@@ -55,14 +55,12 @@ export class ProportionalElectionResultsComponent implements OnDestroy {
   public listResults: ProportionalElectionListResult[] = [];
   public selectedListResult?: ProportionalElectionListResult;
   public loading: boolean = true;
-  public newZhFeaturesEnabled: boolean = false;
   public domainOfInfluenceTypes: DomainOfInfluenceType[] = [];
   public canton: DomainOfInfluenceCanton = DomainOfInfluenceCanton.DOMAIN_OF_INFLUENCE_CANTON_UNSPECIFIED;
 
   public breadcrumbs: BreadcrumbItem[];
 
   private readonly routeParamsSubscription: Subscription;
-  private readonly routeDataSubscription: Subscription;
 
   constructor(
     route: ActivatedRoute,
@@ -72,14 +70,10 @@ export class ProportionalElectionResultsComponent implements OnDestroy {
   ) {
     this.breadcrumbs = breadcrumbsService.forProportionalElectionResults();
     this.routeParamsSubscription = route.params.subscribe(({ resultId }) => this.loadData(resultId));
-    this.routeDataSubscription = route.data.subscribe(async ({ contestCantonDefaults }) => {
-      this.newZhFeaturesEnabled = contestCantonDefaults.newZhFeaturesEnabled;
-    });
   }
 
   public ngOnDestroy(): void {
     this.routeParamsSubscription.unsubscribe();
-    this.routeDataSubscription.unsubscribe();
   }
 
   public selectListResult(listResult: ProportionalElectionListResult): void {

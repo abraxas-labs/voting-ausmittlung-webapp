@@ -53,16 +53,7 @@ export abstract class ElectionBallotComponent<
     await super.submitBundleAndNavigate();
   }
 
-  public async createBallot(): Promise<void> {
-    await super.createBallot();
-
-    // setTimeout is needed to make sure all components are visible
-    setTimeout(() => this.setFocus());
-  }
-
   protected abstract isBallotUnchanged(): boolean;
-
-  protected abstract setFocus(): void;
 
   protected async validateBallot(): Promise<boolean> {
     if (!(await this.validateEmptyVoteCount())) {

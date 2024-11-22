@@ -7,22 +7,16 @@
                               [countOfVoters]="resultDetail.countOfVoters"
                               (countOfVotersChange)="countOfVotersChange.emit()"></vo-ausm-ballot-count-input>
   <div class="flex">
-    <h4 *ngIf="newZhFeaturesEnabled" translate>POLITICAL_BUSINESS.SUBMISSION</h4>
-    <div *ngIf="!readonly && eVoting && newZhFeaturesEnabled">
+    <h4 translate>POLITICAL_BUSINESS.SUBMISSION</h4>
+    <div *ngIf="!readonly && eVoting">
       <vo-ausm-contest-detail-submission-tile
         [titleText]="'MAJORITY_ELECTION.MAP_WRITE_INS' | translate"
         [buttonText]="'MAJORITY_ELECTION.MAP'"
         (buttonClick)="openWriteIns(resultDetail.election.id)">
       </vo-ausm-contest-detail-submission-tile>
     </div>
-    <div *ngIf="!readonly && eVoting && !newZhFeaturesEnabled" class="detail-icon-link" (click)="openWriteIns(resultDetail.election.id)">
-      <span translate>MAJORITY_ELECTION.MAP_WRITE_INS</span>
-      <bc-icon icon="arrow-right"></bc-icon>
-    </div>
     <vo-ausm-contest-majority-election-result-input [result]="resultDetail"
                                                     [eVoting]="eVoting"
-                                                    [newZhFeaturesEnabled]="newZhFeaturesEnabled"
-                                                    [class.primary-result-input]="!newZhFeaturesEnabled"
                                                     [readonly]="readonly"
                                                     [showInvalidVotes]="election.contest!.cantonDefaults!.majorityElectionInvalidVotes"
                                                     [showIndividualVotes]="!election.individualCandidatesDisabled"
@@ -39,19 +33,11 @@
     [showInvalidVotes]="election.contest!.cantonDefaults!.majorityElectionInvalidVotes"
     [showIndividualVotes]="!result.election.individualCandidatesDisabled"
     [eVoting]="eVoting"
-    [newZhFeaturesEnabled]="newZhFeaturesEnabled"
     [result]="result"
     [readonly]="readonly"
-    [buttonsTemplate]="newZhFeaturesEnabled ? tileTemplate : buttonsTemplate"
+    [buttonsTemplate]="tileTemplate"
     (contentChanged)="candidateResultChange.emit()"></vo-ausm-contest-majority-election-result-input>
 </div>
-
-<ng-template #buttonsTemplate let-electionId='electionId'>
-  <div *ngIf="!readonly && eVoting" class="detail-icon-link large-ml" (click)="openWriteIns(electionId)">
-    <span translate>MAJORITY_ELECTION.MAP_WRITE_INS</span>
-    <bc-icon icon="arrow-right"></bc-icon>
-  </div>
-</ng-template>
 
 <ng-template #tileTemplate let-electionId='electionId'>
   <div *ngIf="!readonly && eVoting" class="mt-3 max-width">

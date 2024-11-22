@@ -51,7 +51,11 @@ export class CountingCircleTableComponent implements OnInit, AfterViewInit {
   public dataSource = new TableDataSource<ResultOverviewCountingCircleResult>();
   public stateList: EnumItemDescription<CountingCircleResultState>[] = [];
 
-  constructor(private readonly enumUtil: EnumUtil, private readonly router: Router, private readonly route: ActivatedRoute) {}
+  constructor(
+    private readonly enumUtil: EnumUtil,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
+  ) {}
 
   public ngOnInit(): void {
     this.stateList = this.enumUtil.getArrayWithDescriptions<CountingCircleResultState>(

@@ -66,7 +66,11 @@ export class MonitoringCockpitGridFooterButtonsComponent implements OnInit, OnCh
 
   private tenant?: Tenant;
 
-  constructor(private readonly router: Router, private readonly auth: AuthorizationService, private readonly themeService: ThemeService) {}
+  constructor(
+    private readonly router: Router,
+    private readonly auth: AuthorizationService,
+    private readonly themeService: ThemeService,
+  ) {}
 
   public async ngOnInit(): Promise<void> {
     this.tenant = await this.auth.getActiveTenant();
@@ -121,7 +125,7 @@ export class MonitoringCockpitGridFooterButtonsComponent implements OnInit, OnCh
       flatten(
         this.filteredCountingCircleResults.map(ccResult =>
           !!this.politicalBusinessUnionValue
-            ? ccResult.resultsByPoliticalBusinessUnionId[this.politicalBusinessUnionValue.id] ?? []
+            ? (ccResult.resultsByPoliticalBusinessUnionId[this.politicalBusinessUnionValue.id] ?? [])
             : [ccResult.resultsByPoliticalBusinessId[this.politicalBusiness.id]],
         ),
       )
@@ -154,7 +158,7 @@ export class MonitoringCockpitGridFooterButtonsComponent implements OnInit, OnCh
     const allPlausibilisedInPoliticalBusiness = flatten(
       this.countingCircleResults.map(cc =>
         !!this.politicalBusinessUnionValue
-          ? cc.resultsByPoliticalBusinessUnionId[this.politicalBusinessUnionValue.id] ?? []
+          ? (cc.resultsByPoliticalBusinessUnionId[this.politicalBusinessUnionValue.id] ?? [])
           : [cc.resultsByPoliticalBusinessId[this.politicalBusiness.id]],
       ),
     )

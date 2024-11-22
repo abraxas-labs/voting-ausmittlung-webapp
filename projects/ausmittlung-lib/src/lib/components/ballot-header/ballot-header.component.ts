@@ -5,8 +5,9 @@
  */
 
 import { DialogService } from '@abraxas/voting-lib';
-import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
 import { Permissions } from '../../models/permissions.model';
+import { BallotNavigationComponent } from '../ballot-navigation/ballot-navigation.component';
 
 @Component({
   selector: 'vo-ausm-ballot-header',
@@ -55,6 +56,9 @@ export class BallotHeaderComponent {
   @Output()
   public deleteBallot: EventEmitter<void> = new EventEmitter<void>();
 
+  @ViewChild(BallotNavigationComponent)
+  public navigationComponent!: BallotNavigationComponent;
+
   constructor(private readonly dialog: DialogService) {}
 
   @HostListener('document:keydown.control.alt.q', ['$event'])
@@ -74,5 +78,9 @@ export class BallotHeaderComponent {
     }
 
     this.deleteBallot.emit();
+  }
+
+  public setFocus(): void {
+    this.navigationComponent.setFocus();
   }
 }

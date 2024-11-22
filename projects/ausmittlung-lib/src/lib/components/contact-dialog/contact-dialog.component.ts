@@ -7,12 +7,12 @@
 import { Component, HostListener, Inject, OnDestroy } from '@angular/core';
 import { ContactPerson, CountingCircle, DomainOfInfluence, ResultList } from '../../models';
 import { cloneDeep, isEqual } from 'lodash';
-import { ContactPersonEditDialogResult } from '../contest-detail/contest-detail-sidebar/contact-person-edit-dialog/contact-person-edit-dialog.component';
 import { ContestCountingCircleContactPersonService } from '../../services/contest-counting-circle-contact-person.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { DialogService } from '@abraxas/voting-lib';
 import { TranslateService } from '@ngx-translate/core';
+import { distinct } from '../../services/utils/array.utils';
 
 @Component({
   selector: 'vo-ausm-contact-dialog',
@@ -27,17 +27,20 @@ export class ContactDialogComponent implements OnDestroy {
 
   @HostListener('window:keyup.esc')
   public async keyUpEscape(): Promise<void> {
-    await this.closeWithUnsavedChangesCheck();
+    if (this.showCancel) {
+      await this.closeWithUnsavedChangesCheck();
+    }
   }
 
-  public readonly domainOfInfluences: DomainOfInfluence[];
   public readonly resultList: ResultList;
   public readonly countingCircle: CountingCircle;
   public readonly readonly: boolean;
   public readonly showCancel: boolean;
+  public readonly tenantId: string;
   public saving: boolean = false;
   public hasChanges: boolean = false;
   public originalCountingCircle: CountingCircle;
+  public domainOfInfluences: DomainOfInfluence[];
 
   public readonly backdropClickSubscription: Subscription;
 
@@ -54,9 +57,16 @@ export class ContactDialogComponent implements OnDestroy {
     this.readonly = dialogData.readonly;
     this.showCancel = dialogData.showCancel;
     this.originalCountingCircle = cloneDeep(this.resultList.countingCircle);
+    this.tenantId = dialogData.tenantId;
+
+    this.filterDomainOfInfluences();
 
     this.dialogRef.disableClose = true;
-    this.backdropClickSubscription = this.dialogRef.backdropClick().subscribe(async () => this.closeWithUnsavedChangesCheck());
+    this.backdropClickSubscription = this.dialogRef.backdropClick().subscribe(async () => {
+      if (this.showCancel) {
+        await this.closeWithUnsavedChangesCheck();
+      }
+    });
   }
 
   public ngOnDestroy(): void {
@@ -74,7 +84,7 @@ export class ContactDialogComponent implements OnDestroy {
       }
 
       this.resultList.mustUpdateContactPersons = false;
-      const dialogResult: ContactPersonEditDialogResult = {
+      const dialogResult: ContactDialogResult = {
         resultList: this.resultList,
       };
       this.dialogRef.close(dialogResult);
@@ -130,6 +140,20 @@ export class ContactDialogComponent implements OnDestroy {
       this.countingCircle.contactPersonSameDuringEventAsAfter ? undefined : this.countingCircle.contactPersonAfterEvent,
     );
   }
+
+  private filterDomainOfInfluences(): void {
+    this.domainOfInfluences = this.domainOfInfluences.filter(
+      x =>
+        x.secureConnectId !== this.tenantId &&
+        (!!x.contactPerson?.firstName ||
+          !!x.contactPerson?.familyName ||
+          !!x.contactPerson?.phone ||
+          !!x.contactPerson?.mobilePhone ||
+          !!x.contactPerson?.email),
+    );
+
+    this.domainOfInfluences = distinct(this.domainOfInfluences, x => x.secureConnectId);
+  }
 }
 
 export interface ContactDialogComponentData {
@@ -137,6 +161,7 @@ export interface ContactDialogComponentData {
   resultList: ResultList;
   readonly: boolean;
   showCancel: boolean;
+  tenantId: string;
 }
 
 export interface ContactDialogResult {

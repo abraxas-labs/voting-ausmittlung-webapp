@@ -4,19 +4,21 @@
  * For license information see LICENSE file.
  */
 
-import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { VoteResult } from '../../../../models';
 import { BallotCountInputComponent } from '../../../ballot-count-input/ballot-count-input.component';
 import { ThemeService } from '@abraxas/voting-lib';
-import { Subscription } from 'rxjs';
+import { BallotType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/vote_pb';
 
 @Component({
   selector: 'vo-ausm-contest-vote-detail-detailed',
   templateUrl: './contest-vote-detail-detailed.component.html',
   styleUrls: ['./contest-vote-detail-detailed.component.scss'],
 })
-export class ContestVoteDetailDetailedComponent implements OnDestroy {
+export class ContestVoteDetailDetailedComponent {
+  public readonly ballotTypes: typeof BallotType = BallotType;
+
   @Input()
   public resultDetail!: VoteResult;
 
@@ -35,19 +37,10 @@ export class ContestVoteDetailDetailedComponent implements OnDestroy {
   @ViewChild(BallotCountInputComponent)
   private ballotCountInputComponent!: BallotCountInputComponent;
 
-  public newZhFeaturesEnabled: boolean = false;
-
-  private readonly routeSubscription: Subscription;
-
-  constructor(private readonly router: Router, private readonly themeService: ThemeService, route: ActivatedRoute) {
-    this.routeSubscription = route.data.subscribe(async ({ contestCantonDefaults }) => {
-      this.newZhFeaturesEnabled = contestCantonDefaults.newZhFeaturesEnabled;
-    });
-  }
-
-  public ngOnDestroy(): void {
-    this.routeSubscription.unsubscribe();
-  }
+  constructor(
+    private readonly router: Router,
+    private readonly themeService: ThemeService,
+  ) {}
 
   public async openBundles(voteResultId: string, ballotResultId: string): Promise<void> {
     if (!this.resultDetail) {

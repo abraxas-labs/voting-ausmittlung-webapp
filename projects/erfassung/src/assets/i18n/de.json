@@ -26,14 +26,12 @@
   },
   "SUBMISSION_DONE": {
     "TITLE": "Ergebnisse übermitteln",
-    "TITLE_OLD": "Erfassung prüfen und beenden",
     "POLITICAL_BUSINESS": "Geschäft",
     "DOMAIN_OF_INFLUENCE_TYPE": "Ebene",
     "POLITICAL_BUSINESS_TYPE": "Geschäftstyp",
     "COUNTING_CIRCLE_RESULT_STATE": "Status",
     "NO_RESULTS": "Keine Resultate verfügbar",
     "BREADCRUMB_TITLE": "Ergebnisse übermitteln",
-    "BREADCRUMB_TITLE_OLD": "Erfassung prüfen und beenden",
     "FINISH_SUBMISSION_SELECTED_ACTION": "Alle markierten prüfen und beenden",
     "READY_FOR_CORRECTION_RESULT": "Geschäft {{title}} ist nicht verfügbar, da es sich im Status \"{{state}}\" befindet"
   },

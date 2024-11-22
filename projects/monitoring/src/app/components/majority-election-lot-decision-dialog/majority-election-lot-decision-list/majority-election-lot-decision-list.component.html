@@ -10,7 +10,7 @@
     <bc-label [label]="'ELECTION.CANDIDATE.RANK_AFTER_LOT_DECISION' | translate"></bc-label>
 
     <ng-container *ngFor="let lotDecision of lotDecisions.lotDecisions">
-      <span>{{lotDecision.originalRank}}</span>
+      <span>{{lotDecision.originalRank}}{{lotDecision.lotDecisionRequired ? '*' : ''}}</span>
       <span>{{lotDecision.candidate.number}}</span>
       <span class="candidate-name">{{lotDecision.candidate.politicalLastName}} {{lotDecision.candidate.politicalFirstName}}</span>
       <span>{{lotDecision.candidate.party}}</span>
@@ -19,10 +19,14 @@
     </ng-container>
   </div>
 
+  <bc-label *ngIf="hasAnyRequiredLotDecisions" [label]="'END_RESULT.ELECTION.LOT_DECISION.REQUIRED_HINT' | translate"></bc-label>
+
   <ng-template #rankDropdownTemplate let-lotDecision>
     <span>
       <bc-dropdown #rankDropdownInput
                    [(value)]="lotDecision.selectedRank"
+                   valueExpr="value"
+                   displayExpr="description"
                    [items]="lotDecision.selectableRanks"
                    [subscriptSizing]="'dynamic'"></bc-dropdown>
     </span>

@@ -1,44 +1,14 @@
 <h4 translate>CONTEST.DETAIL.COUNT_OF_VOTERS</h4>
 
-<bc-label *ngIf="swissAbroadHaveVotingRightsOnAnyBusiness" [label]="'CONTEST.DETAIL.SWISS' | translate"></bc-label>
-<div class="count-of-voters mb-2">
-  <bc-number
-    #maleFormfield
-    [disabled]="readonly"
-    [required]="true"
-    [min]="0"
-    [(value)]="getDetail(voterTypes.VOTER_TYPE_SWISS, sexTypes.SEX_TYPE_MALE).countOfVoters"
-    (valueChange)="updateTotal()"
-    [label]="'CONTEST.DETAIL.MEN' | translate"
-    [subscriptSizing]="'dynamic'"
-  ></bc-number>
+<ng-container *ngFor="let voterTypeGroup of voterTypeGroups">
+  <bc-label *ngIf="voterTypeGroup.label" [label]="voterTypeGroup.label | translate"></bc-label>
 
-  <bc-number
-    [disabled]="readonly"
-    [required]="true"
-    [min]="0"
-    [(value)]="getDetail(voterTypes.VOTER_TYPE_SWISS, sexTypes.SEX_TYPE_FEMALE).countOfVoters"
-    (valueChange)="updateTotal()"
-    [label]="'CONTEST.DETAIL.WOMEN' | translate"
-    [subscriptSizing]="'dynamic'"
-  ></bc-number>
-
-  <bc-number [disabled]="true"
-             [required]="true"
-             [value]="totalSwiss"
-             [label]="'CONTEST.DETAIL.TOTAL' | translate"
-             [subscriptSizing]="'dynamic'">
-  </bc-number>
-</div>
-
-<div class="my-2" *ngIf="swissAbroadHaveVotingRightsOnAnyBusiness">
-  <bc-label [label]="'CONTEST.DETAIL.SWISS_ABROAD' | translate"></bc-label>
-  <div class="count-of-voters">
+  <div class="count-of-voters mb-2">
     <bc-number
       [disabled]="readonly"
       [required]="true"
       [min]="0"
-      [(value)]="getDetail(voterTypes.VOTER_TYPE_SWISS_ABROAD, sexTypes.SEX_TYPE_MALE).countOfVoters"
+      [(value)]="voterTypeGroup.menSubTotal.countOfVoters"
       (valueChange)="updateTotal()"
       [label]="'CONTEST.DETAIL.MEN' | translate"
       [subscriptSizing]="'dynamic'"
@@ -48,7 +18,7 @@
       [disabled]="readonly"
       [required]="true"
       [min]="0"
-      [(value)]="getDetail(voterTypes.VOTER_TYPE_SWISS_ABROAD, sexTypes.SEX_TYPE_FEMALE).countOfVoters"
+      [(value)]="voterTypeGroup.womenSubTotal.countOfVoters"
       (valueChange)="updateTotal()"
       [label]="'CONTEST.DETAIL.WOMEN' | translate"
       [subscriptSizing]="'dynamic'"
@@ -57,11 +27,16 @@
     <bc-number
       [disabled]="true"
       [required]="true"
-      [value]="totalSwissAbroad"
+      [value]="voterTypeGroup.total"
       [label]="'CONTEST.DETAIL.TOTAL' | translate"
       [subscriptSizing]="'dynamic'">
     </bc-number>
   </div>
-</div>
+</ng-container>
 
-<bc-checkbox [disabled]="true" [label]="'CONTEST.DETAIL.E_VOTING_ACTIVE' | translate" [checked]="eVoting"></bc-checkbox>
+<bc-checkbox
+  [disabled]="true"
+  [label]="'CONTEST.DETAIL.E_VOTING_ACTIVE' | translate"
+  [checked]="eVoting"
+  [subscriptSizing]="'dynamic'"
+></bc-checkbox>

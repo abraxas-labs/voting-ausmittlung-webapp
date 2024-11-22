@@ -24,17 +24,14 @@ import { HasUnsavedChanges } from '../../services/guards/has-unsaved-changes.gua
 
 @Directive()
 export abstract class PoliticalBusinessBallotComponent<
-  TResult extends ProportionalElectionResult | MajorityElectionResult | VoteResult,
-  TBundle extends PoliticalBusinessResultBundle,
-  TBallot extends PoliticalBusinessResultBallot,
-> implements OnInit, OnDestroy, HasUnsavedChanges
+    TResult extends ProportionalElectionResult | MajorityElectionResult | VoteResult,
+    TBundle extends PoliticalBusinessResultBundle,
+    TBallot extends PoliticalBusinessResultBallot,
+  >
+  implements OnInit, OnDestroy, HasUnsavedChanges
 {
   @HostListener('window:beforeunload')
   public beforeUnload(): boolean {
-    if (!this.newZhFeaturesEnabled) {
-      return true;
-    }
-
     return !this.hasChanges;
   }
 
@@ -56,10 +53,7 @@ export abstract class PoliticalBusinessBallotComponent<
   public canSubmitBundle: boolean = false;
   public canUpdateBallot: boolean = false;
 
-  public newZhFeaturesEnabled: boolean = false;
-
   private routeParamsSubscription: Subscription = Subscription.EMPTY;
-  private routeDataSubscription: Subscription;
 
   protected constructor(
     protected readonly userService: UserService,
@@ -69,11 +63,7 @@ export abstract class PoliticalBusinessBallotComponent<
     private readonly router: Router,
     private readonly toast: SnackbarService,
     private readonly permissionService: PermissionService,
-  ) {
-    this.routeDataSubscription = route.data.subscribe(async ({ contestCantonDefaults }) => {
-      this.newZhFeaturesEnabled = contestCantonDefaults.newZhFeaturesEnabled;
-    });
-  }
+  ) {}
 
   protected abstract get deletedBallotLabel(): string;
 
@@ -85,14 +75,9 @@ export abstract class PoliticalBusinessBallotComponent<
 
   public ngOnDestroy(): void {
     this.routeParamsSubscription.unsubscribe();
-    this.routeDataSubscription.unsubscribe();
   }
 
   public get hasUnsavedChanges(): boolean {
-    if (!this.newZhFeaturesEnabled) {
-      return false;
-    }
-
     return this.hasChanges;
   }
 
@@ -161,6 +146,9 @@ export abstract class PoliticalBusinessBallotComponent<
       this.loadingBallot = false;
       this.actionExecuting = false;
     }
+
+    // setTimeout is needed to make sure all components are visible
+    setTimeout(() => this.setFocus());
   }
 
   public async deleteBallotAndNavigate(): Promise<void> {
@@ -223,6 +211,8 @@ export abstract class PoliticalBusinessBallotComponent<
   protected abstract loadBallotData(bundleId: string, ballotNumber: number): Promise<void>;
 
   protected abstract validateBallot(): Promise<boolean>;
+
+  protected abstract setFocus(): void;
 
   protected computeBundleData(): void {
     if (!this.politicalBusinessResult || !this.bundle) {

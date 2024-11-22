@@ -34,9 +34,6 @@ export class ContestMajorityElectionResultInputComponent {
   public readonly: boolean = true;
 
   @Input()
-  public newZhFeaturesEnabled: boolean = false;
-
-  @Input()
   public buttonsTemplate?: TemplateRef<HTMLElement>;
 
   @Output()

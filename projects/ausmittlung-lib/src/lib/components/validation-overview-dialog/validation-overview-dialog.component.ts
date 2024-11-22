@@ -19,14 +19,19 @@ export class ValidationOverviewDialogComponent {
   public readonly header: string;
   public readonly canEmitSave: boolean;
   public readonly hintLabel?: string;
+  public readonly hasSaveButton: boolean;
 
-  constructor(private readonly dialogRef: MatDialogRef<boolean>, @Inject(MAT_DIALOG_DATA) dialogData: ValidationOverviewDialogData) {
+  constructor(
+    private readonly dialogRef: MatDialogRef<boolean>,
+    @Inject(MAT_DIALOG_DATA) dialogData: ValidationOverviewDialogData,
+  ) {
     this.validationSummaries = dialogData.validationSummaries;
     this.saveLabel = dialogData.saveLabel;
     this.saveIcon = dialogData.saveIcon;
     this.header = dialogData.header;
     this.canEmitSave = dialogData.canEmitSave;
     this.hintLabel = dialogData.hintLabel;
+    this.hasSaveButton = dialogData.hasSaveButton;
   }
 
   public close(): void {
@@ -49,6 +54,7 @@ export interface ValidationOverviewDialogData {
   saveIcon?: string;
   hintLabel?: string;
   header: string;
+  hasSaveButton: boolean;
 }
 
 export interface ValidationOverviewDialogResult {

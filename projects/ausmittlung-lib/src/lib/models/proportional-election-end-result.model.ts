@@ -8,9 +8,9 @@ import {
   ProportionalElectionCandidateEndResult as ProportionalElectionCandidateEndResultProto,
   ProportionalElectionEndResult as ProportionalElectionEndResultProto,
   ProportionalElectionEndResultAvailableLotDecision as ProportionalElectionEndResultAvailableLotDecisionProto,
-  ProportionalElectionEndResultLotDecision as ProportionalElectionEndResultLotDecisionProto,
   ProportionalElectionListEndResult as ProportionalElectionListEndResultProto,
   ProportionalElectionListEndResultAvailableLotDecisions as ProportionalElectionListEndResultAvailableLotDecisionsProto,
+  ProportionalElectionEndResultListLotDecision as ProportionalElectionEndResultListLotDecisionProto,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/proportional_election_end_result_pb';
 import { ProportionalElectionCandidateEndResultState } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/proportional_election_end_result_pb';
 import { PoliticalBusinessCountOfVoters } from './count-of-voters.model';
@@ -28,9 +28,9 @@ export {
   ProportionalElectionEndResultProto,
   ProportionalElectionListEndResultAvailableLotDecisionsProto,
   ProportionalElectionCandidateEndResultProto,
-  ProportionalElectionEndResultLotDecisionProto,
   ProportionalElectionEndResultAvailableLotDecisionProto,
   ProportionalElectionListEndResultProto,
+  ProportionalElectionEndResultListLotDecisionProto,
   ProportionalElectionCandidateEndResultState,
 };
 
@@ -40,6 +40,7 @@ export interface ProportionalElectionEndResult extends PoliticalBusinessEndResul
   listEndResults: ProportionalElectionListEndResult[];
   manualEndResultRequired: boolean;
   mandateDistributionTriggered: boolean;
+  listLotDecisions: ProportionalElectionEndResultListLotDecision[];
 }
 
 export interface ProportionalElectionListEndResult {
@@ -70,7 +71,7 @@ export interface ProportionalElectionCandidateEndResult {
 
 export interface ProportionalElectionEndResultLotDecision {
   candidateId: string;
-  rank: number;
+  rank?: number;
 }
 
 export interface ProportionalElectionListEndResultAvailableLotDecisions {
@@ -87,4 +88,15 @@ export interface ProportionalElectionManualCandidateEndResult {
   voteCount: number;
   rank: number;
   state: ProportionalElectionCandidateEndResultState;
+}
+
+export interface ProportionalElectionEndResultListLotDecision {
+  entries: ProportionalElectionEndResultListLotDecisionEntry[];
+}
+
+export interface ProportionalElectionEndResultListLotDecisionEntry {
+  listId?: string;
+  listUnionId?: string;
+  winning: boolean;
+  description: string;
 }

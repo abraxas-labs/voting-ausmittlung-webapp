@@ -37,7 +37,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ErfassungContestDetailComponent } from './pages/erfassung-contest-detail/erfassung-contest-detail.component';
 import { ErfassungContestOverviewComponent } from './pages/erfassung-contest-overview/erfassung-contest-overview.component';
-import { WebpackTranslateLoader } from './services/webpack-translate-loader';
+import { TranslationLoader } from './services/translation-loader';
 import { ErfassungFinishSubmissionComponent } from './pages/erfassung-finish-submission/erfassung-finish-submission.component';
 
 registerLocaleData(localeDeCh);
@@ -58,7 +58,7 @@ registerLocaleData(localeDeCh);
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useClass: WebpackTranslateLoader,
+        useClass: TranslationLoader,
       },
     }),
     VotingLibModule.forRoot(environment.restApiEndpoint),

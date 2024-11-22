@@ -61,10 +61,14 @@ export class ContestMajorityElectionDetailResultEntryComponent implements OnInit
   public useCandidateCheckDigit: boolean = false;
   private readonly routeSubscription: Subscription;
 
-  constructor(private readonly resultService: MajorityElectionResultService, enumUtil: EnumUtil, route: ActivatedRoute) {
+  constructor(
+    private readonly resultService: MajorityElectionResultService,
+    enumUtil: EnumUtil,
+    route: ActivatedRoute,
+  ) {
     this.resultEntryVariants = enumUtil
       .getArrayWithDescriptions<MajorityElectionResultEntry>(MajorityElectionResultEntry, 'MAJORITY_ELECTION.RESULT_ENTRY.LONG.')
-      .map(x => ({ displayText: x.description, value: x.value } as RadioButton));
+      .map(x => ({ displayText: x.description, value: x.value }) as RadioButton);
 
     this.reviewProcedureChoices = enumUtil
       .getArrayWithDescriptions<MajorityElectionReviewProcedure>(

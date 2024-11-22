@@ -53,7 +53,7 @@
       <ng-container columnDef="countingCircleResultState">
         <bc-header-cell *headerCellDef>{{ 'SUBMISSION_DONE.COUNTING_CIRCLE_RESULT_STATE' | translate }}</bc-header-cell>
         <bc-data-cell *dataCellDef="let element">
-          <vo-ausm-result-state-box [state]="element.state" [newZhFeaturesEnabled]="newZhFeaturesEnabled" [stateDescriptionsByState]="contest?.cantonDefaults.countingCircleResultStateDescriptionsByState"></vo-ausm-result-state-box>
+          <vo-ausm-result-state-box [state]="element.state" [stateDescriptionsByState]="contest?.cantonDefaults.countingCircleResultStateDescriptionsByState"></vo-ausm-result-state-box>
         </bc-data-cell>
       </ng-container>
 

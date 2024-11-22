@@ -17,7 +17,4 @@ export class ElectionInfoComponent {
 
   @Input()
   public electionResult!: ProportionalElectionResult | MajorityElectionResult;
-
-  @Input()
-  public newZhFeaturesEnabled: boolean = false;
 }

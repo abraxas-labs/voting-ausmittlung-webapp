@@ -44,10 +44,12 @@ export class ProportionalElectionBundleTableComponent
   @Input()
   public reviewProcedure?: ProportionalElectionReviewProcedure;
 
-  @Input()
-  public newZhFeaturesEnabled: boolean = false;
-
-  constructor(userService: UserService, roleService: PermissionService, enumUtil: EnumUtil, private readonly i18n: TranslateService) {
+  constructor(
+    userService: UserService,
+    roleService: PermissionService,
+    enumUtil: EnumUtil,
+    private readonly i18n: TranslateService,
+  ) {
     super(userService, roleService, enumUtil);
   }
 

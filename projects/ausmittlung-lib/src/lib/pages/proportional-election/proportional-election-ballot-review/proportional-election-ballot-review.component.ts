@@ -44,13 +44,11 @@ export class ProportionalElectionBallotReviewComponent implements OnDestroy {
 
   public canSucceed: boolean = false;
   public correctionOngoing: boolean = false;
-  public newZhFeaturesEnabled: boolean = false;
 
   @ViewChild(BallotReviewStepperComponent)
   public reviewStepper!: BallotReviewStepperComponent;
 
   private readonly routeParamsSubscription: Subscription;
-  private readonly routeDataSubscription: Subscription;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -62,14 +60,10 @@ export class ProportionalElectionBallotReviewComponent implements OnDestroy {
     private readonly ballotUiService: ProportionalElectionBallotUiService,
   ) {
     this.routeParamsSubscription = this.route.params.subscribe(({ bundleId }) => this.loadData(bundleId));
-    this.routeDataSubscription = route.data.subscribe(async ({ contestCantonDefaults }) => {
-      this.newZhFeaturesEnabled = contestCantonDefaults.newZhFeaturesEnabled;
-    });
   }
 
   public ngOnDestroy(): void {
     this.routeParamsSubscription.unsubscribe();
-    this.routeDataSubscription.unsubscribe();
   }
 
   public updateState(): void {

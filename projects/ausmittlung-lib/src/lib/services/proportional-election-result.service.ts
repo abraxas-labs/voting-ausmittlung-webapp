@@ -34,6 +34,7 @@ import {
   ProportionalElectionResultPrepareCorrectionFinishedRequest,
   ProportionalElectionResultPrepareSubmissionFinishedRequest,
   ProportionalElectionResultPublishRequest,
+  ProportionalElectionResultResetToSubmissionFinishedAndFlagForCorrectionRequest,
   ProportionalElectionResultResetToSubmissionFinishedRequest,
   ProportionalElectionResultsPlausibiliseRequest,
   ProportionalElectionResultsResetToAuditedTentativelyRequest,
@@ -43,6 +44,9 @@ import {
   RevertProportionalElectionEndResultMandateDistributionRequest,
   StartProportionalElectionEndResultMandateDistributionRequest,
   UpdateProportionalElectionDoubleProportionalResultSuperApportionmentLotDecisionRequest,
+  UpdateProportionalElectionEndResultListLotDecisionEntryRequest,
+  UpdateProportionalElectionEndResultListLotDecisionRequest,
+  UpdateProportionalElectionEndResultListLotDecisionsRequest,
   UpdateProportionalElectionEndResultLotDecisionRequest,
   UpdateProportionalElectionListEndResultLotDecisionsRequest,
   ValidateEnterProportionalElectionCountOfVotersRequest,
@@ -60,8 +64,10 @@ import {
   ProportionalElectionEndResult,
   ProportionalElectionEndResultAvailableLotDecision,
   ProportionalElectionEndResultAvailableLotDecisionProto,
+  ProportionalElectionEndResultListLotDecision,
+  ProportionalElectionEndResultListLotDecisionEntry,
+  ProportionalElectionEndResultListLotDecisionProto,
   ProportionalElectionEndResultLotDecision,
-  ProportionalElectionEndResultLotDecisionProto,
   ProportionalElectionEndResultProto,
   ProportionalElectionListEndResult,
   ProportionalElectionListEndResultAvailableLotDecisions,
@@ -85,6 +91,8 @@ import { ProportionalElectionService } from './proportional-election.service';
 import { GRPC_ENV_INJECTION_TOKEN } from './tokens';
 import { ValidationMappingService } from './validation-mapping.service';
 import { DoubleProportionalResultService } from './double-proportional-result.service';
+import { createInt32Value } from './utils/proto.utils';
+import { ElectionLotDecisionService } from './election-lot-decision.service';
 
 @Injectable({
   providedIn: 'root',
@@ -98,6 +106,7 @@ export class ProportionalElectionResultService extends PoliticalBusinessResultBa
     grpcBackend: GrpcBackendService,
     @Inject(GRPC_ENV_INJECTION_TOKEN) env: GrpcEnvironment,
     private readonly validationMapping: ValidationMappingService,
+    private readonly electionLotDecisionService: ElectionLotDecisionService,
   ) {
     super(ProportionalElectionResultServicePromiseClient, ProportionalElectionResultServiceClient, env, grpcBackend);
   }
@@ -414,6 +423,22 @@ export class ProportionalElectionResultService extends PoliticalBusinessResultBa
     return this.requestEmptyResp(c => c.enterManualListEndResult, req);
   }
 
+  public updateEndResultListLotDecisions(
+    proportionalElectionId: string,
+    listLotDecisions: ProportionalElectionEndResultListLotDecision[],
+  ): Promise<void> {
+    const req = new UpdateProportionalElectionEndResultListLotDecisionsRequest();
+    req.setProportionalElectionId(proportionalElectionId);
+    req.setListLotDecisionsList(listLotDecisions.map(x => this.mapToUpdateProportionalElectionEndResultListLotDecisionRequest(x)));
+    return this.requestEmptyResp(x => x.updateEndResultListLotDecisions, req);
+  }
+
+  public async resetToSubmissionFinishedAndFlagForCorrection(proportionalElectionResultId: string): Promise<void> {
+    const req = new ProportionalElectionResultResetToSubmissionFinishedAndFlagForCorrectionRequest();
+    req.setElectionResultId(proportionalElectionResultId);
+    await this.requestEmptyResp(c => c.resetToSubmissionFinishedAndFlagForCorrection, req);
+  }
+
   private mapToUnmodifiedListResults(proto: ProportionalElectionUnmodifiedListResultsProto): ProportionalElectionUnmodifiedListResults {
     return {
       electionResult: ProportionalElectionResultService.mapToProportionalElectionResult(proto.getElectionResult()!),
@@ -442,6 +467,7 @@ export class ProportionalElectionResultService extends PoliticalBusinessResultBa
       finalized: data.getFinalized(),
       manualEndResultRequired: data.getManualEndResultRequired(),
       mandateDistributionTriggered: data.getMandateDistributionTriggered(),
+      listLotDecisions: data.getListLotDecisionsList().map(x => this.mapToEndResultListLotDecision(x)),
     };
   }
 
@@ -475,10 +501,25 @@ export class ProportionalElectionResultService extends PoliticalBusinessResultBa
     }));
   }
 
-  private mapToUpdateLotDecisionRequest(data: ProportionalElectionEndResultLotDecision): ProportionalElectionEndResultLotDecisionProto {
+  private static mapToEndResultListLotDecision(
+    data: ProportionalElectionEndResultListLotDecisionProto,
+  ): ProportionalElectionEndResultListLotDecision {
+    return {
+      entries: data.getEntriesList().map(x => ({
+        listId: x.getListId(),
+        listUnionId: x.getListUnionId(),
+        winning: x.getWinning(),
+        description: x.getDescription(),
+      })),
+    };
+  }
+
+  private mapToUpdateLotDecisionRequest(
+    data: ProportionalElectionEndResultLotDecision,
+  ): UpdateProportionalElectionEndResultLotDecisionRequest {
     const request = new UpdateProportionalElectionEndResultLotDecisionRequest();
     request.setCandidateId(data.candidateId);
-    request.setRank(data.rank);
+    request.setRank(data.rank === 0 ? undefined : createInt32Value(data.rank));
     return request;
   }
 
@@ -496,10 +537,10 @@ export class ProportionalElectionResultService extends PoliticalBusinessResultBa
   ): ProportionalElectionEndResultAvailableLotDecision[] {
     return data.map(x => ({
       candidate: x.getCandidate()!.toObject(),
-      selectedRank: x.getSelectedRank()?.getValue(),
+      selectedRank: x.getSelectedRank()?.getValue() ?? 0,
       voteCount: x.getVoteCount(),
       lotDecisionRequired: x.getLotDecisionRequired(),
-      selectableRanks: x.getSelectableRanksList(),
+      selectableRanks: this.electionLotDecisionService.buildSelectableRank(x.getSelectableRanksList()),
       originalRank: x.getOriginalRank(),
     }));
   }
@@ -520,6 +561,24 @@ export class ProportionalElectionResultService extends PoliticalBusinessResultBa
     const req = new EnterProportionalElectionManualCandidateEndResultRequest();
     req.setCandidateId(data.candidate.id);
     req.setState(data.state);
+    return req;
+  }
+
+  private mapToUpdateProportionalElectionEndResultListLotDecisionRequest(
+    data: ProportionalElectionEndResultListLotDecision,
+  ): UpdateProportionalElectionEndResultListLotDecisionRequest {
+    const req = new UpdateProportionalElectionEndResultListLotDecisionRequest();
+    req.setEntriesList(data.entries.map(x => this.mapToUpdateProportionalElectionEndResultListLotDecisionEntryRequest(x)));
+    return req;
+  }
+
+  private mapToUpdateProportionalElectionEndResultListLotDecisionEntryRequest(
+    data: ProportionalElectionEndResultListLotDecisionEntry,
+  ): UpdateProportionalElectionEndResultListLotDecisionEntryRequest {
+    const req = new UpdateProportionalElectionEndResultListLotDecisionEntryRequest();
+    req.setListId(data.listId ?? '');
+    req.setListUnionId(data.listUnionId ?? '');
+    req.setWinning(data.winning);
     return req;
   }
 }

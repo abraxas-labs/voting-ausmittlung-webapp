@@ -47,7 +47,8 @@
                                                       [canSubmit]="!contentReadonly && !hasUnsavedChanges"
                                                       [contestId]="resultDetail.election.contestId"
                                                       [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
-                                                      [statePlausibilisedDisabled]="contestCantonDefaults?.statePlausibilisedDisabled">
+                                                      [statePlausibilisedDisabled]="contestCantonDefaults?.statePlausibilisedDisabled"
+                                                      [domainOfInfluenceType]="resultDetail.election.domainOfInfluence!.type">
     </vo-ausm-contest-political-business-detail-footer>
   </ng-template>
 </ng-container>

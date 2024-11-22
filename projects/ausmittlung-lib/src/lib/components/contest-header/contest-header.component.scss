@@ -1,11 +1,5 @@
 @use '@abraxas/voting-lib/style/color' as *;
 
-// TODO: can be removed if new UI is standard
-.container {
-  margin: 0.2rem 0;
-  text-align: center;
-}
-
 .info-text {
   font-size: 1rem;
   color: $color-grey-1;
@@ -14,8 +8,8 @@
 
 .info-container {
   display: grid;
-  grid-template-columns: fit-content(44rem) auto 1fr 13rem;
-  column-gap: 3rem;
+  grid-template-columns: fit-content(44rem) auto 1fr 17rem;
+  column-gap: 2rem;
   align-items: center;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;

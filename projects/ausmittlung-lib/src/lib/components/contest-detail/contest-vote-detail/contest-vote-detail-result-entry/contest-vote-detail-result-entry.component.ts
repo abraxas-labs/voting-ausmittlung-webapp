@@ -55,10 +55,13 @@ export class ContestVoteDetailResultEntryComponent implements OnInit {
   private originalResultEntry: VoteResultEntry = VoteResultEntry.VOTE_RESULT_ENTRY_UNSPECIFIED;
   private originalResultEntryParams!: VoteResultEntryParams;
 
-  constructor(private readonly enums: EnumUtil, private readonly voteResultService: VoteResultService) {
+  constructor(
+    private readonly enums: EnumUtil,
+    private readonly voteResultService: VoteResultService,
+  ) {
     this.resultEntryVariants = enums
       .getArrayWithDescriptions<VoteResultEntry>(VoteResultEntry, 'VOTE.RESULT_ENTRY.LONG.')
-      .map(x => ({ displayText: x.description, value: x.value } as RadioButton));
+      .map(x => ({ displayText: x.description, value: x.value }) as RadioButton);
   }
 
   public ngOnInit(): void {

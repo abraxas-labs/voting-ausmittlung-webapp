@@ -17,7 +17,7 @@ import {
   VotingCardResultDetail,
   VotingChannel,
 } from '../../../models';
-import { groupBy, groupBySingle, sum } from '../../../services/utils/array.utils';
+import { groupBy, sum } from '../../../services/utils/array.utils';
 import {
   ContestDetailInfoDialogComponent,
   ContestDetailInfoDialogData,
@@ -37,46 +37,28 @@ import { DomainOfInfluenceCanton } from '@abraxas/voting-ausmittlung-service-pro
 export class ContestDetailInfoComponent {
   public readonly votingChannels: typeof VotingChannel = VotingChannel;
   public readonly domainOfInfluenceCantons: typeof DomainOfInfluenceCanton = DomainOfInfluenceCanton;
+  public readonly voterTypes: typeof VoterType = VoterType;
 
-  public votingCardsByDoiType: { [key in keyof typeof DomainOfInfluenceType]?: VotingCardResultDetail[] } = {};
+  public votingCardsByDoiType: { -readonly [key in keyof typeof DomainOfInfluenceType]?: VotingCardResultDetail[] } = {};
   public votingCardResultSummaries: SimpleVotingCardResultSummary[] = [];
-  public swissMen: number = 0;
-  public swissWomen: number = 0;
-  public swissAbroadMen: number = 0;
-  public swissAbroadWomen: number = 0;
-  public totalSwiss: number = 0;
-  public totalSwissAbroad: number = 0;
+  public subTotalInfoSummaries: SimpleSubTotalResultSummary[] = [];
   public votingCardsValue?: VotingCardResultDetail[];
   public enabledVotingCardChannelsValue: VotingCardChannel[] = [];
   public domainOfInfluenceTypesValue?: DomainOfInfluenceType[];
   public countOfVotersValue?: CountOfVotersInformation;
   public electorateSummaryValue?: ContestCountingCircleElectorateSummary;
-  public readonlyValue: boolean = true;
-
-  private swissVotersInformation: Record<number, CountOfVotersInformationSubTotal> = {};
-  private swissAbroadVotersInformation: Record<number, CountOfVotersInformationSubTotal> = {};
 
   @Input()
-  public set readonly(v: boolean) {
-    if (this.readonlyValue === v) {
-      return;
-    }
-
-    this.readonlyValue = v;
-    this.updateVotingCards();
-  }
+  public readonly: boolean = true;
 
   @Input()
   public countingMachineEnabled: boolean = false;
 
   @Input()
-  public newZhFeaturesEnabled: boolean = false;
-
-  @Input()
   public eVoting: boolean = false;
 
   @Input()
-  public swissAbroadHaveVotingRightsOnAnyBusiness: boolean = false;
+  public enabledVoterTypes: VoterType[] = [];
 
   @Input()
   public countingMachine: CountingMachine = CountingMachine.COUNTING_MACHINE_UNSPECIFIED;
@@ -151,27 +133,49 @@ export class ContestDetailInfoComponent {
 
     const swissInfos = this.countOfVotersValue.subTotalInfoList.filter(x => x.voterType === VoterType.VOTER_TYPE_SWISS);
     const swissAbroadInfos = this.countOfVotersValue.subTotalInfoList.filter(x => x.voterType === VoterType.VOTER_TYPE_SWISS_ABROAD);
-    this.swissVotersInformation = groupBySingle(
-      swissInfos,
-      x => x.sex as number,
-      x => x,
-    );
-    this.swissAbroadVotersInformation = groupBySingle(
-      swissAbroadInfos,
-      x => x.sex as number,
-      x => x,
-    );
+    const foreignerInfos = this.countOfVotersValue.subTotalInfoList.filter(x => x.voterType === VoterType.VOTER_TYPE_FOREIGNER);
+    const minorInfos = this.countOfVotersValue.subTotalInfoList.filter(x => x.voterType === VoterType.VOTER_TYPE_MINOR);
 
-    this.swissMen = this.getDetail(VoterType.VOTER_TYPE_SWISS, SexType.SEX_TYPE_MALE).countOfVoters ?? 0;
-    this.swissWomen = this.getDetail(VoterType.VOTER_TYPE_SWISS, SexType.SEX_TYPE_FEMALE).countOfVoters ?? 0;
-    this.totalSwiss = sum(Object.values(this.swissVotersInformation), x => x.countOfVoters);
-    if (this.swissAbroadHaveVotingRightsOnAnyBusiness) {
-      this.swissAbroadMen = this.getDetail(VoterType.VOTER_TYPE_SWISS_ABROAD, SexType.SEX_TYPE_MALE).countOfVoters ?? 0;
-      this.swissAbroadWomen = this.getDetail(VoterType.VOTER_TYPE_SWISS_ABROAD, SexType.SEX_TYPE_FEMALE).countOfVoters ?? 0;
-      this.totalSwissAbroad = sum(Object.values(this.swissAbroadVotersInformation), x => x.countOfVoters);
+    this.subTotalInfoSummaries = [];
+    this.subTotalInfoSummaries.push({
+      label: 'CONTEST.DETAIL.SWISS',
+      voterType: VoterType.VOTER_TYPE_SWISS,
+      men: this.getDetail(VoterType.VOTER_TYPE_SWISS, SexType.SEX_TYPE_MALE).countOfVoters ?? 0,
+      women: this.getDetail(VoterType.VOTER_TYPE_SWISS, SexType.SEX_TYPE_FEMALE).countOfVoters ?? 0,
+      total: sum(Object.values(swissInfos), x => x.countOfVoters),
+    });
+
+    if (this.enabledVoterTypes.includes(VoterType.VOTER_TYPE_SWISS_ABROAD)) {
+      this.subTotalInfoSummaries.push({
+        label: 'CONTEST.DETAIL.SWISS_ABROAD',
+        voterType: VoterType.VOTER_TYPE_SWISS_ABROAD,
+        men: this.getDetail(VoterType.VOTER_TYPE_SWISS_ABROAD, SexType.SEX_TYPE_MALE).countOfVoters ?? 0,
+        women: this.getDetail(VoterType.VOTER_TYPE_SWISS_ABROAD, SexType.SEX_TYPE_FEMALE).countOfVoters ?? 0,
+        total: sum(Object.values(swissAbroadInfos), x => x.countOfVoters),
+      });
     }
 
-    this.countOfVotersValue.totalCountOfVoters = this.totalSwiss + this.totalSwissAbroad;
+    if (this.enabledVoterTypes.includes(VoterType.VOTER_TYPE_FOREIGNER)) {
+      this.subTotalInfoSummaries.push({
+        label: 'CONTEST.DETAIL.FOREIGNER',
+        voterType: VoterType.VOTER_TYPE_FOREIGNER,
+        men: this.getDetail(VoterType.VOTER_TYPE_FOREIGNER, SexType.SEX_TYPE_MALE).countOfVoters ?? 0,
+        women: this.getDetail(VoterType.VOTER_TYPE_FOREIGNER, SexType.SEX_TYPE_FEMALE).countOfVoters ?? 0,
+        total: sum(Object.values(foreignerInfos), x => x.countOfVoters),
+      });
+    }
+
+    if (this.enabledVoterTypes.includes(VoterType.VOTER_TYPE_MINOR)) {
+      this.subTotalInfoSummaries.push({
+        label: 'CONTEST.DETAIL.MINOR',
+        voterType: VoterType.VOTER_TYPE_MINOR,
+        men: this.getDetail(VoterType.VOTER_TYPE_MINOR, SexType.SEX_TYPE_MALE).countOfVoters ?? 0,
+        women: this.getDetail(VoterType.VOTER_TYPE_MINOR, SexType.SEX_TYPE_FEMALE).countOfVoters ?? 0,
+        total: sum(Object.values(minorInfos), x => x.countOfVoters),
+      });
+    }
+
+    this.countOfVotersValue.totalCountOfVoters = sum(this.subTotalInfoSummaries, x => x.total);
   }
 
   public updateVotingCards(): void {
@@ -184,7 +188,6 @@ export class ContestDetailInfoComponent {
     );
 
     this.votingCardsByDoiType = {};
-    const allVotingCards: VotingCardResultDetail[] = [];
     for (const doiType of this.domainOfInfluenceTypesValue) {
       const votingCardsForDoiType = vcByDoiType[doiType] ?? [];
       const byChannel = groupBy(
@@ -192,7 +195,7 @@ export class ContestDetailInfoComponent {
         x => x.channel,
         x => x,
       );
-      const vcDetails =
+      this.votingCardsByDoiType[doiType] =
         this.enabledVotingCardChannelsValue.length === 0
           ? votingCardsForDoiType
           : this.enabledVotingCardChannelsValue.map(c => ({
@@ -201,15 +204,9 @@ export class ContestDetailInfoComponent {
               valid: c.valid,
               channel: c.votingChannel,
             }));
-
-      allVotingCards.push(...vcDetails);
-      this.votingCardsByDoiType[doiType] = vcDetails;
     }
 
     this.updateVotingCardResultSummaries();
-    if (!this.readonlyValue) {
-      this.votingCardsValue = allVotingCards;
-    }
   }
 
   public async openDialog(): Promise<void> {
@@ -217,12 +214,11 @@ export class ContestDetailInfoComponent {
       return;
 
     const data: ContestDetailInfoDialogData = {
-      readonly: this.readonlyValue,
+      readonly: this.readonly,
       domainOfInfluenceTypes: this.domainOfInfluenceTypesValue,
       countingMachineEnabled: this.countingMachineEnabled,
-      newZhFeaturesEnabled: this.newZhFeaturesEnabled,
       eVoting: this.eVoting,
-      swissAbroadHaveVotingRightsOnAnyBusiness: this.swissAbroadHaveVotingRightsOnAnyBusiness,
+      enabledVoterTypes: this.enabledVoterTypes,
       countOfVoters: this.countOfVotersValue,
       enabledVotingCardChannels: this.enabledVotingCardChannelsValue,
       votingCards: this.votingCardsValue,
@@ -238,7 +234,7 @@ export class ContestDetailInfoComponent {
       data,
     );
 
-    if (!result || this.readonlyValue || !this.contestId || !this.countingCircleId) {
+    if (!result || this.readonly || !this.contestId || !this.countingCircleId) {
       return;
     }
 
@@ -268,14 +264,13 @@ export class ContestDetailInfoComponent {
   }
 
   private getDetail(voterType: VoterType, sex: SexType): CountOfVotersInformationSubTotal {
-    const records = voterType === VoterType.VOTER_TYPE_SWISS ? this.swissVotersInformation : this.swissAbroadVotersInformation;
-    let result = records[sex];
+    let result = this.countOfVotersValue!.subTotalInfoList.find(c => c.voterType === voterType && c.sex === sex);
     if (result) {
       return result;
     }
 
     // don't set the numeric value => textfield should be empty as long as no input is provided
-    result = records[sex] = {
+    result = {
       sex,
       voterType,
     } as CountOfVotersInformationSubTotal;
@@ -335,4 +330,12 @@ interface SimpleVotingCardResultSummary {
   totalVotingCards: number;
   totalValidVotingCards: number;
   hasInvalidVotingCardChannel: boolean;
+}
+
+interface SimpleSubTotalResultSummary {
+  label: string;
+  voterType: VoterType;
+  men: number;
+  women: number;
+  total: number;
 }

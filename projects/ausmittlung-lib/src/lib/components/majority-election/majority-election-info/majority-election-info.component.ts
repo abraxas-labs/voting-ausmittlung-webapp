@@ -14,7 +14,4 @@ import { MajorityElectionResult } from '../../../models';
 export class MajorityElectionInfoComponent {
   @Input()
   public electionResult!: MajorityElectionResult;
-
-  @Input()
-  public newZhFeaturesEnabled: boolean = false;
 }

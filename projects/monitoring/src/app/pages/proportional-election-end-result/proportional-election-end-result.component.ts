@@ -23,7 +23,6 @@ import {
   ProportionalElectionUnionResultService,
   SecondFactorTransactionService,
   sum,
-  SwissAbroadVotingRight,
   VotingDataSource,
 } from 'ausmittlung-lib';
 import { combineLatest, debounceTime, map, Subscription } from 'rxjs';
@@ -51,7 +50,6 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
   public stepActionLoading: boolean = false;
   public dpResultIncomplete?: boolean;
   public endResult?: ProportionalElectionEndResult;
-  public swissAbroadVotingRights: typeof SwissAbroadVotingRight = SwissAbroadVotingRight;
   public hasLotDecisions: boolean = false;
   public hasOpenRequiredLotDecisions: boolean = false;
   public selectedListEndResult?: ProportionalElectionListEndResult;
@@ -217,6 +215,8 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
 
     const data: ProportionalElectionManualEndResultDialogData = {
       lists: this.endResult.listEndResults,
+      proportionalElectionId: this.endResult.election.id,
+      listLotDecisions: this.endResult.listLotDecisions,
     };
 
     const result = await this.dialogService.openForResult<
@@ -284,10 +284,10 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
       this.endResultStep = !endResult.allCountingCirclesDone
         ? EndResultStep.CountingCirclesCounting
         : !endResult.mandateDistributionTriggered
-        ? EndResultStep.AllCountingCirclesDone
-        : !endResult.finalized || !this.finalizeEnabled
-        ? EndResultStep.MandateDistributionTriggered
-        : EndResultStep.Finalized;
+          ? EndResultStep.AllCountingCirclesDone
+          : !endResult.finalized || !this.finalizeEnabled
+            ? EndResultStep.MandateDistributionTriggered
+            : EndResultStep.Finalized;
     } finally {
       this.loading = false;
     }
@@ -328,12 +328,7 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
 
       for (const lotDecision of lotDecisions) {
         const candidateEndResult = candidateEndResultsById[lotDecision.candidateId];
-        candidateEndResult.lotDecision = true;
-        candidateEndResult.rank = lotDecision.rank;
-        candidateEndResult.state =
-          lotDecision.rank <= list.numberOfMandates
-            ? ProportionalElectionCandidateEndResultState.PROPORTIONAL_ELECTION_CANDIDATE_END_RESULT_STATE_ELECTED
-            : ProportionalElectionCandidateEndResultState.PROPORTIONAL_ELECTION_CANDIDATE_END_RESULT_STATE_NOT_ELECTED;
+        this.updateCandidateEndResultByLotDecision(candidateEndResult, lotDecision, list);
       }
 
       list.candidateEndResults = list.candidateEndResults.sort((a, b) => a.rank - b.rank);
@@ -345,6 +340,29 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
     }
 
     this.hasOpenRequiredLotDecisions = this.endResult.listEndResults.some(l => l.hasOpenRequiredLotDecisions);
+  }
+
+  private updateCandidateEndResultByLotDecision(
+    candidateEndResult: ProportionalElectionCandidateEndResult,
+    lotDecision: ProportionalElectionEndResultLotDecision,
+    list: ProportionalElectionListEndResult,
+  ): void {
+    if (!!lotDecision.rank) {
+      candidateEndResult.lotDecision = true;
+      candidateEndResult.rank = lotDecision.rank;
+      candidateEndResult.state =
+        lotDecision.rank <= list.numberOfMandates
+          ? ProportionalElectionCandidateEndResultState.PROPORTIONAL_ELECTION_CANDIDATE_END_RESULT_STATE_ELECTED
+          : ProportionalElectionCandidateEndResultState.PROPORTIONAL_ELECTION_CANDIDATE_END_RESULT_STATE_NOT_ELECTED;
+    } else {
+      const minRank = list.candidateEndResults.map(c => c.voteCount).indexOf(candidateEndResult.voteCount) + 1;
+      candidateEndResult.rank = minRank;
+      candidateEndResult.lotDecision = false;
+      candidateEndResult.state =
+        candidateEndResult.rank <= list.numberOfMandates
+          ? ProportionalElectionCandidateEndResultState.PROPORTIONAL_ELECTION_CANDIDATE_END_RESULT_STATE_PENDING
+          : ProportionalElectionCandidateEndResultState.PROPORTIONAL_ELECTION_CANDIDATE_END_RESULT_STATE_NOT_ELECTED;
+    }
   }
 
   private refreshTableColumns(): void {

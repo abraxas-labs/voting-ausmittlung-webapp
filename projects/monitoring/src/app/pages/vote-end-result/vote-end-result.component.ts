@@ -8,7 +8,7 @@ import { DialogService, SnackbarService } from '@abraxas/voting-lib';
 import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { SecondFactorTransactionService, SwissAbroadVotingRight, VoteEndResult, VoteResultService } from 'ausmittlung-lib';
+import { SecondFactorTransactionService, VoteEndResult, VoteResultService } from 'ausmittlung-lib';
 import { combineLatest, debounceTime, map, Subscription } from 'rxjs';
 import { EndResultStep } from '../../models/end-result-step.model';
 
@@ -21,7 +21,6 @@ export class VoteEndResultComponent implements OnDestroy {
   public loading: boolean = true;
   public stepActionLoading: boolean = false;
   public endResult?: VoteEndResult;
-  public swissAbroadVotingRights: typeof SwissAbroadVotingRight = SwissAbroadVotingRight;
   public isPartialResult = false;
   public endResultStep?: EndResultStep;
   public finalizeEnabled = false;
@@ -118,8 +117,8 @@ export class VoteEndResultComponent implements OnDestroy {
       this.endResultStep = !this.endResult.allCountingCirclesDone
         ? EndResultStep.CountingCirclesCounting
         : !this.endResult.finalized
-        ? EndResultStep.AllCountingCirclesDone
-        : EndResultStep.Finalized;
+          ? EndResultStep.AllCountingCirclesDone
+          : EndResultStep.Finalized;
     } finally {
       this.loading = false;
     }

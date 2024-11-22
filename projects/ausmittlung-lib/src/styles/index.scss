@@ -1,7 +1,5 @@
 @forward '../../../../node_modules/normalize.css/normalize.css';
 @forward '@abraxas/voting-lib/style';
-@forward 'detailIconLink';
-@forward 'stateColors';
 @forward 'typography';
 @forward 'dialog';
 @forward 'tab';
@@ -10,6 +8,7 @@
 @forward 'iconButton';
 @forward 'radioButton';
 @forward 'switch';
+@forward 'formfield';
 
 .page > .container > .content {
   overflow: hidden;

@@ -9,6 +9,7 @@ import {
   BreadcrumbsModule,
   ButtonModule,
   CheckboxModule,
+  DividerModule,
   DropdownModule,
   ExpansionPanelModule,
   FormfieldModule,
@@ -23,8 +24,6 @@ import {
   TabsModule,
   TextareaModule,
   TextModule,
-  DividerModule,
-  PaginatorIntl,
   TooltipModule,
 } from '@abraxas/base-components';
 import { VotingLibModule } from '@abraxas/voting-lib';
@@ -49,12 +48,9 @@ import { ContactPersonDataComponent } from './components/contact-person-data/con
 import { ContactPersonDialogComponent } from './components/contact-person-dialog/contact-person-dialog.component';
 import { ContactPersonEditComponent } from './components/contact-person-edit/contact-person-edit.component';
 import { ContestDetailCountOfVotersComponent } from './components/contest-detail/contest-detail-count-of-voters/contest-detail-count-of-voters.component';
-import { ContactPersonEditDialogComponent } from './components/contest-detail/contest-detail-sidebar/contact-person-edit-dialog/contact-person-edit-dialog.component';
-import { ContestDetailSidebarComponent } from './components/contest-detail/contest-detail-sidebar/contest-detail-sidebar.component';
 import { ContestDetailVotingCardsElectorateComponent } from './components/contest-detail/contest-detail-voting-cards-electorate/contest-detail-voting-cards-electorate.component';
 import { ContestDetailVotingCardsExpansionPanelComponent } from './components/contest-detail/contest-detail-voting-cards-expansion-panel/contest-detail-voting-cards-expansion-panel.component';
 import { ContestDetailVotingCardsComponent } from './components/contest-detail/contest-detail-voting-cards/contest-detail-voting-cards.component';
-import { ContestInfoComponent } from './components/contest-detail/contest-info/contest-info.component';
 import { ContestMajorityElectionDetailDetailedComponent } from './components/contest-detail/contest-majority-election-detail/contest-majority-election-detail-detailed/contest-majority-election-detail-detailed.component';
 import { ContestMajorityElectionDetailFinalResultsComponent } from './components/contest-detail/contest-majority-election-detail/contest-majority-election-detail-final-results/contest-majority-election-detail-final-results.component';
 import { ContestMajorityElectionDetailHeaderComponent } from './components/contest-detail/contest-majority-election-detail/contest-majority-election-detail-header/contest-majority-election-detail-header.component';
@@ -113,7 +109,6 @@ import { VoteBallotQuestionAnswerComponent } from './components/vote/vote-ballot
 import { VoteBundleTableComponent } from './components/vote/vote-bundle-table/vote-bundle-table.component';
 import { VoteInfoComponent } from './components/vote/vote-info/vote-info.component';
 import { VotingDataSourceTabsComponent } from './components/voting-data-source-tabs/voting-data-source-tabs.component';
-import { BindCssVarDirective } from './directives/bind-css-var.directive';
 import { ContestDetailComponent } from './pages/contest-detail/contest-detail.component';
 import { ContestOverviewComponent } from './pages/contest-overview/contest-overview.component';
 import { MajorityElectionBallotGroupCandidatesPipe } from './pages/majority-election/majority-election-ballot-groups/majority-election-ballot-group-candidates.pipe';
@@ -147,7 +142,6 @@ import { ContestCountingCircleElectorateAssignDialogComponent } from './componen
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { TranslatedPaginatorIntl } from './providers/translatedPaginatorIntl';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { BooleanStatusLabelComponent } from './components/boolean-status-label/boolean-status-label.component';
 import { ValidValidationPipe } from './pipes/valid-validation.pipe';
@@ -157,9 +151,7 @@ import { ButtonBarComponent } from './components/button-bar/button-bar.component
   declarations: [
     ContactPersonDataComponent,
     ContestDetailCountOfVotersComponent,
-    ContestDetailSidebarComponent,
     ContestDetailVotingCardsComponent,
-    ContestInfoComponent,
     ContestVoteDetailComponent,
     ContestListComponent,
     SelectCountingCircleDialogComponent,
@@ -219,7 +211,6 @@ import { ButtonBarComponent } from './components/button-bar/button-bar.component
     ContestProportionalElectionDetailHeaderComponent,
     BreadcrumbsComponent,
     ContactPersonEditComponent,
-    ContactPersonEditDialogComponent,
     ContactPersonDialogComponent,
     ProportionalElectionBallotCandidatesChooseDialogComponent,
     ProportionalElectionBallotCandidatesChooseEntryComponent,
@@ -245,7 +236,6 @@ import { ButtonBarComponent } from './components/button-bar/button-bar.component
     MajorityElectionWriteInMappingComponent,
     MajorityElectionWriteInMappingDialogComponent,
     ContestDetailVotingCardsElectorateComponent,
-    BindCssVarDirective,
     TranslateVoteQuestionPipe,
     ContestPastUnlockDialogComponent,
     SecondFactorTransactionDialogComponent,
@@ -338,10 +328,6 @@ export class AusmittlungLibModule {
         {
           provide: VOTING_BASIS_WEBAPP_URL,
           useValue: votingBasisWebAppUrl,
-        },
-        {
-          provide: PaginatorIntl,
-          useClass: TranslatedPaginatorIntl,
         },
         {
           provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,

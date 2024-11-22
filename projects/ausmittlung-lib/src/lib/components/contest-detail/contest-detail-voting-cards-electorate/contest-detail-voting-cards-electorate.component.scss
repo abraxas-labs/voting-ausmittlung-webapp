@@ -1,6 +1,6 @@
 .voting-cards {
   display: grid;
-  grid-template-columns: repeat(var(--voting-cards-per-row), auto);
+  grid-template-columns: repeat(3, auto);
   grid-column-gap: 0.2rem;
 
   > bc-number {

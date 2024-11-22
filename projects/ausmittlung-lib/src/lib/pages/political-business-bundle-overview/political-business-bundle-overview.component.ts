@@ -32,14 +32,14 @@ import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto
 
 @Directive()
 export abstract class PoliticalBusinessBundleOverviewComponent<
-  T extends ProportionalElectionResultBundles | MajorityElectionResultBundles | VoteResultBundles,
-> implements OnInit, OnDestroy
+    T extends ProportionalElectionResultBundles | MajorityElectionResultBundles | VoteResultBundles,
+  >
+  implements OnInit, OnDestroy
 {
   public result?: T;
   public resultReadOnly: boolean = true;
   public loading: boolean = true;
   public canCreateBundle: boolean = false;
-  public newZhFeaturesEnabled: boolean = false;
 
   public openBundles: PoliticalBusinessResultBundle[] | ProportionalElectionResultBundle[] = [];
   public reviewedBundles: PoliticalBusinessResultBundle[] | ProportionalElectionResultBundle[] = [];
@@ -48,7 +48,6 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
   private bundlesById: Record<string, PoliticalBusinessResultBundle | ProportionalElectionResultBundle> = {};
 
   private routeParamsSubscription?: Subscription;
-  private routeDataSubscription: Subscription;
   private bundleStateChangesSubscription?: Subscription;
   private stateChangesSubscription?: Subscription;
 
@@ -63,11 +62,7 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
     protected readonly resultExportService: ResultExportService,
     protected readonly exportService: ExportService,
     private readonly datePipe: DatePipe,
-  ) {
-    this.routeDataSubscription = route.data.subscribe(async ({ contestCantonDefaults }) => {
-      this.newZhFeaturesEnabled = contestCantonDefaults.newZhFeaturesEnabled;
-    });
-  }
+  ) {}
 
   public async ngOnInit(): Promise<void> {
     this.routeParamsSubscription = this.route.params.subscribe(params => this.loadData(params));
@@ -76,7 +71,6 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
 
   public ngOnDestroy(): void {
     this.routeParamsSubscription?.unsubscribe();
-    this.routeDataSubscription.unsubscribe();
     this.bundleStateChangesSubscription?.unsubscribe();
     this.stateChangesSubscription?.unsubscribe();
   }

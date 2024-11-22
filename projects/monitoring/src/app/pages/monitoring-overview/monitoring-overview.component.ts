@@ -28,7 +28,6 @@ import { AuthorizationService, Tenant } from '@abraxas/base-components';
 export class MonitoringOverviewComponent implements OnInit, OnDestroy {
   public loading: boolean = true;
   public resultOverview?: ResultOverview;
-  public newZhFeaturesEnabled: boolean = false;
   public publishResultsEnabled: boolean = false;
   public publishResultsBeforeAuditedTentatively: boolean = false;
   public contestId?: string;
@@ -46,7 +45,6 @@ export class MonitoringOverviewComponent implements OnInit, OnDestroy {
   ) {
     this.routeParamsSubscription = this.route.params.subscribe(({ contestId }) => this.loadData(contestId));
     this.routeDataSubscription = route.data.subscribe(async ({ contestCantonDefaults }) => {
-      this.newZhFeaturesEnabled = contestCantonDefaults.newZhFeaturesEnabled;
       this.publishResultsEnabled = contestCantonDefaults.publishResultsEnabled;
       this.publishResultsBeforeAuditedTentatively = contestCantonDefaults.publishResultsBeforeAuditedTentatively;
     });

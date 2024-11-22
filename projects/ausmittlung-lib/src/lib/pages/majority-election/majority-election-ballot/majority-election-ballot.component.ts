@@ -104,8 +104,10 @@ export class MajorityElectionBallotComponent extends ElectionBallotComponent<
     this.ballot = {
       isNew: true,
       number: this.currentMaxBallotNumber,
-      computedEmptyVoteCount: this.politicalBusinessResult!.election.numberOfMandates,
-      emptyVoteCount: this.politicalBusinessResult!.election.numberOfMandates,
+      computedEmptyVoteCount:
+        this.politicalBusinessResult!.election.numberOfMandates === 1 ? 0 : this.politicalBusinessResult!.election.numberOfMandates,
+      emptyVoteCount:
+        this.politicalBusinessResult!.election.numberOfMandates === 1 ? 0 : this.politicalBusinessResult!.election.numberOfMandates,
       individualVoteCount: 0,
       invalidVoteCount: 0,
       election: this.politicalBusinessResult!.election,

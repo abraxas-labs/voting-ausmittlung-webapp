@@ -26,6 +26,9 @@ export class MajorityElectionBallotContentsComponent {
   public showInvalidVotes: boolean = false;
 
   @Input()
+  public showEmptyVotes: boolean = true;
+
+  @Input()
   public loadingBallot: boolean = true;
 
   @Input()

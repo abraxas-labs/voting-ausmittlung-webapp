@@ -1,4 +1,4 @@
-<div class="content" [class.space-between]="!newZhFeaturesEnabled">
+<div class="content">
   <vo-ausm-ballot-count-input header="ELECTION.BALLOT_CARD"
                               [eVoting]="eVoting"
                               [readonly]="readonly || !canEnterResults"
@@ -7,10 +7,11 @@
                               [countOfVoters]="resultDetail.countOfVoters"
                               (countOfVotersChange)="countOfVotersChange.emit()"></vo-ausm-ballot-count-input>
 
-  <div [class.detail]="!newZhFeaturesEnabled" *ngIf="showDetailsLink">
-    <ng-container *ngIf="newZhFeaturesEnabled; else oldUi">
+  <div *ngIf="showDetailsLink">
+    <ng-container>
       <h4 translate>POLITICAL_BUSINESS.SUBMISSION</h4>
       <vo-ausm-contest-detail-submission-tile
+        *ngIf="resultDetail.hasBallotGroups"
         [titleText]="'MAJORITY_ELECTION.BY_BALLOT_GROUPS' | translate"
         [text]="(!resultDetail?.conventionalCountOfBallotGroupVotes ? 'MAJORITY_ELECTION.NO_BALLOT_GROUPS' : 'MAJORITY_ELECTION.BALLOT_GROUPS_COUNT') | translate: { count: resultDetail?.conventionalCountOfBallotGroupVotes }"
         [disabled]="!canReadBallotGroups"
@@ -28,65 +29,27 @@
         (buttonClick)="openWriteIns(resultDetail.election.id)">
       </vo-ausm-contest-detail-submission-tile>
     </ng-container>
-
-    <!-- TODO: can be removed if new UI is standard -->
-    <ng-template #oldUi>
-      <div class="detail-icon-link"
-           [class.disabled]="!canReadBallotGroups"
-           (click)="openBallotGroups()">
-        <span translate>MAJORITY_ELECTION.BY_BALLOT_GROUPS_OLD</span>
-        <span
-          class="number pr-2">{{!resultDetail?.conventionalCountOfBallotGroupVotes ? '-' : resultDetail?.conventionalCountOfBallotGroupVotes | number }}</span>
-        <bc-icon icon="arrow-right"></bc-icon>
-      </div>
-      <div class="detail-icon-link" (click)="openBundles()">
-        <span translate>MAJORITY_ELECTION.BY_BUNDLE</span>
-        <span
-          class="number pr-2">{{!resultDetail?.conventionalCountOfDetailedEnteredBallots ? '-' : resultDetail?.conventionalCountOfDetailedEnteredBallots | number }}</span>
-        <bc-icon icon="arrow-right"></bc-icon>
-      </div>
-      <div *ngIf="!readonly && eVoting"
-           class="detail-icon-link" (click)="openWriteIns(resultDetail.election.id)">
-        <span translate>MAJORITY_ELECTION.MAP_WRITE_INS</span>
-        <bc-icon icon="arrow-right"></bc-icon>
-      </div>
-    </ng-template>
   </div>
 
 
 
-  <vo-ausm-contest-majority-election-result *ngIf="newZhFeaturesEnabled"
-                                            class="mb-4"
+  <vo-ausm-contest-majority-election-result class="mb-4"
                                             [accountedBallots]="resultDetail.countOfVoters.totalAccountedBallots"
                                             [eVoting]="eVoting"
-                                            [newZhFeaturesEnabled]="newZhFeaturesEnabled"
                                             [result]="resultDetail"
                                             [candidateCheckDigit]="resultDetail.entryParams?.candidateCheckDigit"></vo-ausm-contest-majority-election-result>
 </div>
 
 <div class="content results">
-  <vo-ausm-contest-majority-election-result *ngIf="!newZhFeaturesEnabled"
-                                            [accountedBallots]="resultDetail.countOfVoters.totalAccountedBallots"
-                                            [eVoting]="eVoting"
-                                            [result]="resultDetail"
-                                            [candidateCheckDigit]="resultDetail.entryParams?.candidateCheckDigit"></vo-ausm-contest-majority-election-result>
   <vo-ausm-contest-majority-election-result *ngFor="let result of resultDetail.secondaryMajorityElectionResults"
                                             class="mt-3"
                                             [showElectionHeader]="true"
                                             [eVoting]="eVoting"
-                                            [newZhFeaturesEnabled]="newZhFeaturesEnabled"
-                                            [buttonsTemplate]="newZhFeaturesEnabled ? tileTemplate : buttonsTemplate"
+                                            [buttonsTemplate]="tileTemplate"
                                             [accountedBallots]="resultDetail.countOfVoters.totalAccountedBallots"
                                             [result]="result"
                                             [candidateCheckDigit]="resultDetail.entryParams?.candidateCheckDigit"></vo-ausm-contest-majority-election-result>
 </div>
-
-<ng-template #buttonsTemplate let-electionId='electionId'>
-  <div *ngIf="!readonly && eVoting" class="detail-icon-link detail" (click)="openWriteIns(electionId)">
-    <span translate>MAJORITY_ELECTION.MAP_WRITE_INS</span>
-    <bc-icon icon="arrow-right"></bc-icon>
-  </div>
-</ng-template>
 
 <ng-template #tileTemplate let-electionId='electionId'>
   <div *ngIf="!readonly && eVoting">

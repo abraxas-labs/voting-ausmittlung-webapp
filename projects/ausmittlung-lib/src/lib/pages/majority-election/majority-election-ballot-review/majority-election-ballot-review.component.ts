@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { DialogService, SnackbarService } from '@abraxas/voting-lib';
+import { DialogService } from '@abraxas/voting-lib';
 import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -38,7 +38,6 @@ export class MajorityElectionBallotReviewComponent implements OnDestroy {
 
   public canSucceed: boolean = false;
   public correctionOngoing: boolean = false;
-  public newZhFeaturesEnabled: boolean = false;
 
   @ViewChild(BallotReviewStepperComponent)
   public reviewStepper!: BallotReviewStepperComponent;
@@ -52,25 +51,19 @@ export class MajorityElectionBallotReviewComponent implements OnDestroy {
   };
 
   private readonly routeParamsSubscription: Subscription;
-  private readonly routeDataSubscription: Subscription;
 
   constructor(
     private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly dialog: DialogService,
-    private readonly toast: SnackbarService,
     private readonly i18n: TranslateService,
     private readonly resultBundleService: MajorityElectionResultBundleService,
   ) {
     this.routeParamsSubscription = this.route.params.subscribe(({ bundleId }) => this.loadData(bundleId));
-    this.routeDataSubscription = route.data.subscribe(async ({ contestCantonDefaults }) => {
-      this.newZhFeaturesEnabled = contestCantonDefaults.newZhFeaturesEnabled;
-    });
   }
 
   public ngOnDestroy(): void {
     this.routeParamsSubscription.unsubscribe();
-    this.routeDataSubscription.unsubscribe();
   }
 
   public updateState(): void {

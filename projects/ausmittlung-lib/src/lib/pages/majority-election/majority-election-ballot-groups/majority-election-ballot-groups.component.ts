@@ -5,7 +5,7 @@
  */
 
 import { CountingCircleResultState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/counting_circle_pb';
-import { DialogService, SnackbarService, ThemeService } from '@abraxas/voting-lib';
+import { SnackbarService, ThemeService } from '@abraxas/voting-lib';
 import { Component, HostListener, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -26,10 +26,6 @@ import { HasUnsavedChanges } from '../../../services/guards/has-unsaved-changes.
 export class MajorityElectionBallotGroupsComponent implements OnInit, OnDestroy, HasUnsavedChanges {
   @HostListener('window:beforeunload')
   public beforeUnload(): boolean {
-    if (!this.newZhFeaturesEnabled) {
-      return true;
-    }
-
     return !this.hasChanges;
   }
 
@@ -45,25 +41,19 @@ export class MajorityElectionBallotGroupsComponent implements OnInit, OnDestroy,
   public canSave: boolean = false;
   public hasChanges: boolean = false;
   public resultReadOnly: boolean = false;
-  public newZhFeaturesEnabled: boolean = false;
 
   private readonly routeParamsSubscription: Subscription;
-  private readonly routeDataSubscription: Subscription;
 
   constructor(
     private readonly permissionService: PermissionService,
     private readonly i18n: TranslateService,
     private readonly toast: SnackbarService,
-    private readonly dialog: DialogService,
-    private readonly route: ActivatedRoute,
     private readonly router: Router,
     private readonly resultService: MajorityElectionResultService,
     private readonly themeService: ThemeService,
+    route: ActivatedRoute,
   ) {
     this.routeParamsSubscription = route.params.subscribe(({ resultId }) => this.loadData(resultId));
-    this.routeDataSubscription = route.data.subscribe(async ({ contestCantonDefaults }) => {
-      this.newZhFeaturesEnabled = contestCantonDefaults.newZhFeaturesEnabled;
-    });
   }
 
   public async ngOnInit(): Promise<void> {
@@ -105,7 +95,6 @@ export class MajorityElectionBallotGroupsComponent implements OnInit, OnDestroy,
 
   public ngOnDestroy(): void {
     this.routeParamsSubscription.unsubscribe();
-    this.routeDataSubscription.unsubscribe();
   }
 
   private async loadData(resultId: string): Promise<void> {

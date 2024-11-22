@@ -154,6 +154,7 @@ export class ResultService extends GrpcStreamingService<ResultServicePromiseClie
       results,
       currentTenantIsResponsible: data.getCurrentTenantIsResponsible(),
       enabledVotingCardChannels: data.getEnabledVotingCardChannelsList().map(x => x.toObject()),
+      enabledVoterTypes: data.getEnabledVoterTypesList(),
       electorateSummary: data.getElectorateSummary()!.toObject(),
     };
   }

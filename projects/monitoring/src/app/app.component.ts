@@ -7,7 +7,6 @@
 import { AuthenticationService, AuthorizationService, SnackbarComponent } from '@abraxas/base-components';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { SnackbarService, ThemeService } from '@abraxas/voting-lib';
 import { LanguageService } from '../../../ausmittlung-lib/src/lib/services/language.service';
@@ -15,6 +14,7 @@ import { LocationStrategy } from '@angular/common';
 import { firstValueFrom, Subscription } from 'rxjs';
 import * as moment from 'moment';
 import { Title } from '@angular/platform-browser';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -23,7 +23,7 @@ import { Title } from '@angular/platform-browser';
 export class AppComponent implements OnInit, OnDestroy {
   public authenticated = false;
   public hasTenant = false;
-  public loading = false;
+  public loading = true;
   public theme?: string;
   public customLogo?: string;
   public appTitle: string = '';
@@ -39,7 +39,6 @@ export class AppComponent implements OnInit, OnDestroy {
     private readonly oauthService: OAuthService,
     private readonly auth: AuthenticationService,
     private readonly authorization: AuthorizationService,
-    private readonly router: Router,
     private readonly snackbarService: SnackbarService,
     private readonly languageService: LanguageService,
     private readonly locationStrategy: LocationStrategy,
@@ -64,6 +63,21 @@ export class AppComponent implements OnInit, OnDestroy {
 
     const logoSubscription = themeService.logo$.subscribe(logo => (this.customLogo = logo));
     this.subscriptions.push(logoSubscription);
+
+    const authSubscription = this.auth.authenticationChanged.pipe(filter(isAuthenticated => isAuthenticated)).subscribe(async () => {
+      this.authenticated = true;
+
+      try {
+        // getActiveTenant is called to initialize the tenant cache, otherwise the authorization endpoint would be called multiple times
+        await this.authorization.getActiveTenant();
+        this.hasTenant = true;
+      } catch (e) {
+        this.hasTenant = false;
+      } finally {
+        this.loading = false;
+      }
+    });
+    this.subscriptions.push(authSubscription);
   }
 
   public async switchTenant(): Promise<void> {
@@ -73,25 +87,6 @@ export class AppComponent implements OnInit, OnDestroy {
   public async ngOnInit(): Promise<void> {
     moment.locale(this.languageService.currentLanguage);
     this.translations.setDefaultLang(this.languageService.currentLanguage);
-    this.authenticated = false;
-    this.hasTenant = false;
-    this.loading = true;
-
-    if (!(await this.auth.authenticate())) {
-      this.loading = false;
-      return;
-    }
-
-    this.authenticated = true;
-
-    try {
-      await this.authorization.getActiveTenant();
-      this.hasTenant = true;
-    } catch (e) {
-      this.hasTenant = false;
-    } finally {
-      this.loading = false;
-    }
   }
 
   public async reload(): Promise<void> {

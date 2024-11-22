@@ -8,11 +8,4 @@
   vo-ausm-ballot-count-input {
     flex-shrink: 1;
   }
-
-  // TODO: can be removed if new UI is standard
-  .vote-result-ballot-detail {
-    @extend .mx-4;
-
-    flex-grow: 1;
-  }
 }

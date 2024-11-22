@@ -1,9 +1,4 @@
-<vo-lib-page [contentLoading]="loading"
-             [enableSidebar]="!newZhFeaturesEnabled"
-             [sidebarTemplate]="sidebar"
-             [sidebarOpen]="!newZhFeaturesEnabled"
-             [header]="'END_RESULT.OVERVIEW' + (isPartialResult ? '_PARTIAL_RESULT' : '')">
-
+<vo-lib-page [contentLoading]="loading" [header]="'END_RESULT.OVERVIEW' + (isPartialResult ? '_PARTIAL_RESULT' : '')">
   <vo-lib-page-header header>
     <div left>
       <bc-breadcrumbs>
@@ -18,11 +13,11 @@
     <vo-ausm-contest-header center [contest]="contest"></vo-ausm-contest-header>
   </vo-lib-page-header>
 
-  <ng-container *ngIf="newZhFeaturesEnabled && countOfVotersInformation && votingCards && contest">
+  <ng-container *ngIf="countOfVotersInformation && votingCards && contest">
     <h2 class="mt-3" translate>CONTEST.DETAIL.COUNT_OF_VOTERS_AND_VOTING_CARDS</h2>
     <div class="mb-3">
       <vo-ausm-contest-detail-info [eVoting]="contest.eVoting"
-                                   [swissAbroadHaveVotingRightsOnAnyBusiness]="swissAbroadHaveVotingRights"
+                                   [enabledVoterTypes]="enabledVoterTypes"
                                    [countOfVoters]="countOfVotersInformation"
                                    [votingCards]="votingCards"
                                    [domainOfInfluenceTypes]="[domainOfInfluenceType]"
@@ -31,28 +26,5 @@
       </vo-ausm-contest-detail-info>
     </div>
   </ng-container>
-
-
   <ng-content></ng-content>
-
-  <ng-template #sidebar>
-    <ng-container *ngIf="!loading; else spinner">
-      <ng-container *ngIf="countOfVotersInformation && votingCards && contest">
-        <vo-ausm-contest-detail-count-of-voters [readonly]="true"
-                                                [eVoting]="contest.eVoting"
-                                                [swissAbroadHaveVotingRightsOnAnyBusiness]="swissAbroadHaveVotingRights"
-                                                [countOfVoters]="countOfVotersInformation"></vo-ausm-contest-detail-count-of-voters>
-
-        <vo-ausm-contest-detail-voting-cards *ngIf="domainOfInfluenceType !== undefined"
-                                             [readonly]="true"
-                                             [domainOfInfluenceTypes]="[domainOfInfluenceType]"
-                                             [votingCards]="votingCards"
-                                             [canton]="canton"></vo-ausm-contest-detail-voting-cards>
-      </ng-container>
-    </ng-container>
-
-    <ng-template #spinner>
-      <bc-spinner></bc-spinner>
-    </ng-template>
-  </ng-template>
 </vo-lib-page>

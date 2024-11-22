@@ -1,7 +1,7 @@
 <vo-lib-page [contentLoading]="loading"
              header="ELECTION.BUNDLE_OVERVIEW">
   <ng-container *ngIf="result">
-    <vo-ausm-proportional-election-info [electionResult]="result.politicalBusinessResult" [newZhFeaturesEnabled]="newZhFeaturesEnabled"></vo-ausm-proportional-election-info>
+    <vo-ausm-proportional-election-info [electionResult]="result.politicalBusinessResult"></vo-ausm-proportional-election-info>
     <div class="my-4">
       <div class="shortcut-container">
         <bc-icon class="clickable-icon" icon="question-circle-o" (click)="showShortcutDialog()"></bc-icon>
@@ -33,7 +33,6 @@
                                                     (generateBundleReviewExport)="generateBundleReviewExport($event)"
                                                     (downloadBundleReviewExport)="downloadBundleReviewExport($event)"
                                                     [reviewProcedure]="result.politicalBusinessResult.entryParams?.reviewProcedure"
-                                                    [newZhFeaturesEnabled]="newZhFeaturesEnabled"
                                                     [enableReviewMultiple]="isReviewProcedurePhysically"
                                                     [enableReviewColumn]="isReviewProcedurePhysically">
         </vo-ausm-proportional-election-bundle-table>

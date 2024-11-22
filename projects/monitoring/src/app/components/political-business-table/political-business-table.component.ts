@@ -56,7 +56,10 @@ export class PoliticalBusinessTableComponent implements OnInit, AfterViewInit {
   public domainOfInfluenceTypeList: EnumItemDescription<DomainOfInfluenceType>[] = [];
   public politicalBusinessTypeList: EnumItemDescription<PoliticalBusinessType>[] = [];
 
-  constructor(private readonly enumUtil: EnumUtil, private readonly i18n: TranslateService) {}
+  constructor(
+    private readonly enumUtil: EnumUtil,
+    private readonly i18n: TranslateService,
+  ) {}
 
   public ngOnInit(): void {
     this.stateList = this.enumUtil.getArrayWithDescriptions<CountingCircleResultState>(

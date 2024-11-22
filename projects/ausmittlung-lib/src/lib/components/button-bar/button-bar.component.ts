@@ -4,8 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { ButtonComponent } from '@abraxas/base-components';
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 // TODO: can be moved to lib after updating to angular 18
 @Component({
@@ -46,11 +45,4 @@ export class ButtonBarComponent {
 
   @Input()
   public sticky: boolean = true;
-
-  @ViewChild('saveButton', { static: false })
-  private saveButton?: ButtonComponent;
-
-  public setSaveFocus(): void {
-    this.saveButton?.setFocus();
-  }
 }

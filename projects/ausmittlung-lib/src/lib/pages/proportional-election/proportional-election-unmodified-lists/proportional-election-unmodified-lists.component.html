@@ -1,7 +1,7 @@
 <vo-lib-page [contentLoading]="loading"
              header="PROPORTIONAL_ELECTION.UNMODIFIED_LISTS">
   <ng-container *ngIf="result">
-    <vo-ausm-proportional-election-info [electionResult]="result.electionResult" [newZhFeaturesEnabled]="newZhFeaturesEnabled"></vo-ausm-proportional-election-info>
+    <vo-ausm-proportional-election-info [electionResult]="result.electionResult"></vo-ausm-proportional-election-info>
 
     <div class="content content-box">
       <bc-label [label]="'APP.NR' | translate"></bc-label>

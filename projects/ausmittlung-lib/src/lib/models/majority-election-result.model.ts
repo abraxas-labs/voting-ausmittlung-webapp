@@ -68,6 +68,7 @@ export interface MajorityElectionResult extends CountingCircleResult, MajorityEl
   conventionalSubTotal: MajorityElectionResultNullableSubTotal;
   eVotingSubTotal: MajorityElectionResultSubTotal;
   hasUnmappedWriteIns: boolean;
+  hasBallotGroups: boolean;
 }
 
 export type MajorityElectionResultSubTotal = MajorityElectionResultSubTotalProto.AsObject;

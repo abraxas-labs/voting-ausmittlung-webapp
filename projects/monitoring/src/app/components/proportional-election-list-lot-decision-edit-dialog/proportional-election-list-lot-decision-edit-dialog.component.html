@@ -1,0 +1,59 @@
+<vo-lib-dialog>
+  <h3 header translate>PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.ADD</h3>
+
+  <div content>
+    <div class="grid">
+      <div>
+        <h4 translate>{{ 'PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.LISTS.TITLE' | translate }}</h4>
+        <app-proportional-election-list-lot-decision-edit-lists-table
+          [lists]="lists"
+          (selectedChanged)="selectedLists = $event; updateLotDecisionEntries()"
+        ></app-proportional-election-list-lot-decision-edit-lists-table>
+
+        <h4 translate class="mt-3">{{ 'PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.LIST_UNIONS.TITLE' | translate }}</h4>
+        <app-proportional-election-list-lot-decision-edit-list-unions-table
+          [listUnions]="listUnions"
+          (selectedChanged)="selectedListUnions = $event; updateLotDecisionEntries()"
+        ></app-proportional-election-list-lot-decision-edit-list-unions-table>
+      </div>
+
+      <bc-divider class="ml-4" orientation="vertical"></bc-divider>
+
+      <div>
+        <h4 translate class="mb-0">{{ 'PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.LOT_DECISION_ENTRY.TITLE' | translate }}</h4>
+        <bc-table class="w-full" [dataSource]="lotDecisionEntries">
+          <ng-container columnDef="description">
+            <bc-header-cell *headerCellDef>
+              {{ 'PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.LOT_DECISION_ENTRY.DESCRIPTION' | translate }}
+            </bc-header-cell>
+            <bc-data-cell *dataCellDef="let element">
+              {{ element.description }}
+            </bc-data-cell>
+          </ng-container>
+
+          <ng-container columnDef="winner">
+            <bc-header-cell *headerCellDef>
+              {{ 'PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.LOT_DECISION_ENTRY.WINNER' | translate }}
+            </bc-header-cell>
+            <bc-data-cell *dataCellDef="let element">
+              <bc-checkbox [(checked)]="element.winning"></bc-checkbox>
+            </bc-data-cell>
+          </ng-container>
+
+          <bc-header-row *headerRowDef="let row; columns: columns"></bc-header-row>
+          <bc-data-row *dataRowDef="let row; columns: columns; let i = index"></bc-data-row>
+        </bc-table>
+      </div>
+    </div>
+  </div>
+
+  <div footer>
+    <vo-lib-button-bar
+      (save)="save()"
+      [canSave]="canSave"
+      [sticky]="false"
+      [saveLabel]="'COMMON.ADD' | translate"
+      (cancel)="close()"
+    ></vo-lib-button-bar>
+  </div>
+</vo-lib-dialog>

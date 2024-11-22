@@ -19,8 +19,8 @@
                                   [countOfVoters]="resultDetail.countOfVoters"
                                   (countOfVotersChange)="updateCountOfVotersValid(); updateUnsavedChanges()"></vo-ausm-ballot-count-input>
 
-      <div [class.detail]="!newZhFeaturesEnabled">
-        <ng-container *ngIf="newZhFeaturesEnabled; else oldUi">
+      <div>
+        <ng-container>
           <h4 translate>POLITICAL_BUSINESS.SUBMISSION</h4>
           <vo-ausm-contest-detail-submission-tile
             [titleText]="'PROPORTIONAL_ELECTION.UNMODIFIED_LISTS' | translate"
@@ -34,22 +34,8 @@
             (buttonClick)="openModifiedLists()">
           </vo-ausm-contest-detail-submission-tile>
         </ng-container>
-        <ng-template #oldUi>
-          <div class="detail-icon-link"
-               [class.disabled]="!canReadListResults"
-               (click)="openUnmodifiedLists()">
-            <span translate>PROPORTIONAL_ELECTION.UNMODIFIED_LISTS</span>
-            <span class="number pr-2">{{!resultDetail?.conventionalSubTotal.totalCountOfUnmodifiedLists ? '-' : resultDetail?.conventionalSubTotal.totalCountOfUnmodifiedLists | number }}</span>
-            <bc-icon icon="arrow-right"></bc-icon>
-          </div>
-          <div class="detail-icon-link" (click)="openModifiedLists()">
-            <span translate>PROPORTIONAL_ELECTION.MODIFIED_LISTS</span>
-            <span class="number pr-2">{{!resultDetail?.conventionalSubTotal.totalCountOfBallots ? '-' : resultDetail?.conventionalSubTotal.totalCountOfBallots | number}}</span>
-            <bc-icon icon="arrow-right"></bc-icon>
-          </div>
-        </ng-template>
       </div>
-      <div *ngIf="canReadListResults && newZhFeaturesEnabled">
+      <div *ngIf="canReadListResults">
         <h4 translate>POLITICAL_BUSINESS.RESULT</h4>
         <vo-ausm-contest-detail-submission-tile
           [titleText]="'PROPORTIONAL_ELECTION.SHOW_RESULTS' | translate"
@@ -59,17 +45,9 @@
       </div>
     </div>
 
-    <bc-button *ngIf="canReadListResults && !newZhFeaturesEnabled"
-               class="mb-3"
-               (buttonClick)="navigateToResults()"
-               [label]="'PROPORTIONAL_ELECTION.SHOW_RESULTS' | translate">
-    </bc-button>
-
     <vo-ausm-contest-political-business-detail-footer *ngIf="!contestLocked
                                                         && (!contentReadonly || isResponsibleMonitorAuthority)
                                                         && (canAudit || canFinishSubmissionAndAudit || (canFinishSubmission && (result.state === states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING || result.state === states.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION)))"
-                                                      editEntryText="PROPORTIONAL_ELECTION.RESULT_ENTRY.EDIT"
-                                                      entryDescription=""
                                                       (selectResultEntry)="selectResultEntry = true"
                                                       (validateAndSave)="validateAndSave()"
                                                       (validate)="validateAndSave()"
@@ -84,7 +62,8 @@
                                                       [canSubmit]="!contentReadonly && !hasUnsavedChanges"
                                                       [contestId]="resultDetail.election.contestId"
                                                       [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
-                                                      [statePlausibilisedDisabled]="contestCantonDefaults?.statePlausibilisedDisabled">
+                                                      [statePlausibilisedDisabled]="contestCantonDefaults?.statePlausibilisedDisabled"
+                                                      [domainOfInfluenceType]="resultDetail.election.domainOfInfluence!.type">
     </vo-ausm-contest-political-business-detail-footer>
   </ng-template>
 </ng-container>

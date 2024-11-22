@@ -1,10 +1,6 @@
 @use '@abraxas/voting-lib/style/color' as *;
 @use '@abraxas/voting-lib/style/spacing' as *;
 
-.whitespace-pre-wrap {
-  white-space: pre-wrap;
-}
-
 .question-results {
   display: flex;
   column-gap: 1.5rem;
@@ -22,6 +18,7 @@
 
     .input-container {
       display: flex;
+      align-items: baseline;
 
       > :not(:first-child) {
         @extend .ml-2;
@@ -37,10 +34,8 @@
 
 .source-label {
   width: 5.5rem;
-  align-self: flex-end;
-  margin-bottom: 2.3rem;
 }
 
 ::ng-deep .label-space .formfield .mat-form-field-appearance-outline.has-label {
-  margin-top: 29px;
+  margin-top: 33px;
 }

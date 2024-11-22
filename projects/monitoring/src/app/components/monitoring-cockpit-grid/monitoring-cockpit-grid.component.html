@@ -12,7 +12,7 @@
                  displayExpr="name"
                  [subscriptSizing]="'dynamic'"></bc-dropdown>
   </div>
-  <div [ngStyle]="{gridColumn: '3 / span ' + ((filteredPoliticalBusinesses.length + filteredPoliticalBusinessUnions.length + (notOwnedPoliticalBusinessIds.length > 0 && !politicalBusinessFilter && !politicalBusinessUnionFilter && !domainOfInfluenceTypeFilter ? 1 : 0)) || 1)}">
+  <div [ngStyle]="{gridColumn: '3 / span ' + ((filteredPoliticalBusinesses.length + filteredPoliticalBusinessUnions.length + (showNotOwnedPoliticalBusinessColumn ? 1 : 0)) || 1)}">
     <bc-label [label]="'MONITORING_COCKPIT.FILTER_STATE.TITLE' | translate"></bc-label>
     <bc-segmented-control-group [items]="allStateFilters" [value]="stateFilter" (valueChange)="stateFilterSelected($event)" width="100%"></bc-segmented-control-group>
   </div>
@@ -29,7 +29,7 @@
       <span>{{'DOMAIN_OF_INFLUENCE_TYPES.' + type | translate}}</span>
       <bc-icon icon="filter" ></bc-icon>
     </div>
-    <div *ngIf="notOwnedPoliticalBusinessIds.length > 0 && !politicalBusinessFilter && !politicalBusinessUnionFilter && !domainOfInfluenceTypeFilter"
+    <div *ngIf="showNotOwnedPoliticalBusinessColumn"
          class="filter large not-clickable">
       <div></div>
       <span translate>MONITORING_COCKPIT.NOT_OWNED_POLITICAL_BUSINESS.TITLE</span>
@@ -59,7 +59,7 @@
         </div>
       </ng-container>
     </ng-container>
-    <div *ngIf="notOwnedPoliticalBusinessIds.length > 0 && !politicalBusinessFilter && !politicalBusinessUnionFilter && !domainOfInfluenceTypeFilter"
+    <div *ngIf="showNotOwnedPoliticalBusinessColumn"
          class="filter not-clickable" translate>MONITORING_COCKPIT.NOT_OWNED_POLITICAL_BUSINESS.TITLE</div>
 
     <!-- Statusbar Row -->
@@ -68,7 +68,6 @@
       <ng-container *ngFor="let politicalBusiness of filteredPoliticalBusinessesByDoiType[type]">
         <app-monitoring-cockpit-grid-status-bar
           [filteredCountingCircleResults]="filteredCountingCircleResults"
-          [statePlausibilisedDisabled]="contestCantonDefaults?.statePlausibilisedDisabled"
           [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
           [politicalBusinessId]="politicalBusiness.id">
         </app-monitoring-cockpit-grid-status-bar>
@@ -77,19 +76,18 @@
       <ng-container *ngFor="let politicalBusinessUnion of filteredPoliticalBusinessUnionsByDoiType[type]">
         <app-monitoring-cockpit-grid-status-bar
           [filteredCountingCircleResults]="filteredCountingCircleResults"
-          [statePlausibilisedDisabled]="contestCantonDefaults?.statePlausibilisedDisabled"
           [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
           [politicalBusinessUnionId]="politicalBusinessUnion.id">
         </app-monitoring-cockpit-grid-status-bar>
       </ng-container>
     </ng-container>
 
-    <div *ngIf="notOwnedPoliticalBusinessIds.length > 0 && !politicalBusinessFilter && !politicalBusinessUnionFilter && !domainOfInfluenceTypeFilter"></div>
+    <div *ngIf="showNotOwnedPoliticalBusinessColumn"></div>
 
     <!-- CC Result Rows -->
     <ng-container *ngFor="let result of filteredCountingCircleResults">
       <div class="state-colorbox"
-           [ngClass]="'result-state-' + result.minResultState + (newZhFeaturesEnabled ? '' : '-old')"></div>
+           [ngClass]="'result-state-' + result.minResultState"></div>
       <div class="clickable"
            (click)="openDetail(result.countingCircle)">{{result.countingCircle.name}}</div>
       <ng-container *ngFor="let type of filteredDomainOfInfluenceTypes">
@@ -99,7 +97,6 @@
             (openDetail)="openDetail(result.countingCircle, politicalBusiness)"
             [showDetails]="showDetails"
             [results]="[result.resultsByPoliticalBusinessId[politicalBusiness.id]]"
-            [newZhFeaturesEnabled]="newZhFeaturesEnabled"
             [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
             [disabled]="publishing"
             [showPublishSwitch]="publishResultsEnabled && politicalBusiness.domainOfInfluence.type < domainOfInfluenceTypes.DOMAIN_OF_INFLUENCE_TYPE_MU"
@@ -113,7 +110,6 @@
             (openDetail)="openDetail(result.countingCircle, undefined)"
             [showDetails]="showDetails"
             [results]="result.resultsByPoliticalBusinessUnionId[politicalBusinessUnion.id] ?? []"
-            [newZhFeaturesEnabled]="newZhFeaturesEnabled"
             [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
             [disabled]="publishing"
             [showPublishSwitch]="publishResultsEnabled && politicalBusinessUnion.politicalBusinesses[0].domainOfInfluence.type < domainOfInfluenceTypes.DOMAIN_OF_INFLUENCE_TYPE_MU"
@@ -123,7 +119,7 @@
         </ng-container>
       </ng-container>
 
-      <div *ngIf="notOwnedPoliticalBusinessIds.length > 0 && !politicalBusinessFilter && !politicalBusinessUnionFilter && !domainOfInfluenceTypeFilter">
+      <div *ngIf="showNotOwnedPoliticalBusinessColumn">
         <div *ngIf="result.resultsByCountingCircleId[result.countingCircle.id] as results"
              class="not-owned-political-business-container"
              (click)="openDetail(result.countingCircle, undefined)">

@@ -26,7 +26,10 @@ export class ContestVoteDetailResultEntryParamsComponent {
   public automaticBallotBundleNumberGenerationChoices: RadioButton[];
   public reviewProcedureChoices: RadioButton[];
 
-  constructor(private readonly i18n: TranslateService, enumUtil: EnumUtil) {
+  constructor(
+    private readonly i18n: TranslateService,
+    enumUtil: EnumUtil,
+  ) {
     this.automaticBallotBundleNumberGenerationChoices = [
       {
         value: true,

@@ -1,10 +1,10 @@
 <vo-lib-page [contentLoading]="loading"
              header="VOTE.REVIEW_BALLOT_DETAIL.TITLE">
   <div *ngIf="voteResult && voteResult.entryParams && bundle" class="content">
-    <vo-ausm-vote-info [voteResult]="voteResult" [newZhFeaturesEnabled]="newZhFeaturesEnabled"></vo-ausm-vote-info>
+    <vo-ausm-vote-info [voteResult]="voteResult"></vo-ausm-vote-info>
 
     <div>
-      <vo-ausm-vote-bundle-table [bundles]="[bundle]" [newZhFeaturesEnabled]="newZhFeaturesEnabled"></vo-ausm-vote-bundle-table>
+      <vo-ausm-vote-bundle-table [bundles]="[bundle]"></vo-ausm-vote-bundle-table>
     </div>
 
     <div class="content-box">

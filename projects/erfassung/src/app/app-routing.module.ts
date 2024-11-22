@@ -62,9 +62,6 @@ const routes: Routes = [
           {
             path: ':contestId/:countingCircleId/finish-submission',
             component: ErfassungFinishSubmissionComponent,
-            resolve: {
-              contestCantonDefaults: (route: ActivatedRouteSnapshot) => inject(ContestCantonDefaultsResolver).resolve(route),
-            },
           },
         ],
       },

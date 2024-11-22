@@ -23,7 +23,7 @@ export class ContestDetailVotingCardsComponent implements OnInit {
   public electorateVotingCardsList: { votingCards: ElectorateVotingCardResultDetail[]; domainOfInfluenceTypes: DomainOfInfluenceType[] }[] =
     [];
 
-  private _votingCardsByDoiType: { [key in keyof typeof DomainOfInfluenceType]?: VotingCardResultDetail[] } = {};
+  private _votingCardsByDoiType: { -readonly [key in keyof typeof DomainOfInfluenceType]?: VotingCardResultDetail[] } = {};
   private _domainOfInfluenceTypes?: DomainOfInfluenceType[];
   private _enabledVotingCardChannels: VotingCardChannel[] = [];
   private _votingCards?: VotingCardResultDetail[];
@@ -91,9 +91,6 @@ export class ContestDetailVotingCardsComponent implements OnInit {
     this._votingCards = v;
     this.updateVotingCards();
   }
-
-  @Input()
-  public newZhFeaturesEnabled: boolean = false;
 
   @Input()
   public canton: DomainOfInfluenceCanton = DomainOfInfluenceCanton.DOMAIN_OF_INFLUENCE_CANTON_UNSPECIFIED;

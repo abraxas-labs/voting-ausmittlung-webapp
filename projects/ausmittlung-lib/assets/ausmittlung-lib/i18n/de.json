@@ -55,6 +55,8 @@
       "WOMEN": "Frauen",
       "TOTAL": "Total",
       "SWISS": "Inlandschweizer",
+      "FOREIGNER": "Ausländer",
+      "MINOR": "Minderjährige",
       "NOT_ACTIVE": "Geschäft nicht zur Erfassung freigegeben.",
       "SWISS_ABROAD": "Auslandschweizer",
       "E_VOTING_ACTIVE": "E-Voting aktiviert",
@@ -75,14 +77,12 @@
       },
       "INFO": {
         "CONTEST": "Urnengang",
-        "COUNTING_CIRCLE": "Auszählungskreis",
-        "TOTAL_COUNT_OF_VOTERS": "Stimmberechtigte"
+        "COUNTING_CIRCLE": "Auszählungskreis"
       },
       "CONTACT_DATA": {
         "TITLE": "Kontaktdaten",
         "TITLE_AUTHORITY": "Kontaktdaten der zuständigen Behörde",
         "TITLE_DETAILS": "Kontakte",
-        "TITLE_DETAILS_OLD": "Kontakt Oberbehörde",
         "TITLE_DIALOG": "Kontaktinformationen",
         "NO_DATA": "Keine Kontaktdaten erfasst",
         "PHONE": "Telefon",
@@ -93,14 +93,12 @@
         "DURING_EVENT": "Vor und während der Abstimmung/Wahl",
         "SAME_CONTACT_PERSON": "gleiche Kontaktdaten wie vor/während der Abstimmung/Wahl",
         "AFTER_EVENT": "Nach dem Schliessen des Wahlbüros",
-        "EDIT": "Kontaktdaten bearbeiten…",
         "UPDATE_FOR_CONTEST": "Bitte aktualisieren Sie die Kontaktdaten für den Urnengang",
         "UPDATE_REMARK": "Die folgenden Anpassungen an den Kontaktdaten sind nur temporär für den aktuellen Urnengang gültig. Die permanenten Kontaktdaten können innerhalb der VOTING Basis-Services angepasst werden."
       },
       "ELECTORATE": {
         "DIALOG_TITLE": "Elektorate anpassen",
         "EDIT": "Elektorate",
-        "EDIT_OLD": "Elektorate anpassen...",
         "ADD": "Elektorat hinzufügen...",
         "DOMAIN_OF_INFLUENCE_TYPES": "Geschäftsebenen",
         "ASSIGN_OPEN": "Ebenen zuordnen",
@@ -117,12 +115,10 @@
         }
       },
       "STATE_ACTION": {
-        "LABEL_OLD": "Status aller Geschäfte ändern...",
         "LABEL": "Status ändern",
         "ALL_TO_AUDIT_TENTATIVELY": "Alle auf {{state}}",
         "RESET_RESULTS": "Status zurücksetzen und Teilergebnisse löschen",
-        "SUBMIT_RESULTS": "Ergebnisse übermitteln",
-        "FINISH_SUBMISSION": "Erfassung prüfen und beenden"
+        "SUBMIT_RESULTS": "Ergebnisse übermitteln"
       }
     }
   },
@@ -130,12 +126,10 @@
     "NOT_SUBMITTED": "Ergebnisse wurden noch nicht erfasst.",
     "SUBMIT": "Erfassen",
     "RESULTS_ENTRY": {
-      "EDIT_OLD": "(anpassen…)",
       "EDIT": "Erfassungsvariante",
       "QUESTION": "Bitte wählen Sie die Methode aus, wie die Ergebnisse erfasst werden sollen",
       "SELECT": "Erfassungsparameter bestätigen",
       "NOT_SELECTED": "Die Erfassungsweise ist nicht eingestellt. Bitte kontaktieren Sie den zuständigen Wahlverantwortlichen.",
-      "SELECTED": "Erfassungsvariante: {{name}}",
       "CONFIRM_CHANGE": "Sind Sie sicher, dass Sie die Erfassungsweise umstellen möchten?",
       "CONFIRM_CHANGE_DETAIL": "Alle bereits erfassten Stimmen des Geschäfts werden gelöscht."
     },
@@ -202,7 +196,6 @@
     "BALLOT_CARD": "Stimmzettel",
     "VOTER_PARTICIPATION": "Stimmbeteiligung",
     "BALLOT": {
-      "TITLE": "Vorlage",
       "ANSWER": {
         "YES": "Ja",
         "NO": "Nein",
@@ -262,6 +255,17 @@
             "ANSWER_2_SHORT": "Gv2/Var3"
           }
         }
+      },
+      "QUESTION_TYPE": {
+        "TYPES": {
+          "1": "Hauptvorlage",
+          "2": "Gegenvorschlag",
+          "2_WITH_NUMBER": "Gegenvorschlag {{number}}",
+          "3": "Variante",
+          "3_WITH_NUMBER": "Variante {{number}}"
+        },
+        "TIE_BREAK": "Stichfrage",
+        "TIE_BREAK_WITH_NUMBER": "Stichfrage {{number}}"
       }
     },
     "BALLOT_SUB_TYPE": {
@@ -491,7 +495,6 @@
   "MAJORITY_ELECTION": {
     "TITLE": "Majorzwahl",
     "BY_BALLOT_GROUPS": "Nach Wahlzettelgruppen erfassen",
-    "BY_BALLOT_GROUPS_OLD": "Nach Wahlzettelgruppen erfassen",
     "BALLOT_GROUPS_COUNT": "{{count}} Wahlzettelgruppen erfasst",
     "NO_BALLOT_GROUPS": "Es sind noch keine Wahlzettelgruppen erfasst",
     "BY_BUNDLE": "Einzelne Wahlzettel erfassen und Bundkontrolle",
@@ -499,7 +502,6 @@
     "MAP": "Zuweisen",
     "RESULT_ENTRY": {
       "NOT_SELECTED": "Die Erfassungsvariante sind nicht eingestellt. Bitte kontaktieren Sie die zuständige auszählungsverantwortliche Person.",
-      "EDIT": "Erfassungsvariante anpassen…",
       "LONG": {
         "1": "Endresultate (Das Total der Kandidierenden-Stimmen wird direkt von den Wahlverantwortlichen erfasst)",
         "2": "Detailerfassung (Bundweise Erfassung einzelner Wahlzettel und Erfassung von Wahlzettel-Gruppen)"
@@ -541,7 +543,6 @@
       "TITLE": "Detailerfassung (bundweise Erfassung einzelner Wahlzettel und Erfassung von unveränderten Listen)",
       "NOT_SELECTED": "Die Erfassungsparameter sind nicht eingestellt. Bitte kontaktieren Sie die zuständige auszählungsverantwortliche Person.",
       "CONFIRM_CHANGE": "Sind Sie sicher, dass Sie die Erfassungsparameter umstellen möchten?",
-      "EDIT": "Erfassungsparameter anpassen…",
       "REVIEW_PROCEDURE": {
         "TITLE": "Erfassungsweise (Kontrolle)",
         "TYPES": {
@@ -560,8 +561,8 @@
     "LISTS": "Listen",
     "LIST": {
       "NONE_SELECTED": "Keine Liste ausgewählt",
-      "ORDER_NUMBER": "Ordnungs-Nr.",
-      "ORDER_NUMBER_ABBREVIATION": "O-Nr.",
+      "ORDER_NUMBER": "Listen-Nr.",
+      "ORDER_NUMBER_ABBREVIATION": "L-Nr.",
       "DESCRIPTION": "Listenbezeichnung",
       "DESCRIPTION_ABBREVIATION": "Bezeichnung",
       "SHORT_DESCRIPTION": "Listenkurzbezeichnung",
@@ -645,7 +646,6 @@
   "ACTIONS": {
     "EDIT": "Bearbeiten",
     "DELETE": "Löschen",
-    "VALIDATE_AND_SAVE": "Speichern",
     "SAVE": "Speichern",
     "VALIDATE": "Prüfen",
     "SUBMIT_RESULTS": "Ergebnisse übermitteln",
@@ -653,10 +653,7 @@
       "TITLE": "Erfassung beenden und zu den Protokollen",
       "HINT": "Absprung zu den Protokollen der kommunalen Geschäfte. Die Protokolle der eidgenössischen und kantonalen Geschäfte müssen in VOTING Ausmittlung Erfassung generiert werden."
     },
-    "FINISH_SUBMISSION_AND_AUDIT_TENTATIVELY": "Erfassung beenden und zu den Protokollen",
     "CREATE_PROTOCOL": "Protokoll erstellen",
-    "SUBMISSION_DONE": "Prüfen und Erfassung beenden",
-    "CORRECTION_DONE": "Kontrolle beenden",
     "FLAG_FOR_CORRECTION": "zur Kontrolle",
     "AUDIT_TENTATIVELY": "Vorläufig geprüft",
     "PLAUSIBILISED": "Plausibilisiert",
@@ -666,11 +663,6 @@
       "TITLE": "Ergebnisse übermitteln?",
       "MSG": "Wenn Sie die Ergebnisse übermitteln, können die Ergebnisse nicht mehr geändert werden.",
       "OK": "Ergebnisse übermitteln"
-    },
-    "SUBMISSION_DONE_CONFIRM_OLD": {
-      "TITLE": "Erfassung beenden?",
-      "MSG": "Wenn Sie die Erfassung beenden, werden die Ergebnisse dieses Geschäfts zur Prüfung an die zuständige Behörde übermittelt.\nDie Ergebnisse des Geschäfts können dann nicht mehr geändert werden.",
-      "OK": "Erfassung beenden"
     },
     "CORRECTION_DONE_CONFIRM": {
       "TITLE": "Kontrolle beenden?",

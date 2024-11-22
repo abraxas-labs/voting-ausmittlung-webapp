@@ -1,0 +1,16 @@
+.mat-mdc-button-touch-target {
+  height: 36px !important;
+}
+
+.mat-mdc-form-field-infix {
+  --mat-form-field-container-height: 44px;
+}
+
+mat-checkbox {
+  --mdc-checkbox-state-layer-size: 30px;
+
+  .mat-mdc-checkbox-touch-target {
+    height: 30px !important;
+    width: 30px !important;
+  }
+}

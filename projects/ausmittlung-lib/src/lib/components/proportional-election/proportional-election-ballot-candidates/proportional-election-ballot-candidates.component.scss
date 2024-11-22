@@ -43,6 +43,12 @@
   }
 
   bc-checkbox {
+    height: 33px; // workaround to hide the scrollbar when there aren't many candidates
+
+    ::ng-deep .mdc-checkbox .mat-mdc-checkbox-touch-target {
+      height: 30px;
+    }
+
     &:not(.clickable) {
       cursor: not-allowed;
 
@@ -66,5 +72,9 @@
 
   ::ng-deep bc-button .mat-mdc-button {
     height: 30px;
+
+    .mat-mdc-button-touch-target {
+      height: 30px;
+    }
   }
 }

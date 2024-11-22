@@ -104,7 +104,10 @@ export class MajorityElectionWriteInMappingComponent implements OnChanges {
   private readonly keyboardCandidateAssignedMessage: Subject<KeyboardMessage> = new Subject<KeyboardMessage>();
   private readonly keyboardCandidateAssignedMessageReset: Subject<void> = new Subject<void>();
 
-  constructor(private readonly majorityElectionService: MajorityElectionService, private readonly i18n: TranslateService) {
+  constructor(
+    private readonly majorityElectionService: MajorityElectionService,
+    private readonly i18n: TranslateService,
+  ) {
     // messages with content are immediately shown.
     // messages without content leave the previous message for 2s
     this.keyboardCandidateAssignedMessage$ = merge(

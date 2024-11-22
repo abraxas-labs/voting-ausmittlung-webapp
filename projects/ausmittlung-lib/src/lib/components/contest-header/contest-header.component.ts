@@ -5,8 +5,7 @@
  */
 
 import { DialogService } from '@abraxas/voting-lib';
-import { Component, Input, OnChanges, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, Input, OnChanges } from '@angular/core';
 import { Contest, ContestState, CountingCircle } from '../../models';
 import {
   ContestPastUnlockDialogComponent,
@@ -20,7 +19,7 @@ import { CountingCircleResultState } from '@abraxas/voting-ausmittlung-service-p
   templateUrl: './contest-header.component.html',
   styleUrls: ['./contest-header.component.scss'],
 })
-export class ContestHeaderComponent implements OnDestroy, OnChanges {
+export class ContestHeaderComponent implements OnChanges {
   @Input()
   public contest?: Contest;
 
@@ -35,16 +34,13 @@ export class ContestHeaderComponent implements OnDestroy, OnChanges {
 
   public readonly states: typeof ContestState = ContestState;
 
-  public newZhFeaturesEnabled: boolean = false;
   public selectedCountingCircle?: CountingCircle;
 
-  private readonly routeSubscription: Subscription;
-
-  constructor(private readonly dialog: DialogService, private readonly router: Router, private readonly route: ActivatedRoute) {
-    this.routeSubscription = route.data.subscribe(async ({ contestCantonDefaults }) => {
-      this.newZhFeaturesEnabled = contestCantonDefaults?.newZhFeaturesEnabled ?? true;
-    });
-  }
+  constructor(
+    private readonly dialog: DialogService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
+  ) {}
 
   public ngOnChanges(): void {
     if (!this.countingCircle || this.accessibleCountingCircles.length === 0 || !this.contest) {
@@ -69,10 +65,6 @@ export class ContestHeaderComponent implements OnDestroy, OnChanges {
     };
 
     this.dialog.open(ContestPastUnlockDialogComponent, dialogData);
-  }
-
-  public ngOnDestroy(): void {
-    this.routeSubscription.unsubscribe();
   }
 
   public async countingCircleChanged(countingCircle?: CountingCircle): Promise<void> {

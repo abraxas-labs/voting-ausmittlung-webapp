@@ -13,6 +13,7 @@ import {
   BreadcrumbsModule,
   ButtonModule,
   CheckboxModule,
+  DividerModule,
   DropdownModule,
   FORMFIELD_DEFAULT_OPTIONS,
   FormfieldModule,
@@ -24,6 +25,7 @@ import {
   SegmentedControlGroupModule,
   SnackbarModule,
   SpinnerModule,
+  StatusLabelModule,
   SwitchModule,
   TableModule,
   TabsModule,
@@ -31,7 +33,6 @@ import {
   TextModule,
   TooltipModule,
   UserModule,
-  StatusLabelModule,
 } from '@abraxas/base-components';
 import { ENV_INJECTION_TOKEN, GRPC_INTERCEPTORS, VotingLibModule } from '@abraxas/voting-lib';
 import { registerLocaleData } from '@angular/common';
@@ -81,7 +82,7 @@ import { MonitoringOverviewComponent } from './pages/monitoring-overview/monitor
 import { ProportionalElectionEndResultComponent } from './pages/proportional-election-end-result/proportional-election-end-result.component';
 import { VoteEndResultComponent } from './pages/vote-end-result/vote-end-result.component';
 import { BreadcrumbsService } from './services/breadcrumbs.service';
-import { WebpackTranslateLoader } from './services/webpack-translate-loader';
+import { TranslationLoader } from './services/translation-loader';
 import { ExportCockpitPoliticalBusinessesComponent } from './components/export-cockpit-political-businesses/export-cockpit-political-businesses.component';
 import { ProportionalElectionManualEndResultDialogComponent } from './components/proportional-election-manual-end-result-dialog/proportional-election-manual-end-result-dialog.component';
 import { MonitoringPoliticalBusinessesOverviewComponent } from './components/monitoring-political-businesses-overview/monitoring-political-businesses-overview.component';
@@ -97,6 +98,10 @@ import { DoubleProportionalResultSubApportionmentLotDecisionComponent } from './
 import { PoliticalBusinessTableComponent } from './components/political-business-table/political-business-table.component';
 import { CountingCircleTableComponent } from './components/counting-circle-table/counting-circle-table.component';
 import { EndResultStepActionBarComponent } from './components/end-result-step-action-bar/end-result-step-action-bar.component';
+import { ProportionalElectionListLotDecisionsDialogComponent } from './components/proportional-election-list-lot-decisions-dialog/proportional-election-list-lot-decisions-dialog.component';
+import { ProportionalElectionListLotDecisionEditDialogComponent } from './components/proportional-election-list-lot-decision-edit-dialog/proportional-election-list-lot-decision-edit-dialog.component';
+import { ProportionalElectionListLotDecisionEditListsTableComponent } from './components/proportional-election-list-lot-decision-edit-dialog/proportional-election-list-lot-decision-edit-lists-table/proportional-election-list-lot-decision-edit-lists-table.component';
+import { ProportionalElectionListLotDecisionEditListUnionsTableComponent } from './components/proportional-election-list-lot-decision-edit-dialog/proportional-election-list-lot-decision-edit-list-unions-table/proportional-election-list-lot-decision-edit-list-unions-table.component';
 
 registerLocaleData(localeDeCh);
 
@@ -141,6 +146,10 @@ registerLocaleData(localeDeCh);
     PoliticalBusinessTableComponent,
     CountingCircleTableComponent,
     EndResultStepActionBarComponent,
+    ProportionalElectionListLotDecisionEditDialogComponent,
+    ProportionalElectionListLotDecisionsDialogComponent,
+    ProportionalElectionListLotDecisionEditListsTableComponent,
+    ProportionalElectionListLotDecisionEditListUnionsTableComponent,
   ],
   imports: [
     BrowserModule,
@@ -159,7 +168,7 @@ registerLocaleData(localeDeCh);
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useClass: WebpackTranslateLoader,
+        useClass: TranslationLoader,
       },
     }),
     BreadcrumbItemModule,
@@ -184,6 +193,7 @@ registerLocaleData(localeDeCh);
     MatTooltip,
     SwitchModule,
     StatusLabelModule,
+    DividerModule,
   ],
   providers: [
     ...getCommonProviders(),

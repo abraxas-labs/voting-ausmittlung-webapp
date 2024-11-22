@@ -47,11 +47,11 @@
       [error]="ballot.individualVoteCount < 0 || ballot.individualVoteCount > ballot.election.numberOfMandates"
       [value]="ballot.individualVoteCount"
       (valueChange)="setIndividualVoteCount(+$event)"
-      (keydown.enter)="emptyVoteFormfield.readonly ? contentCompleted.emit($event) : undefined"
+      (keydown.enter)="automaticEmptyVoteCounting ? contentCompleted.emit($event) : undefined"
       [subscriptSizing]="'dynamic'"
     ></bc-number>
     <bc-number
-      #emptyVoteFormfield
+      *ngIf="showEmptyVotes"
       [label]="'ELECTION.BALLOT_DETAIL.EMPTY' | translate"
       [min]="0"
       [max]="ballot.election.numberOfMandates"

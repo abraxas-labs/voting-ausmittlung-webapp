@@ -14,7 +14,10 @@ import { ContestSummary } from 'ausmittlung-lib';
   styleUrls: ['./monitoring-contest-overview.component.scss'],
 })
 export class MonitoringContestOverviewComponent {
-  constructor(private readonly router: Router, private readonly route: ActivatedRoute) {}
+  constructor(
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
+  ) {}
 
   public async openDetail(contest: ContestSummary): Promise<void> {
     await this.router.navigate([contest.id], { relativeTo: this.route });

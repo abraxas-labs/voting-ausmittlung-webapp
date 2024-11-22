@@ -32,7 +32,8 @@ export class ContestProportionalElectionDetailResultEntryComponent implements On
   public resultEntryParams!: ProportionalElectionResultEntryParams;
 
   @Output()
-  public resultEntryParamsChange: EventEmitter<ProportionalElectionResultEntryParams> = new EventEmitter<ProportionalElectionResultEntryParams>();
+  public resultEntryParamsChange: EventEmitter<ProportionalElectionResultEntryParams> =
+    new EventEmitter<ProportionalElectionResultEntryParams>();
 
   @Output()
   public done: EventEmitter<void> = new EventEmitter<void>();
@@ -49,7 +50,11 @@ export class ContestProportionalElectionDetailResultEntryComponent implements On
   public useCandidateCheckDigit: boolean = false;
   private readonly routeSubscription: Subscription;
 
-  constructor(private readonly resultService: ProportionalElectionResultService, enumUtil: EnumUtil, route: ActivatedRoute) {
+  constructor(
+    private readonly resultService: ProportionalElectionResultService,
+    enumUtil: EnumUtil,
+    route: ActivatedRoute,
+  ) {
     this.reviewProcedureChoices = enumUtil
       .getArrayWithDescriptions<ProportionalElectionReviewProcedure>(
         ProportionalElectionReviewProcedure,

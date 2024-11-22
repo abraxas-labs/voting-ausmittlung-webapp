@@ -2,12 +2,11 @@
              header="ELECTION.BALLOT_DETAIL.TITLE">
   <ng-container *ngIf="politicalBusinessResult && politicalBusinessResult.entryParams && bundle">
     <div class="content">
-      <vo-ausm-majority-election-info [electionResult]="politicalBusinessResult" [newZhFeaturesEnabled]="newZhFeaturesEnabled"></vo-ausm-majority-election-info>
+      <vo-ausm-majority-election-info [electionResult]="politicalBusinessResult"></vo-ausm-majority-election-info>
 
       <div>
         <vo-ausm-majority-election-bundle-table [bundleSize]="politicalBusinessResult.entryParams.ballotBundleSize"
-                                                [bundles]="[bundle]"
-                                                [newZhFeaturesEnabled]="newZhFeaturesEnabled"></vo-ausm-majority-election-bundle-table>
+                                                [bundles]="[bundle]"></vo-ausm-majority-election-bundle-table>
       </div>
 
       <div class="content-box">
@@ -32,6 +31,7 @@
           [disabled]="actionExecuting"
           [showInvalidVotes]="politicalBusinessResult.election.contest!.cantonDefaults!.majorityElectionInvalidVotes"
           [automaticEmptyVoteCounting]="politicalBusinessResult.entryParams.automaticEmptyVoteCounting"
+          [showEmptyVotes]="politicalBusinessResult.election.numberOfMandates !== 1"
           [readonly]="!bundleInProcessOrCorrection
             || !canUpdateBallot
             || politicalBusinessResult.election.contest!.locked"

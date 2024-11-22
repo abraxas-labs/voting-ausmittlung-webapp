@@ -12,7 +12,6 @@ import {
   ContestCantonDefaults as ContestCantonDefaultsProto,
   CountingCircleResultStateDescription as CountingCircleResultStateDescriptionProto,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/contest_pb';
-import { SwissAbroadVotingRight as SwissAbroadVotingRightProto } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/swiss_abroad_voting_right_pb';
 
 export { ContestState };
 export { ContestProto };
@@ -36,7 +35,6 @@ export type ContestSummary = Contest & {
   contestEntriesDetails: ContestSummaryEntryDetails[];
 };
 export type ContestSummaryEntryDetails = ContestSummaryEntryDetailsProto.AsObject;
-export { SwissAbroadVotingRightProto as SwissAbroadVotingRight };
 export { ContestCantonDefaultsProto };
 export interface ContestCantonDefaults extends Omit<ContestCantonDefaultsProto.AsObject, 'countingCircleResultStateDescriptions'> {
   countingCircleResultStateDescriptionsByState: Record<number, string>;

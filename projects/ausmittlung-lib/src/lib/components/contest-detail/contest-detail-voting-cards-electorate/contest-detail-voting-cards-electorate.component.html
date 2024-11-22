@@ -1,8 +1,6 @@
 <vo-ausm-contest-detail-voting-cards-expansion-panel
   [header]="expansionPanelHeaderTitle">
-  <div class="voting-cards"
-       voAusmBindCssVar="voting-cards-per-row"
-       [voAusmBindCssVarValue]="(votingCardDetailsValue.length % 2 === 0 && !hasInvalidVotingCardChannel) || newZhFeaturesEnabled ? 3 : 2">
+  <div class="voting-cards">
     <ng-container *ngFor="let votingCardDetail of votingCardDetailsValue; let i = index">
       <bc-number
         [disabled]="readonly || votingCardDetail.channel === votingChannels.VOTING_CHANNEL_E_VOTING"

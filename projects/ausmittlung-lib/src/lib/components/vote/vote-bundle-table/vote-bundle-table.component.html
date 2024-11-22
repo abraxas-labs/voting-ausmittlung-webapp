@@ -53,8 +53,7 @@
                       filterDisplayExpr="description" filterValueExpr="value" [sort]="enableSorting" *headerCellDef>
         {{ 'APP.STATE' | translate }}
       </bc-header-cell>
-      <bc-data-cell *dataCellDef="let element"><vo-ausm-result-bundle-state-chip [state]="element.state"
-                                                                                 [newZhFeaturesEnabled]="newZhFeaturesEnabled"></vo-ausm-result-bundle-state-chip></bc-data-cell>
+      <bc-data-cell *dataCellDef="let element"><vo-ausm-result-bundle-state-chip [state]="element.state"></vo-ausm-result-bundle-state-chip></bc-data-cell>
     </ng-container>
 
     <ng-container [columnDef]="reviewedByColumn">

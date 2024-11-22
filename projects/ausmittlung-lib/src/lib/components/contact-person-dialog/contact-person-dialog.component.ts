@@ -14,14 +14,12 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 })
 export class ContactPersonDialogComponent {
   public readonly domainOfInfluences: DomainOfInfluence[];
-  public readonly newZhFeaturesEnabled: boolean;
 
   constructor(
     private readonly dialogRef: MatDialogRef<ContactPersonDialogComponentData>,
     @Inject(MAT_DIALOG_DATA) dialogData: ContactPersonDialogComponentData,
   ) {
     this.domainOfInfluences = dialogData.domainOfInfluences;
-    this.newZhFeaturesEnabled = dialogData.newZhFeaturesEnabled;
   }
 
   public done(): void {
@@ -31,5 +29,4 @@ export class ContactPersonDialogComponent {
 
 export interface ContactPersonDialogComponentData {
   domainOfInfluences: DomainOfInfluence[];
-  newZhFeaturesEnabled: boolean;
 }

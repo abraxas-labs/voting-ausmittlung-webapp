@@ -1,11 +1,11 @@
-<bc-expansion-panel (expandedChange)="expandedChanged($event)" [class.with-border]="newZhFeaturesEnabled">
+<bc-expansion-panel (expandedChange)="expandedChanged($event)" class="with-border">
   <div header>
     <div>
       <h4 [class.not-responsible]="contentReadonly && !isResponsibleMonitorAuthority">
         {{result.politicalBusiness.title}}
       </h4>
     </div>
-    <div *ngIf="newZhFeaturesEnabled" class="container">
+    <div class="container">
       <bc-status-label class="center" [label]="'DOMAIN_OF_INFLUENCE_TYPES.' + result.politicalBusiness.domainOfInfluence?.type | translate"></bc-status-label>
     </div>
     <div class="spacer"></div>
@@ -17,13 +17,6 @@
         *ngSwitchCase="politicalBusinessType.POLITICAL_BUSINESS_TYPE_MAJORITY_ELECTION"
         [election]="result.politicalBusiness"></vo-ausm-contest-majority-election-detail-header>
     </ng-container>
-    <div class="mr-2">
-      <bc-button
-        *ngIf="!newZhFeaturesEnabled && result.politicalBusiness.domainOfInfluence && result.politicalBusiness.domainOfInfluence.contactPerson"
-        variant="tertiary"
-        [label]="'CONTEST.DETAIL.CONTACT_DATA.TITLE_DETAILS_OLD' | translate"
-        (buttonClick)="openContactPerson(); $event.stopPropagation()"></bc-button>
-    </div>
     <div class="header-icon mr-2">
       <bc-icon *ngIf="result.hasComments"
                (click)="openComments(); $event.stopPropagation()"
@@ -31,7 +24,6 @@
     </div>
     <vo-ausm-result-state-box [state]="result.state"
                               [timestamp]="(result.state === states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY ? result.auditedTentativelyTimestamp : (result.state === states.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED ? result.plausibilisedTimestamp : (result.state === states.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION ? result.readyForCorrectionTimestamp : result.submissionDoneTimestamp)))"
-                              [newZhFeaturesEnabled]="newZhFeaturesEnabled"
                               [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"></vo-ausm-result-state-box>
   </div>
 

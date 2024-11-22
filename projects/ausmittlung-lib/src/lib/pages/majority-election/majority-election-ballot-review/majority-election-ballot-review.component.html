@@ -1,12 +1,11 @@
 <vo-lib-page [contentLoading]="loading"
              header="ELECTION.REVIEW_BALLOT_DETAIL.TITLE">
   <div *ngIf="electionResult && electionResult.entryParams && bundle" class="content">
-    <vo-ausm-majority-election-info [electionResult]="electionResult" [newZhFeaturesEnabled]="newZhFeaturesEnabled"></vo-ausm-majority-election-info>
+    <vo-ausm-majority-election-info [electionResult]="electionResult"></vo-ausm-majority-election-info>
 
     <div>
       <vo-ausm-majority-election-bundle-table [bundleSize]="electionResult.entryParams.ballotBundleSize"
-                                              [bundles]="[bundle]"
-                                              [newZhFeaturesEnabled]="newZhFeaturesEnabled"></vo-ausm-majority-election-bundle-table>
+                                              [bundles]="[bundle]"></vo-ausm-majority-election-bundle-table>
     </div>
 
     <div class="content-box">
@@ -27,7 +26,8 @@
                                                    [loadingBallot]="loadingBallot"
                                                    [readonly]="!correctionOngoing"
                                                    [disabled]="actionExecuting"
-                                                   [candidateCheckDigit]="electionResult.entryParams.candidateCheckDigit">
+                                                   [candidateCheckDigit]="electionResult.entryParams.candidateCheckDigit"
+                                                   [showEmptyVotes]="electionResult.election.numberOfMandates !== 1">
         </vo-ausm-majority-election-ballot-contents>
       </ng-container>
     </div>

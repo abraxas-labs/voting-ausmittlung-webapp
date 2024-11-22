@@ -15,7 +15,4 @@ import { ProportionalElectionResult } from '../../../models';
 export class ProportionalElectionInfoComponent {
   @Input()
   public electionResult!: ProportionalElectionResult;
-
-  @Input()
-  public newZhFeaturesEnabled: boolean = false;
 }

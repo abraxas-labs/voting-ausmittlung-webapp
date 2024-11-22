@@ -43,15 +43,15 @@ export class MajorityElectionLotDecisionDialogComponent extends ElectionLotDecis
       return;
     }
 
-    const availableLotDecisionsWithSelectedRank = this.getAvailableLotDecisionsWithSelectedRank();
-    if (availableLotDecisionsWithSelectedRank.length === 0) {
+    const availableLotDecisions = this.getAvailableLotDecisions();
+    if (availableLotDecisions.length === 0) {
       return;
     }
 
-    const lotDecisions: MajorityElectionEndResultLotDecision[] = availableLotDecisionsWithSelectedRank.map(x => {
+    const lotDecisions: MajorityElectionEndResultLotDecision[] = availableLotDecisions.map(x => {
       return {
         candidateId: x.candidate.id,
-        rank: x.selectedRank!,
+        rank: x.selectedRank,
       };
     });
 
@@ -73,25 +73,21 @@ export class MajorityElectionLotDecisionDialogComponent extends ElectionLotDecis
     this.dialogRef.close();
   }
 
-  private getAvailableLotDecisionsWithSelectedRank(): MajorityElectionEndResultAvailableLotDecision[] {
+  private getAvailableLotDecisions(): MajorityElectionEndResultAvailableLotDecision[] {
     if (!this.availableLotDecisions) {
       return [];
     }
 
-    const lotDecisionsWithSelectedRank = this.availableLotDecisions.lotDecisions.filter(
-      lotDecision => lotDecision.selectedRank !== undefined && lotDecision.selectedRank > 0,
-    );
+    const lotDecisions = this.availableLotDecisions.lotDecisions;
 
     if (!this.availableLotDecisions.secondaryLotDecisions) {
-      return lotDecisionsWithSelectedRank;
+      return lotDecisions;
     }
 
     for (const secondaryLotDecisions of this.availableLotDecisions.secondaryLotDecisions) {
-      lotDecisionsWithSelectedRank.push(
-        ...secondaryLotDecisions.lotDecisions.filter(lotDecision => lotDecision.selectedRank !== undefined && lotDecision.selectedRank > 0),
-      );
+      lotDecisions.push(...secondaryLotDecisions.lotDecisions);
     }
-    return lotDecisionsWithSelectedRank;
+    return lotDecisions;
   }
 
   private ensureHasValidLotDecisions(): boolean {
@@ -99,8 +95,8 @@ export class MajorityElectionLotDecisionDialogComponent extends ElectionLotDecis
       return false;
     }
 
-    if (this.hasOpenRequiredLotDecisions(this.availableLotDecisions.lotDecisions)) {
-      this.alertMissingRequiredLotDecisions();
+    if (!this.hasValidVoteCountGroups(this.availableLotDecisions.lotDecisions)) {
+      this.alertVoteCountGroupConflict();
       return false;
     }
 
@@ -110,11 +106,10 @@ export class MajorityElectionLotDecisionDialogComponent extends ElectionLotDecis
     }
 
     for (const secondaryLotDecisions of this.availableLotDecisions.secondaryLotDecisions) {
-      if (this.hasOpenRequiredLotDecisions(secondaryLotDecisions.lotDecisions)) {
-        this.alertMissingRequiredLotDecisions();
+      if (!this.hasValidVoteCountGroups(secondaryLotDecisions.lotDecisions)) {
+        this.alertVoteCountGroupConflict();
         return false;
       }
-
       if (!this.hasUniqueLotDecisions(secondaryLotDecisions.lotDecisions)) {
         this.alertDuplicateLotDecisions();
         return false;

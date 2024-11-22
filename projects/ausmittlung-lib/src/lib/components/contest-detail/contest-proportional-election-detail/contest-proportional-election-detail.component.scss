@@ -13,12 +13,4 @@
 
     flex-shrink: 1;
   }
-
-  .detail {
-    @extend .mx-4;
-
-    flex-grow: 1;
-    margin-top: 2rem;
-    min-width: 32rem;
-  }
 }

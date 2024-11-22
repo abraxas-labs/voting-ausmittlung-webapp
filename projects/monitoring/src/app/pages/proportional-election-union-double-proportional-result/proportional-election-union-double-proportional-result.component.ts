@@ -28,7 +28,10 @@ export class ProportionalElectionUnionDoubleProportionalResultComponent implemen
   public doubleProportionalResult?: DoubleProportionalResult;
   public steps?: DoubleProportionalResultStep[];
 
-  constructor(private readonly route: ActivatedRoute, private readonly resultService: ProportionalElectionUnionResultService) {
+  constructor(
+    private readonly route: ActivatedRoute,
+    private readonly resultService: ProportionalElectionUnionResultService,
+  ) {
     this.routeSubscription = this.route.params.subscribe(({ politicalBusinessUnionId }) => this.loadData(politicalBusinessUnionId));
   }
 

@@ -1,0 +1,41 @@
+<bc-table selection class="w-full" [dataSource]="dataSource">
+  <ng-container columnDef="select">
+    <bc-header-cell *headerCellDef>
+      <bc-checkbox
+        class="ml-2 mb-0"
+        (checkedChange)="toggleAllRows($event); selectedChanged.emit(selection.selected)"
+        [checked]="selection.hasValue() && isAllSelected"
+        [indeterminate]="selection.hasValue() && !isAllSelected"
+      >
+      </bc-checkbox>
+    </bc-header-cell>
+    <bc-data-cell *dataCellDef="let element">
+      <bc-checkbox
+        class="ml-2"
+        (checkedChange)="toggleRow(element, $event); selectedChanged.emit(selection.selected)"
+        [checked]="selection.isSelected(element)"
+      >
+      </bc-checkbox>
+    </bc-data-cell>
+  </ng-container>
+
+  <ng-container columnDef="description">
+    <bc-header-cell *headerCellDef>
+      {{ 'PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.LIST_UNIONS.DESCRIPTION' | translate }}
+    </bc-header-cell>
+    <bc-data-cell *dataCellDef="let element">
+      {{ element.description }}
+    </bc-data-cell>
+  </ng-container>
+
+  <bc-header-row *headerRowDef="let row; columns: columns"></bc-header-row>
+  <bc-data-row
+    *dataRowDef="let row; columns: columns; let i = index"
+    selectionToggle
+    [selectionToggleValue]="row"
+    selectionRow
+    [selectionRowValue]="row"
+    (click)="selection.toggle(row); updateIsAllSelected(); selectedChanged.emit(selection.selected)"
+  >
+  </bc-data-row>
+</bc-table>

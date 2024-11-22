@@ -1,5 +1,4 @@
-<vo-lib-page [contentLoading]="loading" [enableSidebar]="!newZhFeaturesEnabled" [sidebarTemplate]="sidebar"
-  [sidebarOpen]="!newZhFeaturesEnabled" header="PROPORTIONAL_ELECTION.RESULTS">
+<vo-lib-page [contentLoading]="loading" header="PROPORTIONAL_ELECTION.RESULTS">
 
   <vo-lib-page-header header>
     <vo-ausm-breadcrumbs [items]="breadcrumbs" left></vo-ausm-breadcrumbs>
@@ -7,11 +6,11 @@
       [countingCircle]="contestResultList!.countingCircle" [state]="contestResultList!.state"></vo-ausm-contest-header>
   </vo-lib-page-header>
 
-  <ng-container *ngIf="newZhFeaturesEnabled && contestResultList">
+  <ng-container *ngIf="contestResultList">
     <h2 class="mt-3" translate>CONTEST.DETAIL.COUNT_OF_VOTERS_AND_VOTING_CARDS</h2>
     <div class="mb-3">
       <vo-ausm-contest-detail-info [eVoting]="contestResultList.details.eVoting"
-        [swissAbroadHaveVotingRightsOnAnyBusiness]="contestResultList.swissAbroadHaveVotingRightsOnAnyBusiness"
+        [enabledVoterTypes]="contestResultList.enabledVoterTypes"
         [countOfVoters]="contestResultList.details.countOfVotersInformation"
         [votingCards]="contestResultList.details.votingCards"
         [enabledVotingCardChannels]="contestResultList.enabledVotingCardChannels"
@@ -20,8 +19,7 @@
     </div>
   </ng-container>
 
-  <vo-ausm-proportional-election-info *ngIf="electionResult" [electionResult]="electionResult"
-    [newZhFeaturesEnabled]="newZhFeaturesEnabled">
+  <vo-ausm-proportional-election-info *ngIf="electionResult" [electionResult]="electionResult">
   </vo-ausm-proportional-election-info>
 
   <vo-ausm-voting-data-source-tabs *ngIf="contestResultList && contestResultList.details.eVoting" class="mt-3 mb-3"
@@ -151,9 +149,4 @@
         </ng-template>
       </div>
   </vo-lib-split-screen>
-
-  <ng-template #sidebar>
-    <vo-ausm-contest-detail-sidebar [resultList]="contestResultList" [readonly]="true" [canton]="canton">
-    </vo-ausm-contest-detail-sidebar>
-  </ng-template>
 </vo-lib-page>

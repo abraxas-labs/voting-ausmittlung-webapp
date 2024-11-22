@@ -1,4 +1,4 @@
-<ng-container *ngIf="newZhFeaturesEnabled; else oldUi">
+<ng-container>
   <div class="info-container" *ngIf="!!contest">
       <bc-label [label]="'CONTEST.DETAIL.INFO.CONTEST' | translate"
                 [class.col-span-2]="!!countingCircle"
@@ -27,7 +27,7 @@
                          [label]="'CONTEST.PAST_UNLOCKED' | translate"></bc-status-label>
         <div *ngSwitchDefault></div>
       </ng-container>
-    <vo-ausm-result-state-box *ngIf="!!state" [state]="state" [newZhFeaturesEnabled]="newZhFeaturesEnabled" [stateDescriptionsByState]="contest.cantonDefaults.countingCircleResultStateDescriptionsByState"></vo-ausm-result-state-box>
+    <vo-ausm-result-state-box *ngIf="!!state" [state]="state" [stateDescriptionsByState]="contest.cantonDefaults.countingCircleResultStateDescriptionsByState"></vo-ausm-result-state-box>
     <ng-container *ngIf="!!countingCircle">
         <span *ngIf="accessibleCountingCircles.length <= 1; else selectCountingCircle" class="info-text">{{ countingCircle.name }}</span>
       </ng-container>
@@ -39,30 +39,4 @@
                [clearable]="false" [required]="true" displayExpr="name"
                [subscriptSizing]="'dynamic'">
   </bc-dropdown>
-</ng-template>
-
-<!-- TODO: can be removed if new UI is standard -->
-<ng-template #oldUi>
-  <div class="container" *ngIf="!!contest">
-    {{'CONTEST.DETAIL.DATE_TITLE' | translate:{date: (contest.date | date: 'longDate') || ''} }}
-    <ng-container [ngSwitch]="contest.state">
-      <bc-status-label *ngSwitchCase="states.CONTEST_STATE_TESTING_PHASE"
-                       foregroundColor="dark"
-                       backgroundColor="#ffa000"
-                       [label]="('CONTEST.END_OF_TESTING_PHASE' | translate) + ' ' + (contest.endOfTestingPhase | date: 'short')">
-      </bc-status-label>
-      <ng-container *ngSwitchCase="states.CONTEST_STATE_PAST_LOCKED">
-        <bc-status-label foregroundColor="light"
-                         backgroundColor="#c60000"
-                         [label]="'CONTEST.PAST_LOCKED' | translate"></bc-status-label>
-        <bc-button variant="tertiary"
-                   [label]="'CONTEST.PAST_UNLOCK.OPEN' | translate"
-                   (buttonClick)="openPastUnlockDialog()"></bc-button>
-      </ng-container>
-      <bc-status-label *ngSwitchCase="states.CONTEST_STATE_PAST_UNLOCKED"
-                       foregroundColor="light"
-                       backgroundColor="#1c9048"
-                       [label]="'CONTEST.PAST_UNLOCKED' | translate"></bc-status-label>
-    </ng-container>
-  </div>
 </ng-template>

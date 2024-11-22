@@ -6,17 +6,7 @@
 
 import { CountingCircleResultState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/counting_circle_pb';
 import { DialogService, ThemeService } from '@abraxas/voting-lib';
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Inject,
-  Input,
-  OnDestroy,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { StateChange } from '../../../../models';
 import { PermissionService } from '../../../../services/permission.service';
@@ -26,9 +16,8 @@ import {
   ConfirmCommentDialogResult,
 } from '../../../confirm-comment-dialog/confirm-comment-dialog.component';
 import { Permissions } from '../../../../models/permissions.model';
-import { Subscription } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
 import { VOTING_AUSMITTLUNG_MONITORING_WEBAPP_URL } from '../../../../tokens';
+import { DomainOfInfluenceType } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/domain_of_influence_pb';
 
 @Component({
   selector: 'vo-ausm-contest-political-business-detail-footer',
@@ -36,15 +25,11 @@ import { VOTING_AUSMITTLUNG_MONITORING_WEBAPP_URL } from '../../../../tokens';
   styleUrls: ['./contest-political-business-detail-footer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ContestPoliticalBusinessDetailFooterComponent implements OnInit, OnDestroy {
+export class ContestPoliticalBusinessDetailFooterComponent implements OnInit {
+  public readonly domainOfInfluenceTypes: typeof DomainOfInfluenceType = DomainOfInfluenceType;
+
   @Input()
   public entryDescriptionDetail?: any;
-
-  @Input() // TODO: can be removed if new UI is standard
-  public entryDescription: string = 'POLITICAL_BUSINESS.RESULTS_ENTRY.SELECTED';
-
-  @Input() // TODO: can be removed if new UI is standard
-  public editEntryText: string = 'POLITICAL_BUSINESS.RESULTS_ENTRY.EDIT_OLD';
 
   @Input()
   public isActionExecuting: boolean = false;
@@ -79,6 +64,9 @@ export class ContestPoliticalBusinessDetailFooterComponent implements OnInit, On
   @Input()
   public statePlausibilisedDisabled: boolean = false;
 
+  @Input()
+  public domainOfInfluenceType: DomainOfInfluenceType = DomainOfInfluenceType.DOMAIN_OF_INFLUENCE_TYPE_UNSPECIFIED;
+
   @Output()
   public selectResultEntry: EventEmitter<void> = new EventEmitter<void>();
 
@@ -98,10 +86,8 @@ export class ContestPoliticalBusinessDetailFooterComponent implements OnInit, On
   public canFinishSubmission: boolean = false;
   public canFinishSubmissionAndAudit: boolean = false;
   public canAudit: boolean = false;
-  public newZhFeaturesEnabled: boolean = false;
 
   public readonly states: typeof CountingCircleResultState = CountingCircleResultState;
-  public readonly routeSubscription: Subscription;
 
   constructor(
     @Inject(VOTING_AUSMITTLUNG_MONITORING_WEBAPP_URL) public readonly votingAusmittlungMonitoringWebAppUrl: string,
@@ -110,12 +96,7 @@ export class ContestPoliticalBusinessDetailFooterComponent implements OnInit, On
     private readonly i18n: TranslateService,
     private readonly cd: ChangeDetectorRef,
     private readonly themeService: ThemeService,
-    route: ActivatedRoute,
-  ) {
-    this.routeSubscription = route.data.subscribe(async ({ contestCantonDefaults }) => {
-      this.newZhFeaturesEnabled = contestCantonDefaults.newZhFeaturesEnabled;
-    });
-  }
+  ) {}
 
   public async ngOnInit(): Promise<void> {
     this.canEnterResults = await this.permissionService.hasPermission(Permissions.PoliticalBusinessResult.EnterResults);
@@ -125,10 +106,6 @@ export class ContestPoliticalBusinessDetailFooterComponent implements OnInit, On
     );
     this.canAudit = await this.permissionService.hasPermission(Permissions.PoliticalBusinessResult.Audit);
     this.cd.detectChanges();
-  }
-
-  public ngOnDestroy(): void {
-    this.routeSubscription.unsubscribe();
   }
 
   public async updateState(newState: CountingCircleResultState): Promise<void> {
@@ -156,6 +133,15 @@ export class ContestPoliticalBusinessDetailFooterComponent implements OnInit, On
   public finishCorrectionAndAuditTentatively(): void {
     const stateChange: StateChange = {
       newState: CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY,
+      oldState: this.state,
+      comment: '',
+    };
+    this.stateUpdate.emit(stateChange);
+  }
+
+  public resetToFinishSubmissionAndFlagForCorrection(): void {
+    const stateChange: StateChange = {
+      newState: CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION,
       oldState: this.state,
       comment: '',
     };
@@ -205,7 +191,7 @@ export class ContestPoliticalBusinessDetailFooterComponent implements OnInit, On
         if (stateChange.oldState === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY) {
           return;
         }
-        return this.newZhFeaturesEnabled ? 'ACTIONS.SUBMISSION_DONE_CONFIRM' : 'ACTIONS.SUBMISSION_DONE_CONFIRM_OLD';
+        return 'ACTIONS.SUBMISSION_DONE_CONFIRM';
       case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE:
         return 'ACTIONS.CORRECTION_DONE_CONFIRM';
       case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION:

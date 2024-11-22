@@ -35,7 +35,11 @@ export class ValidationMappingService {
   private readonly votingChannels: EnumItemDescription<VotingChannel>[];
   private readonly doiTypes: EnumItemDescription<DomainOfInfluenceType>[];
 
-  constructor(private readonly decimalPipe: DecimalPipe, private readonly datePipe: DatePipe, private readonly enumUtil: EnumUtil) {
+  constructor(
+    private readonly decimalPipe: DecimalPipe,
+    private readonly datePipe: DatePipe,
+    private readonly enumUtil: EnumUtil,
+  ) {
     this.doiTypes = this.enumUtil.getArrayWithDescriptions<DomainOfInfluenceType>(DomainOfInfluenceType, 'DOMAIN_OF_INFLUENCE_TYPES.');
 
     this.votingChannels = this.enumUtil.getArrayWithDescriptions<VotingChannel>(VotingChannel, 'VOTING_CHANNELS.');

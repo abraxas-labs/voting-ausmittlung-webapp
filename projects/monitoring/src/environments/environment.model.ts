@@ -10,7 +10,6 @@ import { Environments, GrpcEnvironment } from '@abraxas/voting-lib';
 
 export interface Environment extends TenantConfig, UserConfig, AuthorizationConfig, GrpcEnvironment {
   production: boolean;
-  hmr: boolean;
   env: Environments;
   authenticationConfig: AuthenticationConfig & Required<Pick<AuthenticationConfig, 'clientId' | 'issuer' | 'scope'>>;
   grpcApiEndpoint: string;

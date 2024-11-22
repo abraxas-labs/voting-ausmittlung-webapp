@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { MajorityElectionEndResultAvailableLotDecisions, SecondaryMajorityElectionEndResultAvailableLotDecisions } from 'ausmittlung-lib';
 
 @Component({
@@ -12,10 +12,16 @@ import { MajorityElectionEndResultAvailableLotDecisions, SecondaryMajorityElecti
   templateUrl: './majority-election-lot-decision-list.component.html',
   styleUrls: ['./majority-election-lot-decision-list.component.scss'],
 })
-export class MajorityElectionLotDecisionListComponent {
+export class MajorityElectionLotDecisionListComponent implements OnChanges {
   @Input()
   public lotDecisions!: MajorityElectionEndResultAvailableLotDecisions | SecondaryMajorityElectionEndResultAvailableLotDecisions;
 
   @Input()
   public showTitle: boolean = false;
+
+  public hasAnyRequiredLotDecisions: boolean = false;
+
+  public ngOnChanges(): void {
+    this.hasAnyRequiredLotDecisions = !!this.lotDecisions && this.lotDecisions.lotDecisions.some(l => l.lotDecisionRequired);
+  }
 }

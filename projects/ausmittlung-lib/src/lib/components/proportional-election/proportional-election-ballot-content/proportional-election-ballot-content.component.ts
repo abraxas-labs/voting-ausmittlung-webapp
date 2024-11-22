@@ -62,7 +62,10 @@ export class ProportionalElectionBallotContentComponent {
   @ViewChild(ProportionalElectionBallotCandidatesComponent)
   private proportionalElectionBallotCandidatesComponent?: ProportionalElectionBallotCandidatesComponent;
 
-  constructor(private readonly ballotUiService: ProportionalElectionBallotUiService, private readonly dialogService: DialogService) {}
+  constructor(
+    private readonly ballotUiService: ProportionalElectionBallotUiService,
+    private readonly dialogService: DialogService,
+  ) {}
 
   public async removeCandidateAtPosition({ position, listCandidate }: CandidatePositionEvent): Promise<void> {
     this.ballotUiService.removeCandidateAtPosition(position, listCandidate, this.ballotUiData);

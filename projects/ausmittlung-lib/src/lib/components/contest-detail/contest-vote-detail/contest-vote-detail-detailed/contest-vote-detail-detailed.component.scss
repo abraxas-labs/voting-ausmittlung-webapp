@@ -14,13 +14,4 @@
     flex-direction: column;
     row-gap: 1rem;
   }
-
-  // TODO: can be removed if new UI is standard
-  .vote-result-ballot-detail {
-    @extend .mx-4;
-
-    margin-top: 2rem;
-    min-width: 36rem;
-    flex-grow: 1;
-  }
 }

@@ -37,9 +37,6 @@ export class MonitoringCockpitGridEntryComponent {
   public openDetail: EventEmitter<void> = new EventEmitter<void>();
 
   @Input()
-  public newZhFeaturesEnabled: boolean = false;
-
-  @Input()
   public stateDescriptionsByState: Record<number, string> = {};
 
   @Input()

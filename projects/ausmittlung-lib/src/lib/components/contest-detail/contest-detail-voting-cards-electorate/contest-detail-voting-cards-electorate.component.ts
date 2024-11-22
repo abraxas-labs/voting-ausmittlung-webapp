@@ -34,9 +34,6 @@ export class ContestDetailVotingCardsElectorateComponent {
   constructor(private readonly i18n: TranslateService) {}
 
   @Input()
-  public newZhFeaturesEnabled: boolean = false;
-
-  @Input()
   public canton: DomainOfInfluenceCanton = DomainOfInfluenceCanton.DOMAIN_OF_INFLUENCE_CANTON_UNSPECIFIED;
 
   public total: number = 0;

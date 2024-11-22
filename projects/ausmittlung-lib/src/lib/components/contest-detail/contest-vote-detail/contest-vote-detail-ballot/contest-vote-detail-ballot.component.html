@@ -6,22 +6,22 @@
                               [participationLabel]="'VOTE.VOTER_PARTICIPATION'"
                               [countOfVoters]="ballotResult.countOfVoters"
                               (countOfVotersChange)="countOfVotersChange.emit()"></vo-ausm-ballot-count-input>
-  <div [class.vote-result-ballot-detail]="!newZhFeaturesEnabled">
-    <h4 class="mb-2">
-      <ng-container *ngIf="newZhFeaturesEnabled; else ballotTitle">
+  <div>
+    <h4 *ngIf="ballotResult.ballot.ballotType !== ballotTypes.BALLOT_TYPE_VARIANTS_BALLOT" class="mb-2" >
+      <ng-container>
         <ng-container *ngIf="!ballotResult.ballot.ballotSubType; else ballotSubType">
           {{ 'POLITICAL_BUSINESS.SUBMISSION' | translate }}
         </ng-container>
       </ng-container>
-      <ng-template #ballotTitle>
-        {{ 'VOTE.BALLOT.TITLE' | translate }}
-      </ng-template>
       <ng-template #ballotSubType>
         {{ 'VOTE.BALLOT_SUB_TYPE.TYPES.' + ballotResult.ballot.ballotSubType | translate }}
       </ng-template>
     </h4>
     <div *ngFor="let questionResult of ballotResult.questionResults"
          class="mb-4">
+      <h4 *ngIf="ballotResult.ballot.ballotType === ballotTypes.BALLOT_TYPE_VARIANTS_BALLOT" class="mb-2">
+        {{ 'VOTE.BALLOT.QUESTION_TYPE.TYPES.' + questionResult.question.type + (ballotResult.questionResults.length > 2 && questionResult.question.number > 1 ? '_WITH_NUMBER' : '') | translate: { number: questionResult.question.number - 1 } }}
+      </h4>
       <vo-ausm-contest-vote-detail-question [eVoting]="eVoting"
                                             [readonly]="readonly"
                                             [ballotNumberOfQuestions]="ballotResult.questionResults.length"
@@ -31,6 +31,9 @@
     </div>
     <div *ngFor="let tieBreakQuestionResult of ballotResult.tieBreakQuestionResults"
          class="mb-4">
+      <h4 *ngIf="ballotResult.ballot.ballotType === ballotTypes.BALLOT_TYPE_VARIANTS_BALLOT" class="mb-2">
+        {{ 'VOTE.BALLOT.QUESTION_TYPE.TIE_BREAK' + (ballotResult.tieBreakQuestionResults.length > 1 ? '_WITH_NUMBER' : '') | translate: { number: tieBreakQuestionResult.question.number } }}
+      </h4>
       <vo-ausm-contest-vote-detail-question [eVoting]="eVoting"
                                             [readonly]="readonly"
                                             [isTieBreakQuestion]="true"
@@ -39,7 +42,7 @@
                                             (countOfAnswersChanged)="countOfAnswersChanged.emit()"></vo-ausm-contest-vote-detail-question>
     </div>
   </div>
-  <div *ngIf="newZhFeaturesEnabled">
+  <div>
     <vo-ausm-contest-vote-detail-results-graph [ballotResult]="ballotResult"
                                                [eVoting]="eVoting"></vo-ausm-contest-vote-detail-results-graph>
   </div>

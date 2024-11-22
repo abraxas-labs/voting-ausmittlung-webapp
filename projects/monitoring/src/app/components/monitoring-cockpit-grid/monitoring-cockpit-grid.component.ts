@@ -42,9 +42,6 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
   public readonly domainOfInfluenceTypes: typeof DomainOfInfluenceType = DomainOfInfluenceType;
 
   @Input()
-  public newZhFeaturesEnabled: boolean = false;
-
-  @Input()
   public publishResultsEnabled: boolean = false;
 
   @Input()
@@ -82,6 +79,8 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
 
   public clearingFilter: boolean = false;
   public publishing: boolean = false;
+
+  public showNotOwnedPoliticalBusinessColumn: boolean = false;
 
   private politicalBusinesses: SimplePoliticalBusiness[] = [];
   public notOwnedPoliticalBusinessIds: string[] = [];
@@ -156,33 +155,7 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
 
     this.updateFilters();
     this.startChangesListener();
-
-    this.allStateFilters = [
-      {
-        displayText: this.i18n.instant('MONITORING_COCKPIT.FILTER_STATE.ALL'),
-        value: MonitoringCockpitGridComponent.emptyStateFilter,
-        disabled: false,
-      },
-      this.createSegmentedControl(CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING, [
-        CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING,
-        CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION,
-      ]),
-      this.createSegmentedControl(CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE, [
-        CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE,
-        CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE,
-      ]),
-      this.createSegmentedControl(CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY, [
-        CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY,
-      ]),
-    ];
-
-    if (!this.contestCantonDefaults.statePlausibilisedDisabled) {
-      this.allStateFilters.push(
-        this.createSegmentedControl(CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED, [
-          CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED,
-        ]),
-      );
-    }
+    this.updateStateFilters();
   }
 
   public ngOnDestroy(): void {
@@ -336,16 +309,6 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
     }
   }
 
-  private createSegmentedControl(descriptionState: CountingCircleResultState, filterValues: CountingCircleResultState[]): SegmentedControl {
-    return {
-      displayText:
-        this.contestCantonDefaults?.countingCircleResultStateDescriptionsByState[descriptionState] ??
-        this.i18n.instant('COUNTING_CIRCLE_RESULT_STATE.' + descriptionState),
-      value: filterValues,
-      disabled: false,
-    };
-  }
-
   private startChangesListener(): void {
     if (!this.contestId || !this.resultService || this.readOnly) {
       return;
@@ -406,6 +369,7 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
 
     this.sortCountingCircleResults();
     this.updateFilters();
+    this.updateStateFilters();
   }
 
   private sortCountingCircleResults(): void {
@@ -536,13 +500,16 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
   }
 
   private updateGrid(): void {
-    const showNotOwnedPoliticalBusinessColumn =
+    this.showNotOwnedPoliticalBusinessColumn =
       this.notOwnedPoliticalBusinessIds.length > 0 &&
       !this.politicalBusinessFilter &&
       !this.politicalBusinessUnionFilter &&
-      !this.domainOfInfluenceTypeFilter;
+      !this.domainOfInfluenceTypeFilter &&
+      this.stateFilter.length === 0;
     const polBusinessColCount = Math.max(
-      this.filteredPoliticalBusinesses.length + this.filteredPoliticalBusinessUnions.length + (showNotOwnedPoliticalBusinessColumn ? 1 : 0),
+      this.filteredPoliticalBusinesses.length +
+        this.filteredPoliticalBusinessUnions.length +
+        (this.showNotOwnedPoliticalBusinessColumn ? 1 : 0),
       1,
     );
     // first two columns are the color box and the name of the counting circle
@@ -592,6 +559,38 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
 
     // 3. order criteria: ascending by cc name
     return a.countingCircle!.name.localeCompare(b.countingCircle!.name);
+  }
+
+  private updateStateFilters(): void {
+    const countCorrected = this.countingCircleResults.filter(cc => cc.isCorrected).length;
+    const countNotCorrected = this.countingCircleResults.length - countCorrected;
+
+    this.allStateFilters = [
+      {
+        displayText: this.i18n.instant('MONITORING_COCKPIT.FILTER_STATE.ALL'),
+        value: MonitoringCockpitGridComponent.emptyStateFilter,
+        disabled: false,
+      },
+      {
+        displayText: this.i18n.instant('MONITORING_COCKPIT.FILTER_STATE.TO_CHECK', { count: countNotCorrected }),
+        value: [
+          CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_INITIAL,
+          CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING,
+          CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION,
+          CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE,
+          CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE,
+        ],
+        disabled: false,
+      },
+      {
+        displayText: this.i18n.instant('MONITORING_COCKPIT.FILTER_STATE.CHECKED', { count: countCorrected }),
+        value: [
+          CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY,
+          CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED,
+        ],
+        disabled: false,
+      },
+    ];
   }
 }
 

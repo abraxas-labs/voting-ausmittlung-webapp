@@ -15,12 +15,13 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "projects/monitoring/dist",
+            "outputPath": {
+              "base": "projects/monitoring/dist"
+            },
             "index": "projects/monitoring/src/index.html",
-            "main": "projects/monitoring/src/main.ts",
-            "polyfills": "projects/monitoring/src/polyfills.ts",
+            "polyfills": ["zone.js"],
             "tsConfig": "projects/monitoring/tsconfig.app.json",
             "assets": [
               "projects/monitoring/src/favicon.ico",
@@ -44,19 +45,17 @@
             "styles": [
               "projects/monitoring/src/styles.scss"
             ],
-            "stylePreprocessorOptions": {
-              "includePaths": [
-                "node_modules/"
-              ]
+            "loader": {
+              ".ttf": "file",
+              ".woff": "file",
+              ".woff2": "file"
             },
             "scripts": [],
-            "vendorChunk": true,
             "extractLicenses": false,
-            "buildOptimizer": false,
             "sourceMap": true,
-            "aot": true,
             "optimization": false,
-            "namedChunks": true
+            "namedChunks": true,
+            "browser": "projects/monitoring/src/main.ts"
           },
           "configurations": {
             "local-sta": {
@@ -89,8 +88,6 @@
               "sourceMap": false,
               "namedChunks": false,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -110,7 +107,6 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "hmr": true,
             "buildTarget": "monitoring:build"
           },
           "configurations": {
@@ -145,12 +141,13 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "projects/erfassung/dist",
+            "outputPath": {
+              "base": "projects/erfassung/dist"
+            },
             "index": "projects/erfassung/src/index.html",
-            "main": "projects/erfassung/src/main.ts",
-            "polyfills": "projects/erfassung/src/polyfills.ts",
+            "polyfills": ["zone.js"],
             "tsConfig": "projects/erfassung/tsconfig.app.json",
             "assets": [
               "projects/erfassung/src/favicon.ico",
@@ -174,19 +171,17 @@
             "styles": [
               "projects/erfassung/src/styles.scss"
             ],
-            "stylePreprocessorOptions": {
-              "includePaths": [
-                "node_modules/"
-              ]
+            "loader": {
+              ".ttf": "file",
+              ".woff": "file",
+              ".woff2": "file"
             },
             "scripts": [],
-            "vendorChunk": true,
             "extractLicenses": false,
-            "buildOptimizer": false,
             "sourceMap": true,
-            "aot": true,
             "optimization": false,
-            "namedChunks": true
+            "namedChunks": true,
+            "browser": "projects/erfassung/src/main.ts"
           },
           "configurations": {
             "local-sta": {
@@ -218,10 +213,7 @@
               "outputHashing": "all",
               "sourceMap": false,
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -241,7 +233,6 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "hmr": true,
             "buildTarget": "erfassung:build"
           },
           "configurations": {
@@ -260,12 +251,6 @@
               "projects/erfassung/src/**/*.ts",
               "projects/erfassung/src/**/*.component.html"
             ]
-          }
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "buildTarget": "erfassung:build"
           }
         }
       }
@@ -304,5 +289,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

@@ -4,10 +4,8 @@
  * For license information see LICENSE file.
  */
 
-import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { BallotQuestionResult, TieBreakQuestionResult } from '../../../../models';
-import { Subscription } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
 import { BallotSubType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/vote_pb';
 
 @Component({
@@ -15,7 +13,7 @@ import { BallotSubType } from '@abraxas/voting-ausmittlung-service-proto/grpc/mo
   templateUrl: './contest-vote-detail-question.component.html',
   styleUrls: ['./contest-vote-detail-question.component.scss'],
 })
-export class ContestVoteDetailQuestionComponent implements OnDestroy {
+export class ContestVoteDetailQuestionComponent {
   @Input()
   public isTieBreakQuestion: boolean = false;
 
@@ -36,20 +34,6 @@ export class ContestVoteDetailQuestionComponent implements OnDestroy {
 
   @Output()
   public countOfAnswersChanged: EventEmitter<void> = new EventEmitter<void>();
-
-  public newZhFeaturesEnabled: boolean = false;
-
-  private readonly routeSubscription: Subscription;
-
-  constructor(route: ActivatedRoute) {
-    this.routeSubscription = route.data.subscribe(async ({ contestCantonDefaults }) => {
-      this.newZhFeaturesEnabled = contestCantonDefaults.newZhFeaturesEnabled;
-    });
-  }
-
-  public ngOnDestroy(): void {
-    this.routeSubscription.unsubscribe();
-  }
 
   public updateTotal(): void {
     const conventionalSubTotal = this.result.conventionalSubTotal;

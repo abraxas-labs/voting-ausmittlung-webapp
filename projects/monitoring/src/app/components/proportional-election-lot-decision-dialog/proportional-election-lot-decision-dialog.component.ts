@@ -29,7 +29,7 @@ export class ProportionalElectionLotDecisionDialogComponent extends ElectionLotD
 
   public loading: boolean = false;
   public isLast: boolean = false;
-  public hasAnyOpenRequiredLotDecisions: boolean = true;
+  public hasAnyRequiredLotDecisions: boolean = true;
   public availableLotDecisions?: ProportionalElectionListEndResultAvailableLotDecisions;
   public lists: ProportionalElectionListEndResult[];
   public readonly lotDecisionsByListId: Record<string, ProportionalElectionEndResultLotDecision[]> = {};
@@ -62,15 +62,15 @@ export class ProportionalElectionLotDecisionDialogComponent extends ElectionLotD
       return;
     }
 
-    const availableLotDecisionsWithSelectedRank = this.getAvailableLotDecisionsWithSelectedRank();
-    if (availableLotDecisionsWithSelectedRank.length === 0) {
+    const availableLotDecisions = this.getAvailableLotDecisions();
+    if (availableLotDecisions.length === 0) {
       this.nextOrClose();
       return;
     }
 
-    const lotDecisions: ProportionalElectionEndResultLotDecision[] = availableLotDecisionsWithSelectedRank.map(x => ({
+    const lotDecisions: ProportionalElectionEndResultLotDecision[] = availableLotDecisions.map(x => ({
       candidateId: x.candidate.id,
-      rank: x.selectedRank!,
+      rank: x.selectedRank,
     }));
 
     this.loading = true;
@@ -93,19 +93,16 @@ export class ProportionalElectionLotDecisionDialogComponent extends ElectionLotD
     this.dialogRef.close(result);
   }
 
-  public updateHasOpenRequiredLotDecisions(): void {
-    this.hasAnyOpenRequiredLotDecisions =
-      this.availableLotDecisions !== undefined && this.hasOpenRequiredLotDecisions(this.availableLotDecisions.lotDecisions);
+  public updateHasAnyRequiredLotDecisions(): void {
+    this.hasAnyRequiredLotDecisions =
+      this.availableLotDecisions !== undefined && this.availableLotDecisions.lotDecisions.some(l => l.lotDecisionRequired);
   }
-
-  private getAvailableLotDecisionsWithSelectedRank(): ProportionalElectionEndResultAvailableLotDecision[] {
+  private getAvailableLotDecisions(): ProportionalElectionEndResultAvailableLotDecision[] {
     if (!this.availableLotDecisions) {
       return [];
     }
 
-    return this.availableLotDecisions.lotDecisions.filter(
-      lotDecision => lotDecision.selectedRank !== undefined && lotDecision.selectedRank > 0,
-    );
+    return this.availableLotDecisions.lotDecisions;
   }
 
   private nextOrClose(): void {
@@ -122,8 +119,8 @@ export class ProportionalElectionLotDecisionDialogComponent extends ElectionLotD
       return false;
     }
 
-    if (this.hasOpenRequiredLotDecisions(this.availableLotDecisions.lotDecisions)) {
-      this.alertMissingRequiredLotDecisions();
+    if (!this.hasValidVoteCountGroups(this.availableLotDecisions.lotDecisions)) {
+      this.alertVoteCountGroupConflict();
       return false;
     }
 
@@ -139,14 +136,14 @@ export class ProportionalElectionLotDecisionDialogComponent extends ElectionLotD
     delete this.availableLotDecisions;
 
     if (this.selectedList === undefined) {
-      this.updateHasOpenRequiredLotDecisions();
+      this.updateHasAnyRequiredLotDecisions();
       return;
     }
 
     try {
       this.loading = true;
       this.availableLotDecisions = await this.resultService.getListEndResultAvailableLotDecisions(this.selectedList.list.id);
-      this.updateHasOpenRequiredLotDecisions();
+      this.updateHasAnyRequiredLotDecisions();
     } finally {
       this.loading = false;
     }

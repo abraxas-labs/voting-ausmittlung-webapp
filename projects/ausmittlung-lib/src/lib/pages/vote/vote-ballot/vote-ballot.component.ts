@@ -6,7 +6,7 @@
 
 import { BallotType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/vote_pb';
 import { DialogService, SnackbarService } from '@abraxas/voting-lib';
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, ViewChild } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ShortcutDialogComponent, ShortcutDialogData } from '../../../components/ballot-shortcut-dialog/shortcut-dialog.component';
@@ -26,6 +26,7 @@ import { UserService } from '../../../services/user.service';
 import { VoteResultBundleService } from '../../../services/vote-result-bundle.service';
 import { VoteResultService } from '../../../services/vote-result.service';
 import { PoliticalBusinessBallotComponent } from '../../political-business-ballot/political-business-ballot.component';
+import { BallotHeaderComponent } from '../../../components/ballot-header/ballot-header.component';
 
 @Component({
   selector: 'vo-ausm-vote-ballot',
@@ -34,6 +35,9 @@ import { PoliticalBusinessBallotComponent } from '../../political-business-ballo
 })
 export class VoteBallotComponent extends PoliticalBusinessBallotComponent<VoteResult, PoliticalBusinessResultBundle, VoteResultBallot> {
   public BallotType: typeof BallotType = BallotType;
+
+  @ViewChild(BallotHeaderComponent)
+  public headerComponent!: BallotHeaderComponent;
 
   public ballotResult?: BallotResult;
   public activeAnswer?: VoteResultBallotQuestionAnswer | VoteResultBallotTieBreakQuestionAnswer;
@@ -229,6 +233,10 @@ export class VoteBallotComponent extends PoliticalBusinessBallotComponent<VoteRe
     }
 
     return true;
+  }
+
+  protected setFocus(): void {
+    this.headerComponent.setFocus();
   }
 
   private trySetQuestionAnswer(answer: BallotQuestionAnswer): boolean {

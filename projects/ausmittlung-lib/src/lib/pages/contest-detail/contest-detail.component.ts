@@ -6,10 +6,9 @@
 
 import { AuthorizationService, Tenant } from '@abraxas/base-components';
 import { DialogService, SnackbarService } from '@abraxas/voting-lib';
-import { AfterViewInit, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { ContestDetailSidebarComponent } from '../../components/contest-detail/contest-detail-sidebar/contest-detail-sidebar.component';
 import { ContestPoliticalBusinessDetailComponent } from '../../components/contest-detail/contest-political-business-detail/contest-political-business-detail.component';
 import {
   MajorityElectionWriteInMappingDialogComponent,
@@ -31,8 +30,11 @@ import { distinct, flatten, groupBySingle } from '../../services/utils/array.uti
 import { ResultImportService } from '../../services/result-import.service';
 import { PermissionService } from '../../services/permission.service';
 import { Permissions } from '../../models/permissions.model';
-import { ContactPersonEditDialogResult } from '../../components/contest-detail/contest-detail-sidebar/contact-person-edit-dialog/contact-person-edit-dialog.component';
-import { ContactDialogComponent, ContactDialogComponentData } from '../../components/contact-dialog/contact-dialog.component';
+import {
+  ContactDialogComponent,
+  ContactDialogComponentData,
+  ContactDialogResult,
+} from '../../components/contact-dialog/contact-dialog.component';
 import {
   ContestCountingCircleElectoratesUpdateDialogComponent,
   ContestCountingCircleElectoratesUpdateDialogData,
@@ -70,7 +72,6 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
   @ViewChildren(ContestPoliticalBusinessDetailComponent)
   public politicalBusinessesDetails?: QueryList<ContestPoliticalBusinessDetailComponent>;
 
-  public newZhFeaturesEnabled: boolean = false;
   public countingMachineEnabled: boolean = false;
   public domainOfInfluenceTypes: DomainOfInfluenceType[] = [];
   public canton: DomainOfInfluenceCanton = DomainOfInfluenceCanton.DOMAIN_OF_INFLUENCE_CANTON_UNSPECIFIED;
@@ -86,9 +87,6 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
   private importChangesSubscription?: Subscription;
   private writeInChangesSubscription?: Subscription;
 
-  @ViewChild(ContestDetailSidebarComponent)
-  private contestDetailSidebarComponent?: ContestDetailSidebarComponent;
-
   private politicalBusinessIdToExpand?: string;
   private resultsById: Record<string, ResultListResult> = {};
 
@@ -98,7 +96,6 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
   public canMapWriteIns: boolean = false;
   public canEditCountingCircleDetails: boolean = false;
   private canReadWriteIns: boolean = false;
-  public readonly sidebarWith: string = '21rem';
 
   constructor(
     breadcrumbsService: BreadcrumbsService,
@@ -124,7 +121,6 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     );
 
     this.routeDataSubscription = route.data.subscribe(async ({ contestCantonDefaults }) => {
-      this.newZhFeaturesEnabled = contestCantonDefaults.newZhFeaturesEnabled;
       this.countingMachineEnabled = contestCantonDefaults.countingMachineEnabled;
     });
   }
@@ -208,6 +204,8 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     if (initialResultList) {
       this.resultList!.state = CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING;
     }
+
+    this.resultList!.details = newData;
   }
 
   private async onStateChangeListenerRetry(): Promise<void> {
@@ -270,7 +268,8 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
         this.contestService.getAccessibleCountingCircles(contestId),
         await this.resultService.getList(contestId, countingCircleId),
       ]);
-      if (this.newZhFeaturesEnabled && this.resultList.mustUpdateContactPersons) {
+
+      if (this.resultList.mustUpdateContactPersons && this.canEditContactPerson) {
         await this.openContactDialog(false);
       }
 
@@ -296,7 +295,6 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
 
       // detect changes to make sure that all components are visible
       this.cd.detectChanges();
-      this.contestDetailSidebarComponent?.setFocus();
     } finally {
       this.loading = false;
     }
@@ -437,13 +435,12 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
       resultList: this.resultList,
       readonly: !this.resultList.currentTenantIsResponsible || !this.canEditContactPerson || this.resultList.contest.locked,
       showCancel,
+      tenantId: this.tenant!.id,
     };
 
-    const dialogResult = await this.dialogService.openForResult<ContactDialogComponent, ContactPersonEditDialogResult>(
-      ContactDialogComponent,
-      data,
-      { disableClose: !showCancel },
-    );
+    const dialogResult = await this.dialogService.openForResult<ContactDialogComponent, ContactDialogResult>(ContactDialogComponent, data, {
+      disableClose: !showCancel,
+    });
 
     if (dialogResult) {
       this.resultList = dialogResult.resultList;

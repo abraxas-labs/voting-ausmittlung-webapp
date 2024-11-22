@@ -233,7 +233,7 @@ export class MajorityElectionResultBundleService extends GrpcService<MajorityEle
     request.setSelectedCandidateIdsList(ballot.candidates.filter(c => c.selected).map(c => c.id));
     request.setIndividualVoteCount(ballot.individualVoteCount);
     request.setInvalidVoteCount(ballot.invalidVoteCount);
-    if (!autoEmptyVoteCounting) {
+    if (!autoEmptyVoteCounting && ballot.election.numberOfMandates > 1) {
       const smeEmptyVoteCount = new Int32Value();
       smeEmptyVoteCount.setValue(ballot.emptyVoteCount);
       request.setEmptyVoteCount(smeEmptyVoteCount);

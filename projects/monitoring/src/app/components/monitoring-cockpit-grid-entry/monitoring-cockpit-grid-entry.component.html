@@ -1,4 +1,4 @@
-<ng-container *ngIf="newZhFeaturesEnabled; else oldUi">
+<ng-container>
   <div
     *ngIf="result"
     class="p-2 counting-circle-result"
@@ -35,25 +35,3 @@
     ></bc-switch>
   </div>
 </ng-container>
-
-<!-- TODO: can be removed if new UI is standard -->
-<ng-template #oldUi>
-  <div
-    *ngIf="result"
-    class="p-2 counting-circle-result"
-    (click)="openDetail.emit()"
-    [ngClass]="'result-state-' + result.state + '-old'"
-  >
-    <span>{{ 'COUNTING_CIRCLE_RESULT_STATE.' + result.state | translate }}</span>
-    <span *ngIf="showDetails && result.submissionDoneTimestamp">{{
-        (result.state === states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY
-            ? result.auditedTentativelyTimestamp
-            : result.state === states.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED
-              ? result.plausibilisedTimestamp
-              : result.state === states.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION
-                ? result.readyForCorrectionTimestamp
-                : result.submissionDoneTimestamp
-        ) | date: 'shortTime'
-      }}</span>
-  </div>
-</ng-template>

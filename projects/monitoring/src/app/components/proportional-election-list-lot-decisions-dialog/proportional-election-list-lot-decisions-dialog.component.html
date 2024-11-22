@@ -1,0 +1,42 @@
+<vo-lib-dialog>
+  <h3 header translate>PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.TITLE</h3>
+
+  <div content>
+    <bc-table [dataSource]="dataSource">
+      <ng-container columnDef="lists">
+        <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.LOT_DECISION.LISTS' | translate }}</bc-header-cell>
+        <bc-data-cell *dataCellDef="let element">{{ element.lists }}</bc-data-cell>
+      </ng-container>
+      <ng-container columnDef="winners">
+        <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.LOT_DECISION.WINNERS' | translate }}</bc-header-cell>
+        <bc-data-cell *dataCellDef="let element">{{ element.winners }}</bc-data-cell>
+      </ng-container>
+      <ng-container columnDef="actions">
+        <bc-header-cell *headerCellDef class="actions-header"></bc-header-cell>
+        <bc-data-cell *dataCellDef="let element">
+          <bc-icon (click)="removeListLotDecision(element)" icon="remove" class="clickable-icon"></bc-icon>
+        </bc-data-cell>
+      </ng-container>
+
+      <bc-header-row *headerRowDef="let row; columns: columns"></bc-header-row>
+      <bc-data-row *dataRowDef="let row; columns: columns; let i = index">
+      </bc-data-row>
+    </bc-table>
+    <bc-button
+      class="mt-3"
+      [label]="'PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.ADD' | translate"
+      icon="plus"
+      variant="tertiary"
+      (buttonClick)="addListLotDecision()"
+    ></bc-button>
+  </div>
+
+  <div footer>
+    <vo-lib-button-bar
+      (save)="save()"
+      [sticky]="false"
+      [saveLabel]="'COMMON.SAVE' | translate"
+      (cancel)="close()"
+    ></vo-lib-button-bar>
+  </div>
+</vo-lib-dialog>

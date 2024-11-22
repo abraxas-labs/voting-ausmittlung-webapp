@@ -33,6 +33,7 @@ import {
   VoteResultPrepareCorrectionFinishedRequest,
   VoteResultPrepareSubmissionFinishedRequest,
   VoteResultPublishRequest,
+  VoteResultResetToSubmissionFinishedAndFlagForCorrectionRequest,
   VoteResultResetToSubmissionFinishedRequest,
   VoteResultsPlausibiliseRequest,
   VoteResultsResetToAuditedTentativelyRequest,
@@ -419,6 +420,12 @@ export class VoteResultService extends PoliticalBusinessResultBaseService<
       req,
       r => this.validationMapping.mapToValidationSummary(r),
     );
+  }
+
+  public async resetToSubmissionFinishedAndFlagForCorrection(voteResultId: string): Promise<void> {
+    const req = new VoteResultResetToSubmissionFinishedAndFlagForCorrectionRequest();
+    req.setVoteResultId(voteResultId);
+    await this.requestEmptyResp(c => c.resetToSubmissionFinishedAndFlagForCorrection, req);
   }
 
   private mapToResultRequestList(results: BallotResult[]): EnterVoteBallotResultsRequest[] {

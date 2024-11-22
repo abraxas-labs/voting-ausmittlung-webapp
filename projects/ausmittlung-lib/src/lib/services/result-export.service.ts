@@ -21,7 +21,10 @@ import { REST_API_URL_INJECTION_TOKEN } from './tokens';
 export class ResultExportService {
   private readonly apiUrl: string = '';
 
-  constructor(private readonly fileDownloadService: FileDownloadService, @Inject(REST_API_URL_INJECTION_TOKEN) restApiUrl: string) {
+  constructor(
+    private readonly fileDownloadService: FileDownloadService,
+    @Inject(REST_API_URL_INJECTION_TOKEN) restApiUrl: string,
+  ) {
     this.apiUrl = `${restApiUrl}/result_export`;
   }
 

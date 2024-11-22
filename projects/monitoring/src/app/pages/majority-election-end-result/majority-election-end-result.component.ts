@@ -10,11 +10,11 @@ import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import {
   groupBySingle,
+  MajorityElectionCandidateEndResult,
   MajorityElectionEndResult,
   MajorityElectionEndResultLotDecision,
   MajorityElectionResultService,
   SecondFactorTransactionService,
-  SwissAbroadVotingRight,
 } from 'ausmittlung-lib';
 import { combineLatest, debounceTime, map, Subscription } from 'rxjs';
 import {
@@ -33,7 +33,6 @@ export class MajorityElectionEndResultComponent implements OnDestroy {
   public loading: boolean = true;
   public stepActionLoading: boolean = false;
   public endResult?: MajorityElectionEndResult;
-  public swissAbroadVotingRights: typeof SwissAbroadVotingRight = SwissAbroadVotingRight;
   public hasLotDecisions: boolean = false;
   public hasOpenRequiredLotDecisions: boolean = false;
   public isPartialResult = false;
@@ -165,8 +164,8 @@ export class MajorityElectionEndResultComponent implements OnDestroy {
       this.endResultStep = !this.endResult.allCountingCirclesDone
         ? EndResultStep.CountingCirclesCounting
         : !this.endResult.finalized || !this.finalizeEnabled
-        ? EndResultStep.AllCountingCirclesDone
-        : EndResultStep.Finalized;
+          ? EndResultStep.AllCountingCirclesDone
+          : EndResultStep.Finalized;
     } finally {
       this.loading = false;
     }
@@ -195,8 +194,16 @@ export class MajorityElectionEndResultComponent implements OnDestroy {
 
     for (const lotDecision of lotDecisions) {
       const candidateEndResult = candidateEndResultsById[lotDecision.candidateId];
-      candidateEndResult.lotDecision = true;
-      candidateEndResult.rank = lotDecision.rank;
+      const electionCandidateEndResults = this.getElectionCandidateEndResults(lotDecision.candidateId);
+
+      if (!!lotDecision.rank) {
+        candidateEndResult.lotDecision = true;
+        candidateEndResult.rank = lotDecision.rank;
+      } else {
+        const minRank = electionCandidateEndResults.map(c => c.voteCount).indexOf(candidateEndResult.voteCount) + 1;
+        candidateEndResult.rank = minRank;
+        candidateEndResult.lotDecision = false;
+      }
     }
 
     this.endResult.candidateEndResults = this.endResult.candidateEndResults.sort((a, b) => a.rank - b.rank);
@@ -207,5 +214,23 @@ export class MajorityElectionEndResultComponent implements OnDestroy {
     }
 
     this.hasOpenRequiredLotDecisions = false;
+  }
+
+  private getElectionCandidateEndResults(candidateId: string): MajorityElectionCandidateEndResult[] {
+    if (!this.endResult) {
+      return [];
+    }
+
+    if (this.endResult.candidateEndResults.find(e => e.candidate.id == candidateId)) {
+      return this.endResult.candidateEndResults;
+    }
+
+    for (const secondaryEndResult of this.endResult.secondaryMajorityElectionEndResults) {
+      if (secondaryEndResult.candidateEndResults.find(e => e.candidate.id == candidateId)) {
+        return secondaryEndResult.candidateEndResults;
+      }
+    }
+
+    throw new Error('Election candidate end results not found');
   }
 }

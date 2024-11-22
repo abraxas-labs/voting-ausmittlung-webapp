@@ -52,10 +52,8 @@ export class ErfassungFinishSubmissionComponent implements OnInit, OnDestroy {
   public countingCircleResultStates: typeof CountingCircleResultState = CountingCircleResultState;
 
   public breadcrumbs: BreadcrumbItem[] = [];
-  public newZhFeaturesEnabled: boolean = false;
   public tenant?: Tenant;
 
-  private routeDataSubscription: Subscription;
   private routeParamsSubscription: Subscription = Subscription.EMPTY;
 
   private contestId: string = '';
@@ -74,10 +72,7 @@ export class ErfassungFinishSubmissionComponent implements OnInit, OnDestroy {
     private readonly i18n: TranslateService,
     private readonly auth: AuthorizationService,
   ) {
-    this.routeDataSubscription = route.data.subscribe(async ({ contestCantonDefaults }) => {
-      this.newZhFeaturesEnabled = contestCantonDefaults.newZhFeaturesEnabled;
-      this.breadcrumbs = this.breadcrumbsService.forFinishSubmission(this.newZhFeaturesEnabled);
-    });
+    this.breadcrumbs = this.breadcrumbsService.forFinishSubmission();
   }
 
   public get selectableResults(): ResultListResult[] {
@@ -94,7 +89,6 @@ export class ErfassungFinishSubmissionComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.routeParamsSubscription.unsubscribe();
-    this.routeDataSubscription.unsubscribe();
     this.stateChangesSubscription?.unsubscribe();
   }
 
@@ -186,6 +180,7 @@ export class ErfassungFinishSubmissionComponent implements OnInit, OnDestroy {
       canEmitSave: validationSummaries.isValid,
       header: `VALIDATION.${validationSummaries.isValid ? 'VALID' : 'INVALID'}`,
       saveLabel: !validationSummaries.isValid ? 'APP.CONTINUE' : 'COMMON.SAVE',
+      hasSaveButton: true,
     };
 
     const result = await this.dialogService.openForResult<ValidationOverviewDialogComponent, ValidationOverviewDialogResult>(

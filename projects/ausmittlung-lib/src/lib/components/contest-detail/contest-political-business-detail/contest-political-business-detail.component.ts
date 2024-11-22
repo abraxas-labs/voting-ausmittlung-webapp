@@ -7,22 +7,21 @@
 import { ExpansionPanelComponent } from '@abraxas/base-components';
 import { CountingCircleResultState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/counting_circle_pb';
 import { DialogService } from '@abraxas/voting-lib';
-import { ChangeDetectorRef, Component, Input, OnDestroy, ViewChild } from '@angular/core';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { ChangeDetectorRef, Component, Input, ViewChild } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
 import { ContestCantonDefaults, ContestCountingCircleDetails, PoliticalBusinessType, ResultListResult } from '../../../models';
 import { CommentsDialogComponent, CommentsDialogComponentData } from '../../comments-dialog/comments-dialog.component';
 import {
   ContactPersonDialogComponent,
   ContactPersonDialogComponentData,
 } from '../../contact-person-dialog/contact-person-dialog.component';
-import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'vo-ausm-contest-political-business-detail',
   templateUrl: './contest-political-business-detail.component.html',
   styleUrls: ['./contest-political-business-detail.component.scss'],
 })
-export class ContestPoliticalBusinessDetailComponent implements OnDestroy {
+export class ContestPoliticalBusinessDetailComponent {
   public readonly politicalBusinessType: typeof PoliticalBusinessType = PoliticalBusinessType;
 
   @Input()
@@ -48,22 +47,14 @@ export class ContestPoliticalBusinessDetailComponent implements OnDestroy {
 
   public readonly states: typeof CountingCircleResultState = CountingCircleResultState;
 
-  public newZhFeaturesEnabled: boolean = false;
-
   private readonly countingCircleDetailsUpdatedSubject: Subject<ContestCountingCircleDetails> = new Subject<ContestCountingCircleDetails>();
 
   private readonly expandedSubject: Subject<boolean> = new Subject<boolean>();
-  private readonly routeSubscription: Subscription;
 
-  constructor(private readonly dialog: DialogService, private readonly cd: ChangeDetectorRef, route: ActivatedRoute) {
-    this.routeSubscription = route.data.subscribe(async ({ contestCantonDefaults }) => {
-      this.newZhFeaturesEnabled = contestCantonDefaults.newZhFeaturesEnabled;
-    });
-  }
-
-  public ngOnDestroy(): void {
-    this.routeSubscription?.unsubscribe();
-  }
+  constructor(
+    private readonly dialog: DialogService,
+    private readonly cd: ChangeDetectorRef,
+  ) {}
 
   public set expanded(x: boolean) {
     this.expansionPanel.expanded = x;
@@ -109,7 +100,6 @@ export class ContestPoliticalBusinessDetailComponent implements OnDestroy {
 
     const data: ContactPersonDialogComponentData = {
       domainOfInfluences: [this.result.politicalBusiness.domainOfInfluence],
-      newZhFeaturesEnabled: this.newZhFeaturesEnabled,
     };
     this.dialog.open(ContactPersonDialogComponent, data);
   }

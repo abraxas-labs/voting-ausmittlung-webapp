@@ -1,44 +1,29 @@
-<div class="footer" [class.border]="newZhFeaturesEnabled">
-  <!--  TODO: can be removed if new UI is standard-->
-  <div *ngIf="!newZhFeaturesEnabled">
-    <span>{{entryDescription | translate:entryDescriptionDetail}}</span>
-    <bc-button *ngIf="canSelectResultEntry && canEnterResults && state === states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING"
-               class="ml-2"
-               variant="tertiary"
-               [label]="editEntryText | translate"
-               (buttonClick)="selectResultEntry.emit()">
-    </bc-button>
-  </div>
+<div class="footer border">
   <vo-lib-inline-spinner [loading]="isActionExecuting"
                          position="left">
     <div class="buttons">
       <ng-container *ngIf="canFinishSubmission || canFinishSubmissionAndAudit; else monitoring">
-        <bc-button *ngIf="!newZhFeaturesEnabled && (state === states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING || state === states.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION)"
-                   [variant]="newZhFeaturesEnabled ? 'tertiary' : 'secondary'"
-                   [label]="'ACTIONS.VALIDATE_AND_SAVE' | translate"
-                   [disabled]="isActionExecuting || !canValidateAndSave"
-                   (buttonClick)="validateAndSave.emit()"></bc-button>
-        <bc-button *ngIf="newZhFeaturesEnabled && (state === states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING || state === states.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION)"
+        <bc-button *ngIf="state === states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING || state === states.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION"
                    variant='tertiary'
                    [label]="'ACTIONS.SAVE' | translate"
                    [disabled]="isActionExecuting || !canSave"
                    (buttonClick)="save.emit()"></bc-button>
-        <bc-button *ngIf="newZhFeaturesEnabled && (state === states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING || state === states.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION)"
+        <bc-button *ngIf="state === states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING || state === states.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION"
                    variant='tertiary'
                    [label]="'ACTIONS.VALIDATE' | translate"
                    [disabled]="isActionExecuting || !canValidate"
                    (buttonClick)="validate.emit()"></bc-button>
         <bc-button *ngIf="state === states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING"
                    variant="primary"
-                   [label]="(newZhFeaturesEnabled ? 'ACTIONS.SUBMIT_RESULTS' : 'ACTIONS.SUBMISSION_DONE') | translate"
-                   (buttonClick)="newZhFeaturesEnabled && isResponsibleMonitorAuthority ? finishSubmissionAndAuditTentatively() : updateState(states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE)"
+                   [label]="(isResponsibleMonitorAuthority && domainOfInfluenceType >= domainOfInfluenceTypes.DOMAIN_OF_INFLUENCE_TYPE_MU ? 'ACTIONS.SUBMIT_RESULTS_AND_AUDIT_TENTATIVELY.TITLE' : 'ACTIONS.SUBMIT_RESULTS') | translate"
+                   (buttonClick)="isResponsibleMonitorAuthority && domainOfInfluenceType >= domainOfInfluenceTypes.DOMAIN_OF_INFLUENCE_TYPE_MU ? finishSubmissionAndAuditTentatively() : updateState(states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE)"
                    [disabled]="isActionExecuting || !canSubmit"></bc-button>
         <bc-button *ngIf="state === states.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION"
                    variant="primary"
-                   [label]="(newZhFeaturesEnabled ? 'ACTIONS.SUBMIT_RESULTS' : 'ACTIONS.CORRECTION_DONE') | translate"
-                   (buttonClick)="newZhFeaturesEnabled && isResponsibleMonitorAuthority ? finishCorrectionAndAuditTentatively() : updateState(states.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE)"
+                   [label]="(isResponsibleMonitorAuthority && domainOfInfluenceType >= domainOfInfluenceTypes.DOMAIN_OF_INFLUENCE_TYPE_MU ? 'ACTIONS.SUBMIT_RESULTS_AND_AUDIT_TENTATIVELY.TITLE' : 'ACTIONS.SUBMIT_RESULTS')  | translate"
+                   (buttonClick)="isResponsibleMonitorAuthority && domainOfInfluenceType >= domainOfInfluenceTypes.DOMAIN_OF_INFLUENCE_TYPE_MU ? finishCorrectionAndAuditTentatively() : updateState(states.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE)"
                    [disabled]="isActionExecuting || !canSubmit"></bc-button>
-        <bc-button *ngIf="newZhFeaturesEnabled && isResponsibleMonitorAuthority && state === states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY"
+        <bc-button *ngIf="isResponsibleMonitorAuthority && state === states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY"
                    variant="tertiary"
                    icon="external-link"
                    [label]="'ACTIONS.CREATE_PROTOCOL' | translate"
@@ -61,7 +46,7 @@
           </ng-container>
           <ng-container *ngSwitchCase="states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE">
             <bc-button [disabled]="isActionExecuting"
-                       [variant]="newZhFeaturesEnabled ? 'tertiary' : 'secondary'"
+                       [variant]="'tertiary'"
                        [label]="stateDescriptionsByState[states.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION] ?? 'ACTIONS.FLAG_FOR_CORRECTION' | translate"
                        (buttonClick)="updateState(states.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION)"></bc-button>
             <bc-button [disabled]="isActionExecuting"
@@ -71,7 +56,7 @@
           </ng-container>
           <ng-container *ngSwitchCase="states.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE">
             <bc-button [disabled]="isActionExecuting"
-                       [variant]="newZhFeaturesEnabled ? 'tertiary' : 'secondary'"
+                       [variant]="'tertiary'"
                        [label]="stateDescriptionsByState[states.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION] ?? 'ACTIONS.FLAG_FOR_CORRECTION' | translate"
                        (buttonClick)="updateState(states.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION)"></bc-button>
             <bc-button [disabled]="isActionExecuting"
@@ -81,9 +66,9 @@
           </ng-container>
           <ng-container *ngSwitchCase="states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY">
             <bc-button [disabled]="isActionExecuting"
-                       [variant]="newZhFeaturesEnabled ? 'tertiary' : 'secondary'"
-                       [label]="'ACTIONS.RESET_TO_SUBMISSION_DONE' | translate: { state: stateDescriptionsByState[states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE] ?? 'COUNTING_CIRCLE_RESULT_STATE.' + states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE | translate }"
-                       (buttonClick)="updateState(states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE)"></bc-button>
+                       [variant]="'tertiary'"
+                       [label]="isResponsibleMonitorAuthority && domainOfInfluenceType >= domainOfInfluenceTypes.DOMAIN_OF_INFLUENCE_TYPE_MU ? (stateDescriptionsByState[states.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION] ?? 'ACTIONS.FLAG_FOR_CORRECTION' | translate) : 'ACTIONS.RESET_TO_SUBMISSION_DONE' | translate: { state: stateDescriptionsByState[states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE] ?? 'COUNTING_CIRCLE_RESULT_STATE.' + states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE | translate }"
+                       (buttonClick)="isResponsibleMonitorAuthority && domainOfInfluenceType >= domainOfInfluenceTypes.DOMAIN_OF_INFLUENCE_TYPE_MU ? resetToFinishSubmissionAndFlagForCorrection() : updateState(states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE)"></bc-button>
             <bc-button *ngIf="!statePlausibilisedDisabled"
                        [disabled]="isActionExecuting"
                        (buttonClick)="updateState(states.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED)"
@@ -92,14 +77,14 @@
           </ng-container>
           <bc-button *ngSwitchCase="states.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED"
                      [disabled]="isActionExecuting"
-                     [variant]="newZhFeaturesEnabled ? 'tertiary' : 'secondary'"
+                     [variant]="'tertiary'"
                      [label]="stateDescriptionsByState[states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY] ?? 'ACTIONS.RESET_TO_AUDIT_TENTATIVELY' | translate"
                      (buttonClick)="updateState(states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY)"></bc-button>
         </ng-container>
       </ng-template>
     </div>
   </vo-lib-inline-spinner>
-  <bc-button *ngIf="newZhFeaturesEnabled && canSelectResultEntry && canEnterResults && state === states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING"
+  <bc-button *ngIf="canSelectResultEntry && canEnterResults && state === states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING"
              class="ml-2"
              variant="tertiary"
              [label]="'POLITICAL_BUSINESS.RESULTS_ENTRY.EDIT' | translate"

@@ -4,7 +4,7 @@
   <div content class="container">
     <vo-ausm-contest-detail-count-of-voters [readonly]="readonly"
                                             [eVoting]="eVoting"
-                                            [swissAbroadHaveVotingRightsOnAnyBusiness]="swissAbroadHaveVotingRightsOnAnyBusiness"
+                                            [enabledVoterTypes]="enabledVoterTypes"
                                             [countOfVoters]="countOfVoters"
                                             (countOfVotersChange)="contentChanged()"></vo-ausm-contest-detail-count-of-voters>
 
@@ -15,7 +15,6 @@
                                          [enabledVotingCardChannels]="enabledVotingCardChannels"
                                          [domainOfInfluenceTypes]="domainOfInfluenceTypes"
                                          [electorates]="electorateSummary?.effectiveElectoratesList"
-                                         [newZhFeaturesEnabled]="newZhFeaturesEnabled"
                                          [canton]="canton"></vo-ausm-contest-detail-voting-cards>
 
     <ng-container *ngIf="countingMachineEnabled">

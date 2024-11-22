@@ -6,15 +6,9 @@
 
 import { Component, HostListener, Inject, OnDestroy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { CountOfVotersInformation, DomainOfInfluenceType, VotingCardChannel, VotingCardResultDetail } from '../../../models';
+import { CountOfVotersInformation, DomainOfInfluenceType, VoterType, VotingCardChannel, VotingCardResultDetail } from '../../../models';
 import { CountingMachine } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/counting_machine_pb';
 import { DialogService, EnumItemDescription, EnumUtil } from '@abraxas/voting-lib';
-import {
-  ValidationOverviewDialogComponent,
-  ValidationOverviewDialogData,
-  ValidationOverviewDialogResult,
-} from '../../validation-overview-dialog/validation-overview-dialog.component';
-import { ContestCountingCircleDetailsService } from '../../../services/contest-counting-circle-details.service';
 import { ContestCountingCircleElectorateSummary } from '../../../models/contest-counting-circle-electorate.model';
 import { DomainOfInfluenceCanton } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/domain_of_influence_pb';
 import { cloneDeep, isEqual } from 'lodash';
@@ -42,9 +36,8 @@ export class ContestDetailInfoDialogComponent implements OnDestroy {
   public readonly: boolean;
   public domainOfInfluenceTypes: DomainOfInfluenceType[];
   public countingMachineEnabled: boolean;
-  public newZhFeaturesEnabled: boolean;
   public eVoting: boolean;
-  public swissAbroadHaveVotingRightsOnAnyBusiness: boolean;
+  public enabledVoterTypes: VoterType[];
   public countOfVoters: CountOfVotersInformation;
   public votingCards: VotingCardResultDetail[];
   public enabledVotingCardChannels: VotingCardChannel[];
@@ -63,7 +56,6 @@ export class ContestDetailInfoDialogComponent implements OnDestroy {
 
   constructor(
     private readonly dialogRef: MatDialogRef<ContestDetailInfoDialogData, ContestDetailInfoDialogResult>,
-    private readonly contestCountingCircleDetailsService: ContestCountingCircleDetailsService,
     private readonly dialogService: DialogService,
     private readonly i18n: TranslateService,
     @Inject(MAT_DIALOG_DATA) dialogData: ContestDetailInfoDialogData,
@@ -72,9 +64,8 @@ export class ContestDetailInfoDialogComponent implements OnDestroy {
     this.readonly = dialogData.readonly;
     this.domainOfInfluenceTypes = dialogData.domainOfInfluenceTypes;
     this.countingMachineEnabled = dialogData.countingMachineEnabled;
-    this.newZhFeaturesEnabled = dialogData.newZhFeaturesEnabled;
     this.eVoting = dialogData.eVoting;
-    this.swissAbroadHaveVotingRightsOnAnyBusiness = dialogData.swissAbroadHaveVotingRightsOnAnyBusiness;
+    this.enabledVoterTypes = dialogData.enabledVoterTypes;
     this.countOfVoters = cloneDeep(dialogData.countOfVoters);
     this.votingCards = dialogData.votingCards;
     this.enabledVotingCardChannels = dialogData.enabledVotingCardChannels;
@@ -106,11 +97,6 @@ export class ContestDetailInfoDialogComponent implements OnDestroy {
   }
 
   public async save(): Promise<void> {
-    const validationConfirm = await this.confirmValidationOverviewDialog();
-    if (!validationConfirm) {
-      return;
-    }
-
     this.hasChanges = false;
     this.dialogRef.close({
       countOfVoters: this.countOfVoters,
@@ -129,44 +115,14 @@ export class ContestDetailInfoDialogComponent implements OnDestroy {
   private async leaveDialogOpen(): Promise<boolean> {
     return this.hasChanges && !(await this.dialogService.confirm('APP.CHANGES.TITLE', this.i18n.instant('APP.CHANGES.MSG'), 'APP.YES'));
   }
-
-  private async confirmValidationOverviewDialog(): Promise<boolean> {
-    if (!this.contestId || !this.countingCircleId) {
-      return false;
-    }
-
-    const validationSummary = await this.contestCountingCircleDetailsService.validateUpdateDetails({
-      contestId: this.contestId,
-      countingCircleId: this.countingCircleId,
-      countingMachine: this.countingMachine ?? CountingMachine.COUNTING_MACHINE_UNSPECIFIED,
-      countOfVotersInformation: this.countOfVoters,
-      votingCards: this.votingCards,
-      eVoting: this.eVoting,
-    });
-
-    const data: ValidationOverviewDialogData = {
-      validationSummaries: [validationSummary],
-      canEmitSave: validationSummary.isValid,
-      header: `VALIDATION.${validationSummary.isValid ? 'VALID' : 'INVALID'}`,
-      saveLabel: !validationSummary.isValid ? 'APP.CONTINUE' : 'COMMON.SAVE',
-    };
-
-    const result = await this.dialogService.openForResult<ValidationOverviewDialogComponent, ValidationOverviewDialogResult>(
-      ValidationOverviewDialogComponent,
-      data,
-    );
-
-    return !!result && result.save;
-  }
 }
 
 export interface ContestDetailInfoDialogData {
   readonly: boolean;
   domainOfInfluenceTypes: DomainOfInfluenceType[];
   countingMachineEnabled: boolean;
-  newZhFeaturesEnabled: boolean;
   eVoting: boolean;
-  swissAbroadHaveVotingRightsOnAnyBusiness: boolean;
+  enabledVoterTypes: VoterType[];
   countOfVoters: CountOfVotersInformation;
   votingCards: VotingCardResultDetail[];
   enabledVotingCardChannels: VotingCardChannel[];

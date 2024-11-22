@@ -1,7 +1,6 @@
 <div class="flex">
   <ng-container *ngFor="let state of allStates">
     <div
-      *ngIf="state !== states.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED || !statePlausibilisedDisabled"
       [matTooltip]="stateDescriptionsByState[state] ?? 'COUNTING_CIRCLE_RESULT_STATE.' + state | translate"
       matTooltipPosition="above"
       matTooltipShowDelay="600"

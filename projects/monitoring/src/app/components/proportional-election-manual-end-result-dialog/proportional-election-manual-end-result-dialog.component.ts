@@ -4,16 +4,22 @@
  * For license information see LICENSE file.
  */
 
-import { EnumItemDescription, EnumUtil, SnackbarService } from '@abraxas/voting-lib';
+import { DialogService, EnumItemDescription, EnumUtil, SnackbarService } from '@abraxas/voting-lib';
 import { Component, Inject, ViewChild } from '@angular/core';
 import { MatStepper } from '@angular/material/stepper';
 import { TranslateService } from '@ngx-translate/core';
-import { ProportionalElectionListEndResult, ProportionalElectionResultService } from 'ausmittlung-lib';
 import {
   ProportionalElectionCandidateEndResultState,
+  ProportionalElectionEndResultListLotDecision,
+  ProportionalElectionListEndResult,
   ProportionalElectionManualCandidateEndResult,
-} from '../../../../../ausmittlung-lib/src/public-api';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+  ProportionalElectionResultService,
+} from 'ausmittlung-lib';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import {
+  ProportionalElectionListLotDecisionsDialogComponent,
+  ProportionalElectionListLotDecisionsDialogData,
+} from '../proportional-election-list-lot-decisions-dialog/proportional-election-list-lot-decisions-dialog.component';
 
 @Component({
   selector: 'app-proportional-election-manual-end-result-dialog',
@@ -29,6 +35,8 @@ export class ProportionalElectionManualEndResultDialogComponent {
   public lists: ProportionalElectionListEndResult[];
   public canSave: boolean = false;
   public readonly candidateStates: EnumItemDescription<ProportionalElectionCandidateEndResultState>[] = [];
+  public proportionalElectionId: string;
+  public listLotDecisions: ProportionalElectionEndResultListLotDecision[];
 
   private selectedList?: ProportionalElectionListEndResult;
   private hasChanges: boolean = false;
@@ -41,9 +49,12 @@ export class ProportionalElectionManualEndResultDialogComponent {
     private readonly toast: SnackbarService,
     private readonly dialogRef: MatDialogRef<ProportionalElectionManualEndResultDialogData>,
     private readonly resultService: ProportionalElectionResultService,
+    private readonly dialogService: DialogService,
     @Inject(MAT_DIALOG_DATA) dialogData: ProportionalElectionManualEndResultDialogData,
   ) {
     this.lists = dialogData.lists;
+    this.proportionalElectionId = dialogData.proportionalElectionId;
+    this.listLotDecisions = dialogData.listLotDecisions;
     this.candidateStates = enumUtil
       .getArrayWithDescriptions<ProportionalElectionCandidateEndResultState>(
         ProportionalElectionCandidateEndResultState,
@@ -105,6 +116,16 @@ export class ProportionalElectionManualEndResultDialogComponent {
     this.dialogRef.close(result);
   }
 
+  public async openListLotDecisionsDialog(): Promise<void> {
+    const data: ProportionalElectionListLotDecisionsDialogData = {
+      proportionalElectionId: this.proportionalElectionId,
+      lists: this.lists,
+      listLotDecisions: this.listLotDecisions,
+    };
+
+    this.dialogService.open<ProportionalElectionListLotDecisionsDialogComponent>(ProportionalElectionListLotDecisionsDialogComponent, data);
+  }
+
   private nextOrClose(): void {
     if (!this.isLast) {
       this.stepper.selectedIndex = this.stepper.selectedIndex + 1;
@@ -138,6 +159,8 @@ export class ProportionalElectionManualEndResultDialogComponent {
 
 export interface ProportionalElectionManualEndResultDialogData {
   lists: ProportionalElectionListEndResult[];
+  proportionalElectionId: string;
+  listLotDecisions: ProportionalElectionEndResultListLotDecision[];
 }
 
 export interface ProportionalElectionManualEndResultDialogResult {

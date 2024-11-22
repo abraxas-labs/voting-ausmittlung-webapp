@@ -17,7 +17,10 @@ export class ContestDateGuard {
   private alreadyRedirected: boolean = false;
   private tenant?: Tenant;
 
-  constructor(private readonly contestService: ContestService, private readonly auth: AuthorizationService) {}
+  constructor(
+    private readonly contestService: ContestService,
+    private readonly auth: AuthorizationService,
+  ) {}
 
   public async canActivate(currentRoute: ActivatedRouteSnapshot): Promise<boolean | UrlTree> {
     if (this.alreadyRedirected) {

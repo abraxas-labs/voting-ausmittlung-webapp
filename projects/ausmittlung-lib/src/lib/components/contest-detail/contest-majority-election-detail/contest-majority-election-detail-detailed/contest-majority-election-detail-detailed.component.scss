@@ -10,15 +10,4 @@
   &.results {
     display: block;
   }
-
-  .detail {
-    @extend .mx-4;
-
-    margin-top: 2rem;
-    min-width: 32rem;
-  }
-}
-
-.space-between {
-  justify-content: space-between;
 }

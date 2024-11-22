@@ -1,7 +1,7 @@
 <vo-lib-page [contentLoading]="loading"
              header="VOTE.BUNDLE_OVERVIEW">
   <ng-container *ngIf="result">
-    <vo-ausm-vote-info [voteResult]="result.politicalBusinessResult" [newZhFeaturesEnabled]="newZhFeaturesEnabled"></vo-ausm-vote-info>
+    <vo-ausm-vote-info [voteResult]="result.politicalBusinessResult"></vo-ausm-vote-info>
     <div class="my-4">
       <div class="shortcut-container">
         <bc-icon class="clickable-icon" icon="question-circle-o" (click)="showShortcutDialog()"></bc-icon>
@@ -32,7 +32,6 @@
                                    (generateBundleReviewExport)="generateBundleReviewExport($event)"
                                    (downloadBundleReviewExport)="downloadBundleReviewExport($event)"
                                    [reviewProcedure]="result.politicalBusinessResult.entryParams?.reviewProcedure"
-                                   [newZhFeaturesEnabled]="newZhFeaturesEnabled"
                                    [enableReviewMultiple]="isReviewProcedurePhysically"
                                    [enableReviewColumn]="isReviewProcedurePhysically">
         </vo-ausm-vote-bundle-table>

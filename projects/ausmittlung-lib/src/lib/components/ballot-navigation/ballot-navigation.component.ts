@@ -4,7 +4,8 @@
  * For license information see LICENSE file.
  */
 
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { TextComponent } from '@abraxas/base-components';
 
 @Component({
   selector: 'vo-ausm-ballot-navigation',
@@ -26,6 +27,9 @@ export class BallotNavigationComponent {
 
   @Output()
   public ballotNumberChange: EventEmitter<number> = new EventEmitter<number>();
+
+  @ViewChild('navigationComponent')
+  private navigationComponent!: TextComponent;
 
   public ballotNumberValue: number = 1;
   public ballotNumberOriginalValue: number = 1;
@@ -50,5 +54,9 @@ export class BallotNavigationComponent {
     ) {
       this.ballotNumberChange.emit(this.ballotNumberValue);
     }
+  }
+
+  public setFocus(): void {
+    this.navigationComponent.setFocus();
   }
 }

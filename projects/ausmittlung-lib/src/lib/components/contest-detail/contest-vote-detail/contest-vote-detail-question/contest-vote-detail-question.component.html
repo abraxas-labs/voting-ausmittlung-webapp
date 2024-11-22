@@ -1,10 +1,8 @@
-<p *ngIf="!newZhFeaturesEnabled" class="whitespace-pre-wrap">{{ result.question | translateVoteQuestion: isTieBreakQuestion:'question':ballotNumberOfQuestions }}</p>
-<div class="question-results" [class.vertical]="newZhFeaturesEnabled">
+<div class="question-results vertical">
   <div class="result-entry">
-    <p *ngIf="!newZhFeaturesEnabled" translate>VOTE.COUNT_OF_VOTES.UNKNOWN</p>
     <div class="input-container">
-      <bc-label *ngIf="eVoting && newZhFeaturesEnabled && ballotNumberOfQuestions > 1" class="source-label" [label]="'VOTING_DATA_SOURCE.CONVENTIONAL' | translate"></bc-label>
-      <bc-number class="label-no-wrap" [class.label-space]="newZhFeaturesEnabled"
+      <bc-label *ngIf="eVoting && ballotNumberOfQuestions > 1" class="source-label" [label]="'VOTING_DATA_SOURCE.CONVENTIONAL' | translate"></bc-label>
+      <bc-number class="label-no-wrap label-space"
                     [label]="result.question | translateVoteQuestion: isTieBreakQuestion:'answer1Short':ballotNumberOfQuestions:ballotSubType"
                     [min]="0"
                     [required]="true"
@@ -13,7 +11,7 @@
                     [(value)]="result.conventionalSubTotal.totalCountOfAnswer1"
                     (valueChange)="updateTotal()"
                     [subscriptSizing]="'dynamic'"></bc-number>
-      <bc-number class="label-no-wrap" [class.label-space]="newZhFeaturesEnabled"
+      <bc-number class="label-no-wrap label-space"
                     [label]="result.question | translateVoteQuestion: isTieBreakQuestion:'answer2Short':ballotNumberOfQuestions:ballotSubType"
                     [min]="0"
                     [required]="true"
@@ -22,7 +20,7 @@
                     [(value)]="result.conventionalSubTotal.totalCountOfAnswer2"
                     (valueChange)="updateTotal()"
                     [subscriptSizing]="'dynamic'"></bc-number>
-      <bc-number class="label-no-wrap" [class.label-space]="newZhFeaturesEnabled"
+      <bc-number class="label-no-wrap label-space"
                     [label]="'VOTE.BALLOT.ANSWER.UNSPECIFIED_SHORT' | translate"
                     [min]="0"
                     *ngIf="ballotNumberOfQuestions > 1"
@@ -36,27 +34,26 @@
   </div>
   <ng-container *ngIf="eVoting">
     <div class="result-entry">
-      <p *ngIf="!newZhFeaturesEnabled" translate>VOTE.COUNT_OF_VOTES.E_VOTING</p>
         <div class="input-container">
-          <bc-label *ngIf="eVoting && newZhFeaturesEnabled && ballotNumberOfQuestions > 1" class="source-label" [label]="'VOTING_DATA_SOURCE.E_VOTING' | translate"></bc-label>
+          <bc-label *ngIf="eVoting && ballotNumberOfQuestions > 1" class="source-label" [label]="'VOTING_DATA_SOURCE.E_VOTING' | translate"></bc-label>
           <bc-number
             class="label-no-wrap"
             [disabled]="true"
             [required]="true"
-            [label]="!newZhFeaturesEnabled ? (result.question | translateVoteQuestion: isTieBreakQuestion:'answer1Short':ballotNumberOfQuestions) : ''"
+            [label]="''"
             [value]="result.eVotingSubTotal.totalCountOfAnswer1"
             [subscriptSizing]="'dynamic'"></bc-number>
           <bc-number
             class="label-no-wrap"
             [disabled]="true"
             [required]="true"
-            [label]="!newZhFeaturesEnabled ? (result.question | translateVoteQuestion: isTieBreakQuestion:'answer2Short':ballotNumberOfQuestions) : ''"
+            [label]="''"
             [value]="result.eVotingSubTotal.totalCountOfAnswer2"
             [subscriptSizing]="'dynamic'"></bc-number>
           <bc-number
             class="label-no-wrap"
             [disabled]="true"
-            [label]="!newZhFeaturesEnabled ? ('VOTE.BALLOT.ANSWER.UNSPECIFIED_SHORT' | translate) : ''"
+            [label]="''"
             [min]="0"
             *ngIf="ballotNumberOfQuestions > 1"
             [required]="true"
@@ -66,21 +63,20 @@
         </div>
       </div>
       <div class="result-entry">
-        <p *ngIf="!newZhFeaturesEnabled" translate>VOTE.COUNT_OF_VOTES.TOTAL</p>
           <div class="input-container">
-            <bc-label *ngIf="eVoting && newZhFeaturesEnabled && ballotNumberOfQuestions > 1" class="source-label" [label]="'VOTING_DATA_SOURCE.TOTAL' | translate"></bc-label>
+            <bc-label *ngIf="eVoting && ballotNumberOfQuestions > 1" class="source-label" [label]="'VOTING_DATA_SOURCE.TOTAL' | translate"></bc-label>
             <bc-number
               class="label-no-wrap"
               [disabled]="true"
               [required]="true"
-              [label]="!newZhFeaturesEnabled ? (result.question | translateVoteQuestion: isTieBreakQuestion:'answer1Short':ballotNumberOfQuestions) : ''"
+              [label]="''"
               [value]="result.totalCountOfAnswer1"
               [subscriptSizing]="'dynamic'"></bc-number>
             <bc-number
               class="label-no-wrap"
               [disabled]="true"
               [required]="true"
-              [label]="!newZhFeaturesEnabled ? (result.question | translateVoteQuestion: isTieBreakQuestion:'answer2Short':ballotNumberOfQuestions) : ''"
+              [label]="''"
               [value]="result.totalCountOfAnswer2"
               [subscriptSizing]="'dynamic'"></bc-number>
             <bc-number
@@ -88,20 +84,10 @@
               [disabled]="true"
               [required]="true"
               *ngIf="ballotNumberOfQuestions > 1"
-              [label]="!newZhFeaturesEnabled ? ('VOTE.BALLOT.ANSWER.UNSPECIFIED_SHORT' | translate) : ''"
+              [label]="''"
               [value]="result.totalCountOfAnswerUnspecified"
               [subscriptSizing]="'dynamic'"></bc-number>
           </div>
         </div>
-      </ng-container>
-      <ng-container *ngIf="!newZhFeaturesEnabled">
-        <div class="spacer"></div>
-        <vo-ausm-vote-results-graph
-          [countLeft]="result.totalCountOfAnswer1"
-          [countRight]="result.totalCountOfAnswer2"
-          [equalityRightWins]="!isTieBreakQuestion"
-          [resultLabelLeft]="result.question | translateVoteQuestion: isTieBreakQuestion:'answer1Short':ballotNumberOfQuestions"
-          [resultLabelRight]="result.question | translateVoteQuestion: isTieBreakQuestion:'answer2Short':ballotNumberOfQuestions">
-        </vo-ausm-vote-results-graph>
       </ng-container>
     </div>

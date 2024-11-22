@@ -33,6 +33,7 @@ import {
   MajorityElectionResultPrepareCorrectionFinishedRequest,
   MajorityElectionResultPrepareSubmissionFinishedRequest,
   MajorityElectionResultPublishRequest,
+  MajorityElectionResultResetToSubmissionFinishedAndFlagForCorrectionRequest,
   MajorityElectionResultResetToSubmissionFinishedRequest,
   MajorityElectionResultsPlausibiliseRequest,
   MajorityElectionResultsResetToAuditedTentativelyRequest,
@@ -69,7 +70,6 @@ import {
   MajorityElectionEndResultAvailableLotDecisions,
   MajorityElectionEndResultAvailableLotDecisionsProto,
   MajorityElectionEndResultLotDecision,
-  MajorityElectionEndResultLotDecisionProto,
   MajorityElectionEndResultProto,
   SecondaryMajorityElectionEndResult,
   SecondaryMajorityElectionEndResultAvailableLotDecisions,
@@ -88,6 +88,7 @@ import { PoliticalBusinessResultBaseService } from './political-business-result-
 import { GRPC_ENV_INJECTION_TOKEN } from './tokens';
 import { createInt32Value } from './utils/proto.utils';
 import { ValidationMappingService } from './validation-mapping.service';
+import { ElectionLotDecisionService } from './election-lot-decision.service';
 
 @Injectable({
   providedIn: 'root',
@@ -101,6 +102,7 @@ export class MajorityElectionResultService extends PoliticalBusinessResultBaseSe
     grpcBackend: GrpcBackendService,
     @Inject(GRPC_ENV_INJECTION_TOKEN) env: GrpcEnvironment,
     private readonly validationMapping: ValidationMappingService,
+    private readonly electionLotDecisionService: ElectionLotDecisionService,
   ) {
     super(MajorityElectionResultServicePromiseClient, MajorityElectionResultServiceClient, env, grpcBackend);
   }
@@ -399,6 +401,12 @@ export class MajorityElectionResultService extends PoliticalBusinessResultBaseSe
     );
   }
 
+  public async resetToSubmissionFinishedAndFlagForCorrection(majorityElectionResultId: string): Promise<void> {
+    const req = new MajorityElectionResultResetToSubmissionFinishedAndFlagForCorrectionRequest();
+    req.setElectionResultId(majorityElectionResultId);
+    await this.requestEmptyResp(c => c.resetToSubmissionFinishedAndFlagForCorrection, req);
+  }
+
   private mapToBallotGroups(proto: MajorityElectionBallotGroupResultsProto): MajorityElectionBallotGroupResults {
     const obj = proto.toObject();
     return {
@@ -475,10 +483,10 @@ export class MajorityElectionResultService extends PoliticalBusinessResultBaseSe
     }));
   }
 
-  private mapToUpdateLotDecisionRequest(data: MajorityElectionEndResultLotDecision): MajorityElectionEndResultLotDecisionProto {
+  private mapToUpdateLotDecisionRequest(data: MajorityElectionEndResultLotDecision): UpdateMajorityElectionEndResultLotDecisionRequest {
     const request = new UpdateMajorityElectionEndResultLotDecisionRequest();
     request.setCandidateId(data.candidateId);
-    request.setRank(data.rank);
+    request.setRank(data.rank === 0 ? undefined : createInt32Value(data.rank));
     return request;
   }
 
@@ -497,10 +505,10 @@ export class MajorityElectionResultService extends PoliticalBusinessResultBaseSe
   ): MajorityElectionEndResultAvailableLotDecision[] {
     return data.map(x => ({
       candidate: x.getCandidate()!.toObject(),
-      selectedRank: x.getSelectedRank()?.getValue(),
+      selectedRank: x.getSelectedRank()?.getValue() ?? 0,
       voteCount: x.getVoteCount(),
       lotDecisionRequired: x.getLotDecisionRequired(),
-      selectableRanks: x.getSelectableRanksList(),
+      selectableRanks: this.electionLotDecisionService.buildSelectableRank(x.getSelectableRanksList()),
       originalRank: x.getOriginalRank(),
     }));
   }

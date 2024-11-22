@@ -6,23 +6,10 @@
       <h2>{{ 'CONTEST.DETAIL.CONTACT_DATA.TITLE_AUTHORITY' | translate }}</h2>
       <ng-container *ngFor="let domainOfInfluence of domainOfInfluences">
         <div class="my-2 mb-4">
-          <h3>{{ domainOfInfluence.name }}</h3>
-          <vo-ausm-contact-person-data
-            *ngIf="
-              !!domainOfInfluence.contactPerson.firstName ||
-                !!domainOfInfluence.contactPerson.familyName ||
-                !!domainOfInfluence.contactPerson.phone ||
-                !!domainOfInfluence.contactPerson.mobilePhone ||
-                !!domainOfInfluence.contactPerson.email;
-              else noData
-            "
-            [contactPerson]="domainOfInfluence.contactPerson"
-          ></vo-ausm-contact-person-data>
+          <vo-ausm-contact-person-data [contactPerson]="domainOfInfluence.contactPerson"></vo-ausm-contact-person-data>
         </div>
       </ng-container>
-      <ng-template #noData>
-        <span class="no-data" translate>CONTEST.DETAIL.CONTACT_DATA.NO_DATA</span>
-      </ng-template>
+      <span *ngIf="domainOfInfluences.length === 0" class="no-data" translate>CONTEST.DETAIL.CONTACT_DATA.NO_DATA</span>
     </div>
     <div class="line"></div>
     <div class="right">
@@ -46,6 +33,7 @@
         [disabled]="readonly"
         [checked]="countingCircle.contactPersonSameDuringEventAsAfter"
         (checkedChange)="setContactPersonSameDuringEventAsAfter($event)"
+        [subscriptSizing]="'dynamic'"
       >
       </bc-checkbox>
       <vo-ausm-contact-person-edit

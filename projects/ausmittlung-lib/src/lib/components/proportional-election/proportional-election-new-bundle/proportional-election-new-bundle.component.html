@@ -11,7 +11,6 @@
       <bc-text #listNumberFormfield class="m-2 field-number" [required]="true"
         [label]="'PROPORTIONAL_ELECTION.ENTER_LIST_NUMBER' | translate" [(value)]="listNumber"
         (keydown.enter)="selectList(true)"
-        (keydown.tab)="selectList(false); footer.setSaveFocus(); $event.preventDefault()"
         [subscriptSizing]="'dynamic'"></bc-text>
       <div class="spacer"></div>
       <bc-button [disabled]="saving || enableBundleNumber && (!bundleNumber || duplicatedBundleNumber)"
@@ -49,7 +48,7 @@
       <bc-data-row *dataRowDef="let row; columns: columns; let i = index"></bc-data-row>
     </bc-table>
   </div>
-  <vo-lib-button-bar footer #footer (cancel)="close()" [saveLabel]="'PROPORTIONAL_ELECTION.SELECT_LIST' | translate"
+  <vo-lib-button-bar footer (cancel)="close()" [saveLabel]="'PROPORTIONAL_ELECTION.SELECT_LIST' | translate"
     (save)="createBundle(selection.selected[0])" [saving]="saving"
     [canSave]="selection.hasValue() && (!enableBundleNumber || (!!bundleNumber && !duplicatedBundleNumber))">
   </vo-lib-button-bar>

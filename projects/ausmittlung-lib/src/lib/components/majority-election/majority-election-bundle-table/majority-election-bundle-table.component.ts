@@ -35,9 +35,6 @@ export class MajorityElectionBundleTableComponent extends ResultBundleTableCompo
   @Input()
   public reviewProcedure?: MajorityElectionReviewProcedure;
 
-  @Input()
-  public newZhFeaturesEnabled: boolean = false;
-
   constructor(userService: UserService, roleService: PermissionService, enumUtil: EnumUtil) {
     super(userService, roleService, enumUtil);
   }

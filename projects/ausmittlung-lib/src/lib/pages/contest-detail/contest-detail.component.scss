@@ -3,12 +3,3 @@ $political-business-gutter: 1.8rem;
 .political-business-list > * {
   margin-bottom: $political-business-gutter;
 }
-
-// TODO: can be removed if new UI is standard
-.political-business-list-old > * {
-  margin-top: $political-business-gutter;
-
-  &:last-child {
-    margin-bottom: $political-business-gutter;
-  }
-}

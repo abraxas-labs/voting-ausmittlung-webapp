@@ -14,7 +14,4 @@ import { VoteResult } from '../../../models';
 export class VoteInfoComponent {
   @Input()
   public voteResult!: VoteResult;
-
-  @Input()
-  public newZhFeaturesEnabled: boolean = false;
 }

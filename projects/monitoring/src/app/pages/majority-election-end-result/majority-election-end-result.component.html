@@ -4,7 +4,7 @@
                      [countOfVotersInformation]="endResult?.countOfVotersInformation"
                      [votingCards]="endResult?.votingCards"
                      [domainOfInfluenceType]="endResult?.election?.domainOfInfluence?.type"
-                     [swissAbroadHaveVotingRights]="endResult?.election.swissAbroadVotingRight === swissAbroadVotingRights.SWISS_ABROAD_VOTING_RIGHT_ON_EVERY_COUNTING_CIRCLE"
+                     [enabledVoterTypes]="endResult?.election.enabledVoterTypesList"
                      [canton]="endResult?.election?.domainOfInfluence?.canton">
   <ng-container *ngIf="endResult">
     <vo-ausm-info-panel>

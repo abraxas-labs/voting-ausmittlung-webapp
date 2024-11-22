@@ -1,12 +1,11 @@
 <vo-lib-page [contentLoading]="loading"
              header="ELECTION.REVIEW_BALLOT_DETAIL.TITLE">
   <div *ngIf="electionResult && bundle" class="content">
-    <vo-ausm-proportional-election-info [electionResult]="electionResult" [newZhFeaturesEnabled]="newZhFeaturesEnabled"></vo-ausm-proportional-election-info>
+    <vo-ausm-proportional-election-info [electionResult]="electionResult"></vo-ausm-proportional-election-info>
 
     <div>
       <vo-ausm-proportional-election-bundle-table [bundleSize]="electionResult.entryParams.ballotBundleSize"
-                                                  [bundles]="[bundle]"
-                                                  [newZhFeaturesEnabled]="newZhFeaturesEnabled"></vo-ausm-proportional-election-bundle-table>
+                                                  [bundles]="[bundle]"></vo-ausm-proportional-election-bundle-table>
     </div>
 
     <div class="content-box">

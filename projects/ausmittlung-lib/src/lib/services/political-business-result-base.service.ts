@@ -44,6 +44,8 @@ export abstract class PoliticalBusinessResultBaseService<
 
   public abstract unpublish(resultIds: string[]): Promise<void>;
 
+  public abstract resetToSubmissionFinishedAndFlagForCorrection(resultId: string): Promise<void>;
+
   protected mapToCountOfVotersProto(countOfVoters: PoliticalBusinessNullableCountOfVoters): EnterPoliticalBusinessCountOfVotersRequest {
     const countOfVotersProto = new EnterPoliticalBusinessCountOfVotersRequest();
     countOfVotersProto.setConventionalAccountedBallots(createInt32Value(countOfVoters.conventionalAccountedBallots));

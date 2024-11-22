@@ -13,7 +13,10 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class HasUnsavedChangesGuard<T extends HasUnsavedChanges> implements CanDeactivate<T> {
-  constructor(private readonly dialog: DialogService, private readonly i18n: TranslateService) {}
+  constructor(
+    private readonly dialog: DialogService,
+    private readonly i18n: TranslateService,
+  ) {}
 
   public async canDeactivate(component: T): Promise<boolean> {
     if (!component.hasUnsavedChanges) {

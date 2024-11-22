@@ -4,7 +4,7 @@
   <div content>
     <ng-container *ngFor="let domainOfInfluence of domainOfInfluences">
       <div class="my-2 mb-4">
-        <h4 *ngIf="newZhFeaturesEnabled">{{ domainOfInfluence.name }}</h4>
+        <h4>{{ domainOfInfluence.name }}</h4>
         <vo-ausm-contact-person-data
           *ngIf="
             !!domainOfInfluence.contactPerson.firstName ||

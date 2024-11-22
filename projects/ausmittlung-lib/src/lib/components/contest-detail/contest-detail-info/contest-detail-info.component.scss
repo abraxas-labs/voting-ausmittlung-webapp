@@ -9,8 +9,7 @@
   display: flex;
   flex-wrap: wrap;
   border-radius: 4px;
-  row-gap: 1rem;
-  column-gap: 7rem;
+  gap: 1rem 7rem;
 }
 
 .count-of-voters {
@@ -35,6 +34,10 @@
 h5 {
   margin-bottom: 0.25rem;
   color: $color-grey-2;
+}
+
+::ng-deep .bold-label label {
+  font-weight: bold;
 }
 
 // TODO: copied from base-components, can be removed after base-components update and replacement of the button

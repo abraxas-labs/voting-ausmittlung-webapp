@@ -28,9 +28,6 @@ export class ContestMajorityElectionResultComponent {
   public buttonsTemplate?: TemplateRef<HTMLElement>;
 
   @Input()
-  public newZhFeaturesEnabled: boolean = false;
-
-  @Input()
   public candidateCheckDigit: boolean = false;
 
   @ViewChild('candidateResultsContainer', { static: true })

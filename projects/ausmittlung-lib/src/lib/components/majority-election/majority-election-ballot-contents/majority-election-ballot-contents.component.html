@@ -6,6 +6,7 @@
                                             [disabled]="disabled"
                                             [showInvalidVotes]="showInvalidVotes"
                                             [showIndividualVotes]="!ballot.election.individualCandidatesDisabled"
+                                            [showEmptyVotes]="showEmptyVotes"
                                             [automaticEmptyVoteCounting]="automaticEmptyVoteCounting"
                                             (contentCompleted)="contentCompleted.emit($event)"
                                             [readonly]="readonly"

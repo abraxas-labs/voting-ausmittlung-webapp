@@ -21,7 +21,10 @@ export class ProportionalElectionDoubleProportionalResultComponent implements On
   public finalizing: boolean = false;
   public doubleProportionalResult?: DoubleProportionalResult;
 
-  constructor(private readonly route: ActivatedRoute, private readonly resultService: ProportionalElectionResultService) {
+  constructor(
+    private readonly route: ActivatedRoute,
+    private readonly resultService: ProportionalElectionResultService,
+  ) {
     this.routeSubscription = this.route.params.subscribe(({ politicalBusinessId }) => this.loadData(politicalBusinessId));
   }
 

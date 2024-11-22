@@ -1,4 +1,4 @@
-# ✨ Changelog (`v2.15.5`)
+# ✨ Changelog (`v3.1.1`)
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,196 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Info
 
 ```text
-This version -------- v2.15.5
-Previous version ---- v2.7.0
+This version -------- v3.1.1
+Previous version ---- v2.15.5
 Initial version ----- v1.25.0
 Total commits ------- 32
 ```
+
+## [v3.1.1] - 2024-11-08
+
+### 🔄 Changed
+
+- fix unnecessary scrollbar for popups
+
+## [v3.1.0] - 2024-11-07
+
+### 🆕 Added
+
+- add reset to submission finished and flag for correction endpoints
+
+## [v3.0.0] - 2024-11-07
+
+BREAKING CHANGE: update Angular to version 18
+
+### 🔄 Changed
+
+- update Angular to version 18
+- migrate to new build system
+
+## [v2.18.2] - 2024-11-06
+
+### 🔄 Changed
+
+- finish submission and audit tentatively only for communal political businesses
+
+## [v2.18.1] - 2024-11-06
+
+### 🔄 Changed
+
+- contest detail info should not update voting cards
+
+## [v2.18.0] - 2024-11-06
+
+### 🆕 Added
+
+- optional rank in candidate lot decisions
+
+## [v2.17.0] - 2024-11-04
+
+### 🆕 Added
+
+- add proportional election end result list lot decisions
+
+## [v2.16.20] - 2024-11-04
+
+### 🔄 Changed
+
+- remove duplicated contact data
+
+## [v2.16.19] - 2024-10-29
+
+### 🔄 Changed
+
+- update contest details after save
+
+### 🔄 Changed
+
+- increase proportional election ballot width
+
+## [v2.16.18] - 2024-10-29
+
+### 🔄 Changed
+
+- vote ballot content tab navigation improved
+
+## [v2.16.17] - 2024-10-28
+
+### 🔄 Changed
+
+- change monitoring cockpit state filters
+
+## [v2.16.16] - 2024-10-25
+
+### 🔄 Changed
+
+- remove unnecessary focus in contest detail dialog
+
+## [v2.16.15] - 2024-10-22
+
+### 🔄 Changed
+
+- update result state for result detail
+
+## [v2.16.14] - 2024-10-16
+
+### 🔄 Changed
+
+- change submit results button text for responsible monitor authority
+
+## [v2.16.13] - 2024-10-14
+
+### 🆕 Added
+
+- add has ballot groups
+
+## [v2.16.12] - 2024-10-11
+
+### ❌ Removed
+
+- remove counting circle detail validate endpoint
+
+## [v2.16.11] - 2024-10-10
+
+### 🔄 Changed
+
+- adjust cockpit grid status bar
+
+## [v2.16.10] - 2024-10-10
+
+### 🔄 Changed
+
+- validate has no save button if no unsaved changes
+
+## [v2.16.9] - 2024-10-09
+
+### 🔄 Changed
+
+- validate has no save button if no unsaved changes
+
+## [v2.16.8] - 2024-10-03
+
+### ❌ Removed
+
+- remove zh feature flag
+
+## [v2.16.7] - 2024-10-03
+
+### 🔄 Changed
+
+- fix logout after new tab is opened
+
+## [v2.16.6] - 2024-09-30
+
+### 🔄 Changed
+
+- change list number label
+
+## [v2.16.5] - 2024-09-30
+
+### 🔄 Changed
+
+- show empty votes not for single mandate
+
+## [v2.16.4] - 2024-09-30
+
+### 🔄 Changed
+
+- adjusted counting circle dropdown width
+
+## [v2.16.3] - 2024-09-27
+
+### 🔄 Changed
+
+- ballot without party is now selectable with tab
+
+## [v2.16.2] - 2024-09-26
+
+### 🔄 Changed
+
+- bold total valid label and value
+
+## [v2.16.1] - 2024-09-26
+
+### :arrows_counterclockwise: Changed
+
+- do not allow closing contact dialog and only show it when necessary
+
+## [v2.16.0] - 2024-09-25
+
+### 🆕 Added
+
+- foreigner and minor voters
+
+## [v2.15.6] - 2024-09-12
+
+### 🔄 Changed
+
+- align evoting variant ballot labels
+
+### 🆕 Added
+
+- add ballot question type labels
 
 ## [v2.15.5] - 2024-09-06
 
@@ -115,49 +300,33 @@ patch ci-cd template version, align with new defaults
 
 - add asynchronous bundle review
 
-## [v2.11.1] - 2024-08-09
-
 ### 🔄 Changed
 
 - vote question result equality total count of no should win
-
-## [v2.11.0] - 2024-08-08
 
 ### :new: Added
 
 - added political business and ballot sub type
 
-## [v2.10.2] - 2024-08-06
-
 ### 🔄 Changed
 
 - readonly counting circle details if the user does not have the permissions
-
-## [v2.10.1] - 2024-08-05
 
 ### 🔄 Changed
 
 - submission done text
 
-## [v2.10.0] - 2024-07-19
-
 ### 🆕 Added
 
 - canton settings with publish results before audited tentatively
-
-## [v2.9.2] - 2024-07-15
 
 ### 🔄 Changed
 
 - index.html set default language to german and disable google translation
 
-## [v2.9.1] - 2024-06-25
-
 ### 🔄 Changed
 
 - show only owned political businesses in export cockpit
-
-## [v2.9.0] - 2024-06-21
 
 ### 🆕 Added
 
@@ -167,145 +336,97 @@ patch ci-cd template version, align with new defaults
 
 - end result workflow
 
-## [v2.8.3] - 2024-06-21
-
 ### 🆕 Added
 
 - add unsaved changes dialog to contact person dialog
-
-## [v2.8.2] - 2024-06-20
 
 ### 🔄 Changed
 
 - replace submission finish with submit results everywhere
 
-## [v2.8.1] - 2024-06-20
-
 ### 🆕 Added
 
 - add partial results to result overview
-
-## [v2.8.0] - 2024-06-07
 
 ### 🆕 Added
 
 - add ready for correction timestamp
 
-## [v2.7.2] - 2024-06-07
-
 ### 🔄 Changed
 
 - change no bundles text
-
-## [v2.7.1] - 2024-06-06
 
 ### :arrows_counterclockwise: Changed
 
 - update voting lib to fix outdated access tokens on server streaming retries
 
-## [v2.7.0] - 2024-05-29
-
 ### 🆕 Added
 
 - add published state to results
-
-## [v2.6.3] - 2024-05-28
 
 ### 🔄 Changed
 
 - finish submission for multiple political businesses
 
-## [v2.6.2] - 2024-05-27
-
 ### 🔄 Changed
 
 - change plausibilisiert state color
-
-## [v2.6.1] - 2024-05-22
 
 ### 🔄 Changed
 
 - angular update UI optimizations
 
-## [v2.6.0] - 2024-05-21
-
 ### 🆕 Added
 
 - add sort and filter for bundle table and political business overview tables
-
-## [v2.5.0] - 2024-05-16
 
 ### 🆕 Added
 
 - double proportional lot decisions
 
-## [v2.4.4] - 2024-05-13
-
 ### 🔄 Changed
 
 - app loading spinner
-
-## [v2.4.3] - 2024-05-08
 
 ### 🔄 Changed
 
 - monitoring cockpit state filter
 
-## [v2.4.2] - 2024-05-07
-
 ### 🔄 Changed
 
 - navigate to union results
-
-## [v2.4.1] - 2024-04-30
 
 ### 🔄 Changed
 
 - result export table
 
-## [v2.4.0] - 2024-04-30
-
 ### 🆕 Added
 
 - set multiple bundles to review succeed
-
-## [v2.3.0] - 2024-04-29
 
 ### 🆕 Added
 
 - open contest if contest date matches today
 
-## [v2.2.5] - 2024-04-26
-
 ### 🔄 Changed
 
 - allow counting circle switch on contest detail
-
-## [v2.2.4] - 2024-04-25
 
 ### :arrows_counterclockwise: Changed
 
 - do not set all counting circles states when importing or deleting e-voting results
 
-## [v2.2.3] - 2024-04-24
-
 ### 🔄 Changed
 
 - move canton defaults from doi to contest
-
-## [v2.2.2] - 2024-04-24
 
 ### 🆕 Added
 
 - add config
 
-## [v2.2.1] - 2024-04-24
-
 ### 🔄 Changed
 
 - show all voting cards in contest detail info
-
-## [v2.2.0] - 2024-04-23
 
 ### 🔄 Changed
 
@@ -876,6 +997,202 @@ This reverts commit 60ee4e312750c5b9d82b3ab87107bccc48cb7971.
 ### 🔄 Changed
 
 - Adjusted page title of the vote review bundle page
+
+## [v2.11.1] - 2024-08-09
+
+### 🔄 Changed
+
+- vote question result equality total count of no should win
+
+## [v2.11.0] - 2024-08-08
+
+### :new: Added
+
+- added political business and ballot sub type
+
+## [v2.10.2] - 2024-08-06
+
+### 🔄 Changed
+
+- readonly counting circle details if the user does not have the permissions
+
+## [v2.10.1] - 2024-08-05
+
+### 🔄 Changed
+
+- submission done text
+
+## [v2.10.0] - 2024-07-19
+
+### 🆕 Added
+
+- canton settings with publish results before audited tentatively
+
+## [v2.9.2] - 2024-07-15
+
+### 🔄 Changed
+
+- index.html set default language to german and disable google translation
+
+## [v2.9.1] - 2024-06-25
+
+### 🔄 Changed
+
+- show only owned political businesses in export cockpit
+
+## [v2.9.0] - 2024-06-21
+
+### 🆕 Added
+
+- explicit election mandate distribution
+
+### 🔄 Changed
+
+- end result workflow
+
+## [v2.8.3] - 2024-06-21
+
+### 🆕 Added
+
+- add unsaved changes dialog to contact person dialog
+
+## [v2.8.2] - 2024-06-20
+
+### 🔄 Changed
+
+- replace submission finish with submit results everywhere
+
+## [v2.8.1] - 2024-06-20
+
+### 🆕 Added
+
+- add partial results to result overview
+
+## [v2.8.0] - 2024-06-07
+
+### 🆕 Added
+
+- add ready for correction timestamp
+
+## [v2.7.2] - 2024-06-07
+
+### 🔄 Changed
+
+- change no bundles text
+
+## [v2.7.1] - 2024-06-06
+
+### :arrows_counterclockwise: Changed
+
+- update voting lib to fix outdated access tokens on server streaming retries
+
+## [v2.7.0] - 2024-05-29
+
+### 🆕 Added
+
+- add published state to results
+
+## [v2.6.3] - 2024-05-28
+
+### 🔄 Changed
+
+- finish submission for multiple political businesses
+
+## [v2.6.2] - 2024-05-27
+
+### 🔄 Changed
+
+- change plausibilisiert state color
+
+## [v2.6.1] - 2024-05-22
+
+### 🔄 Changed
+
+- angular update UI optimizations
+
+## [v2.6.0] - 2024-05-21
+
+### 🆕 Added
+
+- add sort and filter for bundle table and political business overview tables
+
+## [v2.5.0] - 2024-05-16
+
+### 🆕 Added
+
+- double proportional lot decisions
+
+## [v2.4.4] - 2024-05-13
+
+### 🔄 Changed
+
+- app loading spinner
+
+## [v2.4.3] - 2024-05-08
+
+### 🔄 Changed
+
+- monitoring cockpit state filter
+
+## [v2.4.2] - 2024-05-07
+
+### 🔄 Changed
+
+- navigate to union results
+
+## [v2.4.1] - 2024-04-30
+
+### 🔄 Changed
+
+- result export table
+
+## [v2.4.0] - 2024-04-30
+
+### 🆕 Added
+
+- set multiple bundles to review succeed
+
+## [v2.3.0] - 2024-04-29
+
+### 🆕 Added
+
+- open contest if contest date matches today
+
+## [v2.2.5] - 2024-04-26
+
+### 🔄 Changed
+
+- allow counting circle switch on contest detail
+
+## [v2.2.4] - 2024-04-25
+
+### :arrows_counterclockwise: Changed
+
+- do not set all counting circles states when importing or deleting e-voting results
+
+## [v2.2.3] - 2024-04-24
+
+### 🔄 Changed
+
+- move canton defaults from doi to contest
+
+## [v2.2.2] - 2024-04-24
+
+### 🆕 Added
+
+- add config
+
+## [v2.2.1] - 2024-04-24
+
+### 🔄 Changed
+
+- show all voting cards in contest detail info
+
+## [v2.2.0] - 2024-04-23
+
+### 🔄 Changed
+
+- rework monitoring cockpit overview
 
 ## [v2.1.0] - 2024-04-23
 

@@ -4,10 +4,10 @@
     [centeredTitle]="true"
     [election]="result.election"
   ></vo-ausm-majority-election-secondary-info>
-  <div [class.p-3]="!newZhFeaturesEnabled || showElectionHeader" [class.pb-3]="newZhFeaturesEnabled">
-    <h4 *ngIf="newZhFeaturesEnabled && showElectionHeader" translate>POLITICAL_BUSINESS.SUBMISSION</h4>
+  <div [class.p-3]="showElectionHeader" class="pb-3">
+    <h4 *ngIf="showElectionHeader" translate>POLITICAL_BUSINESS.SUBMISSION</h4>
     <ng-container [ngTemplateOutlet]="buttonsTemplate" [ngTemplateOutletContext]="{electionId:result.election.id}"></ng-container>
-    <div class="candidate-results" #candidateResultsContainer [class.large-ml]="showElectionHeader && !newZhFeaturesEnabled">
+    <div class="candidate-results" #candidateResultsContainer [class.large-ml]="showElectionHeader">
       <bc-label [label]="'CANDIDATE.NR' | translate"></bc-label>
       <bc-label [label]="'CANDIDATE.CANDIDACY' | translate"></bc-label>
       <bc-label [label]="'MAJORITY_ELECTION.PARTY' | translate"></bc-label>

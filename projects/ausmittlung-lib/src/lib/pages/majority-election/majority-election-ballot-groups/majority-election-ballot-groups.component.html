@@ -5,7 +5,7 @@
              [sidebarOpen]="true"
              header="MAJORITY_ELECTION.BALLOT_GROUP.TITLE">
   <ng-container *ngIf="result">
-    <vo-ausm-majority-election-info [electionResult]="result.electionResult" [newZhFeaturesEnabled]="newZhFeaturesEnabled"></vo-ausm-majority-election-info>
+    <vo-ausm-majority-election-info [electionResult]="result.electionResult"></vo-ausm-majority-election-info>
 
     <div class="content content-box">
       <bc-label [label]="'APP.NR' | translate"></bc-label>

@@ -34,6 +34,9 @@ export class MajorityElectionBallotContentComponent implements OnChanges {
   public showIndividualVotes: boolean = false;
 
   @Input()
+  public showEmptyVotes: boolean = true;
+
+  @Input()
   public ballot!: MajorityElectionResultBallotBase;
 
   @Input()

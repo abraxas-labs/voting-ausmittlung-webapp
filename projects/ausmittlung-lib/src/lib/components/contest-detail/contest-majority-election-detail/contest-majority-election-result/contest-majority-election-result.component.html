@@ -2,9 +2,9 @@
   <vo-ausm-majority-election-secondary-info *ngIf="showElectionHeader"
                                             [centeredTitle]="true"
                                             [election]="result.election"></vo-ausm-majority-election-secondary-info>
-  <div class="flex" [class.p-4]="!newZhFeaturesEnabled || showElectionHeader">
+  <div class="flex" [class.p-4]="showElectionHeader">
     <div>
-      <h4 translate [ngClass]="newZhFeaturesEnabled ? 'mb-2' : 'mb-0'">APP.RESULT</h4>
+      <h4 translate class="mb-2">APP.RESULT</h4>
       <div class="candidate-results" #candidateResultsContainer>
         <bc-label [label]="'CANDIDATE.NR' | translate"></bc-label>
         <bc-label [label]="'CANDIDATE.CANDIDACY' | translate"></bc-label>

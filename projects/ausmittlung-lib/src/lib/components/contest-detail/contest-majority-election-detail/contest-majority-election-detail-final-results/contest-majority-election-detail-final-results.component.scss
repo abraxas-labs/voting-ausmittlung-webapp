@@ -12,25 +12,10 @@
     flex: 0 0 40rem;
   }
 
-  .primary-result-input {
-    margin-top: 0.8rem;
-  }
-
   .secondary-result-input {
     @extend .my-2;
 
     width: 100%;
-  }
-
-  .detail-icon-link {
-    @extend .mx-4;
-
-    margin-top: 2rem;
-    min-width: 32rem;
-  }
-
-  .large-ml {
-    margin-left: calc(41.5rem - 1px); // 40 rem: width of count of voters, 1.5rem margin, 1px border
   }
 
   .max-width {

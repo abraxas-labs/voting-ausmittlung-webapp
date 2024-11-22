@@ -8,6 +8,11 @@ export interface ElectionEndResultAvailableLotDecision {
   selectedRank?: number;
   voteCount: number;
   lotDecisionRequired: boolean;
-  selectableRanks: number[];
+  selectableRanks: ElectionEndResultAvailableLotDecisionSelectableRank[];
   originalRank: number;
+}
+
+export interface ElectionEndResultAvailableLotDecisionSelectableRank {
+  value: number;
+  description: string;
 }

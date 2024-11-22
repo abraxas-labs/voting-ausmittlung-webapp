@@ -16,7 +16,10 @@ const languageHeader = 'x-language';
   providedIn: 'root',
 })
 export class HttpLanguageInterceptor implements HttpInterceptor {
-  constructor(private readonly languageService: LanguageService, @Inject(REST_API_URL) private readonly restApiUrl: string | undefined) {}
+  constructor(
+    private readonly languageService: LanguageService,
+    @Inject(REST_API_URL) private readonly restApiUrl: string | undefined,
+  ) {}
 
   public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (!this.restApiUrl || !req.url.includes(this.restApiUrl)) {

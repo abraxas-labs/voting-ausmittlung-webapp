@@ -35,9 +35,6 @@ export class VoteBundleTableComponent extends ResultBundleTableComponent impleme
   @Input()
   public reviewProcedure?: VoteReviewProcedure;
 
-  @Input()
-  public newZhFeaturesEnabled: boolean = false;
-
   constructor(userService: UserService, roleService: PermissionService, enumUtil: EnumUtil) {
     super(userService, roleService, enumUtil);
   }

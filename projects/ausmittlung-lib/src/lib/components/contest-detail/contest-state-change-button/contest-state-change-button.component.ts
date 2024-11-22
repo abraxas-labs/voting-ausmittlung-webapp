@@ -43,9 +43,6 @@ export class ContestStateChangeButtonComponent implements OnDestroy, OnChanges, 
   @Input()
   public stateDescriptionsByState: Record<number, string> = {};
 
-  @Input()
-  public newZhFeaturesEnabled: boolean = false;
-
   @Output()
   public finishSubmission: EventEmitter<void> = new EventEmitter<void>();
 

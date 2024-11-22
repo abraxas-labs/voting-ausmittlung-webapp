@@ -28,7 +28,7 @@
           <bc-label [label]="'ELECTION.CANDIDATE.RANK_AFTER_LOT_DECISION' | translate"></bc-label>
 
           <ng-container *ngFor="let lotDecision of availableLotDecisions.lotDecisions">
-            <span>{{lotDecision.originalRank}}</span>
+            <span>{{lotDecision.originalRank}}{{lotDecision.lotDecisionRequired ? '*' : ''}}</span>
             <span>{{lotDecision.candidate.number}}</span>
             <span
               class="candidate-name">{{lotDecision.candidate.politicalLastName}} {{lotDecision.candidate.politicalFirstName}}</span>
@@ -37,11 +37,14 @@
           </ng-container>
         </div>
 
+        <bc-label *ngIf="hasAnyRequiredLotDecisions" [label]="'END_RESULT.ELECTION.LOT_DECISION.REQUIRED_HINT' | translate"></bc-label>
+
         <ng-template #rankDropdownTemplate let-lotDecision>
           <span>
             <bc-dropdown [(value)]="lotDecision.selectedRank"
-                         (valueChange)="updateHasOpenRequiredLotDecisions()"
                          [items]="lotDecision.selectableRanks"
+                         valueExpr="value"
+                         displayExpr="description"
                          [subscriptSizing]="'dynamic'"></bc-dropdown>
           </span>
         </ng-template>
@@ -55,7 +58,6 @@
   <div footer>
     <vo-lib-button-bar (save)="save()"
                        [sticky]="false"
-                       [canSave]="!hasAnyOpenRequiredLotDecisions"
                        [saveLabel]="(isLast ? 'COMMON.SAVE' : 'APP.NEXT') | translate"
                        [cancelLabel]="'APP.CLOSE' | translate"
                        (cancel)="close()"></vo-lib-button-bar>

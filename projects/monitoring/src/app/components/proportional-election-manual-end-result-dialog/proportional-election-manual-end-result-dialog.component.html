@@ -2,6 +2,7 @@
   <h3 header translate>PROPORTIONAL_ELECTION_END_RESULT.ENTER_MANUAL_RESULTS</h3>
 
   <div content>
+    <bc-button [label]="'PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.TITLE' | translate" icon="plus" variant="tertiary" (buttonClick)="openListLotDecisionsDialog()"></bc-button>
     <mat-horizontal-stepper #stepper
                             labelPosition="bottom"
                             (selectionChange)="selectionChanged($event.selectedIndex)">

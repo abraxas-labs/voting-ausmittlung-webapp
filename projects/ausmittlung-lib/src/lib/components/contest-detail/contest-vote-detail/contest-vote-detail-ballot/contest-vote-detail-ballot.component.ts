@@ -4,18 +4,19 @@
  * For license information see LICENSE file.
  */
 
-import { Component, EventEmitter, Input, OnDestroy, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { BallotResult } from '../../../../models';
 import { BallotCountInputComponent } from '../../../ballot-count-input/ballot-count-input.component';
-import { Subscription } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { BallotType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/vote_pb';
 
 @Component({
   selector: 'vo-ausm-contest-vote-detail-ballot',
   templateUrl: './contest-vote-detail-ballot.component.html',
   styleUrls: ['./contest-vote-detail-ballot.component.scss'],
 })
-export class ContestVoteDetailBallotComponent implements OnDestroy {
+export class ContestVoteDetailBallotComponent {
+  public readonly ballotTypes: typeof BallotType = BallotType;
+
   @Input()
   public ballotResult!: BallotResult;
 
@@ -36,20 +37,6 @@ export class ContestVoteDetailBallotComponent implements OnDestroy {
 
   @ViewChild(BallotCountInputComponent)
   private ballotCountInputComponent!: BallotCountInputComponent;
-
-  public newZhFeaturesEnabled: boolean = false;
-
-  private readonly routeSubscription: Subscription;
-
-  constructor(route: ActivatedRoute) {
-    this.routeSubscription = route.data.subscribe(async ({ contestCantonDefaults }) => {
-      this.newZhFeaturesEnabled = contestCantonDefaults.newZhFeaturesEnabled;
-    });
-  }
-
-  public ngOnDestroy(): void {
-    this.routeSubscription.unsubscribe();
-  }
 
   public setFocus(): void {
     this.ballotCountInputComponent.setFocus();

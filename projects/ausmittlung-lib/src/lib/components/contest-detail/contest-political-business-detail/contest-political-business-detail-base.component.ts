@@ -17,9 +17,7 @@ import {
   PoliticalBusinessNullableCountOfVoters,
   ResultListResult,
   StateChange,
-  SwissAbroadVotingRight,
   ValidationSummary,
-  VoterType,
 } from '../../../models';
 import { PoliticalBusinessResultBaseService } from '../../../services/political-business-result-base.service';
 import { PoliticalBusinessResultService } from '../../../services/political-business-result.service';
@@ -40,9 +38,10 @@ import { cloneDeep, isEqual } from 'lodash';
 
 @Directive()
 export abstract class AbstractContestPoliticalBusinessDetailComponent<
-  T extends CountingCircleResult,
-  TService extends PoliticalBusinessResultBaseService<T, any, any>,
-> implements OnInit, OnDestroy
+    T extends CountingCircleResult,
+    TService extends PoliticalBusinessResultBaseService<T, any, any>,
+  >
+  implements OnInit, OnDestroy
 {
   private static readonly emptySecondFactorId: string = '';
 
@@ -135,16 +134,10 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
       return;
     }
 
-    if (
-      this.resultDetail.politicalBusiness.swissAbroadVotingRight ===
-      SwissAbroadVotingRight.SWISS_ABROAD_VOTING_RIGHT_ON_EVERY_COUNTING_CIRCLE
-    ) {
-      this.resultDetail.totalCountOfVoters = values.countOfVotersInformation.totalCountOfVoters;
-      return;
-    }
-
     this.resultDetail.totalCountOfVoters = sum(
-      values.countOfVotersInformation.subTotalInfoList.filter(x => x.voterType === VoterType.VOTER_TYPE_SWISS),
+      values.countOfVotersInformation.subTotalInfoList.filter(x =>
+        this.resultDetail!.politicalBusiness.enabledVoterTypesList.includes(x.voterType),
+      ),
       x => x.countOfVoters,
     );
   }
@@ -240,17 +233,16 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
       header: `VALIDATION.${validationSummary.isValid ? 'VALID' : 'INVALID'}`,
       saveLabel:
         isAuditedTentativelyForSelfOwnedBusinesses && validationSummary.isValid
-          ? this.contestCantonDefaults?.newZhFeaturesEnabled
-            ? 'ACTIONS.SUBMIT_RESULTS_AND_AUDIT_TENTATIVELY.TITLE'
-            : 'ACTIONS.FINISH_SUBMISSION_AND_AUDIT_TENTATIVELY'
+          ? 'ACTIONS.SUBMIT_RESULTS_AND_AUDIT_TENTATIVELY.TITLE'
           : isFinishingOperation && !validationSummary.isValid
-          ? 'APP.CONTINUE'
-          : 'COMMON.SAVE',
+            ? 'APP.CONTINUE'
+            : 'COMMON.SAVE',
       saveIcon: isAuditedTentativelyForSelfOwnedBusinesses && validationSummary.isValid ? 'external-link' : undefined,
       hintLabel:
-        isAuditedTentativelyForSelfOwnedBusinesses && validationSummary.isValid && this.contestCantonDefaults?.newZhFeaturesEnabled
+        isAuditedTentativelyForSelfOwnedBusinesses && validationSummary.isValid
           ? 'ACTIONS.SUBMIT_RESULTS_AND_AUDIT_TENTATIVELY.HINT'
           : undefined,
+      hasSaveButton: isFinishingOperation || this.hasUnsavedChanges,
     };
 
     const result = await this.dialog.openForResult<ValidationOverviewDialogComponent, ValidationOverviewDialogResult>(
@@ -285,6 +277,11 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
         break;
       }
       case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION: {
+        if (oldState === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY) {
+          await this.resultService.resetToSubmissionFinishedAndFlagForCorrection(id);
+          break;
+        }
+
         await this.resultService.flagForCorrection(id, comment);
         break;
       }
@@ -373,6 +370,10 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
 
   private resultStateUpdated(newState: CountingCircleResultState): void {
     this.setResultReadonly();
+
+    if (this.resultDetail) {
+      this.resultDetail.state = newState;
+    }
 
     if (newState === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING) {
       if (this.parent.expanded) {

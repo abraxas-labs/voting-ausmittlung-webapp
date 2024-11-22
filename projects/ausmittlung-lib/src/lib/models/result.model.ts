@@ -20,6 +20,7 @@ import { PoliticalBusiness, SimplePoliticalBusiness } from './political-business
 import { VotingCardChannel } from './voting-channel.model';
 import { ContestCountingCircleElectorateSummary } from './contest-counting-circle-electorate.model';
 import { PoliticalBusinessUnion } from './political-business-union.model';
+import { VoterType } from './voter-type.model';
 
 export {
   ResultStateChangeProto,
@@ -62,7 +63,7 @@ export interface ResultList {
   results: ResultListResult[];
   currentTenantIsResponsible: boolean;
   state: CountingCircleResultState;
-  swissAbroadHaveVotingRightsOnAnyBusiness: boolean;
+  enabledVoterTypes: VoterType[];
   contestCountingCircleContactPersonId: string;
   mustUpdateContactPersons: boolean;
   hasUnmappedEVotingWriteIns: boolean;

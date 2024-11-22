@@ -10,7 +10,6 @@ import {
   MajorityElectionEndResult as MajorityElectionEndResultProto,
   MajorityElectionEndResultAvailableLotDecision as MajorityElectionEndResultAvailableLotDecisionProto,
   MajorityElectionEndResultAvailableLotDecisions as MajorityElectionEndResultAvailableLotDecisionsProto,
-  MajorityElectionEndResultLotDecision as MajorityElectionEndResultLotDecisionProto,
   SecondaryMajorityElectionEndResult as SecondaryMajorityElectionEndResultProto,
   SecondaryMajorityElectionEndResultAvailableLotDecisions as SecondaryMajorityElectionEndResultAvailableLotDecisionsProto,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/majority_election_end_result_pb';
@@ -24,7 +23,6 @@ export {
   MajorityElectionEndResultProto,
   SecondaryMajorityElectionEndResultProto,
   MajorityElectionCandidateEndResultProto,
-  MajorityElectionEndResultLotDecisionProto,
   MajorityElectionEndResultAvailableLotDecisionProto,
   SecondaryMajorityElectionEndResultAvailableLotDecisionsProto,
   MajorityElectionEndResultAvailableLotDecisionsProto,
@@ -62,7 +60,7 @@ export interface MajorityElectionCandidateEndResult {
 
 export interface MajorityElectionEndResultLotDecision {
   candidateId: string;
-  rank: number;
+  rank?: number;
 }
 
 export interface MajorityElectionEndResultAvailableLotDecisions {

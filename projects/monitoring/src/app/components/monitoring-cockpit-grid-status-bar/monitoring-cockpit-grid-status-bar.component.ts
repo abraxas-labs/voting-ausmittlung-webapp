@@ -21,9 +21,6 @@ export class MonitoringCockpitGridStatusBarComponent implements OnChanges {
   public filteredCountingCircleResults: FilteredCountingCircleResults[] = [];
 
   @Input()
-  public statePlausibilisedDisabled: boolean = false;
-
-  @Input()
   public stateDescriptionsByState: Record<number, string> = {};
 
   @Input()
@@ -34,13 +31,10 @@ export class MonitoringCockpitGridStatusBarComponent implements OnChanges {
 
   public resultsByState: Record<number, ResultOverviewCountingCircleResult[]> = {};
   public allStates: CountingCircleResultState[] = [
-    CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_INITIAL,
     CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING,
     CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE,
     CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION,
-    CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE,
     CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY,
-    CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED,
   ];
 
   public ngOnChanges(): void {
@@ -61,5 +55,11 @@ export class MonitoringCockpitGridStatusBarComponent implements OnChanges {
       x => x.state,
       x => x,
     );
+
+    // state submission done and correction done should be displayed together
+    this.resultsByState[CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE] = [
+      ...(this.resultsByState[CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE] ?? []),
+      ...(this.resultsByState[CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE] ?? []),
+    ];
   }
 }

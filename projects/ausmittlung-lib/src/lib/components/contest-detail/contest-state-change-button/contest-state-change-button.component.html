@@ -27,7 +27,7 @@
       mat-menu-item
       *ngIf="!contentReadonly && !resultList?.contest.locked && resultList.currentTenantIsResponsible  && canFinishSubmission"
       (click)="finishSubmission.emit()">
-      {{ (newZhFeaturesEnabled ? 'CONTEST.DETAIL.STATE_ACTION.SUBMIT_RESULTS' : 'CONTEST.DETAIL.STATE_ACTION.FINISH_SUBMISSION') | translate }}
+      {{ 'CONTEST.DETAIL.STATE_ACTION.SUBMIT_RESULTS' | translate }}
     </button>
   </mat-menu>
 </vo-lib-inline-spinner>

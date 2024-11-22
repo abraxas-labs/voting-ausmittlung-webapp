@@ -11,22 +11,28 @@ export function groupBySingle<E, K extends keyof any, V>(
   keySelector: (item: E) => K,
   itemSelector: (item: E) => V,
 ): Record<K, V> {
-  return arr.reduce((existing, current) => {
-    const key = keySelector(current);
-    existing[key] = itemSelector(current);
-    return existing;
-  }, {} as Record<K, V>);
+  return arr.reduce(
+    (existing, current) => {
+      const key = keySelector(current);
+      existing[key] = itemSelector(current);
+      return existing;
+    },
+    {} as Record<K, V>,
+  );
 }
 
 export function groupBy<E, K extends keyof any, V>(arr: E[], keySelector: (item: E) => K, itemSelector: (item: E) => V): Record<K, V[]> {
-  return arr.reduce((existing, current) => {
-    const key = keySelector(current);
-    if (!existing.hasOwnProperty(key)) {
-      existing[key] = [];
-    }
-    existing[key].push(itemSelector(current));
-    return existing;
-  }, {} as Record<K, V[]>);
+  return arr.reduce(
+    (existing, current) => {
+      const key = keySelector(current);
+      if (!existing.hasOwnProperty(key)) {
+        existing[key] = [];
+      }
+      existing[key].push(itemSelector(current));
+      return existing;
+    },
+    {} as Record<K, V[]>,
+  );
 }
 
 export function toMap<E, K, V>(arr: E[], keySelector: (item: E) => K, valueSelector: (item: E) => V): Map<K, V> {

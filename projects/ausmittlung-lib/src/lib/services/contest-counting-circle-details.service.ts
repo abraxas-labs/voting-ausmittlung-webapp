@@ -5,10 +5,7 @@
  */
 
 import { ContestCountingCircleDetailsServicePromiseClient } from '@abraxas/voting-ausmittlung-service-proto/grpc/contest_counting_circle_details_service_grpc_web_pb';
-import {
-  UpdateContestCountingCircleDetailsRequest,
-  ValidateUpdateContestCountingCircleDetailsRequest,
-} from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/contest_counting_circle_details_requests_pb';
+import { UpdateContestCountingCircleDetailsRequest } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/contest_counting_circle_details_requests_pb';
 import { UpdateCountOfVotersInformationSubTotalRequest } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/count_of_voters_requests_pb';
 import { UpdateVotingCardResultDetailRequest } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/voting_cards_requests_pb';
 import { GrpcBackendService, GrpcEnvironment, GrpcService } from '@abraxas/voting-lib';
@@ -19,7 +16,6 @@ import {
   CountOfVotersInformationProto,
   CountOfVotersInformationSubTotal,
   CountOfVotersInformationSubTotalProto,
-  ValidationSummary,
   VotingCardResultDetail,
   VotingCardResultDetailProto,
 } from '../models';
@@ -65,16 +61,6 @@ export class ContestCountingCircleDetailsService extends GrpcService<ContestCoun
   public updateDetails(details: ContestCountingCircleDetails): Promise<void> {
     const req = this.mapToRequest(details);
     return this.requestEmptyResp(c => c.updateDetails, req);
-  }
-
-  public validateUpdateDetails(details: ContestCountingCircleDetails): Promise<ValidationSummary> {
-    const req = new ValidateUpdateContestCountingCircleDetailsRequest();
-    req.setRequest(this.mapToRequest(details));
-    return this.request(
-      c => c.validateUpdateDetails,
-      req,
-      r => this.validationMapping.mapToValidationSummary(r),
-    );
   }
 
   private mapToRequest(details: ContestCountingCircleDetails): UpdateContestCountingCircleDetailsRequest {

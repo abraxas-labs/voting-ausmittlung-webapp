@@ -1,62 +1,42 @@
-<vo-lib-page [contentLoading]="loading"
-             [enableSidebar]="!newZhFeaturesEnabled"
-             [sidebarTemplate]="sidebar"
-             [sidebarOpen]="!newZhFeaturesEnabled"
-             [sidebarWidth]="sidebarWith"
-             [header]="'CONTEST.DETAIL.TITLE' | translate">
+<vo-lib-page [contentLoading]="loading" [header]="'CONTEST.DETAIL.TITLE' | translate">
   <vo-lib-page-header header>
     <div left>
       <vo-ausm-breadcrumbs [items]="breadcrumbs"></vo-ausm-breadcrumbs>
     </div>
     <vo-ausm-contest-header center [contest]="resultList?.contest" [countingCircle]="resultList?.countingCircle" [state]="resultList?.state" [accessibleCountingCircles]="accessibleCountingCircles"></vo-ausm-contest-header>
     <div right *ngIf="!!resultList">
-      <bc-button *ngIf="newZhFeaturesEnabled"
-                 variant="tertiary"
+      <bc-button variant="tertiary"
                  [label]="'CONTEST.DETAIL.CONTACT_DATA.TITLE_DETAILS' | translate"
                  (buttonClick)="openContactDialog()"></bc-button>
-      <bc-button *ngIf="newZhFeaturesEnabled && canEditElectorates && resultList.currentTenantIsResponsible"
+      <bc-button *ngIf="canEditElectorates && resultList.currentTenantIsResponsible"
                  variant="tertiary"
                  [label]="'CONTEST.DETAIL.ELECTORATE.EDIT' | translate"
                  (buttonClick)="openElectoratesDialog()"></bc-button>
       <vo-ausm-contest-state-change-button
-        *ngIf="newZhFeaturesEnabled"
         class="ml-3"
         [contentReadonly]="contentReadonly"
         [resultList]="resultList"
         [showResetResultsInTestingPhase]="showResetResultsInTestingPhase"
         [showSetAllAuditedTentatively]="showSetAllAuditedTentatively"
         (finishSubmission)="finishSubmission()"
-        [stateDescriptionsByState]="resultList.contest.cantonDefaults.countingCircleResultStateDescriptionsByState"
-        [newZhFeaturesEnabled]="newZhFeaturesEnabled"></vo-ausm-contest-state-change-button>
+        [stateDescriptionsByState]="resultList.contest.cantonDefaults.countingCircleResultStateDescriptionsByState"></vo-ausm-contest-state-change-button>
       <bc-button *ngIf="showExport" variant="tertiary" (buttonClick)="export()" [label]="'CONTEST.DETAIL.EXPORT' | translate"></bc-button>
     </div>
   </vo-lib-page-header>
 
   <div *ngIf="resultList">
-    <!-- TODO: can be removed if new UI is standard -->
-    <vo-ausm-contest-info
-      *ngIf="!newZhFeaturesEnabled"
-      [contentReadonly]="contentReadonly"
-      [resultList]="resultList"
-      [showResetResultsInTestingPhase]="showResetResultsInTestingPhase"
-      [showSetAllAuditedTentatively]="showSetAllAuditedTentatively"
-      (finishSubmission)="finishSubmission()"
-      [stateDescriptionsByState]="resultList.contest.cantonDefaults.countingCircleResultStateDescriptionsByState">
-    </vo-ausm-contest-info>
-
-    <ng-container *ngIf="newZhFeaturesEnabled">
+    <ng-container>
       <h2 class="mt-3" translate>CONTEST.DETAIL.COUNT_OF_VOTERS_AND_VOTING_CARDS</h2>
 
       <vo-ausm-contest-detail-info
         [eVoting]="resultList.details.eVoting"
-        [swissAbroadHaveVotingRightsOnAnyBusiness]="resultList.swissAbroadHaveVotingRightsOnAnyBusiness"
+        [enabledVoterTypes]="resultList.enabledVoterTypes"
         [countOfVoters]="resultList.details.countOfVotersInformation"
         [votingCards]="resultList.details.votingCards"
         [enabledVotingCardChannels]="resultList.enabledVotingCardChannels"
         [domainOfInfluenceTypes]="domainOfInfluenceTypes"
         [countingMachineEnabled]="countingMachineEnabled"
         [countingMachine]="resultList.details.countingMachine"
-        [newZhFeaturesEnabled]="newZhFeaturesEnabled"
         [canton]="canton"
         [contestId]="resultList.contest.id"
         [countingCircleId]="resultList.countingCircle.id"
@@ -71,7 +51,7 @@
       <h2 class="mt-3" translate>CONTEST.DETAIL.POLITICAL_BUSINESSES</h2>
     </ng-container>
 
-    <div [ngClass]="newZhFeaturesEnabled ? 'political-business-list' : 'political-business-list-old'">
+    <div class="political-business-list">
       <div *ngFor="let result of resultList.results">
         <vo-ausm-contest-political-business-detail
           [contentReadonly]="contentReadonly || !resultList.currentTenantIsResponsible"
@@ -83,15 +63,4 @@
       </div>
     </div>
   </div>
-
-  <ng-template #sidebar>
-    <vo-ausm-contest-detail-sidebar
-      [resultList]="resultList"
-      (saved)="updateCountOfVoters($event)"
-      [readonly]="contentReadonly
-        || sidebarReadonly
-        || !resultList?.currentTenantIsResponsible"
-      [canton]="canton">
-    </vo-ausm-contest-detail-sidebar>
-  </ng-template>
 </vo-lib-page>

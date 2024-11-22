@@ -5,8 +5,8 @@
  */
 
 import { DialogService, SnackbarService, ThemeService } from '@abraxas/voting-lib';
-import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ChangeDetectorRef, Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import {
   ContestCountingCircleDetails,
@@ -22,7 +22,6 @@ import { BallotCountInputComponent } from '../../ballot-count-input/ballot-count
 import { AbstractContestPoliticalBusinessDetailComponent } from '../contest-political-business-detail/contest-political-business-detail-base.component';
 import { ContestPoliticalBusinessDetailComponent } from '../contest-political-business-detail/contest-political-business-detail.component';
 import { Permissions } from '../../../models/permissions.model';
-import { Subscription } from 'rxjs';
 import { VOTING_AUSMITTLUNG_MONITORING_WEBAPP_URL } from '../../../tokens';
 import { UnsavedChangesService } from '../../../services/unsaved-changes.service';
 import { cloneDeep } from 'lodash';
@@ -34,17 +33,13 @@ import { cloneDeep } from 'lodash';
 })
 export class ContestProportionalElectionDetailComponent
   extends AbstractContestPoliticalBusinessDetailComponent<ProportionalElectionResult, ProportionalElectionResultService>
-  implements OnInit, OnDestroy
+  implements OnInit
 {
   public countOfVotersValid: boolean = true;
   public canReadListResults: boolean = false;
 
   @ViewChild(BallotCountInputComponent)
   private ballotCountInputComponent?: BallotCountInputComponent;
-
-  public newZhFeaturesEnabled: boolean = false;
-
-  private readonly routeSubscription: Subscription;
 
   constructor(
     @Inject(VOTING_AUSMITTLUNG_MONITORING_WEBAPP_URL) votingAusmittlungMonitoringWebAppUrl: string,
@@ -57,7 +52,6 @@ export class ContestProportionalElectionDetailComponent
     secondFactorTransactionService: SecondFactorTransactionService,
     politicalBusinessResultService: PoliticalBusinessResultService,
     cd: ChangeDetectorRef,
-    route: ActivatedRoute,
     themeService: ThemeService,
     unsavedChangesService: UnsavedChangesService,
     private readonly router: Router,
@@ -76,18 +70,11 @@ export class ContestProportionalElectionDetailComponent
       unsavedChangesService,
       parent,
     );
-    this.routeSubscription = route.data.subscribe(async ({ contestCantonDefaults }) => {
-      this.newZhFeaturesEnabled = contestCantonDefaults.newZhFeaturesEnabled;
-    });
   }
 
   public override async ngOnInit(): Promise<void> {
     await super.ngOnInit();
     this.canReadListResults = await this.permissionService.hasPermission(Permissions.ProportionalElectionListResult.Read);
-  }
-
-  public ngOnDestroy(): void {
-    this.routeSubscription.unsubscribe();
   }
 
   public resetResults(): void {

@@ -20,7 +20,9 @@
       "MULTIPLE": "{{count}} Geschäfte"
     },
     "FILTER_STATE": {
-      "TITLE": "Status des geringsten Fortschritts",
+      "TITLE": "Filter",
+      "TO_CHECK": "Zu prüfen ({{count}})",
+      "CHECKED": "geprüft ({{count}})",
       "ALL": "Alle"
     }
   },
@@ -99,9 +101,11 @@
     "ELECTION": {
       "LOT_DECISION": {
         "OPEN": "Losentscheide fällen",
-        "REQUIRED_IS_MISSING": {
+        "PENDING": "Ausstehend",
+        "REQUIRED_HINT": "*relevante/zwingende Losentscheide",
+        "VOTE_COUNT_GROUP_CONFLICT": {
           "TITLE": "Validierung fehlgeschlagen",
-          "MSG": "Alle notwendigen Losentscheide müssen getroffen werden."
+          "MSG": "Es müssen alle Losentscheide einer Gruppe mit gleicher Stimmenzahl gemeinsam getroffen werden."
         },
         "DUPLICATE_RANK": {
           "TITLE": "Validierung fehlgeschlagen",
@@ -234,8 +238,8 @@
   "PROPORTIONAL_ELECTION": {
     "TITLE": "Proporzwahl",
     "LIST": {
-      "LIST_VOTES_COUNT": "Kandidatenstimmen",
-      "BLANK_ROWS_COUNT": "Zusatzstimmen",
+      "LIST_VOTES_COUNT": "Stimmen",
+      "BLANK_ROWS_COUNT": "Leere Zeilen",
       "TOTAL_VOTE_COUNT": "Total Stimmen"
     },
     "CANDIDATE": {
@@ -270,7 +274,28 @@
     }
   },
   "PROPORTIONAL_ELECTION_END_RESULT": {
-    "ENTER_MANUAL_RESULTS": "Ergebnisse manuell eintragen"
+    "ENTER_MANUAL_RESULTS": "Ergebnisse manuell eintragen",
+    "LOT_DECISION_LIST": {
+      "TITLE": "Losentscheid Liste",
+      "ADD": "Losentscheid Liste hinzufügen",
+      "LISTS": {
+        "TITLE": "Listen",
+        "SHORT_DESCRIPTION": "Bezeichnung"
+      },
+      "LIST_UNIONS": {
+        "TITLE": "Listenverbindungen und Unterlistenverbindungen",
+        "DESCRIPTION": "Bezeichnung"
+      },
+      "LOT_DECISION": {
+        "LISTS": "Listen",
+        "WINNERS": "Gewinner-Listen"
+      },
+      "LOT_DECISION_ENTRY": {
+        "TITLE": "Losentscheid",
+        "DESCRIPTION": "Bezeichnung",
+        "WINNER": "Gewinner"
+      }
+    }
   },
   "ERROR_MESSAGES": {
     "CountingCircleResultInInvalidStateForEVotingImportException": "eVoting Resultate können nur importiert werden, wenn noch kein Resultat geprüft wurde.",
