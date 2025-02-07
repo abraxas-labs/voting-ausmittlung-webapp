@@ -6,7 +6,7 @@
   [min]="minBallotNumber"
   [max]="maxBallotNumber"
   [error]="ballotNumberValue < minBallotNumber || ballotNumberValue > maxBallotNumber"
-  [disabled]="readonly"
+  [readonly]="readonly"
   [value]="ballotNumberValue"
   (valueChange)="ballotNumberValue = +$event"
   (blur)="emitNewBallotNumber()"

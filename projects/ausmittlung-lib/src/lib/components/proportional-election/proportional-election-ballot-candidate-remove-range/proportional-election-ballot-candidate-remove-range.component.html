@@ -2,7 +2,7 @@
   #startInput
   [tabIndex]="-1"
   optionalText=""
-  [disabled]="readonly"
+  [readonly]="readonly"
   [(ngModel)]="start"
   (keydown.tab)="endInput.setFocus(); $event.preventDefault()"
   [label]="'ELECTION.BALLOT_DETAIL.REMOVE_RANGE.START' | translate"
@@ -10,7 +10,7 @@
 ></bc-text>
 <bc-text
   #endInput
-  [disabled]="readonly"
+  [readonly]="readonly"
   [tabIndex]="-1"
   optionalText=""
   [(ngModel)]="end"

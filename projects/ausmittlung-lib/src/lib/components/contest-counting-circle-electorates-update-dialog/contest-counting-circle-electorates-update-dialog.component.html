@@ -5,7 +5,7 @@
     <div class="electorates" *ngFor="let electorate of electorates; let index = index">
       <bc-text
         [label]="'CONTEST.DETAIL.ELECTORATE.DOMAIN_OF_INFLUENCE_TYPES' | translate"
-        [disabled]="true"
+        [readonly]="true"
         [required]="true"
         [value]="electorateLabelByIndex.get(index)"
         [subscriptSizing]="'dynamic'"></bc-text>

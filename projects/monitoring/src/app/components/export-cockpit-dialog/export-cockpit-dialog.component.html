@@ -23,7 +23,8 @@
           {value: false, displayText: 'EXPORT_COCKPIT.TRIGGER_MODE_MANUAL' | translate},
           {value: true, displayText: 'EXPORT_COCKPIT.TRIGGER_MODE_AUTO' | translate}]"
         [value]="triggerModeAuto"
-        (valueChange)="setTriggerMode($event)"></bc-radio-button-group>
+        (valueChange)="setTriggerMode($event)"
+        [subscriptSizing]="'dynamic'"></bc-radio-button-group>
       <bc-number *ngIf="triggerModeAuto"
                  [label]="'EXPORT_COCKPIT.INTERVAL' | translate"
                  [required]="true"

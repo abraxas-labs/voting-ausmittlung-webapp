@@ -191,5 +191,9 @@ export class ContestStateChangeButtonComponent implements OnDestroy, OnChanges, 
     }
 
     details.countOfVotersInformation.totalCountOfVoters = 0;
+
+    // trigger cd
+    details.votingCards = [...details.votingCards];
+    details.countOfVotersInformation = { ...details.countOfVotersInformation };
   }
 }

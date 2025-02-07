@@ -49,7 +49,7 @@
                [label]="'END_RESULT.DOUBLE_PROPORTIONAL_RESULT.REDIRECT' | translate">
     </bc-button>
 
-    <bc-button *ngIf="hasLotDecisions && endResult.allCountingCirclesDone && !endResult.contest.locked && !isPartialResult"
+    <bc-button *ngIf="hasLotDecisions && !endResult.contest.locked && !isPartialResult"
                [label]="'END_RESULT.ELECTION.LOT_DECISION.OPEN' | translate" (buttonClick)="openUpdateLotDecisions()">
     </bc-button>
 

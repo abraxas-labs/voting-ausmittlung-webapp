@@ -18,7 +18,14 @@ export class ValidationGroupPipe implements PipeTransform {
   public transform(value: Record<string, ValidationResult[]>): KeyValue<string, ValidationResult[]>[] {
     return Object.entries(value)
       .map(([k, v]) => ({ key: this.mapKey(k, v), value: v }))
-      .sort((kvp1, kvp2) => kvp1.key.localeCompare(kvp2.key));
+      .sort((kvp1, kvp2) => {
+        const validationGroupSort = kvp1.value[0].validationGroup - kvp2.value[0].validationGroup;
+        if (validationGroupSort != 0) {
+          return validationGroupSort;
+        }
+
+        return kvp1.key.localeCompare(kvp2.key);
+      });
   }
 
   private mapKey(key: string, value: ValidationResult[]): string {

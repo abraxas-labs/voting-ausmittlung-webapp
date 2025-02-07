@@ -227,43 +227,44 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     const result = this.resultsById[resultId] || {};
-    if (!result || result.state === newState) {
-      return;
-    }
+    if (result && result.state !== newState) {
+      result.state = newState;
 
-    result.state = newState;
+      switch (result.state) {
+        case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING:
+          result.submissionDoneTimestamp = undefined;
+          break;
+        case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION:
+          result.submissionDoneTimestamp = undefined;
+          result.readyForCorrectionTimestamp = new Date();
+          break;
+        case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE:
+          result.submissionDoneTimestamp = new Date();
+          break;
+        case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE:
+          result.submissionDoneTimestamp = new Date();
+          result.readyForCorrectionTimestamp = undefined;
+          break;
+        case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY:
+          result.auditedTentativelyTimestamp = new Date();
+          break;
+        case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED:
+          result.plausibilisedTimestamp = new Date();
+          break;
+      }
 
-    switch (result.state) {
-      case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING:
-        result.submissionDoneTimestamp = undefined;
-        break;
-      case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION:
-        result.submissionDoneTimestamp = undefined;
-        result.readyForCorrectionTimestamp = new Date();
-        break;
-      case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE:
-        result.submissionDoneTimestamp = new Date();
-        break;
-      case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE:
-        result.submissionDoneTimestamp = new Date();
-        result.readyForCorrectionTimestamp = undefined;
-        break;
-      case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY:
-        result.auditedTentativelyTimestamp = new Date();
-        break;
-      case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED:
-        result.plausibilisedTimestamp = new Date();
-        break;
+      this.politicalBusinessResultService.resultStateChanged(result.id, newState);
     }
 
     this.resultList.state = Math.min(...this.resultList.results.map(r => r.state));
     this.updateSidebarReadonly();
-    this.politicalBusinessResultService.resultStateChanged(result.id, newState);
   }
 
   private async loadData(contestId: string, countingCircleId: string): Promise<void> {
     this.loading = true;
     try {
+      this.tenant = await this.auth.getActiveTenant();
+
       [this.accessibleCountingCircles, this.resultList] = await Promise.all([
         this.contestService.getAccessibleCountingCircles(contestId),
         await this.resultService.getList(contestId, countingCircleId),
@@ -283,7 +284,6 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
       }
 
       this.updateSidebarReadonly();
-      this.tenant = await this.auth.getActiveTenant();
       this.tryExpandPoliticalBusinesses();
       this.mapWriteIns();
       this.resultsById = groupBySingle(

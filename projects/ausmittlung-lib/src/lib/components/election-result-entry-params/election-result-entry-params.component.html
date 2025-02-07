@@ -30,6 +30,7 @@
     [checked]="resultEntryParams.automaticBallotBundleNumberGeneration"
     [label]="'ELECTION.RESULT_ENTRY.BALLOT_BUNDLE_NUMBER_GENERATION.AUTOMATIC' | translate"
     (checkedChange)="updateAutomaticBallotBundleNumberGeneration($event)"
+    [subscriptSizing]="'dynamic'"
   >
   </bc-checkbox>
 </div>
@@ -44,6 +45,7 @@
     [items]="automaticEmptyVoteCountingChoices"
     [(value)]="resultEntryParams.automaticEmptyVoteCounting"
     [disabled]="enforceEmptyVoteCounting"
+    [subscriptSizing]="'dynamic'"
   >
   </bc-radio-button-group>
 </div>
@@ -56,6 +58,7 @@
     [(checked)]="resultEntryParams.candidateCheckDigit"
     [label]="'ELECTION.RESULT_ENTRY.CANDIDATE_CHECK_DIGIT.USE' | translate"
     [disabled]="enforceCandidateCheckDigit"
+    [subscriptSizing]="'dynamic'"
   >
   </bc-checkbox>
 </div>

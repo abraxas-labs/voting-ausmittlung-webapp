@@ -8,5 +8,8 @@
 
   <h2 translate>CONTEST.ARCHIVED_CONTESTS</h2>
   <vo-ausm-contest-list [contests]="archivedContests"
+                        [showEndOfTestingPhase]="false"
+                        [showDescription]="true"
+                        [showOwner]="true"
                         (openDetail)="openDetail.emit($event)"></vo-ausm-contest-list>
 </vo-lib-page>

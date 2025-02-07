@@ -238,8 +238,8 @@
   "PROPORTIONAL_ELECTION": {
     "TITLE": "Proporzwahl",
     "LIST": {
-      "LIST_VOTES_COUNT": "Stimmen",
-      "BLANK_ROWS_COUNT": "Leere Zeilen",
+      "LIST_VOTES_COUNT": "Kandidatenstimmen",
+      "BLANK_ROWS_COUNT": "Zusatzstimmen",
       "TOTAL_VOTE_COUNT": "Total Stimmen"
     },
     "CANDIDATE": {

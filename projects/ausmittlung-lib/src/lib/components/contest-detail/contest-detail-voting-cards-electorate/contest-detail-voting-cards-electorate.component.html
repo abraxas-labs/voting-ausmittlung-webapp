@@ -3,7 +3,7 @@
   <div class="voting-cards">
     <ng-container *ngFor="let votingCardDetail of votingCardDetailsValue; let i = index">
       <bc-number
-        [disabled]="readonly || votingCardDetail.channel === votingChannels.VOTING_CHANNEL_E_VOTING"
+        [readonly]="readonly || votingCardDetail.channel === votingChannels.VOTING_CHANNEL_E_VOTING"
         [required]="true"
         [min]="0"
         [value]="votingCardDetail.countOfReceivedVotingCards"
@@ -14,13 +14,15 @@
     </ng-container>
     <div *ngIf="votingCardDetailsValue.length % 2 !== 0 && hasInvalidVotingCardChannel"></div>
     <bc-number *ngIf="hasInvalidVotingCardChannel && votingCardDetailsValue.length > 1"
-               [disabled]="true"
+               [readonly]="true"
+               [tabIndex]="-1"
                [required]="true"
                [value]="totalValid"
                [label]="'CONTEST.DETAIL.VOTING_CARDS.TOTAL_VALID' | translate"
                [subscriptSizing]="'dynamic'"></bc-number>
     <bc-number *ngIf="votingCardDetailsValue.length > 1"
-               [disabled]="true"
+               [readonly]="true"
+               [tabIndex]="-1"
                [required]="true"
                [value]="total"
                [label]="'CONTEST.DETAIL.VOTING_CARDS.TOTAL' | translate"

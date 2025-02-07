@@ -25,6 +25,7 @@ import {
   TextareaModule,
   TextModule,
   TooltipModule,
+  ErrorModule,
 } from '@abraxas/base-components';
 import { VotingLibModule } from '@abraxas/voting-lib';
 import { CommonModule } from '@angular/common';
@@ -288,6 +289,7 @@ import { ButtonBarComponent } from './components/button-bar/button-bar.component
     MatButtonModule,
     DividerModule,
     TooltipModule,
+    ErrorModule,
   ],
   exports: [
     ContestDetailComponent,

@@ -30,6 +30,7 @@ import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthorizationService, Tenant } from '@abraxas/base-components';
 import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/political_business_pb';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-monitoring-cockpit-grid',
@@ -37,12 +38,24 @@ import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto
   styleUrls: ['./monitoring-cockpit-grid.component.scss'],
 })
 export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
-  private static emptyStateFilter: CountingCircleResultState[] = [];
+  private readonly toCheckStates: CountingCircleResultState[] = [
+    CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_INITIAL,
+    CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING,
+    CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION,
+    CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE,
+    CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE,
+  ];
+  private readonly checkedStates: CountingCircleResultState[] = [
+    CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY,
+    CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED,
+  ];
+  private readonly emptyStates: CountingCircleResultState[] = [];
+
   public readonly states: typeof CountingCircleResultState = CountingCircleResultState;
   public readonly domainOfInfluenceTypes: typeof DomainOfInfluenceType = DomainOfInfluenceType;
 
   @Input()
-  public publishResultsEnabled: boolean = false;
+  public manualPublishResultsEnabled: boolean = false;
 
   @Input()
   public publishResultsBeforeAuditedTentatively: boolean = false;
@@ -75,19 +88,14 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
 
   public contestCantonDefaults?: ContestCantonDefaults;
   public allStateFilters: SegmentedControl[] = [];
-  public stateFilter: CountingCircleResultState[] = MonitoringCockpitGridComponent.emptyStateFilter;
+  public stateFilter: CountingCircleResultState[] = this.toCheckStates;
 
-  public clearingFilter: boolean = false;
   public publishing: boolean = false;
 
   public showNotOwnedPoliticalBusinessColumn: boolean = false;
 
   private politicalBusinesses: SimplePoliticalBusiness[] = [];
   public notOwnedPoliticalBusinessIds: string[] = [];
-  private readonly isCorrectedStates: CountingCircleResultState[] = [
-    CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY,
-    CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED,
-  ];
 
   private resultsById: Record<
     string,
@@ -108,6 +116,7 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
     private readonly voteResultService: VoteResultService,
     private readonly proportionalElectionResultService: ProportionalElectionResultService,
     private readonly majorityElectionResultService: MajorityElectionResultService,
+    private readonly storageService: StorageService,
   ) {}
 
   public async ngOnInit(): Promise<void> {
@@ -156,6 +165,11 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
     this.updateFilters();
     this.startChangesListener();
     this.updateStateFilters();
+
+    const storedStateFilter = this.storageService.getStateFilter();
+    if (storedStateFilter != null) {
+      this.stateFilter = this.mapValueToStateFilter(storedStateFilter);
+    }
   }
 
   public ngOnDestroy(): void {
@@ -209,16 +223,6 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
   }
 
   public countingCircleFilterSelected(cc: CountingCircle | undefined): void {
-    if (this.clearingFilter) {
-      this.clearingFilter = false;
-      return;
-    }
-
-    if (this.stateFilter.length > 0) {
-      this.clearingFilter = true;
-      this.stateFilter = MonitoringCockpitGridComponent.emptyStateFilter;
-    }
-
     this.countingCircleFilter = cc;
     this.updateFilters();
   }
@@ -243,17 +247,8 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
   }
 
   public stateFilterSelected(states: CountingCircleResultState[]): void {
-    if (this.clearingFilter) {
-      this.clearingFilter = false;
-      return;
-    }
-
-    if (!!this.countingCircleFilter) {
-      this.clearingFilter = true;
-      delete this.countingCircleFilter;
-    }
-
     this.stateFilter = states;
+    this.storageService.storeStateFilter(this.mapStateFilterToValue());
     this.updateFilters();
   }
 
@@ -454,11 +449,11 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
         .concat(flatten(this.filteredPoliticalBusinessUnions.map(x => x.politicalBusinesses)))
         .map(pb => cc.resultsByPoliticalBusinessId[pb.id])
         .filter(r => !!r);
-      cc.isCorrected = cc.filteredResults.every(y => this.isCorrectedStates.includes(y.state));
+      cc.isCorrected = cc.filteredResults.every(y => this.checkedStates.includes(y.state));
     }
 
     this.filteredCountingCircleResults = this.filteredCountingCircleResults.filter(
-      x => x.filteredResults.length > 0 && (this.stateFilter.length === 0 || this.stateFilter.includes(x.minResultState)),
+      x => this.stateFilter.length === 0 || this.stateFilter.includes(x.minResultState),
     );
   }
 
@@ -562,35 +557,52 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
   }
 
   private updateStateFilters(): void {
-    const countCorrected = this.countingCircleResults.filter(cc => cc.isCorrected).length;
-    const countNotCorrected = this.countingCircleResults.length - countCorrected;
+    const relevantCountingCircleResults = this.countingCircleResults.filter(cc => cc.filteredResults.length > 0);
+    const countCorrected = relevantCountingCircleResults.filter(cc => cc.isCorrected).length;
+    const countNotCorrected = relevantCountingCircleResults.length - countCorrected;
 
     this.allStateFilters = [
       {
-        displayText: this.i18n.instant('MONITORING_COCKPIT.FILTER_STATE.ALL'),
-        value: MonitoringCockpitGridComponent.emptyStateFilter,
-        disabled: false,
-      },
-      {
         displayText: this.i18n.instant('MONITORING_COCKPIT.FILTER_STATE.TO_CHECK', { count: countNotCorrected }),
-        value: [
-          CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_INITIAL,
-          CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING,
-          CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION,
-          CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE,
-          CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE,
-        ],
+        value: this.toCheckStates,
         disabled: false,
       },
       {
         displayText: this.i18n.instant('MONITORING_COCKPIT.FILTER_STATE.CHECKED', { count: countCorrected }),
-        value: [
-          CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY,
-          CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED,
-        ],
+        value: this.checkedStates,
+        disabled: false,
+      },
+      {
+        displayText: this.i18n.instant('MONITORING_COCKPIT.FILTER_STATE.ALL'),
+        value: this.emptyStates,
         disabled: false,
       },
     ];
+  }
+
+  private mapStateFilterToValue(): string {
+    switch (this.stateFilter) {
+      case this.toCheckStates:
+        return this.storageService.stateFilterSessionStorageValueToCheck;
+      case this.checkedStates:
+        return this.storageService.stateFilterSessionStorageValueChecked;
+      case this.emptyStates:
+        return this.storageService.stateFilterSessionStorageValueAll;
+      default:
+        throw new Error('Invalid state filter value');
+    }
+  }
+  private mapValueToStateFilter(value: string): CountingCircleResultState[] {
+    switch (value) {
+      case this.storageService.stateFilterSessionStorageValueToCheck:
+        return this.toCheckStates;
+      case this.storageService.stateFilterSessionStorageValueChecked:
+        return this.checkedStates;
+      case this.storageService.stateFilterSessionStorageValueAll:
+        return this.emptyStates;
+      default:
+        throw new Error('Invalid state filter');
+    }
   }
 }
 

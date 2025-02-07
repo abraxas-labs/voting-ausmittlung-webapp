@@ -6,7 +6,7 @@
                     [label]="result.question | translateVoteQuestion: isTieBreakQuestion:'answer1Short':ballotNumberOfQuestions:ballotSubType"
                     [min]="0"
                     [required]="true"
-                    [disabled]="readonly"
+                    [readonly]="readonly"
                     [error]="result.conventionalSubTotal.totalCountOfAnswer1 !== undefined && result.conventionalSubTotal.totalCountOfAnswer1 < 0"
                     [(value)]="result.conventionalSubTotal.totalCountOfAnswer1"
                     (valueChange)="updateTotal()"
@@ -15,7 +15,7 @@
                     [label]="result.question | translateVoteQuestion: isTieBreakQuestion:'answer2Short':ballotNumberOfQuestions:ballotSubType"
                     [min]="0"
                     [required]="true"
-                    [disabled]="readonly"
+                    [readonly]="readonly"
                     [error]="result.conventionalSubTotal.totalCountOfAnswer2 !== undefined && result.conventionalSubTotal.totalCountOfAnswer2 < 0"
                     [(value)]="result.conventionalSubTotal.totalCountOfAnswer2"
                     (valueChange)="updateTotal()"
@@ -25,7 +25,7 @@
                     [min]="0"
                     *ngIf="ballotNumberOfQuestions > 1"
                     [required]="true"
-                    [disabled]="readonly"
+                    [readonly]="readonly"
                     [error]="result.conventionalSubTotal.totalCountOfAnswerUnspecified !== undefined && result.conventionalSubTotal.totalCountOfAnswerUnspecified < 0"
                     [(value)]="result.conventionalSubTotal.totalCountOfAnswerUnspecified"
                     (valueChange)="updateTotal()"
@@ -38,21 +38,24 @@
           <bc-label *ngIf="eVoting && ballotNumberOfQuestions > 1" class="source-label" [label]="'VOTING_DATA_SOURCE.E_VOTING' | translate"></bc-label>
           <bc-number
             class="label-no-wrap"
-            [disabled]="true"
+            [readonly]="true"
+            [tabIndex]="-1"
             [required]="true"
             [label]="''"
             [value]="result.eVotingSubTotal.totalCountOfAnswer1"
             [subscriptSizing]="'dynamic'"></bc-number>
           <bc-number
             class="label-no-wrap"
-            [disabled]="true"
+            [readonly]="true"
+            [tabIndex]="-1"
             [required]="true"
             [label]="''"
             [value]="result.eVotingSubTotal.totalCountOfAnswer2"
             [subscriptSizing]="'dynamic'"></bc-number>
           <bc-number
             class="label-no-wrap"
-            [disabled]="true"
+            [readonly]="true"
+            [tabIndex]="-1"
             [label]="''"
             [min]="0"
             *ngIf="ballotNumberOfQuestions > 1"
@@ -67,21 +70,24 @@
             <bc-label *ngIf="eVoting && ballotNumberOfQuestions > 1" class="source-label" [label]="'VOTING_DATA_SOURCE.TOTAL' | translate"></bc-label>
             <bc-number
               class="label-no-wrap"
-              [disabled]="true"
+              [readonly]="true"
+              [tabIndex]="-1"
               [required]="true"
               [label]="''"
               [value]="result.totalCountOfAnswer1"
               [subscriptSizing]="'dynamic'"></bc-number>
             <bc-number
               class="label-no-wrap"
-              [disabled]="true"
+              [readonly]="true"
+              [tabIndex]="-1"
               [required]="true"
               [label]="''"
               [value]="result.totalCountOfAnswer2"
               [subscriptSizing]="'dynamic'"></bc-number>
             <bc-number
               class="label-no-wrap"
-              [disabled]="true"
+              [readonly]="true"
+              [tabIndex]="-1"
               [required]="true"
               *ngIf="ballotNumberOfQuestions > 1"
               [label]="''"

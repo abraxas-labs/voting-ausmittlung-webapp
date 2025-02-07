@@ -1,4 +1,4 @@
-# ✨ Changelog (`v3.1.1`)
+# ✨ Changelog (`v3.4.6`)
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,148 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Info
 
 ```text
-This version -------- v3.1.1
-Previous version ---- v2.15.5
+This version -------- v3.4.6
+Previous version ---- v3.1.1
 Initial version ----- v1.25.0
-Total commits ------- 32
+Total commits ------- 27
 ```
+
+## [v3.4.6] - 2025-01-24
+
+### 🔄 Changed
+
+- show view results button in monitoring cockpit for all state filters
+
+## [v3.4.5] - 2025-01-23
+
+### 🔄 Changed
+
+- show counting circles with only non-owned results also in the monitoring cockpit grid
+
+## [v3.4.4] - 2025-01-21
+
+### 🔄 Changed
+
+- update base components
+
+## [v3.4.3] - 2025-01-16
+
+### 🔄 Changed
+
+- adjust spacing in contest header for past locked contests
+
+## [v3.4.2] - 2025-01-13
+
+### ❌ Removed
+
+- remove clearing filter for counting circles in monitoring cockpit
+
+## [v3.4.1] - 2025-01-08
+
+### 🔄 Changed
+
+- change label of submission by ballot groups
+
+## [v3.4.0] - 2025-01-07
+
+### 🆕 Added
+
+- add robots meta tag to instruct crawlers to not index content
+- add X-Robots-Tag response header to instruct crawlers to not index content
+
+## [v3.3.6] - 2025-01-07
+
+### 🔄 Changed
+
+- rename list votes count and blank rows count for proportional election
+
+## [v3.3.5] - 2025-01-07
+
+### 🔄 Changed
+
+- update dependencies
+
+## [v3.3.4] - 2025-01-07
+
+### 🔄 Changed
+
+- rework monitoring cockpit state filter and store filter into session storage
+
+## [v3.3.3] - 2024-12-11
+
+### 🔄 Changed
+
+- change disabled form fields to readonly
+
+## [v3.3.2] - 2024-12-05
+
+### 🔄 Changed
+
+- monitoring state filters show correct amount
+
+## [v3.3.1] - 2024-12-05
+
+### 🔄 Changed
+
+- show invalid and empty votes for majority election result
+
+## [v3.3.0] - 2024-12-03
+
+### 🆕 Added
+
+- show roles in header tenant switch
+
+## [v3.2.0] - 2024-11-27
+
+### 🆕 Added
+
+- add secondary majority election candidate vote count validation
+
+### 🆕 Added
+
+- add contest list filter and sort
+
+### 🔄 Changed
+
+- update state in contest detail header correctly
+
+### 🔄 Changed
+
+- set correct ui state after proportional election mandate distribution reverted
+
+### 🆕 Added
+
+- secondary majority election result validations
+
+### 🔄 Changed
+
+- tooltips in dialogs not visible
+
+### 🔄 Changed
+
+- reset results should reset voting cards and count of voters information
+
+### 🔄 Changed
+
+- archived contest list with description and owner column
+
+### 🔄 Changed
+
+- change form field errors from hint to bc-error
+
+### ❌ Removed
+
+- remove unnecessary space for checkboxes and radio buttons
+
+### 🆕 Added
+
+- publish results option on domain of influence
+
+## [v3.1.2] - 2024-11-24
+
+### :arrows_counterclockwise: Changed
+
+- fix tenant loading in contest detail when checking for required contact data
 
 ## [v3.1.1] - 2024-11-08
 
@@ -153,43 +290,29 @@ BREAKING CHANGE: update Angular to version 18
 
 - change list number label
 
-## [v2.16.5] - 2024-09-30
-
 ### 🔄 Changed
 
 - show empty votes not for single mandate
-
-## [v2.16.4] - 2024-09-30
 
 ### 🔄 Changed
 
 - adjusted counting circle dropdown width
 
-## [v2.16.3] - 2024-09-27
-
 ### 🔄 Changed
 
 - ballot without party is now selectable with tab
-
-## [v2.16.2] - 2024-09-26
 
 ### 🔄 Changed
 
 - bold total valid label and value
 
-## [v2.16.1] - 2024-09-26
-
 ### :arrows_counterclockwise: Changed
 
 - do not allow closing contact dialog and only show it when necessary
 
-## [v2.16.0] - 2024-09-25
-
 ### 🆕 Added
 
 - foreigner and minor voters
-
-## [v2.15.6] - 2024-09-12
 
 ### 🔄 Changed
 
@@ -199,102 +322,68 @@ BREAKING CHANGE: update Angular to version 18
 
 - add ballot question type labels
 
-## [v2.15.5] - 2024-09-06
-
 ### 🔄 Changed
 
 - result submission finished to audited tentatively for owned results
-
-## [v2.15.4] - 2024-09-04
 
 ### 🔄 Changed
 
 - migrate from gcr to harbor
 
-## [v2.15.3] - 2024-09-04
-
 fix(VOTING-4850): only consider states of owned political businesses for the summary state in monitoring
-
-## [v2.15.2] - 2024-09-04
 
 ### 🔄 Changed
 
 - cancel 2FA should not disabled submission finish button
 
-## [v2.15.1] - 2024-09-04
-
 ### 🔄 Changed
 
 - change submit results and audit tentatively label
-
-## [v2.15.0] - 2024-09-04
 
 ### 🆕 Added
 
 - add correction finished and audited tentatively endpoint
 
-## [v2.14.4] - 2024-09-03
-
 ### 🆕 Added
 
 - add validation hint for audited and self owned businesses
-
-## [v2.14.3] - 2024-09-03
 
 ### 🔄 Changed
 
 - sort counting circles in monitoring cockpit when live reload
 
-## [v2.14.2] - 2024-08-28
-
 ### 🔄 Changed
 
 - show mandate distribution trigger only with correct mandate algorithm
-
-## [v2.14.1] - 2024-08-28
 
 ### 🔄 Changed
 
 - create protocol link changed
 
-## [v2.14.0] - 2024-08-28
-
 ### 🆕 Added
 
 - optional individual candidates on majority elections
-
-## [v2.13.2] - 2024-08-28
 
 🔄 Changed
 
 update bug bounty template reference
 patch ci-cd template version, align with new defaults
 
-## [v2.13.1] - 2024-08-22
-
 ### 🔄 Changed
 
 - show empty votes always for secondary majority election
-
-## [v2.13.0] - 2024-08-20
 
 ### 🆕 Added
 
 - add 2fa fallback qr code
 
-## [v2.12.2] - 2024-08-16
-
 ### 🔄 Changed
 
 - monitoring cockpit grid footer sticky
 
-## [v2.12.1] - 2024-08-14
-
 ### 🔄 Changed
 
 - scroll added candidate into view
-
-## [v2.12.0] - 2024-08-14
 
 ### 🆕 Added
 
@@ -997,6 +1086,153 @@ This reverts commit 60ee4e312750c5b9d82b3ab87107bccc48cb7971.
 ### 🔄 Changed
 
 - Adjusted page title of the vote review bundle page
+
+## [v2.16.5] - 2024-09-30
+
+### 🔄 Changed
+
+- show empty votes not for single mandate
+
+## [v2.16.4] - 2024-09-30
+
+### 🔄 Changed
+
+- adjusted counting circle dropdown width
+
+## [v2.16.3] - 2024-09-27
+
+### 🔄 Changed
+
+- ballot without party is now selectable with tab
+
+## [v2.16.2] - 2024-09-26
+
+### 🔄 Changed
+
+- bold total valid label and value
+
+## [v2.16.1] - 2024-09-26
+
+### :arrows_counterclockwise: Changed
+
+- do not allow closing contact dialog and only show it when necessary
+
+## [v2.16.0] - 2024-09-25
+
+### 🆕 Added
+
+- foreigner and minor voters
+
+## [v2.15.6] - 2024-09-12
+
+### 🔄 Changed
+
+- align evoting variant ballot labels
+
+### 🆕 Added
+
+- add ballot question type labels
+
+## [v2.15.5] - 2024-09-06
+
+### 🔄 Changed
+
+- result submission finished to audited tentatively for owned results
+
+## [v2.15.4] - 2024-09-04
+
+### 🔄 Changed
+
+- migrate from gcr to harbor
+
+## [v2.15.3] - 2024-09-04
+
+fix(VOTING-4850): only consider states of owned political businesses for the summary state in monitoring
+
+## [v2.15.2] - 2024-09-04
+
+### 🔄 Changed
+
+- cancel 2FA should not disabled submission finish button
+
+## [v2.15.1] - 2024-09-04
+
+### 🔄 Changed
+
+- change submit results and audit tentatively label
+
+## [v2.15.0] - 2024-09-04
+
+### 🆕 Added
+
+- add correction finished and audited tentatively endpoint
+
+## [v2.14.4] - 2024-09-03
+
+### 🆕 Added
+
+- add validation hint for audited and self owned businesses
+
+## [v2.14.3] - 2024-09-03
+
+### 🔄 Changed
+
+- sort counting circles in monitoring cockpit when live reload
+
+## [v2.14.2] - 2024-08-28
+
+### 🔄 Changed
+
+- show mandate distribution trigger only with correct mandate algorithm
+
+## [v2.14.1] - 2024-08-28
+
+### 🔄 Changed
+
+- create protocol link changed
+
+## [v2.14.0] - 2024-08-28
+
+### 🆕 Added
+
+- optional individual candidates on majority elections
+
+## [v2.13.2] - 2024-08-28
+
+🔄 Changed
+
+update bug bounty template reference
+patch ci-cd template version, align with new defaults
+
+## [v2.13.1] - 2024-08-22
+
+### 🔄 Changed
+
+- show empty votes always for secondary majority election
+
+## [v2.13.0] - 2024-08-20
+
+### 🆕 Added
+
+- add 2fa fallback qr code
+
+## [v2.12.2] - 2024-08-16
+
+### 🔄 Changed
+
+- monitoring cockpit grid footer sticky
+
+## [v2.12.1] - 2024-08-14
+
+### 🔄 Changed
+
+- scroll added candidate into view
+
+## [v2.12.0] - 2024-08-14
+
+### 🆕 Added
+
+- add asynchronous bundle review
 
 ## [v2.11.1] - 2024-08-09
 

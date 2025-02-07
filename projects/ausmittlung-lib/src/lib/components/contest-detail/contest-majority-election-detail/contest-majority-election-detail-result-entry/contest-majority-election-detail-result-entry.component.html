@@ -3,7 +3,8 @@
     <bc-radio-button-group [(value)]="resultEntry"
                            orientation="vertical"
                            [label]="'POLITICAL_BUSINESS.RESULTS_ENTRY.QUESTION' | translate"
-                           [items]="resultEntryVariants"></bc-radio-button-group>
+                           [items]="resultEntryVariants"
+                           [subscriptSizing]="'dynamic'"></bc-radio-button-group>
     <vo-ausm-election-result-entry-params *ngIf="resultEntry === resultEntries.MAJORITY_ELECTION_RESULT_ENTRY_DETAILED"
                                           class="entry-params"
                                           [resultEntryParams]="resultEntryParams"
@@ -16,6 +17,7 @@
         [items]="reviewProcedureChoices"
         [(value)]="resultEntryParams.reviewProcedure"
         [disabled]="election.enforceReviewProcedureForCountingCircles"
+        [subscriptSizing]="'dynamic'"
       >
       </bc-radio-button-group>
     </vo-ausm-election-result-entry-params>

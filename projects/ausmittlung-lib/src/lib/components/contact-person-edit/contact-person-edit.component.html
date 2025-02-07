@@ -2,7 +2,7 @@
   <bc-text
     [label]="'CONTEST.DETAIL.CONTACT_DATA.FAMILY_NAME' | translate"
     [required]="true"
-    [disabled]="readonly"
+    [readonly]="readonly"
     [value]="contactPerson.familyName"
     (valueChange)="contactPerson.familyName = $event; contentChanged.emit()"
     [subscriptSizing]="'dynamic'"
@@ -11,7 +11,7 @@
     class="ml-2"
     [label]="'CONTEST.DETAIL.CONTACT_DATA.FIRST_NAME' | translate"
     [required]="true"
-    [disabled]="readonly"
+    [readonly]="readonly"
     [value]="contactPerson.firstName"
     (valueChange)="contactPerson.firstName = $event; contentChanged.emit()"
     [subscriptSizing]="'dynamic'"
@@ -20,7 +20,7 @@
 <bc-text
   [label]="'CONTEST.DETAIL.CONTACT_DATA.PHONE' | translate"
   [required]="true"
-  [disabled]="readonly"
+  [readonly]="readonly"
   [value]="contactPerson.phone"
   (valueChange)="contactPerson.phone = $event; contentChanged.emit()"
   [subscriptSizing]="'dynamic'"
@@ -28,14 +28,14 @@
 <bc-text
   [label]="'CONTEST.DETAIL.CONTACT_DATA.MOBILE_PHONE' | translate"
   [required]="true"
-  [disabled]="readonly"
+  [readonly]="readonly"
   [value]="contactPerson.mobilePhone"
   (valueChange)="contactPerson.mobilePhone = $event; contentChanged.emit()"
   [subscriptSizing]="'dynamic'"
 ></bc-text>
 <bc-text
   [label]="'CONTEST.DETAIL.CONTACT_DATA.EMAIL' | translate"
-  [disabled]="readonly"
+  [readonly]="readonly"
   [value]="contactPerson.email"
   (valueChange)="contactPerson.email = $event; contentChanged.emit()"
   type="email"

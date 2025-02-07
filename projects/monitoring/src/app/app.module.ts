@@ -102,6 +102,7 @@ import { ProportionalElectionListLotDecisionsDialogComponent } from './component
 import { ProportionalElectionListLotDecisionEditDialogComponent } from './components/proportional-election-list-lot-decision-edit-dialog/proportional-election-list-lot-decision-edit-dialog.component';
 import { ProportionalElectionListLotDecisionEditListsTableComponent } from './components/proportional-election-list-lot-decision-edit-dialog/proportional-election-list-lot-decision-edit-lists-table/proportional-election-list-lot-decision-edit-lists-table.component';
 import { ProportionalElectionListLotDecisionEditListUnionsTableComponent } from './components/proportional-election-list-lot-decision-edit-dialog/proportional-election-list-lot-decision-edit-list-unions-table/proportional-election-list-lot-decision-edit-list-unions-table.component';
+import { StorageService } from './services/storage.service';
 
 registerLocaleData(localeDeCh);
 
@@ -227,6 +228,7 @@ registerLocaleData(localeDeCh);
       provide: FORMFIELD_DEFAULT_OPTIONS,
       useValue: { optionalText: 'optional' },
     },
+    StorageService,
   ],
   bootstrap: [AppComponent],
 })

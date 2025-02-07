@@ -34,6 +34,9 @@
     "ARCHIVED_CONTESTS": "Archivierte Urnengänge",
     "DATE": "Datum",
     "END_OF_TESTING_PHASE": "Testphase bis",
+    "DESCRIPTION_HEADER": "Bezeichnung Urnengang",
+    "OWNER": "Zuständige Behörde",
+    "POLITICAL_BUSINESSES_ENTRY": "{{domainOfInfluenceType}}: {{contestEntriesCount}}",
     "PAST_LOCKED": "Urnengang gesperrt",
     "PAST_UNLOCKED": "Urnengang entsperrt bis 23:59 Uhr",
     "PAST_UNLOCK": {
@@ -495,8 +498,8 @@
   "MAJORITY_ELECTION": {
     "TITLE": "Majorzwahl",
     "BY_BALLOT_GROUPS": "Nach Wahlzettelgruppen erfassen",
-    "BALLOT_GROUPS_COUNT": "{{count}} Wahlzettelgruppen erfasst",
-    "NO_BALLOT_GROUPS": "Es sind noch keine Wahlzettelgruppen erfasst",
+    "BALLOT_GROUPS_COUNT": "{{count}} Wahlzettel erfasst",
+    "NO_BALLOT_GROUPS": "Es sind noch keine Wahlzettel erfasst",
     "BY_BUNDLE": "Einzelne Wahlzettel erfassen und Bundkontrolle",
     "MAP_WRITE_INS": "E-Voting Write-Ins zuweisen",
     "MAP": "Zuweisen",
@@ -759,7 +762,9 @@
       "HEADER": "Die Plausibilisierung ergibt folgende Ergebnisse:"
     },
     "GROUP": {
-      "1": "Frage {{groupValue}}"
+      "1": "Frage {{groupValue}}",
+      "2": "{{groupValue}}",
+      "3": "{{groupValue}}"
     },
     "VALUES": {
       "1": {
@@ -918,6 +923,10 @@
         "VALID": "Eine Kandidatin oder ein Kandidat darf nicht mehr Stimmen haben als die Anzahl gültiger Wahlzettel.",
         "INVALID": "Eine Kandidatin oder ein Kandidat hat mehr Stimmen als die Anzahl gültiger Wahlzettel."
       },
+      "38": {
+        "VALID": "Eine Kandidatin oder ein Kandidat hat maximal gleich viele Stimmen wie in der Hauptwahl.",
+        "INVALID": "Eine Kandidatin oder ein Kandidat hat in einer Nebenwahl mehr Stimmen als in der Hauptwahl."
+      },
       "43": {
         "VALID": "Total kontrollierte veränderte Wahlzettel ({{ totalCountOfBallots }}) + unveränderte Wahlzettel ({{ totalCountOfUnmodifiedLists }}) = ({{ sumBallotsAndUnmodifiedLists }}) stimmt mit der Anzahl gültiger Wahlzettel ({{ totalAccountedBallots }}) überein.",
         "INVALID": "Total kontrollierte veränderte Wahlzettel ({{ totalCountOfBallots }}) + unveränderte Wahlzettel ({{ totalCountOfUnmodifiedLists }}) = ({{ sumBallotsAndUnmodifiedLists }}) stimmt nicht mit der Anzahl gültiger Wahlzettel ({{ totalAccountedBallots }}) überein."
@@ -1029,6 +1038,7 @@
   },
   "ERROR_MESSAGES": {
     "SecondFactorTransactionDataChangedException": "Die Daten wurden in der Zwischenzeit geändert, somit muss die Aktion erneut ausgeführt werden.",
-    "SecondFactorTransactionNotVerifiedException": "Die Transaktionsbestätigung wurde abgebrochen. Bitte führen Sie die Aktion erneut aus."
+    "SecondFactorTransactionNotVerifiedException": "Die Transaktionsbestätigung wurde abgebrochen. Bitte führen Sie die Aktion erneut aus.",
+    "SecondaryMajorityElectionCandidateNotSelectedInPrimaryElectionException": "Die Nebenwahl enthält Stimmen für Kandidaturen welche in der Hauptwahl nicht gewählt wurden."
   }
 }

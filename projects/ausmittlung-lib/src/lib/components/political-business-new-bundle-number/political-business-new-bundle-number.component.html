@@ -7,9 +7,12 @@
                [label]="'POLITICAL_BUSINESS.BUNDLE_NUMBER' | translate"
                [value]="bundleNumber"
                [error]="duplicatedBundleNumber || !bundleNumber"
-               [hint]="duplicatedBundleNumber ? ('POLITICAL_BUSINESS.DUPLICATED_BUNDLE_NUMBER' | translate) : ''"
                (valueChange)="updateBundleNumber(+$event)"
-               [subscriptSizing]="'dynamic'"></bc-number>
+               [subscriptSizing]="'dynamic'">
+      <bc-error *ngIf="duplicatedBundleNumber">
+        {{ ('POLITICAL_BUSINESS.DUPLICATED_BUNDLE_NUMBER' | translate) }}
+      </bc-error>
+    </bc-number>
   </div>
   <vo-lib-button-bar footer
                      (cancel)="close()"

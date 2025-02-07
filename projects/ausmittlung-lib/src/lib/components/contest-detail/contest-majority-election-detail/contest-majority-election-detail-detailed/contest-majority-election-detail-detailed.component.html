@@ -37,7 +37,10 @@
                                             [accountedBallots]="resultDetail.countOfVoters.totalAccountedBallots"
                                             [eVoting]="eVoting"
                                             [result]="resultDetail"
-                                            [candidateCheckDigit]="resultDetail.entryParams?.candidateCheckDigit"></vo-ausm-contest-majority-election-result>
+                                            [candidateCheckDigit]="resultDetail.entryParams?.candidateCheckDigit"
+                                            [showInvalidVotes]="resultDetail.election.contest!.cantonDefaults!.majorityElectionInvalidVotes"
+                                            [showIndividualVotes]="!resultDetail.election.individualCandidatesDisabled"
+                                            [showEmptyVotes]="resultDetail.election.numberOfMandates !== 1"></vo-ausm-contest-majority-election-result>
 </div>
 
 <div class="content results">
@@ -48,7 +51,9 @@
                                             [buttonsTemplate]="tileTemplate"
                                             [accountedBallots]="resultDetail.countOfVoters.totalAccountedBallots"
                                             [result]="result"
-                                            [candidateCheckDigit]="resultDetail.entryParams?.candidateCheckDigit"></vo-ausm-contest-majority-election-result>
+                                            [candidateCheckDigit]="resultDetail.entryParams?.candidateCheckDigit"
+                                            [showInvalidVotes]="resultDetail.election.contest!.cantonDefaults!.majorityElectionInvalidVotes"
+                                            [showIndividualVotes]="!result.election.individualCandidatesDisabled"></vo-ausm-contest-majority-election-result>
 </div>
 
 <ng-template #tileTemplate let-electionId='electionId'>

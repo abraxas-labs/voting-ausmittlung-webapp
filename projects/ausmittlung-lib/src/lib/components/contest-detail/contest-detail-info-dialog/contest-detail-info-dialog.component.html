@@ -20,7 +20,7 @@
     <ng-container *ngIf="countingMachineEnabled">
       <h4 translate class="mt-2">COUNTING_MACHINES.TITLE</h4>
       <bc-dropdown [required]="true"
-                   [disabled]="readonly"
+                   [readonly]="readonly"
                    [items]="countingMachines"
                    displayExpr="description"
                    valueExpr="value"

@@ -9,7 +9,7 @@
   <bc-number
     #receivedFormfield
     [class.col-1]="!eVoting"
-    [disabled]="readonly"
+    [readonly]="readonly"
     [min]="0"
     [error]="countOfVoters.conventionalReceivedBallots !== undefined && countOfVoters.conventionalReceivedBallots < 0"
     [(value)]="countOfVoters.conventionalReceivedBallots"
@@ -17,7 +17,7 @@
     [subscriptSizing]="'dynamic'"
   ></bc-number>
   <bc-number
-    [disabled]="readonly"
+    [readonly]="readonly"
     [min]="0"
     [error]="countOfVoters.conventionalBlankBallots !== undefined && countOfVoters.conventionalBlankBallots < 0"
     [(value)]="countOfVoters.conventionalBlankBallots"
@@ -25,7 +25,7 @@
     [subscriptSizing]="'dynamic'"
   ></bc-number>
   <bc-number
-    [disabled]="readonly"
+    [readonly]="readonly"
     [min]="0"
     [error]="countOfVoters.conventionalInvalidBallots !== undefined && countOfVoters.conventionalInvalidBallots < 0"
     [(value)]="countOfVoters.conventionalInvalidBallots"
@@ -33,7 +33,7 @@
     [subscriptSizing]="'dynamic'"
   ></bc-number>
   <bc-number
-    [disabled]="readonly"
+    [readonly]="readonly"
     [min]="0"
     [error]="countOfVoters.conventionalAccountedBallots !== undefined && countOfVoters.conventionalAccountedBallots < 0"
     [(value)]="countOfVoters.conventionalAccountedBallots"
@@ -42,19 +42,19 @@
   ></bc-number>
   <ng-container *ngIf="eVoting">
     <bc-label class="col-1" [label]="'VOTING_DATA_SOURCE.E_VOTING' | translate"></bc-label>
-    <bc-number [disabled]="true" [tabIndex]="-1" [value]="countOfVoters.eVotingReceivedBallots" [subscriptSizing]="'dynamic'"></bc-number>
-    <bc-number [disabled]="true" [tabIndex]="-1" [(value)]="countOfVoters.eVotingBlankBallots" [subscriptSizing]="'dynamic'"></bc-number>
-    <bc-number [disabled]="true" [tabIndex]="-1" [(value)]="countOfVoters.eVotingInvalidBallots" [subscriptSizing]="'dynamic'"></bc-number>
-    <bc-number [disabled]="true" [tabIndex]="-1" [value]="countOfVoters.eVotingAccountedBallots" [subscriptSizing]="'dynamic'"></bc-number>
+    <bc-number [readonly]="true" [tabIndex]="-1" [value]="countOfVoters.eVotingReceivedBallots" [subscriptSizing]="'dynamic'"></bc-number>
+    <bc-number [readonly]="true" [tabIndex]="-1" [(value)]="countOfVoters.eVotingBlankBallots" [subscriptSizing]="'dynamic'"></bc-number>
+    <bc-number [readonly]="true" [tabIndex]="-1" [(value)]="countOfVoters.eVotingInvalidBallots" [subscriptSizing]="'dynamic'"></bc-number>
+    <bc-number [readonly]="true" [tabIndex]="-1" [value]="countOfVoters.eVotingAccountedBallots" [subscriptSizing]="'dynamic'"></bc-number>
     <bc-label class="col-1" [label]="'VOTING_DATA_SOURCE.TOTAL' | translate"></bc-label>
-    <bc-number [disabled]="true" [tabIndex]="-1" [value]="countOfVoters.totalReceivedBallots" [subscriptSizing]="'dynamic'"></bc-number>
-    <bc-number [disabled]="true" [tabIndex]="-1" [(value)]="countOfVoters.totalBlankBallots" [subscriptSizing]="'dynamic'"></bc-number>
-    <bc-number [disabled]="true" [tabIndex]="-1" [(value)]="countOfVoters.totalInvalidBallots" [subscriptSizing]="'dynamic'"></bc-number>
-    <bc-number [disabled]="true" [tabIndex]="-1" [value]="countOfVoters.totalAccountedBallots" [subscriptSizing]="'dynamic'"></bc-number>
+    <bc-number [readonly]="true" [tabIndex]="-1" [value]="countOfVoters.totalReceivedBallots" [subscriptSizing]="'dynamic'"></bc-number>
+    <bc-number [readonly]="true" [tabIndex]="-1" [(value)]="countOfVoters.totalBlankBallots" [subscriptSizing]="'dynamic'"></bc-number>
+    <bc-number [readonly]="true" [tabIndex]="-1" [(value)]="countOfVoters.totalInvalidBallots" [subscriptSizing]="'dynamic'"></bc-number>
+    <bc-number [readonly]="true" [tabIndex]="-1" [value]="countOfVoters.totalAccountedBallots" [subscriptSizing]="'dynamic'"></bc-number>
   </ng-container>
   <bc-text
     class="col-6 align-right"
-    [disabled]="true"
+    [readonly]="true"
     [tabIndex]="-1"
     [value]="!countOfVoters.voterParticipation ? '-' : (countOfVoters.voterParticipation | percent: '1.2-2')"
     [subscriptSizing]="'dynamic'"

@@ -14,7 +14,7 @@ import {
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/contest_requests_pb';
 import { GrpcBackendService, GrpcEnvironment, GrpcService } from '@abraxas/voting-lib';
 import { Inject, Injectable } from '@angular/core';
-import { ContestCantonDefaults, CountingCircle } from '../models';
+import { ContestCantonDefaults, CountingCircle, DomainOfInfluence, DomainOfInfluenceProto } from '../models';
 import { Contest, ContestCantonDefaultsProto, ContestProto, ContestSummary, ContestSummaryProto } from '../models/contest.model';
 import { GRPC_ENV_INJECTION_TOKEN } from './tokens';
 import { groupBySingle } from './utils/array.utils';
@@ -114,6 +114,31 @@ export class ContestService extends GrpcService<ContestServicePromiseClient> {
       state,
       locked: state === ContestState.CONTEST_STATE_PAST_LOCKED || state === ContestState.CONTEST_STATE_ARCHIVED,
       cantonDefaults: ContestService.mapToCantonDefaults(data.getCantonDefaults()!),
+      domainOfInfluence: this.mapToDomainOfInfluence(data.getDomainOfInfluence()!),
     };
+  }
+
+  private mapToDomainOfInfluence(doi: DomainOfInfluenceProto): DomainOfInfluence {
+    const doiId = doi.getId();
+    return {
+      id: doiId,
+      name: doi.getName(),
+      shortName: doi.getShortName(),
+      authorityName: doi.getAuthorityName(),
+      secureConnectId: doi.getSecureConnectId(),
+      type: doi.getType(),
+      parentId: doi.getParentId(),
+      childrenList: this.mapToDomainOfInfluences(doi.getChildrenList()),
+      canton: doi.getCanton(),
+      contactPerson: doi.getContactPerson()?.toObject(),
+    };
+  }
+
+  private mapToDomainOfInfluences(data: DomainOfInfluenceProto[] | undefined): DomainOfInfluence[] {
+    if (!data) {
+      return [];
+    }
+
+    return data.map(doi => this.mapToDomainOfInfluence(doi));
   }
 }

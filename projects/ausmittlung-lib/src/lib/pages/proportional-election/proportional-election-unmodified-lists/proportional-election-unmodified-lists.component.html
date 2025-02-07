@@ -13,7 +13,7 @@
         <span>{{listResult.list.orderNumber}}</span>
         <span>{{listResult.list.shortDescription}}</span>
         <span>{{listResult.list.description}}</span>
-        <bc-number [disabled]="!canEdit || resultReadOnly"
+        <bc-number [readonly]="!canEdit || resultReadOnly"
                    [ngModel]="listResult.conventionalVoteCount"
                    [allowUndefined]="false"
                    (ngModelChange)="listResult.conventionalVoteCount = +$event; updateTotalAndSetChanges()"

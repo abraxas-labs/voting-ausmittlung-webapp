@@ -17,7 +17,7 @@
         <span class="clickable" (click)="page.sidebarOpen = true; focusedBallotGroup = ballotGroup">
           {{ballotGroup.ballotGroup.description}}
         </span>
-        <bc-number [disabled]="!canEdit || resultReadOnly"
+        <bc-number [readonly]="!canEdit || resultReadOnly"
                    [ngModel]="ballotGroup.voteCount"
                    [allowUndefined]="false"
                    (ngModelChange)="ballotGroup.voteCount = +$event; updateTotalAndSetChanges()"

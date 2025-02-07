@@ -13,11 +13,13 @@
 <bc-radio-button-group [label]="'VOTE.RESULT_ENTRY.BALLOT_BUNDLE_NUMBER_GENERATION.TITLE' | translate"
                        orientation="vertical"
                        [items]="automaticBallotBundleNumberGenerationChoices"
-                       [(value)]="resultEntryParams.automaticBallotBundleNumberGeneration">
+                       [(value)]="resultEntryParams.automaticBallotBundleNumberGeneration"
+                       [subscriptSizing]="'dynamic'">
 </bc-radio-button-group>
 <bc-radio-button-group [label]="'VOTE.RESULT_ENTRY.REVIEW_PROCEDURE.TITLE' | translate"
                        orientation="vertical"
                        [items]="reviewProcedureChoices"
                        [(value)]="resultEntryParams.reviewProcedure"
-                       [disabled]="enforceReviewProcedure">
+                       [disabled]="enforceReviewProcedure"
+                       [subscriptSizing]="'dynamic'">
 </bc-radio-button-group>

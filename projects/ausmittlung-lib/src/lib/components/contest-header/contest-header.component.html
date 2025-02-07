@@ -13,14 +13,14 @@
                          backgroundColor="#c4e6c3"
                          [label]="('CONTEST.END_OF_TESTING_PHASE' | translate) + ' ' + (contest.endOfTestingPhase | date: 'short')">
         </bc-status-label>
-        <ng-container *ngSwitchCase="states.CONTEST_STATE_PAST_LOCKED">
+        <div *ngSwitchCase="states.CONTEST_STATE_PAST_LOCKED">
           <bc-status-label foregroundColor="dark"
                            backgroundColor="#fec6c3"
                            [label]="'CONTEST.PAST_LOCKED' | translate"></bc-status-label>
           <bc-button variant="tertiary"
                      [label]="'CONTEST.PAST_UNLOCK.OPEN' | translate"
                      (buttonClick)="openPastUnlockDialog()"></bc-button>
-        </ng-container>
+        </div>
         <bc-status-label *ngSwitchCase="states.CONTEST_STATE_PAST_UNLOCKED"
                          foregroundColor="dark"
                          backgroundColor="#95d2a4"

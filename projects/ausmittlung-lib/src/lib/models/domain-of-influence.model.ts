@@ -12,3 +12,4 @@ import { DomainOfInfluenceType } from '@abraxas/voting-ausmittlung-service-proto
 
 export type DomainOfInfluence = DomainOfInfluenceProto.AsObject;
 export { DomainOfInfluenceType, DomainOfInfluenceCanton };
+export { DomainOfInfluenceProto };

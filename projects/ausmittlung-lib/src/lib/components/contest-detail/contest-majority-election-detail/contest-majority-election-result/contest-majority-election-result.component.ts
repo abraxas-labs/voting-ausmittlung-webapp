@@ -30,6 +30,15 @@ export class ContestMajorityElectionResultComponent {
   @Input()
   public candidateCheckDigit: boolean = false;
 
+  @Input()
+  public showInvalidVotes: boolean = false;
+
+  @Input()
+  public showIndividualVotes: boolean = false;
+
+  @Input()
+  public showEmptyVotes: boolean = true;
+
   @ViewChild('candidateResultsContainer', { static: true })
   public candidateResultsContainer!: ElementRef;
 

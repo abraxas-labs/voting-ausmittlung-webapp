@@ -140,6 +140,8 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
     } else {
       await this.resultService.revertEndResultMandateDistribution(proportionalElectionId);
       this.endResult.mandateDistributionTriggered = false;
+      this.endResult.manualEndResultRequired = false;
+      this.hasLotDecisions = false;
     }
 
     this.toast.success(this.i18n.instant('APP.SAVED'));

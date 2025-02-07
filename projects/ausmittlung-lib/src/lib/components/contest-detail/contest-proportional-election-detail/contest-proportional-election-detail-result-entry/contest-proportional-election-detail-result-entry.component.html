@@ -11,6 +11,7 @@
         [items]="reviewProcedureChoices"
         [(value)]="resultEntryParams.reviewProcedure"
         [disabled]="election.enforceReviewProcedureForCountingCircles"
+        [subscriptSizing]="'dynamic'"
       >
       </bc-radio-button-group>
     </vo-ausm-election-result-entry-params>

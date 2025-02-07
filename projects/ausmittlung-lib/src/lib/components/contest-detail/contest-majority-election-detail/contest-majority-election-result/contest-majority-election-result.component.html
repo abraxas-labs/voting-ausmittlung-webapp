@@ -22,13 +22,29 @@
           <ng-container *ngTemplateOutlet="votePercentIndicator; context: {$implicit: candidate.voteCount}"></ng-container>
         </ng-container>
 
-        <ng-container *ngIf="!result.election.individualCandidatesDisabled">
+        <ng-container *ngIf="showIndividualVotes">
           <span translate class="candidate-candidacy">MAJORITY_ELECTION.INDIVIDUAL</span>
           <span><!-- party --></span>
           <span *ngIf="eVotingValue" class="candidate-vote-count">{{result.conventionalSubTotal.individualVoteCount | number}}</span>
           <span *ngIf="eVotingValue" class="candidate-vote-count">{{result.eVotingSubTotal.individualVoteCount | number}}</span>
           <span class="candidate-vote-count">{{result.individualVoteCount | number}}</span>
           <ng-container *ngTemplateOutlet="votePercentIndicator; context: {$implicit: result.individualVoteCount}"></ng-container>
+        </ng-container>
+
+        <ng-container *ngIf="showEmptyVotes">
+          <span translate class="candidate-candidacy">MAJORITY_ELECTION.EMPTY_VOTES</span>
+          <span><!-- party --></span>
+          <span *ngIf="eVotingValue" class="candidate-vote-count">{{result.conventionalSubTotal.emptyVoteCountExclWriteIns | number}}</span>
+          <span *ngIf="eVotingValue" class="candidate-vote-count">{{result.eVotingSubTotal.emptyVoteCountExclWriteIns | number}}</span>
+          <span class="candidate-vote-count">{{result.emptyVoteCount | number}}</span>
+        </ng-container>
+
+        <ng-container *ngIf="showInvalidVotes">
+          <span translate class="candidate-candidacy">MAJORITY_ELECTION.INVALID_VOTES</span>
+          <span><!-- party --></span>
+          <span *ngIf="eVotingValue" class="candidate-vote-count">{{result.conventionalSubTotal.invalidVoteCount | number}}</span>
+          <span *ngIf="eVotingValue" class="candidate-vote-count">{{result.eVotingSubTotal.invalidVoteCount | number}}</span>
+          <span class="candidate-vote-count">{{result.invalidVoteCount | number}}</span>
         </ng-container>
       </div>
     </div>

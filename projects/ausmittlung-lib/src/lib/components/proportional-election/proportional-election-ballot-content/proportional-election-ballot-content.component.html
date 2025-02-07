@@ -19,7 +19,7 @@
       [label]="'ELECTION.BALLOT_DETAIL.EMPTY' | translate"
       [min]="0"
       [max]="electionResult.election.numberOfMandates"
-      [disabled]="disabled || readonly || electionResult.entryParams.automaticEmptyVoteCounting"
+      [readonly]="disabled || readonly || electionResult.entryParams.automaticEmptyVoteCounting"
       [error]="!ballotUiData.emptyVoteCountValid"
       [value]="ballotUiData.userEnteredEmptyVoteCount"
       (valueChange)="updateEmptyVotes(+$event)"

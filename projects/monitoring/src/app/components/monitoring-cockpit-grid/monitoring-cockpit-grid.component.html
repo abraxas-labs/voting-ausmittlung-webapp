@@ -7,7 +7,7 @@
                  [clearable]="true"
                  [optionalText]="''"
                  (valueChange)="countingCircleFilterSelected($event)"
-                 [disabled]="plausibiliseLoading"
+                 [readonly]="plausibiliseLoading"
                  [typeaheadDebounceInterval]="250"
                  displayExpr="name"
                  [subscriptSizing]="'dynamic'"></bc-dropdown>
@@ -99,7 +99,7 @@
             [results]="[result.resultsByPoliticalBusinessId[politicalBusiness.id]]"
             [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
             [disabled]="publishing"
-            [showPublishSwitch]="publishResultsEnabled && politicalBusiness.domainOfInfluence.type < domainOfInfluenceTypes.DOMAIN_OF_INFLUENCE_TYPE_MU"
+            [showPublishSwitch]="manualPublishResultsEnabled && politicalBusiness.domainOfInfluence.type < domainOfInfluenceTypes.DOMAIN_OF_INFLUENCE_TYPE_MU"
             [publishResultsBeforeAuditedTentatively]="publishResultsBeforeAuditedTentatively"
             (publishedChanged)="updatePublished($event, politicalBusiness.businessType, [result.resultsByPoliticalBusinessId[politicalBusiness.id]])">
           </app-monitoring-cockpit-grid-entry>
@@ -112,7 +112,7 @@
             [results]="result.resultsByPoliticalBusinessUnionId[politicalBusinessUnion.id] ?? []"
             [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
             [disabled]="publishing"
-            [showPublishSwitch]="publishResultsEnabled && politicalBusinessUnion.politicalBusinesses[0].domainOfInfluence.type < domainOfInfluenceTypes.DOMAIN_OF_INFLUENCE_TYPE_MU"
+            [showPublishSwitch]="manualPublishResultsEnabled && politicalBusinessUnion.politicalBusinesses[0].domainOfInfluence.type < domainOfInfluenceTypes.DOMAIN_OF_INFLUENCE_TYPE_MU"
             [publishResultsBeforeAuditedTentatively]="publishResultsBeforeAuditedTentatively"
             (publishedChanged)="updatePublished($event, politicalBusinessUnion.politicalBusinesses[0].businessType, result.resultsByPoliticalBusinessUnionId[politicalBusinessUnion.id] ?? [])">
           </app-monitoring-cockpit-grid-entry>
@@ -129,8 +129,8 @@
     </ng-container>
 
     <!-- Footer Row -->
-    <app-monitoring-cockpit-grid-footer *ngIf="!countingCircleFilter && stateFilter.length === 0"
-                                        [readOnly]="readOnly"
+    <app-monitoring-cockpit-grid-footer *ngIf="!countingCircleFilter"
+                                        [readOnly]="readOnly || stateFilter.length > 0"
                                         (loadingChange)="plausibiliseLoading = $event"
                                         [filteredDomainOfInfluenceTypes]="filteredDomainOfInfluenceTypes"
                                         [filteredPoliticalBusinessesByDoiType]="filteredPoliticalBusinessesByDoiType"

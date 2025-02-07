@@ -12,6 +12,7 @@ import {
   ContestCantonDefaults as ContestCantonDefaultsProto,
   CountingCircleResultStateDescription as CountingCircleResultStateDescriptionProto,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/contest_pb';
+import { DomainOfInfluence } from './domain-of-influence.model';
 
 export { ContestState };
 export { ContestProto };
@@ -33,6 +34,7 @@ export type Contest = {
 export { ContestSummaryProto };
 export type ContestSummary = Contest & {
   contestEntriesDetails: ContestSummaryEntryDetails[];
+  domainOfInfluence: DomainOfInfluence;
 };
 export type ContestSummaryEntryDetails = ContestSummaryEntryDetailsProto.AsObject;
 export { ContestCantonDefaultsProto };

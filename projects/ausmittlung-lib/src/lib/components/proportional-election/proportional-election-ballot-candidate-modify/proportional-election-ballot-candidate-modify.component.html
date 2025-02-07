@@ -4,7 +4,7 @@
     [focusOnLoad]="true"
     optionalText=""
     [label]="'ELECTION.BALLOT_DETAIL.REMOVE_CANDIDATE' | translate"
-    [disabled]="readonly"
+    [readonly]="readonly"
     [hint]="
       (candidateCheckDigit
         ? 'PROPORTIONAL_ELECTION.BALLOT_DETAIL.REMOVE_CANDIDATE_HINT_WITH_CHECK_DIGIT'
@@ -27,7 +27,7 @@
     #addCandidateInput
     optionalText=""
     [label]="'ELECTION.BALLOT_DETAIL.ADD_CANDIDATE_SHORTCUT' | translate"
-    [disabled]="readonly || !canAddCandidate"
+    [readonly]="readonly || !canAddCandidate"
     [(ngModel)]="addCandidateValue"
     [hint]="
       (candidateCheckDigit
