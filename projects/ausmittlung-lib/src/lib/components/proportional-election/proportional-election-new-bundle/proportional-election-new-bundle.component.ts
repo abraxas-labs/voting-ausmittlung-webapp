@@ -18,6 +18,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   selector: 'vo-ausm-proportional-election-new-bundle',
   templateUrl: './proportional-election-new-bundle.component.html',
   styleUrls: ['./proportional-election-new-bundle.component.scss'],
+  standalone: false,
 })
 export class ProportionalElectionNewBundleComponent implements OnInit {
   public readonly columns = ['select', 'orderNumber', 'shortDescription', 'description'];

@@ -17,6 +17,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-proportional-election-union-double-proportional-result',
   templateUrl: './proportional-election-union-double-proportional-result.component.html',
   styleUrls: ['./proportional-election-union-double-proportional-result.component.scss'],
+  standalone: false,
 })
 export class ProportionalElectionUnionDoubleProportionalResultComponent implements OnDestroy {
   private readonly routeSubscription: Subscription;

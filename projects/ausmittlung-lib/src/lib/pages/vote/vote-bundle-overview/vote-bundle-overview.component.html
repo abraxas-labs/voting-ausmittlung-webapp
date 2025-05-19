@@ -7,35 +7,25 @@
         <bc-icon class="clickable-icon" icon="question-circle-o" (click)="showShortcutDialog()"></bc-icon>
       </div>
 
-      <h3 translate>VOTE.BUNDLE_TABLES.OPEN</h3>
-      <ng-container *ngTemplateOutlet="bundleTable; context: {bundles: openBundles, isReviewProcedurePhysically: result.politicalBusinessResult.entryParams?.reviewProcedure === reviewProcedures.VOTE_REVIEW_PROCEDURE_PHYSICALLY}"></ng-container>
-
-      <h3 translate>VOTE.BUNDLE_TABLES.REVIEWED</h3>
-      <ng-container *ngTemplateOutlet="bundleTable; context: {bundles: reviewedBundles}"></ng-container>
-
-      <h3 translate>VOTE.BUNDLE_TABLES.DELETED</h3>
-      <ng-container *ngTemplateOutlet="bundleTable; context: {bundles: deletedBundles}"></ng-container>
-
-      <ng-template #bundleTable let-bundles="bundles" let-isReviewProcedurePhysically="isReviewProcedurePhysically">
-        <vo-ausm-vote-bundle-table [bundles]="bundles"
-                                   [rowSelectable]="true"
-                                   [enablePagination]="true"
-                                   [enableActions]="true"
-                                   [enableSorting]="true"
-                                   [enableFiltering]="true"
-                                   [readOnly]="resultReadOnly"
-                                   (openDetail)="openBundle($event)"
-                                   (reviewBundle)="reviewBundle($event)"
-                                   (succeedBundleReview)="succeedBundleReview($event)"
-                                   (rejectBundleReview)="rejectBundleReview($event)"
-                                   (deleteBundle)="deleteBundle($event)"
-                                   (generateBundleReviewExport)="generateBundleReviewExport($event)"
-                                   (downloadBundleReviewExport)="downloadBundleReviewExport($event)"
-                                   [reviewProcedure]="result.politicalBusinessResult.entryParams?.reviewProcedure"
-                                   [enableReviewMultiple]="isReviewProcedurePhysically"
-                                   [enableReviewColumn]="isReviewProcedurePhysically">
-        </vo-ausm-vote-bundle-table>
-      </ng-template>
+      <vo-ausm-vote-bundle-table [bundles]="result.bundles"
+                                 [rowSelectable]="true"
+                                 [enablePagination]="true"
+                                 [enableActions]="true"
+                                 [enableSorting]="true"
+                                 [enableFiltering]="true"
+                                 [enableBundleSizeColumn]="false"
+                                 [readOnly]="resultReadOnly"
+                                 (openDetail)="openBundle($event)"
+                                 (reviewBundle)="reviewBundle($event)"
+                                 (succeedBundleReview)="succeedBundleReview($event)"
+                                 (rejectBundleReview)="rejectBundleReview($event)"
+                                 (deleteBundle)="deleteBundle($event)"
+                                 (generateBundleReviewExport)="generateBundleReviewExport($event)"
+                                 (downloadBundleReviewExport)="downloadBundleReviewExport($event)"
+                                 [reviewProcedure]="result.politicalBusinessResult.entryParams?.reviewProcedure"
+                                 [enableReviewMultiple]="result.politicalBusinessResult.entryParams?.reviewProcedure === reviewProcedures.VOTE_REVIEW_PROCEDURE_PHYSICALLY"
+                                 [enableReviewColumn]="result.politicalBusinessResult.entryParams?.reviewProcedure === reviewProcedures.VOTE_REVIEW_PROCEDURE_PHYSICALLY">
+      </vo-ausm-vote-bundle-table>
     </div>
     <div class="sticky-buttons">
       <vo-lib-button-bar [cancelLabel]="'APP.BACK' | translate"

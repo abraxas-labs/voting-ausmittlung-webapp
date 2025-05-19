@@ -2,6 +2,11 @@ bc-button.full-width ::ng-deep button {
   width: 100% !important;
 }
 
+bc-button.full-height ::ng-deep button {
+  min-height: var(--mdc-outlined-button-container-height);
+  height: 100%;
+}
+
 bc-button {
   margin-left: 0 !important;
 }

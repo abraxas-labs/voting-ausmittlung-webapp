@@ -24,6 +24,7 @@ import { MajorityElectionResultBundleService } from '../../../services/majority-
   selector: 'vo-ausm-majority-election-ballot-review',
   templateUrl: './majority-election-ballot-review.component.html',
   styleUrls: ['./majority-election-ballot-review.component.scss'],
+  standalone: false,
 })
 export class MajorityElectionBallotReviewComponent implements OnDestroy {
   public loading: boolean = true;

@@ -1,5 +1,6 @@
-<bc-tab-bar (selectedChange)="changeDataSource($event)">
+<bc-tab-bar *ngIf="eVoting || eCounting" (selectedChange)="changeDataSource($event)">
   <bc-tab [label]="'VOTING_DATA_SOURCE.TOTAL' | translate"></bc-tab>
   <bc-tab [label]="'VOTING_DATA_SOURCE.CONVENTIONAL' | translate"></bc-tab>
-  <bc-tab [label]="'VOTING_DATA_SOURCE.E_VOTING' | translate"></bc-tab>
+  <bc-tab *ngIf="eVoting" [label]="'VOTING_DATA_SOURCE.E_VOTING' | translate"></bc-tab>
+  <bc-tab *ngIf="eCounting" [label]="'VOTING_DATA_SOURCE.E_COUNTING' | translate"></bc-tab>
 </bc-tab-bar>

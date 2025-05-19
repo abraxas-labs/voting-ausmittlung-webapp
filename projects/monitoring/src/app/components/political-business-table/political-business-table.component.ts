@@ -5,18 +5,20 @@
  */
 
 import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { FilterDirective, SortDirective, TableDataSource } from '@abraxas/base-components';
+import { FilterDirective, SelectionDirective, SortDirective, TableDataSource } from '@abraxas/base-components';
 import { SimplePoliticalBusinessOverview } from '../monitoring-political-businesses-overview/monitoring-political-businesses-overview.component';
 import { DomainOfInfluenceType } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/domain_of_influence_pb';
 import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/political_business_pb';
 import { EnumItemDescription, EnumUtil } from '@abraxas/voting-lib';
 import { CountingCircleResultState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/counting_circle_pb';
 import { TranslateService } from '@ngx-translate/core';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-political-business-table',
   templateUrl: './political-business-table.component.html',
   styleUrls: ['./political-business-table.component.scss'],
+  standalone: false,
 })
 export class PoliticalBusinessTableComponent implements OnInit, AfterViewInit {
   public readonly minStateColumn = 'minState';
@@ -26,16 +28,22 @@ export class PoliticalBusinessTableComponent implements OnInit, AfterViewInit {
   public readonly shortDescriptionColumn = 'shortDescription';
   public readonly amountOfCountingCirclesColumn = 'amountOfCountingCircles';
   public readonly domainOfInfluenceColumn = 'domainOfInfluence';
+  public readonly numberOfMandatesColumn = 'numberOfMandates';
 
-  public readonly columns = [
+  public readonly originalColumns = [
     this.minStateColumn,
     this.domainOfInfluenceTypeColumn,
     this.businessTypeColumn,
     this.politicalBusinessNumberColumn,
     this.shortDescriptionColumn,
+    this.numberOfMandatesColumn,
     this.amountOfCountingCirclesColumn,
     this.domainOfInfluenceColumn,
   ];
+
+  public readonly minColumns = [this.minStateColumn, this.politicalBusinessNumberColumn, this.shortDescriptionColumn];
+
+  public columns = this.originalColumns;
 
   @Input()
   public set politicalBusinesses(data: SimplePoliticalBusinessOverview[]) {
@@ -51,6 +59,9 @@ export class PoliticalBusinessTableComponent implements OnInit, AfterViewInit {
   @ViewChild(FilterDirective, { static: true })
   public filter!: FilterDirective;
 
+  @ViewChild(SelectionDirective, { static: true })
+  public selection!: SelectionDirective<SimplePoliticalBusinessOverview>;
+
   public dataSource = new TableDataSource<SimplePoliticalBusinessOverview>();
   public stateList: EnumItemDescription<CountingCircleResultState>[] = [];
   public domainOfInfluenceTypeList: EnumItemDescription<DomainOfInfluenceType>[] = [];
@@ -59,6 +70,7 @@ export class PoliticalBusinessTableComponent implements OnInit, AfterViewInit {
   constructor(
     private readonly enumUtil: EnumUtil,
     private readonly i18n: TranslateService,
+    private readonly storageService: StorageService,
   ) {}
 
   public ngOnInit(): void {
@@ -112,5 +124,22 @@ export class PoliticalBusinessTableComponent implements OnInit, AfterViewInit {
   public ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
     this.dataSource.filter = this.filter;
+
+    const selectedPoliticalBusinessId = this.storageService.getMonitoringCockpitSelectedPoliticalBusinessId();
+    const selectedPoliticalBusiness = this.dataSource.data.find(x => x.id === selectedPoliticalBusinessId);
+    if (selectedPoliticalBusiness) {
+      this.selection.toggleSelection(selectedPoliticalBusiness);
+      this.politicalBusinessSelected.emit(selectedPoliticalBusiness);
+    }
+  }
+
+  public toggleRow(row: SimplePoliticalBusinessOverview): void {
+    this.selection.toggleSelection(row);
+    this.politicalBusinessSelected.emit(row);
+    this.storageService.storeMonitoringCockpitSelectedPoliticalBusinessId(row.id);
+  }
+
+  public toggleAllFields(value: boolean): void {
+    this.columns = value ? this.originalColumns : this.minColumns;
   }
 }

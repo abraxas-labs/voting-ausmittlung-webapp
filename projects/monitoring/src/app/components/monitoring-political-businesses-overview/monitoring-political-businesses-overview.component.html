@@ -1,12 +1,28 @@
 <div class="container">
-  <div class="left">
+  <div [style.width]="allFieldsPoliticalBusinessTableActive ? '60%' : '25%'">
     <h2>{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.POLITICAL_BUSINESS.TITLE' | translate: { count: politicalBusinesses.length } }}</h2>
-    <app-political-business-table [politicalBusinesses]="politicalBusinesses" (politicalBusinessSelected)="openCountingCircleResults($event)"></app-political-business-table>
+    <div class="flex">
+      <bc-switch
+        [label]="'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.ALL_FIELDS' | translate"
+        [(checked)]="allFieldsPoliticalBusinessTableActive"
+        (checkedChange)="politicalBusinessTable.toggleAllFields($event)"
+      ></bc-switch>
+    </div>
+    <app-political-business-table
+      #politicalBusinessTable
+      [politicalBusinesses]="politicalBusinesses"
+      (politicalBusinessSelected)="
+        openCountingCircleResults($event); politicalBusinessTable.toggleAllFields(false); allFieldsPoliticalBusinessTableActive = false
+      "
+    ></app-political-business-table>
   </div>
   <div class="right">
     <ng-container *ngIf="countingCircles.length !== 0; else countingCircleResults">
       <h2>{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.COUNTING_CIRCLE_RESULT.TITLE' | translate: { count: countingCircles.length } }}</h2>
-      <app-counting-circle-table [countingCircles]="countingCircles" [countingCirclesById]="countingCirclesById"></app-counting-circle-table>
+      <app-counting-circle-table
+        [countingCircles]="countingCircles"
+        [countingCirclesById]="countingCirclesById"
+      ></app-counting-circle-table>
     </ng-container>
   </div>
 </div>

@@ -20,6 +20,7 @@ import {
   selector: 'app-proportional-election-list-lot-decision-edit-dialog',
   templateUrl: './proportional-election-list-lot-decision-edit-dialog.component.html',
   styleUrls: ['./proportional-election-list-lot-decision-edit-dialog.component.scss'],
+  standalone: false,
 })
 export class ProportionalElectionListLotDecisionEditDialogComponent {
   public readonly columns = ['description', 'winner'];

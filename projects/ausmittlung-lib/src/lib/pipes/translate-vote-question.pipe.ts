@@ -29,6 +29,7 @@ const attributeKeyMap: Record<QuestionAttribute, string> = {
 
 @Pipe({
   name: 'translateVoteQuestion',
+  standalone: false,
 })
 export class TranslateVoteQuestionPipe implements PipeTransform {
   constructor(private readonly i18n: TranslateService) {}

@@ -12,6 +12,7 @@ import { BallotSubType } from '@abraxas/voting-ausmittlung-service-proto/grpc/mo
   selector: 'app-question-popular-majority-algorithm-end-result',
   templateUrl: './question-popular-majority-algorithm-end-result.component.html',
   styleUrls: ['./question-popular-majority-algorithm-end-result.component.scss'],
+  standalone: false,
 })
 export class QuestionPopularMajorityAlgorithmEndResultComponent {
   @Input()
@@ -22,6 +23,9 @@ export class QuestionPopularMajorityAlgorithmEndResultComponent {
 
   @Input()
   public eVoting: boolean = false;
+
+  @Input()
+  public eCounting: boolean = false;
 
   @Input()
   public endResult!: BallotQuestionEndResult | TieBreakQuestionEndResult;

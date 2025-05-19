@@ -18,6 +18,7 @@ interface SearchableCandidate extends ProportionalElectionCandidate {
   selector: 'vo-ausm-proportional-election-ballot-candidates-choose-dialog',
   templateUrl: './proportional-election-ballot-candidates-choose-dialog.component.html',
   styleUrls: ['./proportional-election-ballot-candidates-choose-dialog.component.scss'],
+  standalone: false,
 })
 export class ProportionalElectionBallotCandidatesChooseDialogComponent implements AfterViewInit {
   public readonly allCandidates: SearchableCandidate[];

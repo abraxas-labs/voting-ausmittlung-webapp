@@ -21,6 +21,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   selector: 'vo-ausm-contest-counting-circle-electorates-update-dialog',
   templateUrl: './contest-counting-circle-electorates-update-dialog.component.html',
   styleUrls: ['./contest-counting-circle-electorates-update-dialog.component.scss'],
+  standalone: false,
 })
 export class ContestCountingCircleElectoratesUpdateDialogComponent {
   private readonly contestId: string;

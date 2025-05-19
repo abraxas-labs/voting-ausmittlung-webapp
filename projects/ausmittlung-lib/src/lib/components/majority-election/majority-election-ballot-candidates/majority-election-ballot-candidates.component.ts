@@ -11,6 +11,7 @@ import { MajorityElectionBallotCandidate } from '../../../models';
   selector: 'vo-ausm-majority-election-ballot-candidates',
   templateUrl: './majority-election-ballot-candidates.component.html',
   styleUrls: ['./majority-election-ballot-candidates.component.scss'],
+  standalone: false,
 })
 export class MajorityElectionBallotCandidatesComponent {
   @Input()

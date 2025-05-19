@@ -21,6 +21,7 @@ import { TranslateService } from '@ngx-translate/core';
   selector: 'app-proportional-election-union-end-result',
   templateUrl: './proportional-election-union-end-result.component.html',
   styleUrls: ['./proportional-election-union-end-result.component.scss'],
+  standalone: false,
 })
 export class ProportionalElectionUnionEndResultComponent implements OnDestroy {
   private readonly routeSubscription: Subscription;

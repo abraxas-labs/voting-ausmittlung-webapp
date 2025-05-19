@@ -13,6 +13,7 @@ import { BallotNavigationComponent } from '../ballot-navigation/ballot-navigatio
   selector: 'vo-ausm-ballot-header',
   templateUrl: './ballot-header.component.html',
   styleUrls: ['./ballot-header.component.scss'],
+  standalone: false,
 })
 export class BallotHeaderComponent {
   public readonly deleteBallotPermission = Permissions.PoliticalBusinessResultBallot.Delete;

@@ -18,6 +18,7 @@ import { DomainOfInfluenceCanton } from '@abraxas/voting-ausmittlung-service-pro
 @Component({
   selector: 'vo-ausm-contest-detail-voting-cards',
   templateUrl: './contest-detail-voting-cards.component.html',
+  standalone: false,
 })
 export class ContestDetailVotingCardsComponent implements OnInit {
   public electorateVotingCardsList: { votingCards: ElectorateVotingCardResultDetail[]; domainOfInfluenceTypes: DomainOfInfluenceType[] }[] =

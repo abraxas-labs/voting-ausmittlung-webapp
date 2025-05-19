@@ -12,6 +12,7 @@ import { ContestSummary } from 'ausmittlung-lib';
   selector: 'app-monitoring-contest-overview',
   templateUrl: './monitoring-contest-overview.component.html',
   styleUrls: ['./monitoring-contest-overview.component.scss'],
+  standalone: false,
 })
 export class MonitoringContestOverviewComponent {
   constructor(

@@ -11,9 +11,9 @@ import { debounceTime, map } from 'rxjs/operators';
 import {
   MajorityElectionCandidate,
   MajorityElectionWriteInMapping,
+  MajorityElectionWriteInMappings,
   MajorityElectionWriteInMappingTarget,
   PoliticalBusinessType,
-  SimplePoliticalBusiness,
 } from '../../../models';
 import { MajorityElectionService } from '../../../services/majority-election.service';
 import { groupBySingle } from '../../../services/utils/array.utils';
@@ -59,6 +59,7 @@ const candidateIdByMappingTarget: Record<MajorityElectionWriteInMappingTarget, s
   selector: 'vo-ausm-majority-election-write-in-mapping',
   templateUrl: './majority-election-write-in-mapping.component.html',
   styleUrls: ['./majority-election-write-in-mapping.component.scss'],
+  standalone: false,
 })
 export class MajorityElectionWriteInMappingComponent implements OnChanges {
   public loadingCandidates: boolean = true;
@@ -71,19 +72,10 @@ export class MajorityElectionWriteInMappingComponent implements OnChanges {
   public readOnly: boolean = true;
 
   @Input()
-  public election!: SimplePoliticalBusiness;
+  public group!: MajorityElectionWriteInMappings;
 
   @Input()
-  public writeInMappings: MajorityElectionWriteInMapping[] = [];
-
-  @Input()
-  public supportsInvalidVotes: boolean = false;
-
-  @Input()
-  public supportsIndividualVotes: boolean = false;
-
-  @Input()
-  public canShowNextElection: boolean = false;
+  public canShowNextGroup: boolean = false;
 
   @Input()
   public canShowResetMappings: boolean = false;
@@ -92,7 +84,7 @@ export class MajorityElectionWriteInMappingComponent implements OnChanges {
   public writeInMappingsChange: EventEmitter<MajorityElectionWriteInMapping[]> = new EventEmitter<MajorityElectionWriteInMapping[]>();
 
   @Output()
-  public showNextElection: EventEmitter<void> = new EventEmitter<void>();
+  public showNextGroup: EventEmitter<void> = new EventEmitter<void>();
 
   @Output()
   public resetMappings: EventEmitter<void> = new EventEmitter<void>();
@@ -120,12 +112,12 @@ export class MajorityElectionWriteInMappingComponent implements OnChanges {
   }
 
   public async ngOnChanges(changes: SimpleChanges): Promise<void> {
-    if (changes.election === undefined) {
+    if (changes.group === undefined) {
       return;
     }
 
     this.writeInMappingsById = groupBySingle(
-      this.writeInMappings,
+      this.group.writeInMappings,
       x => x.id,
       x => x,
     );
@@ -219,7 +211,7 @@ export class MajorityElectionWriteInMappingComponent implements OnChanges {
     candidateMapping.totalWriteInVoteCount += writeIn.voteCount;
     candidateMapping.writeInMappings = [...candidateMapping.writeInMappings, writeIn];
     this.availableWriteInMappings = this.availableWriteInMappings.filter(x => x.id !== writeIn.id);
-    this.writeInMappingsChange.emit(this.writeInMappings);
+    this.writeInMappingsChange.emit(this.group.writeInMappings);
   }
 
   public removeMapping(writeInCopy: MajorityElectionWriteInMapping, candidateMapping: CandidateWithMappings): void {
@@ -235,7 +227,7 @@ export class MajorityElectionWriteInMappingComponent implements OnChanges {
 
     writeIn.candidateId = '';
     this.availableWriteInMappings = [writeIn, ...this.availableWriteInMappings];
-    this.writeInMappingsChange.emit(this.writeInMappings);
+    this.writeInMappingsChange.emit(this.group.writeInMappings);
     this.selectFirstAvailableWriteInMapping();
   }
 
@@ -250,7 +242,7 @@ export class MajorityElectionWriteInMappingComponent implements OnChanges {
   }
 
   private updateAvailableWriteInMappings(): void {
-    this.availableWriteInMappings = this.writeInMappings.filter(
+    this.availableWriteInMappings = this.group.writeInMappings.filter(
       ({ target }) => target === MajorityElectionWriteInMappingTarget.MAJORITY_ELECTION_WRITE_IN_MAPPING_TARGET_UNSPECIFIED,
     );
     this.selectFirstAvailableWriteInMapping();
@@ -273,11 +265,8 @@ export class MajorityElectionWriteInMappingComponent implements OnChanges {
       x => x,
     );
 
-    if (this.writeInMappings === undefined) {
-      this.writeInMappings = [];
-    }
-
-    for (const writeInMapping of this.writeInMappings) {
+    this.group.writeInMappings ??= [];
+    for (const writeInMapping of this.group.writeInMappings) {
       if (!writeInMapping.candidateId) {
         const fakeCandidateId = candidateIdByMappingTarget[writeInMapping.target];
         if (!fakeCandidateId) {
@@ -298,19 +287,19 @@ export class MajorityElectionWriteInMappingComponent implements OnChanges {
       this.loadingCandidates = true;
 
       const candidatesResp =
-        this.election.businessType === PoliticalBusinessType.POLITICAL_BUSINESS_TYPE_SECONDARY_MAJORITY_ELECTION
-          ? await this.majorityElectionService.listCandidatesOfSecondaryElection(this.election.id)
-          : await this.majorityElectionService.listCandidates(this.election.id);
+        this.group.election.businessType === PoliticalBusinessType.POLITICAL_BUSINESS_TYPE_SECONDARY_MAJORITY_ELECTION
+          ? await this.majorityElectionService.listCandidatesOfSecondaryElection(this.group.election.id)
+          : await this.majorityElectionService.listCandidates(this.group.election.id);
 
       const candidates = [...candidatesResp];
 
-      if (this.supportsInvalidVotes) {
+      if (this.group.invalidVotes) {
         candidates.push(this.createFakeCandidate(invalidCandidateId, invalidCandidateNr, 'MAJORITY_ELECTION.INVALID_VOTES'));
       } else {
         candidates.push(this.createFakeCandidate(emptyCandidateId, emptyCandidateNr, 'RESULT_IMPORT.WRITE_INS.EMPTY_VOTES'));
       }
 
-      if (this.supportsIndividualVotes) {
+      if (this.group.individualVotes) {
         candidates.push(this.createFakeCandidate(individualCandidateId, individualCandidateNr, 'MAJORITY_ELECTION.INDIVIDUAL'));
       }
 

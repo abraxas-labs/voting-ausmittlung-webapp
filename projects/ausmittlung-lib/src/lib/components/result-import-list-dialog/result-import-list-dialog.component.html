@@ -1,7 +1,7 @@
 <vo-lib-dialog [contentLoading]="loading">
   <div header>
     <h3 translate>RESULT_IMPORT.LIST_TITLE</h3>
-    <div *ngIf="contestEVotingResultsImported">
+    <div *ngIf="resultsImported && canDeleteImport">
       <bc-button [label]="'RESULT_IMPORT.DELETE' | translate" color="warn" (buttonClick)="deleteResults()"></bc-button>
     </div>
   </div>

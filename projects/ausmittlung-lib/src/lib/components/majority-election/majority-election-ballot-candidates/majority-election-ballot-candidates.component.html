@@ -7,7 +7,8 @@
                  [tabIndex]="-1"
                  [checked]="candidate.selected"
                  [disabled]="readonly || (!candidate.selected && !hasEmptyVotes)"
-                 (checkedChange)="emitToggleCandidate(candidate, $event)"></bc-checkbox>
+                 (checkedChange)="emitToggleCandidate(candidate, $event)"
+                 [subscriptSizing]="'dynamic'"></bc-checkbox>
     <span [class.clickable]="!readonly && (candidate.selected || hasEmptyVotes)"
           (click)="emitToggleCandidate(candidate)">{{candidate.number + (candidateCheckDigit ? candidate.checkDigit : '')}}</span>
     <span [class.clickable]="!readonly && (candidate.selected || hasEmptyVotes)"

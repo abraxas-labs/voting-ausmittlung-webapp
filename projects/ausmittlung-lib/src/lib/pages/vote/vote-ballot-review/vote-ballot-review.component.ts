@@ -15,6 +15,7 @@ import { VoteResultBundleService } from '../../../services/vote-result-bundle.se
   selector: 'vo-ausm-vote-ballot-review',
   templateUrl: './vote-ballot-review.component.html',
   styleUrls: ['./vote-ballot-review.component.scss'],
+  standalone: false,
 })
 export class VoteBallotReviewComponent implements OnDestroy {
   public loading: boolean = true;

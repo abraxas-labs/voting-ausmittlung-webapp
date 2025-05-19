@@ -11,6 +11,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   selector: 'vo-ausm-second-factor-transaction-dialog',
   templateUrl: './second-factor-transaction-dialog.component.html',
   styleUrls: ['./second-factor-transaction-dialog.component.scss'],
+  standalone: false,
 })
 export class SecondFactorTransactionDialogComponent {
   public hasError: boolean = false;

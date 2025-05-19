@@ -7,40 +7,37 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { SimplePoliticalBusiness } from '../../../../../ausmittlung-lib/src/lib/models';
 import {
-  CountingCircle,
   CountingCircleResultState,
   flatten,
   groupBy,
   groupBySingle,
   ResultOverview,
   ResultOverviewCountingCircleResult,
-  ResultService,
+  ResultOverviewCountingCircleWithDetails,
 } from 'ausmittlung-lib';
 
 @Component({
   selector: 'app-monitoring-political-businesses-overview',
   templateUrl: './monitoring-political-businesses-overview.component.html',
   styleUrls: ['./monitoring-political-businesses-overview.component.scss'],
+  standalone: false,
 })
 export class MonitoringPoliticalBusinessesOverviewComponent implements OnInit {
   @Input()
-  public contestId?: string;
+  public resultOverview?: ResultOverview;
 
   public politicalBusinesses: SimplePoliticalBusinessOverview[] = [];
   public countingCircles: ResultOverviewCountingCircleResult[] = [];
 
   public countingCircleResultsByPoliticalBusinessId: Record<string, ResultOverviewCountingCircleResult[]> = {};
-  public countingCirclesById: Record<string, CountingCircle> = {};
-  public resultOverview?: ResultOverview;
+  public countingCirclesById: Record<string, ResultOverviewCountingCircleWithDetails> = {};
 
-  constructor(private readonly resultService: ResultService) {}
+  public allFieldsPoliticalBusinessTableActive: boolean = true;
 
   public async ngOnInit(): Promise<void> {
-    if (!this.contestId) {
+    if (!this.resultOverview) {
       return;
     }
-
-    this.resultOverview = await this.resultService.getOverview(this.contestId);
 
     this.countingCircleResultsByPoliticalBusinessId = groupBy(
       flatten(this.resultOverview.countingCircleResults.map(r => r.results)),
@@ -58,8 +55,8 @@ export class MonitoringPoliticalBusinessesOverviewComponent implements OnInit {
 
     this.countingCirclesById = groupBySingle(
       this.resultOverview.countingCircleResults,
-      x => x.countingCircle.id,
-      x => x.countingCircle,
+      x => x.countingCircleWithDetails.countingCircle.id,
+      x => x.countingCircleWithDetails,
     );
   }
 

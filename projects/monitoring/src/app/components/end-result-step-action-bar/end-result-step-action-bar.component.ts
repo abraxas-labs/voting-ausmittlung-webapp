@@ -11,6 +11,7 @@ import { EndResultStep } from '../../models/end-result-step.model';
   selector: 'app-end-result-step-action-bar',
   templateUrl: './end-result-step-action-bar.component.html',
   styleUrl: './end-result-step-action-bar.component.scss',
+  standalone: false,
 })
 export class EndResultStepActionBarComponent {
   public steps: typeof EndResultStep = EndResultStep;

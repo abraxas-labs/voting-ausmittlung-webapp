@@ -16,8 +16,11 @@ import { ProtocolExportState } from '@abraxas/voting-ausmittlung-service-proto/g
   selector: 'vo-ausm-vote-bundle-table',
   templateUrl: './vote-bundle-table.component.html',
   styleUrls: ['./vote-bundle-table.component.scss'],
+  standalone: false,
 })
 export class VoteBundleTableComponent extends ResultBundleTableComponent implements AfterViewInit {
+  // if this is adjusted any modifications on it need to be adjusted too
+  // (Index based hide/show of columns)
   public readonly columns = [
     this.selectColumn,
     this.numberColumn,
@@ -35,12 +38,19 @@ export class VoteBundleTableComponent extends ResultBundleTableComponent impleme
   @Input()
   public reviewProcedure?: VoteReviewProcedure;
 
+  @Input()
+  public enableBundleSizeColumn: boolean = true;
+
   constructor(userService: UserService, roleService: PermissionService, enumUtil: EnumUtil) {
     super(userService, roleService, enumUtil);
   }
 
   public override ngAfterViewInit(): void {
     super.ngAfterViewInit();
+
+    if (!this.enableBundleSizeColumn) {
+      this.columns.splice(2, 1);
+    }
 
     if (!this.enableReviewColumn) {
       this.columns.splice(this.columns.length - 2, 1);

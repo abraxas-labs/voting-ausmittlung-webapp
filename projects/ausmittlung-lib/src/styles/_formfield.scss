@@ -9,23 +9,6 @@
   --mat-form-field-container-height: 44px;
 }
 
-mat-checkbox {
-  // workaround since the bc-checkbox has a fix height of 30px
-  // without this, some paddings would overlap
-  --mdc-checkbox-state-layer-size: 30px;
-
-  .mat-mdc-checkbox-touch-target {
-    height: 30px !important;
-    width: 30px !important;
-  }
-
-  // workaround since the the label of the bc-checkbox is not properly aligned
-  .mdc-label {
-    padding-top: 0.25rem;
-    padding-left: 0.25rem !important;
-  }
-}
-
 // workaround since the bc-dropdown has a fix height of 20px
 .mat-mdc-select-arrow-wrapper {
   height: 20px !important;

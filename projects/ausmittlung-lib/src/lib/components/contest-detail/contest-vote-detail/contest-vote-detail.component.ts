@@ -32,6 +32,7 @@ import { VOTING_AUSMITTLUNG_MONITORING_WEBAPP_URL } from '../../../tokens';
 @Component({
   selector: 'vo-ausm-contest-vote-detail',
   templateUrl: './contest-vote-detail.component.html',
+  standalone: false,
 })
 export class ContestVoteDetailComponent extends AbstractContestPoliticalBusinessDetailComponent<VoteResult, VoteResultService> {
   public readonly entryVariants: typeof VoteResultEntry = VoteResultEntry;
@@ -178,9 +179,12 @@ export class ContestVoteDetailComponent extends AbstractContestPoliticalBusiness
       questionResult.conventionalSubTotal.totalCountOfAnswer2 = conventionalDefaultValue;
       questionResult.conventionalSubTotal.totalCountOfAnswerUnspecified = conventionalDefaultValue;
 
-      questionResult.totalCountOfAnswer1 = questionResult.eVotingSubTotal.totalCountOfAnswer1;
-      questionResult.totalCountOfAnswer2 = questionResult.eVotingSubTotal.totalCountOfAnswer2;
-      questionResult.totalCountOfAnswerUnspecified = questionResult.eVotingSubTotal.totalCountOfAnswerUnspecified;
+      questionResult.totalCountOfAnswer1 =
+        questionResult.eVotingSubTotal.totalCountOfAnswer1 + questionResult.eCountingSubTotal.totalCountOfAnswer1;
+      questionResult.totalCountOfAnswer2 =
+        questionResult.eVotingSubTotal.totalCountOfAnswer2 + questionResult.eCountingSubTotal.totalCountOfAnswer2;
+      questionResult.totalCountOfAnswerUnspecified =
+        questionResult.eVotingSubTotal.totalCountOfAnswerUnspecified + questionResult.eCountingSubTotal.totalCountOfAnswerUnspecified;
     }
   }
 }

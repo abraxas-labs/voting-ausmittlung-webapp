@@ -7,23 +7,27 @@
 import { DialogService } from '@abraxas/voting-lib';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ResultOverview, ResultService } from 'ausmittlung-lib';
+import {
+  ResultImportListDialogComponent,
+  ResultImportListDialogData,
+  ResultImportListDialogResult,
+  ResultOverview,
+  ResultService,
+} from 'ausmittlung-lib';
 import { Subscription } from 'rxjs';
 import {
   ExportCockpitDialogComponent,
   ExportCockpitDialogData,
 } from '../../components/export-cockpit-dialog/export-cockpit-dialog.component';
-import {
-  ResultImportListDialogComponent,
-  ResultImportListDialogData,
-  ResultImportListDialogResult,
-} from '../../components/result-import-list-dialog/result-import-list-dialog.component';
 import { AuthorizationService, Tenant } from '@abraxas/base-components';
+import { ResultImportType } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/import_pb';
+import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-monitoring-overview',
   templateUrl: './monitoring-overview.component.html',
   styleUrls: ['./monitoring-overview.component.scss'],
+  standalone: false,
 })
 export class MonitoringOverviewComponent implements OnInit, OnDestroy {
   public loading: boolean = true;
@@ -31,6 +35,7 @@ export class MonitoringOverviewComponent implements OnInit, OnDestroy {
   public manualPublishResultsEnabled: boolean = false;
   public publishResultsBeforeAuditedTentatively: boolean = false;
   public contestId?: string;
+  public initialSelectedTab: number;
 
   private readonly routeParamsSubscription: Subscription;
   private readonly routeDataSubscription: Subscription;
@@ -42,12 +47,17 @@ export class MonitoringOverviewComponent implements OnInit, OnDestroy {
     private readonly resultService: ResultService,
     private readonly dialogService: DialogService,
     private readonly auth: AuthorizationService,
+    private readonly storageService: StorageService,
   ) {
     this.routeParamsSubscription = this.route.params.subscribe(({ contestId }) => this.loadData(contestId));
     this.routeDataSubscription = route.data.subscribe(async ({ contestCantonDefaults }) => {
       this.manualPublishResultsEnabled = contestCantonDefaults.manualPublishResultsEnabled;
       this.publishResultsBeforeAuditedTentatively = contestCantonDefaults.publishResultsBeforeAuditedTentatively;
     });
+
+    const storedMonitoringCockpitTab = this.storageService.getMonitoringCockpitTab();
+    this.initialSelectedTab =
+      storedMonitoringCockpitTab === this.storageService.monitoringCockpitTabGrid || storedMonitoringCockpitTab === null ? 0 : 1;
   }
 
   public async ngOnInit(): Promise<void> {
@@ -65,8 +75,11 @@ export class MonitoringOverviewComponent implements OnInit, OnDestroy {
     }
 
     const result: ResultImportListDialogResult = await this.dialogService.openForResult(ResultImportListDialogComponent, {
+      importType: ResultImportType.RESULT_IMPORT_TYPE_EVOTING,
       contestId: this.resultOverview.contest.id,
-    } as ResultImportListDialogData);
+      canImport: true,
+      canDeleteImport: true,
+    } satisfies ResultImportListDialogData);
 
     if (result === 'deleted') {
       this.resultOverview.contest.eVotingResultsImported = false;
@@ -96,6 +109,12 @@ export class MonitoringOverviewComponent implements OnInit, OnDestroy {
     }
 
     await this.router.navigate(['exports'], { relativeTo: this.route });
+  }
+
+  public tabChanged(tabNumber: number): void {
+    this.storageService.storeMonitoringCockpitTab(
+      tabNumber === 0 ? this.storageService.monitoringCockpitTabGrid : this.storageService.monitoringCockpitTabPoliticalBusinessOverview,
+    );
   }
 
   private async loadData(contestId: string): Promise<void> {

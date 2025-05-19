@@ -11,6 +11,7 @@ import { MajorityElectionCandidateEndResult, MajorityElectionEndResult, Secondar
 @Component({
   selector: 'app-majority-election-end-result-candidates-list',
   templateUrl: './majority-election-end-result-candidates-list.component.html',
+  standalone: false,
 })
 export class MajorityElectionEndResultCandidatesListComponent {
   public endResultValue?: MajorityElectionEndResult | SecondaryMajorityElectionEndResult;
@@ -32,8 +33,15 @@ export class MajorityElectionEndResultCandidatesListComponent {
     this.refreshTableColumns();
   }
 
+  @Input()
+  public set eCounting(value: boolean) {
+    this.showECountingColumn = value;
+    this.refreshTableColumns();
+  }
+
   private showLotDecisionColumn: boolean = false;
   private showEVotingColumn: boolean = false;
+  private showECountingColumn: boolean = false;
 
   constructor(private readonly i18n: TranslateService) {
     this.refreshTableColumns();
@@ -56,6 +64,7 @@ export class MajorityElectionEndResultCandidatesListComponent {
         },
         voteCount: v.individualVoteCount,
         eVotingVoteCount: v.eVotingSubTotal.individualVoteCount,
+        eCountingVoteCount: v.eCountingSubTotal.individualVoteCount,
         conventionalVoteCount: v.conventionalSubTotal.individualVoteCount,
       } as unknown as MajorityElectionCandidateEndResult,
     ];
@@ -64,8 +73,16 @@ export class MajorityElectionEndResultCandidatesListComponent {
   private refreshTableColumns() {
     this.columns = ['rank', 'number', 'candidacy', 'party'];
 
+    if (this.showECountingColumn || this.showEVotingColumn) {
+      this.columns.push('conventionalVoteCount');
+    }
+
     if (this.showEVotingColumn) {
-      this.columns.push('conventionalVoteCount', 'eVotingVoteCount');
+      this.columns.push('eVotingVoteCount');
+    }
+
+    if (this.showECountingColumn) {
+      this.columns.push('eCountingVoteCount');
     }
 
     this.columns.push('voteCount', 'state');

@@ -5,7 +5,16 @@
  */
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Contest, CountingCircle, ProtocolExport, ProtocolExportStateChange, ResultExportTemplate } from '../../models';
+import {
+  Contest,
+  CountingCircle,
+  Event,
+  ProtocolEventType,
+  ProtocolEventTypes,
+  ProtocolExport,
+  ProtocolExportStateChangeEventDetails,
+  ResultExportTemplate,
+} from '../../models';
 import { ExportService } from '../../services/export.service';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -13,10 +22,12 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { ResultExportService } from '../../services/result-export.service';
 import { BreadcrumbItem, BreadcrumbsService } from '../../services/breadcrumbs.service';
 import { ProtocolExportState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/export_pb';
-import { DialogService } from '@abraxas/voting-lib';
+import { DialogService, SnackbarService } from '@abraxas/voting-lib';
 import { TranslateService } from '@ngx-translate/core';
 import { DatePipe } from '@angular/common';
 import { TableDataSource } from '@abraxas/base-components';
+import { HttpErrorResponse } from '@angular/common/http';
+import { EventLogService } from '../../services/event-log.service';
 
 enum Tabs {
   PROTOCOLS,
@@ -27,6 +38,7 @@ enum Tabs {
   selector: 'vo-ausm-result-export',
   templateUrl: './result-export.component.html',
   styleUrls: ['./result-export.component.scss'],
+  standalone: false,
 })
 export class ResultExportComponent implements OnInit, OnDestroy {
   private readonly defaultColumns = ['select', 'description', 'political-business'];
@@ -54,7 +66,7 @@ export class ResultExportComponent implements OnInit, OnDestroy {
 
   private contestId: string = '';
   private countingCircleId?: string;
-  private stateChangesSubscription?: Subscription;
+  private watchSubscription?: Subscription;
 
   constructor(
     private readonly exportService: ExportService,
@@ -64,6 +76,8 @@ export class ResultExportComponent implements OnInit, OnDestroy {
     private readonly dialog: DialogService,
     private readonly i18n: TranslateService,
     private readonly datePipe: DatePipe,
+    private readonly toast: SnackbarService,
+    private readonly eventLogService: EventLogService,
   ) {}
 
   public async ngOnInit(): Promise<void> {
@@ -76,7 +90,7 @@ export class ResultExportComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.routeParamsSubscription.unsubscribe();
-    this.stateChangesSubscription?.unsubscribe();
+    this.watchSubscription?.unsubscribe();
   }
 
   public async changeTab(tab: Tabs): Promise<void> {
@@ -130,6 +144,13 @@ export class ResultExportComponent implements OnInit, OnDestroy {
     this.generatingExports = true;
     try {
       await this.resultExportService.downloadExports(templates, this.contestId, this.countingCircleId);
+    } catch (e: any) {
+      if (e instanceof HttpErrorResponse && e.status === 0) {
+        this.toast.error(this.i18n.instant('EXPORTS.DATA_EXPORT_FAILED'));
+        return;
+      }
+
+      throw e;
     } finally {
       this.generatingExports = false;
     }
@@ -207,20 +228,33 @@ export class ResultExportComponent implements OnInit, OnDestroy {
   }
 
   private startStopProtocolExportStateChangeListener(): void {
-    this.stateChangesSubscription?.unsubscribe();
+    this.watchSubscription?.unsubscribe();
 
     if (this.selectedTab !== Tabs.PROTOCOLS || !this.contestId) {
-      delete this.stateChangesSubscription;
+      delete this.watchSubscription;
       return;
     }
 
-    this.stateChangesSubscription = this.exportService
-      .getProtocolExportStateChanges(this.contestId, this.countingCircleId, this.onProtocolExportStateChangeListenerRetry.bind(this))
-      .subscribe(changed => this.protocolExportStateChanged(changed));
+    this.watchSubscription = this.eventLogService
+      .watch([...ProtocolEventTypes], { contestId: this.contestId, countingCircleId: this.countingCircleId })
+      .subscribe(e => this.handleEvent(e));
   }
 
-  private async onProtocolExportStateChangeListenerRetry(): Promise<void> {
-    if (!this.stateChangesSubscription) {
+  private async handleEvent(e: Event<ProtocolEventType>): Promise<void> {
+    switch (e.type) {
+      case 'ProtocolExportStarted':
+      case 'ProtocolExportCompleted':
+      case 'ProtocolExportFailed':
+        this.protocolExportStateChanged(e.timestamp, e.data.protocolExportStateChange!);
+        break;
+      case '_reconnectAttempt':
+        await this.reloadAllStates();
+        break;
+    }
+  }
+
+  private async reloadAllStates(): Promise<void> {
+    if (!this.watchSubscription) {
       return;
     }
 
@@ -229,27 +263,28 @@ export class ResultExportComponent implements OnInit, OnDestroy {
     const data = await this.exportService.listProtocolExports(this.contestId, this.countingCircleId);
     const templates = data.templates as ProtocolExport[];
     for (let template of templates) {
-      const syntheticStateChange: ProtocolExportStateChange = {
+      const syntheticStateChange: ProtocolExportStateChangeEventDetails = {
         exportTemplateId: template.exportTemplateId,
         protocolExportId: template.protocolExportId,
         newState: template.state,
-        started: template.started,
         fileName: template.fileName,
       };
-      this.protocolExportStateChanged(syntheticStateChange);
+      this.protocolExportStateChanged(template.started, syntheticStateChange);
     }
   }
 
-  private protocolExportStateChanged(changed: ProtocolExportStateChange): void {
-    const matchingTemplate = this.templates.data.find(t => t.exportTemplateId === changed.exportTemplateId) as ProtocolExport;
+  private protocolExportStateChanged(timestamp: Date, details: ProtocolExportStateChangeEventDetails): void {
+    const matchingTemplate = this.templates.data.find(t => t.exportTemplateId === details.exportTemplateId) as ProtocolExport;
     if (!matchingTemplate) {
       return;
     }
 
-    matchingTemplate.protocolExportId = changed.protocolExportId;
-    matchingTemplate.state = changed.newState;
-    matchingTemplate.started = changed.started;
-    matchingTemplate.fileName = changed.fileName;
+    matchingTemplate.protocolExportId = details.protocolExportId;
+    matchingTemplate.state = details.newState;
+    matchingTemplate.fileName = details.fileName;
+    if (details.newState === ProtocolExportState.PROTOCOL_EXPORT_STATE_GENERATING) {
+      matchingTemplate.started = timestamp;
+    }
   }
 
   private updateAllTemplatesSelected(): void {

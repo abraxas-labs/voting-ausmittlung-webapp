@@ -1,6 +1,7 @@
 <div class="content">
   <vo-ausm-ballot-count-input header="ELECTION.BALLOT_CARD"
                               [eVoting]="eVoting"
+                              [eCounting]="eCounting"
                               [readonly]="readonly"
                               [totalCountOfVoters]="resultDetail.totalCountOfVoters"
                               [participationLabel]="'ELECTION.VOTER_PARTICIPATION'"
@@ -8,7 +9,7 @@
                               (countOfVotersChange)="countOfVotersChange.emit()"></vo-ausm-ballot-count-input>
   <div class="flex">
     <h4 translate>POLITICAL_BUSINESS.SUBMISSION</h4>
-    <div *ngIf="!readonly && eVoting">
+    <div *ngIf="!readonly && (eVoting || eCounting)">
       <vo-ausm-contest-detail-submission-tile
         [titleText]="'MAJORITY_ELECTION.MAP_WRITE_INS' | translate"
         [buttonText]="'MAJORITY_ELECTION.MAP'"
@@ -17,10 +18,11 @@
     </div>
     <vo-ausm-contest-majority-election-result-input [result]="resultDetail"
                                                     [eVoting]="eVoting"
+                                                    [eCounting]="eCounting"
                                                     [readonly]="readonly"
                                                     [showInvalidVotes]="election.contest!.cantonDefaults!.majorityElectionInvalidVotes"
                                                     [showIndividualVotes]="!election.individualCandidatesDisabled"
-                                                    [showEmptyVotes]="election.numberOfMandates !== 1"
+                                                    [showEmptyVotes]="election.numberOfMandates !== 1 || resultDetail.secondaryMajorityElectionResults.length > 0"
                                                     (contentChanged)="candidateResultChange.emit()"></vo-ausm-contest-majority-election-result-input>
     </div>
   </div>
@@ -33,6 +35,7 @@
     [showInvalidVotes]="election.contest!.cantonDefaults!.majorityElectionInvalidVotes"
     [showIndividualVotes]="!result.election.individualCandidatesDisabled"
     [eVoting]="eVoting"
+    [eCounting]="eCounting"
     [result]="result"
     [readonly]="readonly"
     [buttonsTemplate]="tileTemplate"
@@ -40,7 +43,7 @@
 </div>
 
 <ng-template #tileTemplate let-electionId='electionId'>
-  <div *ngIf="!readonly && eVoting" class="mt-3 max-width">
+  <div *ngIf="!readonly && (eVoting || eCounting)" class="mt-3 max-width">
     <vo-ausm-contest-detail-submission-tile
       [titleText]="'MAJORITY_ELECTION.MAP_WRITE_INS' | translate"
       [buttonText]="'MAJORITY_ELECTION.MAP'"

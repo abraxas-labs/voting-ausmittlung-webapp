@@ -19,3 +19,7 @@
     margin-top: -2rem;
   }
 }
+
+::ng-deep bc-tooltip-component {
+  white-space: pre-line;
+}

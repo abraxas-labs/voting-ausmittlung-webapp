@@ -20,6 +20,7 @@ import { Permissions } from '../../../../models/permissions.model';
   selector: 'vo-ausm-contest-majority-election-detail-detailed',
   templateUrl: './contest-majority-election-detail-detailed.component.html',
   styleUrls: ['./contest-majority-election-detail-detailed.component.scss'],
+  standalone: false,
 })
 export class ContestMajorityElectionDetailDetailedComponent implements OnInit {
   @Input()
@@ -27,6 +28,9 @@ export class ContestMajorityElectionDetailDetailedComponent implements OnInit {
 
   @Input()
   public eVoting: boolean = true;
+
+  @Input()
+  public eCounting: boolean = true;
 
   @Input()
   public resultDetail!: MajorityElectionResult;

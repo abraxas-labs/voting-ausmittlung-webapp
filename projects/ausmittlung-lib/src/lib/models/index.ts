@@ -10,6 +10,7 @@ export * from './comment.model';
 export * from './contest-counting-circle-details.model';
 export * from './counting-circle.model';
 export * from './domain-of-influence.model';
+export * from './event-log.model';
 export * from './ballot-bundle.model';
 export * from './election-lot-decision.model';
 export * from './majority-election.model';

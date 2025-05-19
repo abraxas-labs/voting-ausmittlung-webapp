@@ -33,6 +33,7 @@ import { ElectionBallotComponent } from '../../election-ballot/election-ballot.c
   selector: 'vo-ausm-proportional-election-ballot',
   templateUrl: './proportional-election-ballot.component.html',
   styleUrls: ['./proportional-election-ballot.component.scss'],
+  standalone: false,
 })
 export class ProportionalElectionBallotComponent extends ElectionBallotComponent<
   ProportionalElectionResult,
@@ -197,6 +198,7 @@ export class ProportionalElectionBallotComponent extends ElectionBallotComponent
       number: this.route.snapshot.queryParams.bundleNumber,
       createdBy: await this.userService.getUser(),
       ballotNumbersToReview: [],
+      logs: [],
     };
     this.computeBundleData();
     if (!!this.route.snapshot.queryParams.listId) {

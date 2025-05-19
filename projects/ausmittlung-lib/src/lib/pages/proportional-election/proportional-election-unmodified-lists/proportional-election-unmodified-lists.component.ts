@@ -22,6 +22,7 @@ import { HasUnsavedChanges } from '../../../services/guards/has-unsaved-changes.
   selector: 'vo-ausm-proportional-election-unmodified-lists',
   templateUrl: './proportional-election-unmodified-lists.component.html',
   styleUrls: ['./proportional-election-unmodified-lists.component.scss'],
+  standalone: false,
 })
 export class ProportionalElectionUnmodifiedListsComponent implements OnInit, OnDestroy, HasUnsavedChanges {
   @HostListener('window:beforeunload')

@@ -8,6 +8,7 @@ import { DialogService, SnackbarService } from '@abraxas/voting-lib';
 import { Component, Inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
+  flatten,
   MajorityElectionEndResultAvailableLotDecision,
   MajorityElectionEndResultAvailableLotDecisions,
   MajorityElectionEndResultLotDecision,
@@ -19,11 +20,19 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 @Component({
   selector: 'app-majority-election-lot-decision-dialog',
   templateUrl: './majority-election-lot-decision-dialog.component.html',
+  standalone: false,
 })
 export class MajorityElectionLotDecisionDialogComponent extends ElectionLotDecisionDialogComponent {
   public loading: boolean = false;
   public availableLotDecisions?: MajorityElectionEndResultAvailableLotDecisions;
   public majorityElectionId: string = '';
+  public hasPrimaryAndSecondaryLotDecisions = false;
+  public selectedStepIndex = 0;
+  public steps: MajorityElectionLotDecisionStep[] = [];
+  public hasChanges = false;
+  public canEditStepSecondaryLotDecisions = false;
+
+  public originalAvailableLotDecisions?: MajorityElectionEndResultAvailableLotDecisions;
 
   constructor(
     private readonly i18n: TranslateService,
@@ -38,13 +47,47 @@ export class MajorityElectionLotDecisionDialogComponent extends ElectionLotDecis
     this.loadData();
   }
 
-  public async save(): Promise<void> {
-    if (!this.ensureHasValidLotDecisions()) {
+  public async selectedStepChange(index: number): Promise<void> {
+    const hasChanges = this.hasChanges;
+
+    await this.save(
+      this.selectedStepIndex === 0
+        ? MajorityElectionLotDecisionSaveType.PRIMARY_ELECTION
+        : MajorityElectionLotDecisionSaveType.SECONDARY_ELECTION,
+    );
+
+    if (index === 2 && !hasChanges) {
+      if (!hasChanges) {
+        this.dialogRef.close();
+      }
       return;
     }
 
-    const availableLotDecisions = this.getAvailableLotDecisions();
-    if (availableLotDecisions.length === 0) {
+    this.selectedStepIndex = index;
+  }
+
+  public async singleStepSave(): Promise<void> {
+    if (!!this.availableLotDecisions && this.availableLotDecisions.lotDecisions.length > 0) {
+      await this.save(MajorityElectionLotDecisionSaveType.PRIMARY_ELECTION);
+    } else {
+      await this.save(MajorityElectionLotDecisionSaveType.SECONDARY_ELECTION);
+    }
+
+    this.dialogRef.close();
+  }
+
+  public async save(saveType: MajorityElectionLotDecisionSaveType): Promise<void> {
+    if (!this.availableLotDecisions || !this.hasChanges) {
+      return;
+    }
+
+    const isPrimaryUpdate = saveType === MajorityElectionLotDecisionSaveType.PRIMARY_ELECTION;
+
+    const availableLotDecisions = isPrimaryUpdate
+      ? this.availableLotDecisions.lotDecisions
+      : flatten(this.availableLotDecisions.secondaryLotDecisions.map(d => d.lotDecisions));
+
+    if (!this.ensureHasValidLotDecisions(availableLotDecisions)) {
       return;
     }
 
@@ -57,70 +100,88 @@ export class MajorityElectionLotDecisionDialogComponent extends ElectionLotDecis
 
     this.loading = true;
     try {
-      await this.resultService.updateEndResultLotDecisions(this.majorityElectionId, lotDecisions);
+      if (isPrimaryUpdate) {
+        await this.resultService.updateEndResultLotDecisions(this.majorityElectionId, lotDecisions);
+      } else {
+        await this.resultService.updateEndResultSecondaryLotDecisions(this.majorityElectionId, lotDecisions);
+      }
+
       this.toast.success(this.i18n.instant('APP.SAVED'));
+      this.hasChanges = false;
+
+      const result: MajorityElectionLotDecisionDialogResult = {
+        success: true,
+      };
+      this.dialogRef.close(result);
     } finally {
       this.loading = false;
     }
-
-    const result: MajorityElectionLotDecisionDialogResult = {
-      lotDecisions,
-    };
-    this.dialogRef.close(result);
   }
 
   public close(): void {
     this.dialogRef.close();
   }
 
-  private getAvailableLotDecisions(): MajorityElectionEndResultAvailableLotDecision[] {
-    if (!this.availableLotDecisions) {
-      return [];
-    }
-
-    const lotDecisions = this.availableLotDecisions.lotDecisions;
-
-    if (!this.availableLotDecisions.secondaryLotDecisions) {
-      return lotDecisions;
-    }
-
-    for (const secondaryLotDecisions of this.availableLotDecisions.secondaryLotDecisions) {
-      lotDecisions.push(...secondaryLotDecisions.lotDecisions);
-    }
-    return lotDecisions;
-  }
-
-  private ensureHasValidLotDecisions(): boolean {
-    if (!this.availableLotDecisions) {
+  private ensureHasValidLotDecisions(lotDecisions: MajorityElectionEndResultAvailableLotDecision[]): boolean {
+    if (!lotDecisions || lotDecisions.length === 0) {
       return false;
     }
 
-    if (!this.hasValidVoteCountGroups(this.availableLotDecisions.lotDecisions)) {
+    if (!this.hasValidVoteCountGroups(lotDecisions)) {
       this.alertVoteCountGroupConflict();
       return false;
     }
 
-    if (!this.hasUniqueLotDecisions(this.availableLotDecisions.lotDecisions)) {
+    if (!this.hasUniqueLotDecisions(lotDecisions)) {
       this.alertDuplicateLotDecisions();
       return false;
     }
 
-    for (const secondaryLotDecisions of this.availableLotDecisions.secondaryLotDecisions) {
-      if (!this.hasValidVoteCountGroups(secondaryLotDecisions.lotDecisions)) {
-        this.alertVoteCountGroupConflict();
-        return false;
-      }
-      if (!this.hasUniqueLotDecisions(secondaryLotDecisions.lotDecisions)) {
-        this.alertDuplicateLotDecisions();
-        return false;
-      }
-    }
     return true;
   }
 
   private async loadData(): Promise<void> {
     this.availableLotDecisions = await this.resultService.getEndResultAvailableLotDecisions(this.majorityElectionId);
+
+    this.hasPrimaryAndSecondaryLotDecisions =
+      this.availableLotDecisions!.lotDecisions.length > 0 &&
+      flatten(this.availableLotDecisions.secondaryLotDecisions.map(x => x.lotDecisions)).length > 0;
+
+    this.canEditStepSecondaryLotDecisions =
+      this.hasPrimaryAndSecondaryLotDecisions &&
+      this.availableLotDecisions.lotDecisions.every(l => !l.lotDecisionRequired || !!l.selectedRank);
+
+    this.updateSteps();
   }
+
+  private updateSteps(): void {
+    if (!this.availableLotDecisions) {
+      return;
+    }
+
+    if (!this.hasPrimaryAndSecondaryLotDecisions) {
+      this.steps = [];
+      return;
+    }
+
+    this.steps = [
+      {
+        label: 'MAJORITY_ELECTION_END_RESULT.LOT_DECISION.PRIMARY_ELECTION',
+      },
+      {
+        label: 'MAJORITY_ELECTION_END_RESULT.LOT_DECISION.SECONDARY_ELECTION',
+      },
+    ];
+  }
+}
+
+interface MajorityElectionLotDecisionStep {
+  label: string;
+}
+
+enum MajorityElectionLotDecisionSaveType {
+  PRIMARY_ELECTION,
+  SECONDARY_ELECTION,
 }
 
 export interface MajorityElectionLotDecisionDialogData {
@@ -128,5 +189,5 @@ export interface MajorityElectionLotDecisionDialogData {
 }
 
 export interface MajorityElectionLotDecisionDialogResult {
-  lotDecisions: MajorityElectionEndResultLotDecision[];
+  success: boolean;
 }

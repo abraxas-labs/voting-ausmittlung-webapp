@@ -12,6 +12,7 @@ import { sum } from '../../../services/utils/array.utils';
   selector: 'vo-ausm-contest-detail-count-of-voters',
   templateUrl: './contest-detail-count-of-voters.component.html',
   styleUrls: ['./contest-detail-count-of-voters.component.scss'],
+  standalone: false,
 })
 export class ContestDetailCountOfVotersComponent {
   @Input()
@@ -29,6 +30,9 @@ export class ContestDetailCountOfVotersComponent {
   @Input()
   public set countOfVoters(v: CountOfVotersInformation) {
     this.countOfVotersInformation = v;
+    this.countOfVotersInformation.subTotalInfoList = this.countOfVotersInformation.subTotalInfoList.filter(s =>
+      this.enabledVoterTypes.includes(s.voterType),
+    );
 
     const swissInfos = v.subTotalInfoList.filter(x => x.voterType === VoterType.VOTER_TYPE_SWISS);
     const swissAbroadInfos = v.subTotalInfoList.filter(x => x.voterType === VoterType.VOTER_TYPE_SWISS_ABROAD);

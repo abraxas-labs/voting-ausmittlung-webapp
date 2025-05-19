@@ -30,6 +30,7 @@ import { VOTING_AUSMITTLUNG_MONITORING_WEBAPP_URL } from '../../../tokens';
 @Component({
   selector: 'vo-ausm-contest-majority-election-detail',
   templateUrl: './contest-majority-election-detail.component.html',
+  standalone: false,
 })
 export class ContestMajorityElectionDetailComponent extends AbstractContestPoliticalBusinessDetailComponent<
   MajorityElectionResult,

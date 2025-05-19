@@ -18,6 +18,7 @@ import { distinct } from '../../services/utils/array.utils';
   selector: 'vo-ausm-contact-dialog',
   templateUrl: './contact-dialog.component.html',
   styleUrls: ['./contact-dialog.component.scss'],
+  standalone: false,
 })
 export class ContactDialogComponent implements OnDestroy {
   @HostListener('window:beforeunload')

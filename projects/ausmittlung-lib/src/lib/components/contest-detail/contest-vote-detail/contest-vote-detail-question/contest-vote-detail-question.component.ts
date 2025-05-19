@@ -12,6 +12,7 @@ import { BallotSubType } from '@abraxas/voting-ausmittlung-service-proto/grpc/mo
   selector: 'vo-ausm-contest-vote-detail-question',
   templateUrl: './contest-vote-detail-question.component.html',
   styleUrls: ['./contest-vote-detail-question.component.scss'],
+  standalone: false,
 })
 export class ContestVoteDetailQuestionComponent {
   @Input()
@@ -27,6 +28,9 @@ export class ContestVoteDetailQuestionComponent {
   public eVoting: boolean = false;
 
   @Input()
+  public eCounting: boolean = false;
+
+  @Input()
   public readonly: boolean = true;
 
   @Input()
@@ -38,11 +42,16 @@ export class ContestVoteDetailQuestionComponent {
   public updateTotal(): void {
     const conventionalSubTotal = this.result.conventionalSubTotal;
     const eVotingSubTotal = this.result.eVotingSubTotal;
+    const eCountingSubTotal = this.result.eCountingSubTotal;
 
-    this.result.totalCountOfAnswer1 = +(conventionalSubTotal.totalCountOfAnswer1 ?? 0) + +eVotingSubTotal.totalCountOfAnswer1;
-    this.result.totalCountOfAnswer2 = +(conventionalSubTotal.totalCountOfAnswer2 ?? 0) + +eVotingSubTotal.totalCountOfAnswer2;
+    this.result.totalCountOfAnswer1 =
+      +(conventionalSubTotal.totalCountOfAnswer1 ?? 0) + +eVotingSubTotal.totalCountOfAnswer1 + +eCountingSubTotal.totalCountOfAnswer1;
+    this.result.totalCountOfAnswer2 =
+      +(conventionalSubTotal.totalCountOfAnswer2 ?? 0) + +eVotingSubTotal.totalCountOfAnswer2 + +eCountingSubTotal.totalCountOfAnswer2;
     this.result.totalCountOfAnswerUnspecified =
-      +(conventionalSubTotal.totalCountOfAnswerUnspecified ?? 0) + +eVotingSubTotal.totalCountOfAnswerUnspecified;
+      +(conventionalSubTotal.totalCountOfAnswerUnspecified ?? 0) +
+      +eVotingSubTotal.totalCountOfAnswerUnspecified +
+      +eCountingSubTotal.totalCountOfAnswerUnspecified;
 
     this.countOfAnswersChanged.emit();
   }

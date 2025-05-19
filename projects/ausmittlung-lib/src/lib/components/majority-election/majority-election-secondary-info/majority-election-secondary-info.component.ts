@@ -11,6 +11,7 @@ import { MajorityElectionBase } from '../../../models';
   selector: 'vo-ausm-majority-election-secondary-info',
   templateUrl: './majority-election-secondary-info.component.html',
   styleUrls: ['./majority-election-secondary-info.component.scss'],
+  standalone: false,
 })
 export class MajorityElectionSecondaryInfoComponent {
   @Input()

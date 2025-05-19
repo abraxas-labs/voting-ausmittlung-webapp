@@ -9,7 +9,6 @@ import { DialogService, SnackbarService, ThemeService } from '@abraxas/voting-li
 import { Component, HostListener } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable } from 'rxjs';
 import {
   PoliticalBusinessNewBundleNumberComponent,
   PoliticalBusinessNewBundleNumberComponentData,
@@ -23,11 +22,15 @@ import { VoteBallotComponent } from '../vote-ballot/vote-ballot.component';
 import { ExportService } from '../../../services/export.service';
 import { DatePipe } from '@angular/common';
 import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/political_business_pb';
+import { Event, EventType, VoteResultBundleEventTypes } from '../../../models/event-log.model';
+import { EventLogService } from '../../../services/event-log.service';
+import { BallotBundleState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/ballot_bundle_pb';
 
 @Component({
   selector: 'vo-ausm-vote-bundle-overview',
   templateUrl: './vote-bundle-overview.component.html',
   styleUrls: ['./vote-bundle-overview.component.scss'],
+  standalone: false,
 })
 export class VoteBundleOverviewComponent extends PoliticalBusinessBundleOverviewComponent<VoteResultBundles> {
   public readonly reviewProcedures: typeof VoteReviewProcedure = VoteReviewProcedure;
@@ -46,9 +49,26 @@ export class VoteBundleOverviewComponent extends PoliticalBusinessBundleOverview
     themeService: ThemeService,
     resultExportService: ResultExportService,
     exportService: ExportService,
+    eventLogService: EventLogService,
     datePipe: DatePipe,
   ) {
-    super(permissionService, i18n, toast, dialog, route, router, themeService, resultExportService, exportService, datePipe);
+    super(
+      permissionService,
+      i18n,
+      toast,
+      dialog,
+      route,
+      router,
+      themeService,
+      resultExportService,
+      exportService,
+      eventLogService,
+      datePipe,
+    );
+  }
+
+  public get watcherEventTypes(): EventType[] {
+    return [...VoteResultBundleEventTypes];
   }
 
   @HostListener('document:keydown.control.alt.q')
@@ -137,8 +157,8 @@ export class VoteBundleOverviewComponent extends PoliticalBusinessBundleOverview
     return this.resultBundleService.getBundles(params.ballotResultId);
   }
 
-  protected override startChangesListener(resultId: string, params: Params, onRetry: () => {}): Observable<PoliticalBusinessResultBundle> {
-    return this.resultBundleService.getBundleChanges(params.ballotResultId, onRetry);
+  protected async loadBundle(id: string): Promise<PoliticalBusinessResultBundle> {
+    return (await this.resultBundleService.getBundle(id)).bundle;
   }
 
   protected get politicalBusinessType(): PoliticalBusinessType {
@@ -147,5 +167,34 @@ export class VoteBundleOverviewComponent extends PoliticalBusinessBundleOverview
 
   protected get resultId(): string | undefined {
     return this.result?.ballotResult.id;
+  }
+
+  protected async handleEvent(e: Event, params: Params): Promise<void> {
+    await super.handleEvent(e, params);
+
+    switch (e.type) {
+      case 'VoteResultBundleCreated':
+        await this.handleBundleCreated(e.entityId);
+        break;
+      case 'VoteResultBundleDeleted':
+        this.setBundleState(e.entityId, BallotBundleState.BALLOT_BUNDLE_STATE_DELETED, e.data.bundleLog!);
+        break;
+      case 'VoteResultBundleReviewSucceeded':
+        this.setBundleState(e.entityId, BallotBundleState.BALLOT_BUNDLE_STATE_REVIEWED, e.data.bundleLog!);
+        break;
+      case 'VoteResultBundleReviewRejected':
+        this.setBundleState(e.entityId, BallotBundleState.BALLOT_BUNDLE_STATE_IN_CORRECTION, e.data.bundleLog!);
+        break;
+      case 'VoteResultBundleSubmissionFinished':
+      case 'VoteResultBundleCorrectionFinished':
+        this.setBundleState(e.entityId, BallotBundleState.BALLOT_BUNDLE_STATE_READY_FOR_REVIEW, e.data.bundleLog!);
+        break;
+      case 'VoteResultBallotCreated':
+        this.adjustCountOfBallots(e.entityId, 1);
+        break;
+      case 'VoteResultBallotDeleted':
+        this.adjustCountOfBallots(e.entityId, -1);
+        break;
+    }
   }
 }

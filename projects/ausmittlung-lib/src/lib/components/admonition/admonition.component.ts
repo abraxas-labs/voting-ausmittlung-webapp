@@ -12,6 +12,7 @@ import { AdmonitionType } from './admonition-type.enum';
   selector: 'vo-ausm-admonition',
   templateUrl: './admonition.component.html',
   styleUrls: ['./admonition.component.scss'],
+  standalone: false,
 })
 export class AdmonitionComponent {
   @Input()

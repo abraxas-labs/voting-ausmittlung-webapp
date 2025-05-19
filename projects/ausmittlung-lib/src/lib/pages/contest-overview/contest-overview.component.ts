@@ -13,6 +13,7 @@ import { ContestService } from '../../services/contest.service';
   selector: 'vo-ausm-contest-overview',
   templateUrl: './contest-overview.component.html',
   styleUrls: ['./contest-overview.component.scss'],
+  standalone: false,
 })
 export class ContestOverviewComponent implements OnInit {
   @Output()

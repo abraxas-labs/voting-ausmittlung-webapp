@@ -64,7 +64,6 @@ import { QuestionEndResultEntryComponent } from './components/ballot-end-result/
 import { QuestionPopularMajorityAlgorithmEndResultComponent } from './components/ballot-end-result/question-popular-majority-algorithm-end-result/question-popular-majority-algorithm-end-result.component';
 import { EndResultPageComponent } from './components/end-result-page/end-result-page.component';
 import { ExportCockpitDialogComponent } from './components/export-cockpit-dialog/export-cockpit-dialog.component';
-import { ImportFileSelectComponent } from './components/result-import-dialog/import-file-select/import-file-select.component';
 import { MajorityElectionEndResultCandidatesListComponent } from './components/majority-election-end-result-candidates-list/majority-election-end-result-candidates-list.component';
 import { MajorityElectionLotDecisionDialogComponent } from './components/majority-election-lot-decision-dialog/majority-election-lot-decision-dialog.component';
 import { MajorityElectionLotDecisionListComponent } from './components/majority-election-lot-decision-dialog/majority-election-lot-decision-list/majority-election-lot-decision-list.component';
@@ -73,8 +72,6 @@ import { MonitoringCockpitGridFooterButtonsComponent } from './components/monito
 import { MonitoringCockpitGridFooterComponent } from './components/monitoring-cockpit-grid-footer/monitoring-cockpit-grid-footer.component';
 import { MonitoringCockpitGridComponent } from './components/monitoring-cockpit-grid/monitoring-cockpit-grid.component';
 import { ProportionalElectionLotDecisionDialogComponent } from './components/proportional-election-lot-decision-dialog/proportional-election-lot-decision-dialog.component';
-import { ResultImportDialogComponent } from './components/result-import-dialog/result-import-dialog.component';
-import { ResultImportListDialogComponent } from './components/result-import-list-dialog/result-import-list-dialog.component';
 import { MajorityElectionEndResultComponent } from './pages/majority-election-end-result/majority-election-end-result.component';
 import { MonitoringContestDetailComponent } from './pages/monitoring-contest-detail/monitoring-contest-detail.component';
 import { MonitoringContestOverviewComponent } from './pages/monitoring-contest-overview/monitoring-contest-overview.component';
@@ -130,9 +127,6 @@ registerLocaleData(localeDeCh);
     ProportionalElectionLotDecisionDialogComponent,
     ProportionalElectionManualEndResultDialogComponent,
     MonitoringCockpitGridFooterButtonsComponent,
-    ImportFileSelectComponent,
-    ResultImportDialogComponent,
-    ResultImportListDialogComponent,
     ExportCockpitDialogComponent,
     ExportCockpitPoliticalBusinessesComponent,
     MonitoringPoliticalBusinessesOverviewComponent,

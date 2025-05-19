@@ -15,6 +15,7 @@
                                                        [resultDetail]="resultDetail"
                                                        [readonly]="resultReadonly"
                                                        [eVoting]="eVoting"
+                                                       [eCounting]="eCounting"
                                                        [showDetailsLink]="resultDetail.entry === entryVariants.MAJORITY_ELECTION_RESULT_ENTRY_DETAILED"
                                                        (countOfVotersChange)="updateCountOfVotersValid(); updateUnsavedChanges()"
     ></vo-ausm-contest-majority-election-detail-detailed>
@@ -22,6 +23,7 @@
     <ng-template #finalResultsContent>
       <vo-ausm-contest-majority-election-detail-final-results [readonly]="resultReadonly || !canEnterResults"
                                                               [eVoting]="eVoting"
+                                                              [eCounting]="eCounting"
                                                               [election]="resultDetail.election"
                                                               (countOfVotersChange)="updateCountOfVotersValid(); updateUnsavedChanges()"
                                                               (candidateResultChange)="updateCandidateResultsValid(); updateUnsavedChanges()"

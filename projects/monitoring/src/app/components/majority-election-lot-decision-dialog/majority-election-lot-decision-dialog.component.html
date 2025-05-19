@@ -3,12 +3,43 @@
 
   <div content>
     <ng-container *ngIf="!loading && availableLotDecisions; else spinner">
-      <app-majority-election-lot-decision-list [lotDecisions]="availableLotDecisions"></app-majority-election-lot-decision-list>
-
-      <ng-container *ngFor="let secondaryLotDecisions of availableLotDecisions.secondaryLotDecisions">
-        <app-majority-election-lot-decision-list [lotDecisions]="secondaryLotDecisions"
-                                                 [showTitle]="true"></app-majority-election-lot-decision-list>
+      <ng-container *ngIf="!hasPrimaryAndSecondaryLotDecisions; else stepperTemplate">
+        <app-majority-election-lot-decision-list [lotDecisions]="availableLotDecisions"
+                                                 (contentChanged)="hasChanges = true"></app-majority-election-lot-decision-list>
+        <ng-container *ngFor="let secondaryLotDecisions of availableLotDecisions.secondaryLotDecisions">
+          <app-majority-election-lot-decision-list [lotDecisions]="secondaryLotDecisions"
+                                                   [showTitle]="true"
+                                                   (contentChanged)="hasChanges = true"></app-majority-election-lot-decision-list>
+        </ng-container>
       </ng-container>
+
+      <ng-template #stepperTemplate>
+        <mat-horizontal-stepper
+          labelPosition="bottom"
+          [selectedIndex]="selectedStepIndex"
+          (selectedIndexChange)="selectedStepChange($event)">
+          <ng-template matStepperIcon="number" let-index="index"></ng-template>
+          <ng-template matStepperIcon="edit" let-index="index"></ng-template>
+          <mat-step *ngFor="let step of steps"
+                    [editable]="true">
+            <ng-template matStepLabel>
+              <span>{{step.label | translate}}</span>
+            </ng-template>
+          </mat-step>
+        </mat-horizontal-stepper>
+
+          <ng-container *ngIf="selectedStepIndex === 0; else smeView">
+            <app-majority-election-lot-decision-list [lotDecisions]="availableLotDecisions" (contentChanged)="hasChanges = true"></app-majority-election-lot-decision-list>
+          </ng-container>
+          <ng-template #smeView>
+            <ng-container *ngFor="let secondaryLotDecisions of availableLotDecisions.secondaryLotDecisions">
+              <app-majority-election-lot-decision-list [disabled]="!canEditStepSecondaryLotDecisions"
+                                                       [lotDecisions]="secondaryLotDecisions"
+                                                       [showTitle]="true"
+                                                       (contentChanged)="hasChanges = true"></app-majority-election-lot-decision-list>
+            </ng-container>
+          </ng-template>
+      </ng-template>
     </ng-container>
     <ng-template #spinner>
       <bc-spinner></bc-spinner>
@@ -16,7 +47,7 @@
   </div>
 
   <div footer>
-    <vo-lib-button-bar (save)="save()"
+    <vo-lib-button-bar (save)="hasPrimaryAndSecondaryLotDecisions ? selectedStepChange(selectedStepIndex + 1) : singleStepSave()"
                        [sticky]="false"
                        [cancelLabel]="'APP.CLOSE' | translate"
                        (cancel)="close()"></vo-lib-button-bar>

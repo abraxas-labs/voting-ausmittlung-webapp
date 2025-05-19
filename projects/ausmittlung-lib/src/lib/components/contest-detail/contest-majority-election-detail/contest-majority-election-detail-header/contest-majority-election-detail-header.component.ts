@@ -12,6 +12,7 @@ import { SimplePoliticalBusiness } from '../../../../models';
   templateUrl: './contest-majority-election-detail-header.component.html',
   styleUrls: ['./contest-majority-election-detail-header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class ContestMajorityElectionDetailHeaderComponent {
   @Input()

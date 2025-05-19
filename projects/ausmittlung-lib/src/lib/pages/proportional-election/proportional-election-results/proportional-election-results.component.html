@@ -9,7 +9,10 @@
   <ng-container *ngIf="contestResultList">
     <h2 class="mt-3" translate>CONTEST.DETAIL.COUNT_OF_VOTERS_AND_VOTING_CARDS</h2>
     <div class="mb-3">
-      <vo-ausm-contest-detail-info [eVoting]="contestResultList.details.eVoting"
+      <vo-ausm-contest-detail-info
+        [eVoting]="contestResultList.details.eVoting"
+        [eCounting]="contestResultList.details.eCounting"
+        [eCountingResultsImported]="contestResultList.details.eCountingResultsImported"
         [enabledVoterTypes]="contestResultList.enabledVoterTypes"
         [countOfVoters]="contestResultList.details.countOfVotersInformation"
         [votingCards]="contestResultList.details.votingCards"
@@ -22,7 +25,11 @@
   <vo-ausm-proportional-election-info *ngIf="electionResult" [electionResult]="electionResult">
   </vo-ausm-proportional-election-info>
 
-  <vo-ausm-voting-data-source-tabs *ngIf="contestResultList && contestResultList.details.eVoting" class="mt-3 mb-3"
+  <vo-ausm-voting-data-source-tabs
+    *ngIf="contestResultList && (contestResultList.details.eVoting || contestResultList.details.eCountingResultsImported)"
+    class="mt-3 mb-3"
+    [eVoting]="contestResultList.details.eVoting"
+    [eCounting]="contestResultList.details.eCountingResultsImported"
     (dataSourceChange)="setDataPrefix($event)"></vo-ausm-voting-data-source-tabs>
 
   <vo-lib-split-screen [class.mt-5]="contestResultList && !contestResultList.details.eVoting">
@@ -33,10 +40,10 @@
         <bc-data-cell *dataCellDef="let element">{{ element.list.orderNumber }}</bc-data-cell>
       </ng-container>
 
-      <ng-container columnDef="description">
-        <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.DESCRIPTION_ABBREVIATION' | translate
+      <ng-container columnDef="shortDescription">
+        <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.SHORT_DESCRIPTION_ABBREVIATION' | translate
           }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">{{ element.list.description }}</bc-data-cell>
+        <bc-data-cell *dataCellDef="let element">{{ element.list.shortDescription }}</bc-data-cell>
       </ng-container>
 
       <ng-container columnDef="unmodifiedListVotesCount">
@@ -82,9 +89,14 @@
       </ng-container>
 
       <bc-header-row *headerRowDef="let row; columns: listResultColumns"></bc-header-row>
-      <bc-data-row *dataRowDef="let row; columns: listResultColumns; let i = index" selectionToggle
-        [selectionToggleValue]="row" selectionRow [selectionRowValue]="row"
-        (click)="selectListResult(row)"></bc-data-row>
+      <bc-data-row
+        *dataRowDef="let row; columns: listResultColumns; let i = index"
+        #rowSelection="selectionToggle"
+        selectionToggle
+        [selectionToggleValue]="row"
+        selectionRow
+        [selectionRowValue]="row"
+        (click)="rowSelection.toggle(); selectListResult(row)"></bc-data-row>
       </bc-table>
 
       <div right class="pl-4">

@@ -12,6 +12,7 @@ import { CountingCircleResultState } from '@abraxas/voting-ausmittlung-service-p
   selector: 'app-monitoring-cockpit-grid-entry',
   templateUrl: './monitoring-cockpit-grid-entry.component.html',
   styleUrls: ['./monitoring-cockpit-grid-entry.component.scss'],
+  standalone: false,
 })
 export class MonitoringCockpitGridEntryComponent {
   public readonly states: typeof CountingCircleResultState = CountingCircleResultState;

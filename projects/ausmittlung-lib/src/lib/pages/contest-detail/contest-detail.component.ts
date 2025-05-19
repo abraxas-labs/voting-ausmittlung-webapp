@@ -17,17 +17,16 @@ import {
 import {
   ContestCountingCircleDetails,
   CountingCircle,
-  CountingCircleResultState,
   DomainOfInfluenceType,
   ResultList,
   ResultListResult,
+  ResultStateChangeEvent,
   VotingChannel,
 } from '../../models';
 import { BreadcrumbItem, BreadcrumbsService } from '../../services/breadcrumbs.service';
 import { PoliticalBusinessResultService } from '../../services/political-business-result.service';
 import { ResultService } from '../../services/result.service';
 import { distinct, flatten, groupBySingle } from '../../services/utils/array.utils';
-import { ResultImportService } from '../../services/result-import.service';
 import { PermissionService } from '../../services/permission.service';
 import { Permissions } from '../../models/permissions.model';
 import {
@@ -43,11 +42,19 @@ import {
 import { DomainOfInfluenceCanton } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/domain_of_influence_pb';
 import { TranslateService } from '@ngx-translate/core';
 import { ContestService } from '../../services/contest.service';
+import {
+  ResultImportListDialogComponent,
+  ResultImportListDialogData,
+} from '../../components/result-import-list-dialog/result-import-list-dialog.component';
+import { ResultImportType } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/import_pb';
+import { CountingCircleResultState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/counting_circle_pb';
+import { EventLogService } from '../../services/event-log.service';
 
 @Component({
   selector: 'vo-ausm-contest-detail',
   templateUrl: './contest-detail.component.html',
   styleUrls: ['./contest-detail.component.scss'],
+  standalone: false,
 })
 export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   public resultList?: ResultList;
@@ -67,6 +74,10 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
 
   public sidebarReadonly: boolean = true;
 
+  public get showImports(): boolean {
+    return this.canReadImport && !this.contentReadonly && !!this.resultList && this.resultList.countingCircle.eCounting;
+  }
+
   public tenant?: Tenant;
 
   @ViewChildren(ContestPoliticalBusinessDetailComponent)
@@ -83,7 +94,7 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
   private readonly routeQueryParamsSubscription: Subscription;
   private readonly routeDataSubscription: Subscription;
   private politicalBusinessesDetailsChangeSubscription?: Subscription;
-  private stateChangesSubscription?: Subscription;
+  private watchStateSubscription?: Subscription;
   private importChangesSubscription?: Subscription;
   private writeInChangesSubscription?: Subscription;
 
@@ -96,13 +107,16 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
   public canMapWriteIns: boolean = false;
   public canEditCountingCircleDetails: boolean = false;
   private canReadWriteIns: boolean = false;
+  private canReadImport: boolean = false;
+  private canImport: boolean = false;
+  private canDeleteImport: boolean = false;
 
   constructor(
     breadcrumbsService: BreadcrumbsService,
     private readonly route: ActivatedRoute,
     private readonly router: Router,
+    private readonly eventLogService: EventLogService,
     private readonly resultService: ResultService,
-    private readonly resultImportService: ResultImportService,
     private readonly auth: AuthorizationService,
     private readonly cd: ChangeDetectorRef,
     private readonly dialogService: DialogService,
@@ -132,16 +146,18 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     this.canEditContactPerson = await this.permissionService.hasPermission(Permissions.CountingCircleContactPerson.Update);
     this.canEditElectorates = await this.permissionService.hasPermission(Permissions.ContestCountingCircleElectorate.Update);
     this.canEditCountingCircleDetails = await this.permissionService.hasPermission(Permissions.ContestCountingCircleDetails.Update);
+    this.canReadImport = await this.permissionService.hasPermission(Permissions.Import.ReadECounting);
+    this.canImport = await this.permissionService.hasPermission(Permissions.Import.ImportECounting);
+    this.canDeleteImport = await this.permissionService.hasPermission(Permissions.Import.DeleteECounting);
   }
 
-  public async mapWriteIns(): Promise<void> {
+  public async mapWriteIns(importType?: ResultImportType): Promise<void> {
     if (
       this.contentReadonly ||
       !this.resultList ||
       !this.resultList.currentTenantIsResponsible ||
       this.resultList.contest.locked ||
-      !this.resultList.contest.eVotingResultsImported ||
-      !this.resultList.hasUnmappedEVotingWriteIns ||
+      !this.resultList.hasUnmappedWriteIns ||
       !this.canMapWriteIns
     ) {
       return;
@@ -150,12 +166,27 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     const data: ResultImportWriteInMappingDialogData = {
       contestId: this.resultList.contest.id,
       countingCircleId: this.resultList.countingCircle.id,
+      importType,
     };
 
     const mapped = await this.dialogService.openForResult(MajorityElectionWriteInMappingDialogComponent, data);
     if (mapped) {
-      this.resultList.hasUnmappedEVotingWriteIns = false;
+      this.resultList.hasUnmappedWriteIns = false;
     }
+  }
+
+  public async import(): Promise<void> {
+    if (!this.resultList || !this.showImports) {
+      return;
+    }
+
+    await this.dialogService.openForResult(ResultImportListDialogComponent, {
+      importType: ResultImportType.RESULT_IMPORT_TYPE_ECOUNTING,
+      contestId: this.resultList.contest.id,
+      countingCircleId: this.resultList.countingCircle.id,
+      canImport: this.canImport,
+      canDeleteImport: this.canDeleteImport,
+    } satisfies ResultImportListDialogData);
   }
 
   public async export(): Promise<void> {
@@ -185,8 +216,9 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     this.routeParamsSubscription?.unsubscribe();
     this.routeQueryParamsSubscription?.unsubscribe();
     this.politicalBusinessesDetailsChangeSubscription?.unsubscribe();
-    this.stateChangesSubscription?.unsubscribe();
+    this.watchStateSubscription?.unsubscribe();
     this.importChangesSubscription?.unsubscribe();
+    this.writeInChangesSubscription?.unsubscribe();
     this.routeDataSubscription?.unsubscribe();
   }
 
@@ -208,20 +240,7 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     this.resultList!.details = newData;
   }
 
-  private async onStateChangeListenerRetry(): Promise<void> {
-    if (!this.stateChangesSubscription || !this.resultList?.contest?.id) {
-      return;
-    }
-
-    // When the export state change listener fails, it is being retried with an exponential backoff
-    // During that retry backoff, changes aren't being delivered -> we need to poll for them
-    const data = await this.resultService.getList(this.resultList.contest.id, this.resultList.countingCircle.id);
-    for (const result of data.results) {
-      this.stateUpdated(result.id, result.state);
-    }
-  }
-
-  private stateUpdated(resultId: string, newState: CountingCircleResultState): void {
+  private stateUpdated(resultId: string, newState: CountingCircleResultState, timestamp: Date): void {
     if (!this.resultList) {
       return;
     }
@@ -236,20 +255,20 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
           break;
         case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION:
           result.submissionDoneTimestamp = undefined;
-          result.readyForCorrectionTimestamp = new Date();
+          result.readyForCorrectionTimestamp = timestamp;
           break;
         case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE:
-          result.submissionDoneTimestamp = new Date();
+          result.submissionDoneTimestamp = timestamp;
           break;
         case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE:
-          result.submissionDoneTimestamp = new Date();
+          result.submissionDoneTimestamp = timestamp;
           result.readyForCorrectionTimestamp = undefined;
           break;
         case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY:
-          result.auditedTentativelyTimestamp = new Date();
+          result.auditedTentativelyTimestamp = timestamp;
           break;
         case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED:
-          result.plausibilisedTimestamp = new Date();
+          result.plausibilisedTimestamp = timestamp;
           break;
       }
 
@@ -329,46 +348,65 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   private startChangesListener(): void {
+    this.watchStateSubscription?.unsubscribe();
+    this.importChangesSubscription?.unsubscribe();
+    this.writeInChangesSubscription?.unsubscribe();
+
     if (!this.resultList || !this.resultList.contest) {
       return;
     }
 
-    this.stateChangesSubscription?.unsubscribe();
-    this.stateChangesSubscription = this.resultService
-      .getStateChanges(this.resultList.contest.id, this.onStateChangeListenerRetry.bind(this))
-      .subscribe(({ id, newState }) => this.stateUpdated(id, newState));
+    this.watchStateSubscription = this.eventLogService
+      .watchResultState(this.resultList.contest.id, this.resultList.countingCircle.id, true)
+      .subscribe(e => this.handleStateChange(e));
 
-    if (this.canMapWriteIns && this.resultList.details.eVoting) {
-      this.importChangesSubscription?.unsubscribe();
-      this.importChangesSubscription = this.resultImportService
-        .getImportChanges(this.resultList.contest.id, this.resultList.countingCircle.id)
-        .subscribe(({ hasWriteIns }) => this.importUpdated(hasWriteIns));
-    }
-
-    if (this.canReadWriteIns && this.resultList.details.eVoting) {
-      this.writeInChangesSubscription?.unsubscribe();
-      this.writeInChangesSubscription = this.resultImportService
-        .getWriteInMappingChanges(this.resultList.contest.id, this.resultList.countingCircle.id)
-        .subscribe(change =>
-          this.writeInMappingsUpdated(change.resultId, change.isReset, change.duplicatedCandidates, change.invalidDueToEmptyBallot),
+    if (this.canMapWriteIns && (this.resultList.details.eVoting || this.resultList.countingCircle.eCounting)) {
+      this.importChangesSubscription = this.eventLogService
+        .watch(['ResultImportCountingCircleCompleted'], {
+          contestId: this.resultList.contest.id,
+          countingCircleId: this.resultList.countingCircle.id,
+          skipCall: true,
+          dontFireOnReconnectAttempt: true,
+        })
+        .subscribe(e =>
+          this.importUpdated(e.data.countingCircleImportCompleted!.importType, e.data.countingCircleImportCompleted!.hasWriteIns),
         );
     }
+
+    if (this.canReadWriteIns && (this.resultList.details.eVoting || this.resultList.countingCircle.eCounting)) {
+      this.writeInChangesSubscription = this.eventLogService
+        .watch(['MajorityElectionWriteInsMapped'], {
+          contestId: this.resultList.contest.id,
+          countingCircleId: this.resultList.countingCircle.id,
+          skipCall: true,
+          dontFireOnReconnectAttempt: true,
+        })
+        .subscribe(e =>
+          this.writeInMappingsUpdated(
+            e.data.writeInsMapped!.resultId,
+            e.data.writeInsMapped!.duplicatedCandidates,
+            e.data.writeInsMapped!.invalidDueToEmptyBallot,
+          ),
+        );
+    }
+
+    this.eventLogService.startWatcher();
   }
 
-  private async importUpdated(hasWriteIns: boolean): Promise<void> {
+  private async importUpdated(importType: ResultImportType, hasWriteIns: boolean): Promise<void> {
     if (!this.resultList) {
       return;
     }
 
-    const title = 'RESULT_IMPORT.IMPORTED.TITLE';
+    const title = `RESULT_IMPORT.IMPORTED.${importType}.TITLE`;
     if (!hasWriteIns) {
-      await this.dialogService.alert(title, 'RESULT_IMPORT.IMPORTED.TEXT_WITHOUT_WRITE_INS', 'APP.CONFIRM');
+      await this.dialogService.alert(title, `RESULT_IMPORT.IMPORTED.${importType}.TEXT_WITHOUT_WRITE_INS`, 'APP.CONFIRM');
       return;
     }
 
     const confirmed = await this.dialogService.confirm(
       title,
-      'RESULT_IMPORT.IMPORTED.TEXT_WITH_WRITE_INS',
+      `RESULT_IMPORT.IMPORTED.${importType}.TEXT_WITH_WRITE_INS`,
       'RESULT_IMPORT.IMPORTED.ACTION_WRITE_INS',
     );
 
@@ -379,15 +417,10 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     // update result list after import with new values and write ins
     this.resultList = await this.resultService.getList(this.resultList.contest.id, this.resultList.countingCircle.id);
 
-    await this.mapWriteIns();
+    await this.mapWriteIns(importType);
   }
 
-  private async writeInMappingsUpdated(
-    resultId: string,
-    isReset: boolean,
-    duplicatedCandidates: number,
-    invalidDueToEmptyBallot: number,
-  ): Promise<void> {
+  private async writeInMappingsUpdated(resultId: string, duplicatedCandidates: number, invalidDueToEmptyBallot: number): Promise<void> {
     if (!this.resultList) {
       return;
     }
@@ -397,11 +430,6 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
 
     const result = this.resultList?.results.find(r => r.id === resultId);
     if (!result) {
-      return;
-    }
-
-    if (isReset) {
-      this.toast.success(this.i18n.instant('RESULT_IMPORT.WRITE_INS.RESETTED'));
       return;
     }
 
@@ -500,5 +528,25 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
 
     // trigger cd
     this.resultList.details.votingCards = [...this.resultList.details.votingCards];
+  }
+
+  private async handleStateChange(e: ResultStateChangeEvent): Promise<void> {
+    if (e.isReconnect) {
+      await this.reloadAllStates();
+      return;
+    }
+
+    this.stateUpdated(e.event.aggregateId, e.newState, e.event.timestamp);
+  }
+
+  private async reloadAllStates(): Promise<void> {
+    if (!this.watchStateSubscription || !this.resultList?.contest?.id) {
+      return;
+    }
+
+    const data = await this.resultService.getList(this.resultList.contest.id, this.resultList.countingCircle.id);
+    for (const result of data.results) {
+      this.stateUpdated(result.id, result.state, new Date());
+    }
   }
 }

@@ -10,6 +10,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   selector: 'vo-ausm-vote-ballot-question-answer-button',
   templateUrl: './vote-ballot-question-answer-button.component.html',
   styleUrls: ['./vote-ballot-question-answer-button.component.scss'],
+  standalone: false,
 })
 export class VoteBallotQuestionAnswerButtonComponent {
   @Input()

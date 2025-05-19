@@ -10,6 +10,7 @@ import { MajorityElectionResult, ProportionalElectionResult } from '../../models
 @Component({
   selector: 'vo-ausm-election-info',
   templateUrl: './election-info.component.html',
+  standalone: false,
 })
 export class ElectionInfoComponent {
   @Input()

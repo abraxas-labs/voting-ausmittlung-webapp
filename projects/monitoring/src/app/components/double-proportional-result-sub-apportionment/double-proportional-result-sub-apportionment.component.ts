@@ -18,6 +18,7 @@ const additionalGridRows = 3; // header + sum of union lists + union list diviso
   selector: 'app-double-proportional-result-sub-apportionment',
   templateUrl: './double-proportional-result-sub-apportionment.component.html',
   styleUrls: ['./double-proportional-result-sub-apportionment.component.scss'],
+  standalone: false,
 })
 export class DoubleProportionalResultSubApportionmentComponent {
   public readonly dpResultApportionmentState: typeof DoubleProportionalResultApportionmentState =

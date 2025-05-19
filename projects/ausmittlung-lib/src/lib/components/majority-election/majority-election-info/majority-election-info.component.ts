@@ -10,6 +10,7 @@ import { MajorityElectionResult } from '../../../models';
 @Component({
   selector: 'vo-ausm-majority-election-info',
   templateUrl: './majority-election-info.component.html',
+  standalone: false,
 })
 export class MajorityElectionInfoComponent {
   @Input()

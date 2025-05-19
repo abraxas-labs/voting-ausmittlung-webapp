@@ -11,6 +11,7 @@ import { PoliticalBusinessCountOfVoters } from '../../../../../../ausmittlung-li
   selector: 'app-ballot-end-result-count-of-voters',
   templateUrl: './ballot-end-result-count-of-voters.component.html',
   styleUrls: ['./ballot-end-result-count-of-voters.component.scss'],
+  standalone: false,
 })
 export class BallotEndResultCountOfVotersComponent {
   @Input()
@@ -18,4 +19,7 @@ export class BallotEndResultCountOfVotersComponent {
 
   @Input()
   public eVoting: boolean = false;
+
+  @Input()
+  public eCounting: boolean = false;
 }

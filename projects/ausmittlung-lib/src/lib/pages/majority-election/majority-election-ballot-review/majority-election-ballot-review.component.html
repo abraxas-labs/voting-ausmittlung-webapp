@@ -27,7 +27,7 @@
                                                    [readonly]="!correctionOngoing"
                                                    [disabled]="actionExecuting"
                                                    [candidateCheckDigit]="electionResult.entryParams.candidateCheckDigit"
-                                                   [showEmptyVotes]="electionResult.election.numberOfMandates !== 1">
+                                                   [showEmptyVotes]="electionResult.election.numberOfMandates !== 1 || electionResult.secondaryMajorityElectionResults.length > 0">
         </vo-ausm-majority-election-ballot-contents>
       </ng-container>
     </div>

@@ -10,6 +10,7 @@ import { BallotBundleState } from '../../models';
 @Component({
   selector: 'vo-ausm-result-bundle-state-chip',
   templateUrl: './result-bundle-state-chip.component.html',
+  standalone: false,
 })
 export class ResultBundleStateChipComponent {
   public stateValue!: BallotBundleState;

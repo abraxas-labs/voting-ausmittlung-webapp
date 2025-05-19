@@ -9,6 +9,7 @@ import { ValidationResult } from '../models';
 
 @Pipe({
   name: 'validValidation',
+  standalone: false,
 })
 export class ValidValidationPipe implements PipeTransform {
   public transform(value: ValidationResult[], isValid: boolean = true): ValidationResult[] {

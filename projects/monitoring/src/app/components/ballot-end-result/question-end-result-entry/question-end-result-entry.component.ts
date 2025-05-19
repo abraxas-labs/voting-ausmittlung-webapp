@@ -10,6 +10,7 @@ import { Component, Input } from '@angular/core';
   selector: 'app-question-end-result-entry',
   templateUrl: './question-end-result-entry.component.html',
   styleUrls: ['./question-end-result-entry.component.scss'],
+  standalone: false,
 })
 export class QuestionEndResultEntryComponent {
   @Input()

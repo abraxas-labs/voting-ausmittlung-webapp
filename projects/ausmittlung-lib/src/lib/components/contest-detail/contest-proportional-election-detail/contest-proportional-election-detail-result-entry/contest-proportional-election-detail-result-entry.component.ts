@@ -17,6 +17,7 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'vo-ausm-contest-proportional-election-detail-result-entry',
   templateUrl: './contest-proportional-election-detail-result-entry.component.html',
+  standalone: false,
 })
 export class ContestProportionalElectionDetailResultEntryComponent implements OnInit, OnDestroy {
   @Input()

@@ -2,6 +2,8 @@
   <h3 header translate>END_RESULT.ELECTION.LOT_DECISION.OPEN</h3>
 
   <div content>
+    <bc-label [label]="'PROPORTIONAL_ELECTION.LOT_DECISION.LIST_SELECT' | translate"></bc-label>
+
     <mat-horizontal-stepper #stepper
                             labelPosition="bottom"
                             (selectionChange)="selectionChanged($event.selectedIndex)">
@@ -20,6 +22,8 @@
 
     <ng-container *ngIf="!loading; else spinner">
       <ng-container *ngIf="availableLotDecisions && availableLotDecisions?.lotDecisions.length > 0">
+        <bc-label *ngIf="hasAnyRequiredLotDecisions" [label]="'END_RESULT.ELECTION.LOT_DECISION.REQUIRED_HINT' | translate"></bc-label>
+
         <div class="candidate-results">
           <bc-label [label]="'ELECTION.CANDIDATE.RANK' | translate"></bc-label>
           <bc-label [label]="'ELECTION.CANDIDATE.NUMBER' | translate"></bc-label>
@@ -36,8 +40,6 @@
             <ng-container *ngTemplateOutlet="rankDropdownTemplate; context: {$implicit: lotDecision}"></ng-container>
           </ng-container>
         </div>
-
-        <bc-label *ngIf="hasAnyRequiredLotDecisions" [label]="'END_RESULT.ELECTION.LOT_DECISION.REQUIRED_HINT' | translate"></bc-label>
 
         <ng-template #rankDropdownTemplate let-lotDecision>
           <span>

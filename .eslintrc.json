@@ -12,7 +12,8 @@
       "rules": {
         "quotes": ["error", "single", { "allowTemplateLiterals": true }],
         "license-header/header": ["error", "license-header.js"],
-        "@typescript-eslint/no-non-null-assertion": "off"
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@angular-eslint/prefer-standalone": "off"
       }
     },
     {

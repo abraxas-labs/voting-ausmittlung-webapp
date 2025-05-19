@@ -15,6 +15,7 @@ export interface RemoveCandidateRangeData {
 @Component({
   selector: 'vo-ausm-proportional-election-ballot-candidate-remove-range',
   templateUrl: './proportional-election-ballot-candidate-remove-range.component.html',
+  standalone: false,
 })
 export class ProportionalElectionBallotCandidateRemoveRangeComponent {
   @Input()

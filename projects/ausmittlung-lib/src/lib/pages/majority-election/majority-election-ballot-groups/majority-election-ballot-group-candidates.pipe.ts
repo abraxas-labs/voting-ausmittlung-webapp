@@ -10,6 +10,7 @@ import { MajorityElectionBallotGroupEntry, MajorityElectionCandidate } from '../
 
 @Pipe({
   name: 'majorityElectionBallotGroupCandidates',
+  standalone: false,
 })
 export class MajorityElectionBallotGroupCandidatesPipe implements PipeTransform {
   private readonly individualCandidate: MajorityElectionCandidate;

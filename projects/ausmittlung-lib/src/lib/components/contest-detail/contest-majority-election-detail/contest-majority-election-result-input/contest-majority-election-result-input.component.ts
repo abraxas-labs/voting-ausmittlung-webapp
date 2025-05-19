@@ -11,9 +11,11 @@ import { MajorityElectionCandidateResult, MajorityElectionResult, SecondaryMajor
   selector: 'vo-ausm-contest-majority-election-result-input',
   templateUrl: './contest-majority-election-result-input.component.html',
   styleUrls: ['./contest-majority-election-result-input.component.scss'],
+  standalone: false,
 })
 export class ContestMajorityElectionResultInputComponent {
   public eVotingValue: boolean = false;
+  public eCountingValue: boolean = false;
 
   @Input()
   public showElectionHeader: boolean = false;
@@ -45,28 +47,52 @@ export class ContestMajorityElectionResultInputComponent {
   @Input()
   public set eVoting(v: boolean) {
     this.eVotingValue = v;
+    this.updateCandidateResultsColumnCount();
+  }
 
-    // variable workaround due to angular bug https://github.com/angular/angular/issues/28897
-    this.candidateResultsContainer.nativeElement.style.setProperty('--candidate-results-column-count', v ? 5 : 3);
+  @Input()
+  public set eCounting(v: boolean) {
+    this.eCountingValue = v;
+    this.updateCandidateResultsColumnCount();
   }
 
   public setConventionalEmptyVoteCount(v?: number): void {
     this.result.conventionalSubTotal.emptyVoteCountExclWriteIns = v;
-    this.result.emptyVoteCount = (v ?? 0) + this.result.eVotingSubTotal.emptyVoteCountInclWriteIns;
+    this.result.emptyVoteCount =
+      (v ?? 0) + this.result.eVotingSubTotal.emptyVoteCountInclWriteIns + this.result.eCountingSubTotal.emptyVoteCountInclWriteIns;
   }
 
   public setConventionalInvalidVoteCount(v?: number): void {
     this.result.conventionalSubTotal.invalidVoteCount = v;
-    this.result.invalidVoteCount = (v ?? 0) + this.result.eVotingSubTotal.invalidVoteCount;
+    this.result.invalidVoteCount = (v ?? 0) + this.result.eVotingSubTotal.invalidVoteCount + this.result.eCountingSubTotal.invalidVoteCount;
   }
 
   public setConventionalIndividualVoteCount(v?: number): void {
     this.result.conventionalSubTotal.individualVoteCount = v;
-    this.result.individualVoteCount = (v ?? 0) + this.result.eVotingSubTotal.individualVoteCount;
+    this.result.individualVoteCount =
+      (v ?? 0) + this.result.eVotingSubTotal.individualVoteCount + this.result.eCountingSubTotal.individualVoteCount;
   }
 
   public setConventionalVoteCount(candidate: MajorityElectionCandidateResult, v?: number): void {
     candidate.conventionalVoteCount = v;
-    candidate.voteCount = (v ?? 0) + candidate.eVotingInclWriteInsVoteCount;
+    candidate.voteCount = (v ?? 0) + candidate.eVotingInclWriteInsVoteCount + candidate.eCountingInclWriteInsVoteCount;
+  }
+
+  private updateCandidateResultsColumnCount(): void {
+    let count = 5;
+    if (this.eVotingValue) {
+      count++;
+    }
+
+    if (this.eCountingValue) {
+      count++;
+    }
+
+    if (this.eCountingValue || this.eVotingValue) {
+      count++;
+    }
+
+    // variable workaround due to angular bug https://github.com/angular/angular/issues/28897
+    this.candidateResultsContainer.nativeElement.style.setProperty('--candidate-results-column-count', count);
   }
 }

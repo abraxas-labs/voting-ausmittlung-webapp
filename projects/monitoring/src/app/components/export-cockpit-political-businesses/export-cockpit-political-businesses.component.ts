@@ -13,6 +13,7 @@ import { ExportProvider } from '@abraxas/voting-ausmittlung-service-proto/grpc/m
 @Component({
   selector: 'app-export-cockpit-political-businesses',
   templateUrl: './export-cockpit-political-businesses.component.html',
+  standalone: false,
 })
 export class ExportCockpitPoliticalBusinessesComponent implements OnChanges {
   private readonly allColumns = ['select', 'politicalBusinessNumber', 'shortDescription', 'doiType', 'politicalBusinessType', 'token'];

@@ -27,6 +27,7 @@ import {
   selector: 'vo-ausm-proportional-election-ballot-content',
   templateUrl: './proportional-election-ballot-content.component.html',
   styleUrls: ['./proportional-election-ballot-content.component.scss'],
+  standalone: false,
 })
 export class ProportionalElectionBallotContentComponent {
   @Input()

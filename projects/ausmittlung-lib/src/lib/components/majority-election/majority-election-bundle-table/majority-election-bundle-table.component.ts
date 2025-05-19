@@ -16,6 +16,7 @@ import { ProtocolExportState } from '@abraxas/voting-ausmittlung-service-proto/g
   selector: 'vo-ausm-majority-election-bundle-table',
   templateUrl: './majority-election-bundle-table.component.html',
   styleUrls: ['./majority-election-bundle-table.component.scss'],
+  standalone: false,
 })
 export class MajorityElectionBundleTableComponent extends ResultBundleTableComponent implements AfterViewInit {
   public readonly columns = [

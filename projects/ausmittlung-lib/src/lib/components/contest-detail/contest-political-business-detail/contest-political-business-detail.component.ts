@@ -20,6 +20,7 @@ import {
   selector: 'vo-ausm-contest-political-business-detail',
   templateUrl: './contest-political-business-detail.component.html',
   styleUrls: ['./contest-political-business-detail.component.scss'],
+  standalone: false,
 })
 export class ContestPoliticalBusinessDetailComponent {
   public readonly politicalBusinessType: typeof PoliticalBusinessType = PoliticalBusinessType;

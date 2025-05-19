@@ -21,6 +21,7 @@ import {
   selector: 'app-double-proportional-result-super-apportionment-lot-decision',
   templateUrl: './double-proportional-result-super-apportionment-lot-decision.component.html',
   styleUrl: './double-proportional-result-super-apportionment-lot-decision.component.scss',
+  standalone: false,
 })
 export class DoubleProportionalResultSuperApportionmentLotDecisionComponent implements OnInit {
   private readonly defaultColumns = ['lot'];

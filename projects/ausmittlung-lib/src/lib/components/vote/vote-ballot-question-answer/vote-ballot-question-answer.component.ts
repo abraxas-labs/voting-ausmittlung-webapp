@@ -11,6 +11,7 @@ import { BallotQuestion, BallotQuestionAnswer, TieBreakQuestion, TieBreakQuestio
   selector: 'vo-ausm-vote-ballot-question-answer',
   templateUrl: './vote-ballot-question-answer.component.html',
   styleUrls: ['./vote-ballot-question-answer.component.scss'],
+  standalone: false,
 })
 export class VoteBallotQuestionAnswerComponent {
   public BallotQuestionAnswer: typeof BallotQuestionAnswer = BallotQuestionAnswer;

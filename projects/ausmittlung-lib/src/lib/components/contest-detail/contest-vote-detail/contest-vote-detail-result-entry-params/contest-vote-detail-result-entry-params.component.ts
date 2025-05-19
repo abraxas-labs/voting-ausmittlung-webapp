@@ -15,6 +15,7 @@ import { VoteResultEntryParams } from '../../../../models';
   selector: 'vo-ausm-contest-vote-detail-result-entry-params',
   templateUrl: './contest-vote-detail-result-entry-params.component.html',
   styleUrls: ['./contest-vote-detail-result-entry-params.component.scss'],
+  standalone: false,
 })
 export class ContestVoteDetailResultEntryParamsComponent {
   @Input()

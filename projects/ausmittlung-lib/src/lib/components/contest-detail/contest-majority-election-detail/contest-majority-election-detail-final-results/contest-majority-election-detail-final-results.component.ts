@@ -17,6 +17,7 @@ import { DialogService } from '@abraxas/voting-lib';
   selector: 'vo-ausm-contest-majority-election-detail-final-results',
   templateUrl: './contest-majority-election-detail-final-results.component.html',
   styleUrls: ['./contest-majority-election-detail-final-results.component.scss'],
+  standalone: false,
 })
 export class ContestMajorityElectionDetailFinalResultsComponent {
   @Input()
@@ -24,6 +25,9 @@ export class ContestMajorityElectionDetailFinalResultsComponent {
 
   @Input()
   public eVoting: boolean = true;
+
+  @Input()
+  public eCounting: boolean = true;
 
   @Input()
   public resultDetail!: MajorityElectionResult;

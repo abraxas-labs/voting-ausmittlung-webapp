@@ -12,7 +12,6 @@ import {
   DeleteVoteResultBallotRequest,
   DeleteVoteResultBundleRequest,
   GetVoteResultBallotRequest,
-  GetVoteResultBundleChangesRequest,
   GetVoteResultBundleRequest,
   GetVoteResultBundlesRequest,
   RejectVoteBundleReviewRequest,
@@ -26,14 +25,14 @@ import {
   GetVoteResultBundleResponse,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/responses/vote_result_bundle_responses_pb';
 import { VoteResultBundleServicePromiseClient } from '@abraxas/voting-ausmittlung-service-proto/grpc/vote_result_bundle_service_grpc_web_pb';
-import { GrpcBackendService, GrpcEnvironment, GrpcService, retryForeverWithBackoff } from '@abraxas/voting-lib';
+import { GrpcBackendService, GrpcEnvironment, GrpcService } from '@abraxas/voting-lib';
 import { Inject, Injectable } from '@angular/core';
 import { Int32Value } from 'google-protobuf/google/protobuf/wrappers_pb';
-import { Observable } from 'rxjs';
 import {
   BallotQuestionAnswer,
   PoliticalBusinessResultBundle,
   ProtocolExport,
+  ProtocolExportProto,
   TieBreakQuestionAnswer,
   VoteResultBallot,
   VoteResultBallotProto,
@@ -43,10 +42,10 @@ import {
   VoteResultBundleProto,
   VoteResultBundles,
   VoteResultBundlesProto,
-  ProtocolExportProto,
 } from '../models';
 import { GRPC_ENV_INJECTION_TOKEN } from './tokens';
 import { VoteResultService } from './vote-result.service';
+import { PoliticalBusinessResultBundleService } from './political-business-result-bundle.service';
 
 @Injectable({
   providedIn: 'root',
@@ -64,16 +63,6 @@ export class VoteResultBundleService extends GrpcService<VoteResultBundleService
       req,
       r => this.mapToBundles(r),
     );
-  }
-
-  public getBundleChanges(ballotResultId: string, onRetry: () => {}): Observable<PoliticalBusinessResultBundle> {
-    const req = new GetVoteResultBundleChangesRequest();
-    req.setBallotResultId(ballotResultId);
-    return this.requestServerStream(
-      c => c.getBundleChanges,
-      req,
-      r => this.mapToBundle(r),
-    ).pipe(retryForeverWithBackoff(onRetry));
   }
 
   public getBundle(bundleId: string): Promise<VoteResultBundleDetails> {
@@ -199,6 +188,7 @@ export class VoteResultBundleService extends GrpcService<VoteResultBundleService
       createdBy: obj.createdBy!,
       ballotNumbersToReview: obj.ballotNumbersToReviewList,
       protocolExport: this.mapToProtocolExport(proto.getProtocolExport()),
+      logs: proto.getLogsList().map(x => PoliticalBusinessResultBundleService.mapToPoliticalBusinessResultBundleLog(x)),
     };
   }
 

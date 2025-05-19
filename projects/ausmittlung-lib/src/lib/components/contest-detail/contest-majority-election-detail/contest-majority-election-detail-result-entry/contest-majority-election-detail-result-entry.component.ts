@@ -18,6 +18,7 @@ import { ActivatedRoute } from '@angular/router';
   selector: 'vo-ausm-contest-majority-election-detail-result-entry',
   templateUrl: './contest-majority-election-detail-result-entry.component.html',
   styleUrls: ['./contest-majority-election-detail-result-entry.component.scss'],
+  standalone: false,
 })
 export class ContestMajorityElectionDetailResultEntryComponent implements OnInit, OnDestroy {
   public readonly resultEntries: typeof MajorityElectionResultEntry = MajorityElectionResultEntry;

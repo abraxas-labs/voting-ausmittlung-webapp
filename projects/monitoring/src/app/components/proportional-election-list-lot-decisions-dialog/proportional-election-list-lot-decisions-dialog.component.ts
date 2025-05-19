@@ -24,6 +24,7 @@ import {
 @Component({
   selector: 'app-proportional-election-add-lot-decision-dialog',
   templateUrl: './proportional-election-list-lot-decisions-dialog.component.html',
+  standalone: false,
 })
 export class ProportionalElectionListLotDecisionsDialogComponent {
   public readonly columns = ['lists', 'winners', 'actions'];

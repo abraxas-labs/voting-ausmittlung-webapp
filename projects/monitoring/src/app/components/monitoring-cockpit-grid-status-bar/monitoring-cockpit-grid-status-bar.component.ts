@@ -13,6 +13,7 @@ import { CountingCircleResultState } from '@abraxas/voting-ausmittlung-service-p
   selector: 'app-monitoring-cockpit-grid-status-bar',
   templateUrl: './monitoring-cockpit-grid-status-bar.component.html',
   styleUrls: ['./monitoring-cockpit-grid-status-bar.component.scss'],
+  standalone: false,
 })
 export class MonitoringCockpitGridStatusBarComponent implements OnChanges {
   public readonly states: typeof CountingCircleResultState = CountingCircleResultState;

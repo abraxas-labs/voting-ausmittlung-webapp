@@ -11,6 +11,7 @@ import { MajorityElectionBallotContentComponent } from '../majority-election-bal
 @Component({
   selector: 'vo-ausm-majority-election-ballot-contents',
   templateUrl: './majority-election-ballot-contents.component.html',
+  standalone: false,
 })
 export class MajorityElectionBallotContentsComponent {
   @Input()

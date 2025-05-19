@@ -12,6 +12,7 @@ import { ThemeService } from '@abraxas/voting-lib';
 @Component({
   selector: 'vo-ausm-breadcrumbs',
   templateUrl: './breadcrumbs.component.html',
+  standalone: false,
 })
 export class BreadcrumbsComponent {
   @Input()

@@ -15,12 +15,12 @@
     <bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.CANDIDACY' | translate }}</bc-header-cell>
     <bc-data-cell *dataCellDef="let element">{{ element.candidate.politicalLastName + (element.candidate.politicalFirstName ? ' ' + element.candidate.politicalFirstName : '') }}</bc-data-cell>
   </ng-container>
-  
+
   <ng-container columnDef="party">
     <bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.PARTY' | translate }}</bc-header-cell>
     <bc-data-cell *dataCellDef="let element">{{ element.candidate.party }}</bc-data-cell>
   </ng-container>
-  
+
   <ng-container columnDef="conventionalVoteCount">
     <bc-header-cell *headerCellDef>{{ 'ELECTION.VOTE_COUNT_CONVENTIONAL' | translate }}</bc-header-cell>
     <bc-data-cell *dataCellDef="let element">{{ element.conventionalVoteCount }}</bc-data-cell>
@@ -29,6 +29,11 @@
   <ng-container columnDef="eVotingVoteCount">
     <bc-header-cell *headerCellDef>{{ 'ELECTION.VOTE_COUNT_E_VOTING' | translate }}</bc-header-cell>
     <bc-data-cell *dataCellDef="let element">{{ element.eVotingVoteCount }}</bc-data-cell>
+  </ng-container>
+
+  <ng-container columnDef="eCountingVoteCount">
+    <bc-header-cell *headerCellDef>{{ 'ELECTION.VOTE_COUNT_E_COUNTING' | translate }}</bc-header-cell>
+    <bc-data-cell *dataCellDef="let element">{{ element.eCountingVoteCount }}</bc-data-cell>
   </ng-container>
 
   <ng-container columnDef="voteCount">

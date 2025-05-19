@@ -3,7 +3,7 @@
 }
 
 .bc-column-political-business-number {
-  width: 8rem;
+  width: 5.5rem;
 }
 
 .bc-column-business-type {
@@ -11,7 +11,7 @@
 }
 
 .bc-column-short-description {
-  width: 30%;
+  width: 13rem;
 }
 
 .bc-column-domain-of-influence {
@@ -26,6 +26,10 @@
   width: 8rem;
 }
 
+.bc-column-number-of-mandates {
+  width: 5.5rem;
+}
+
 .state-colorbox {
   border-radius: 4px;
   display: flex;
@@ -38,4 +42,9 @@
 
 .clickable {
   cursor: pointer;
+}
+
+bc-table {
+  overflow: auto;
+  max-height: 44rem;
 }

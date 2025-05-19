@@ -12,7 +12,6 @@ import {
   DeleteProportionalElectionResultBallotRequest,
   DeleteProportionalElectionResultBundleRequest,
   GetProportionalElectionResultBallotRequest,
-  GetProportionalElectionResultBundleChangesRequest,
   GetProportionalElectionResultBundleRequest,
   GetProportionalElectionResultBundlesRequest,
   ProportionalElectionResultBundleSubmissionFinishedRequest,
@@ -24,10 +23,9 @@ import {
   CreateProportionalElectionResultBundleResponse,
   GetProportionalElectionResultBundleResponse,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/responses/proportional_election_result_bundle_responses_pb';
-import { GrpcBackendService, GrpcEnvironment, GrpcService, retryForeverWithBackoff } from '@abraxas/voting-lib';
+import { GrpcBackendService, GrpcEnvironment, GrpcService } from '@abraxas/voting-lib';
 import { Inject, Injectable } from '@angular/core';
 import { Int32Value } from 'google-protobuf/google/protobuf/wrappers_pb';
-import { Observable } from 'rxjs';
 import {
   ProportionalElectionBallotCandidate,
   ProportionalElectionResultBallot,
@@ -43,6 +41,7 @@ import { ProportionalElectionResultBallotProto } from '../models/proportional-el
 import { ProportionalElectionBallotListPosition, ProportionalElectionBallotUiData } from './proportional-election-ballot-ui.service';
 import { ProportionalElectionResultService } from './proportional-election-result.service';
 import { GRPC_ENV_INJECTION_TOKEN } from './tokens';
+import { PoliticalBusinessResultBundleService } from './political-business-result-bundle.service';
 
 @Injectable({
   providedIn: 'root',
@@ -60,16 +59,6 @@ export class ProportionalElectionResultBundleService extends GrpcService<Proport
       req,
       r => this.mapToBundles(r),
     );
-  }
-
-  public getBundleChanges(electionResultId: string, onRetry: () => {}): Observable<ProportionalElectionResultBundle> {
-    const req = new GetProportionalElectionResultBundleChangesRequest();
-    req.setElectionResultId(electionResultId);
-    return this.requestServerStream(
-      c => c.getBundleChanges,
-      req,
-      r => this.mapToBundle(r),
-    ).pipe(retryForeverWithBackoff(onRetry));
   }
 
   public getBundle(bundleId: string): Promise<ProportionalElectionResultBundleDetails> {
@@ -206,6 +195,7 @@ export class ProportionalElectionResultBundleService extends GrpcService<Proport
       createdBy: obj.createdBy!,
       ballotNumbersToReview: obj.ballotNumbersToReviewList,
       protocolExport: this.mapToProtocolExport(proto.getProtocolExport()),
+      logs: proto.getLogsList().map(x => PoliticalBusinessResultBundleService.mapToPoliticalBusinessResultBundleLog(x)),
     };
   }
 

@@ -306,18 +306,14 @@
     "COUNT_OF_VOTES": {
       "UNKNOWN": "Stimmen",
       "E_VOTING": "E-Voting",
+      "E_COUNTING": "E-Counting",
       "TOTAL": "Total"
     },
     "BY_BUNDLE": "Einzelne Stimmzettel erfassen und Bundkontrolle",
     "NO_BUNDLES": "Es sind noch keine Bunde kontrolliert",
-    "BALLOT_COUNT": "{{count}} Stimmzettel erfasst",
+    "BALLOT_COUNT": "{{count}} Stimmzettel kontrolliert",
     "BUNDLE_OVERVIEW": "Bundeübersicht und einzelne Stimmzettel erfassen",
     "NEW_BUNDLE": "+ Neuen Bund erfassen",
-    "BUNDLE_TABLES": {
-      "OPEN": "Bunde in Bearbeitung / zur Kontrolle",
-      "REVIEWED": "Bunde kontrolliert",
-      "DELETED": "Bunde gelöscht"
-    },
     "BALLOT_DETAIL": {
       "TITLE": "Stimmzettel erfassen",
       "DELETE": "Stimmzettel löschen",
@@ -403,17 +399,13 @@
     "BUNDLE_CREATED_BY": "Erstellt von",
     "BUNDLE_REVIEWED_BY": "Kontrolliert von",
     "BUNDLE_REVIEW": "Bundkontrolle",
+    "BUNDLE_LOG_ENTRY": "{{state}}, {{timestamp}} Uhr, {{user}}",
     "BUNDLE_STATES": {
       "1": "In Bearbeitung",
       "2": "zur Kontrolle",
       "3": "Kontrolle offen",
       "4": "Kontrolliert",
       "5": "Gelöscht"
-    },
-    "BUNDLE_TABLES": {
-      "OPEN": "Bunde in Bearbeitung / zur Kontrolle",
-      "REVIEWED": "Bunde kontrolliert",
-      "DELETED": "Bunde gelöscht"
     },
     "BALLOT_DETAIL": {
       "TITLE": "Wahlzettel erfassen",
@@ -491,9 +483,10 @@
     "SHOW_BALLOT": "Wahlzettel einsehen",
     "VOTE_COUNT": "Stimmen",
     "VOTE_COUNT_E_VOTING": "Elektronisch",
+    "VOTE_COUNT_E_COUNTING": "Elektronisch gezählt",
     "VOTE_COUNT_CONVENTIONAL": "Konventionell",
     "NO_BUNDLES": "Es sind noch keine Bunde kontrolliert",
-    "BALLOT_COUNT": "{{count}} Wahlzettel erfasst"
+    "BALLOT_COUNT": "{{count}} Wahlzettel kontrolliert"
   },
   "MAJORITY_ELECTION": {
     "TITLE": "Majorzwahl",
@@ -501,7 +494,7 @@
     "BALLOT_GROUPS_COUNT": "{{count}} Wahlzettel erfasst",
     "NO_BALLOT_GROUPS": "Es sind noch keine Wahlzettel erfasst",
     "BY_BUNDLE": "Einzelne Wahlzettel erfassen und Bundkontrolle",
-    "MAP_WRITE_INS": "E-Voting Write-Ins zuweisen",
+    "MAP_WRITE_INS": "Write-Ins zuweisen",
     "MAP": "Zuweisen",
     "RESULT_ENTRY": {
       "NOT_SELECTED": "Die Erfassungsvariante sind nicht eingestellt. Bitte kontaktieren Sie die zuständige auszählungsverantwortliche Person.",
@@ -567,8 +560,8 @@
       "ORDER_NUMBER": "Listen-Nr.",
       "ORDER_NUMBER_ABBREVIATION": "L-Nr.",
       "DESCRIPTION": "Listenbezeichnung",
-      "DESCRIPTION_ABBREVIATION": "Bezeichnung",
       "SHORT_DESCRIPTION": "Listenkurzbezeichnung",
+      "SHORT_DESCRIPTION_ABBREVIATION": "Kurzbez.",
       "UNMODIFIED_LISTS_COUNT": "Unv. WZ",
       "UNMODIFIED_LIST_VOTES_COUNT": "UnvWZ: Stimmen",
       "UNMODIFIED_LIST_BLANK_ROWS_COUNT": "UnvWZ: Leere Zeilen",
@@ -730,7 +723,8 @@
       "1": "wird generiert",
       "2": "abgeschlossen",
       "3": "fehlgeschlagen"
-    }
+    },
+    "DATA_EXPORT_FAILED": "Export konnte nicht generiert werden. Evtl. schlug die Schema-Validierung fehl."
   },
   "DOMAIN_OF_INFLUENCE": {
     "TYPE": "Ebene {{type}}",
@@ -752,6 +746,7 @@
   "VOTING_DATA_SOURCE": {
     "CONVENTIONAL": "Konventionell",
     "E_VOTING": "E-Voting",
+    "E_COUNTING": "E-Counting",
     "TOTAL": "Total"
   },
   "VALIDATION": {
@@ -998,10 +993,20 @@
     }
   },
   "RESULT_IMPORT": {
+    "BUTTON_TITLE": "Importieren…",
     "WRITE_INS": {
       "TITLE": "Write-Ins zuordnen",
+      "TITLE_1": "Write-Ins zuordnen (E-Voting)",
+      "TITLE_2": "Write-Ins zuordnen (E-Counting)",
       "TITLE_WITH_ELECTION": "Write-Ins zuordnen - {{electionDescription}}",
+      "TITLE_WITH_ELECTION_1": "Write-Ins zuordnen - {{electionDescription}} (E-Voting)",
+      "TITLE_WITH_ELECTION_2": "Write-Ins zuordnen - {{electionDescription}} (E-Counting)",
       "TITLE_MISSING_MAPPINGS": "Write-Ins (vorgruppiert)",
+      "STEP_TITLE_WITH_ELECTION": "{{election.title}}",
+      "STEP_TITLE_WITH_ELECTION_1": "{{election.title}} (E-Voting)",
+      "STEP_TITLE_WITH_ELECTION_2": "{{election.title}} (E-Counting)",
+      "STEP_TITLE_1": "E-Voting",
+      "STEP_TITLE_2": "E-Counting",
       "TITLE_CANDIDATES": "Kandidierende",
       "NO_MORE_DATA": "Keine weiteren Write-Ins vorhanden",
       "NO_DATA": "Keine Write-Ins vorhanden",
@@ -1022,11 +1027,47 @@
       "MAPPED_INVALID_DUE_TO_EMPTY_BALLOT": "{{count}} Wahlzettel wurden ungültig, da sie nach der Zuweisung der Write-Ins leer wurden."
     },
     "IMPORTED": {
-      "TITLE": "E-Voting Import",
-      "TEXT_WITH_WRITE_INS": "Die E-Voting Ergebnisse wurden importiert. Möchten Sie die Zuweisung der Write-Ins jetzt vornehmen?",
-      "TEXT_WITHOUT_WRITE_INS": "Die E-Voting Ergebnisse wurden importiert. Sie können die Ergebniserfassung jetzt abschliessen.",
+      "1": {
+        "TITLE": "E-Voting Import",
+        "TEXT_WITH_WRITE_INS": "Die E-Voting Ergebnisse wurden importiert. Möchten Sie die Zuweisung der Write-Ins jetzt vornehmen?",
+        "TEXT_WITHOUT_WRITE_INS": "Die E-Voting Ergebnisse wurden importiert. Sie können die Ergebniserfassung jetzt abschliessen."
+      },
+      "2": {
+        "TITLE": "E-Counting Import",
+        "TEXT_WITH_WRITE_INS": "Die E-Counting Ergebnisse wurden importiert. Möchten Sie die Zuweisung der Write-Ins jetzt vornehmen?",
+        "TEXT_WITHOUT_WRITE_INS": "Die E-Counting Ergebnisse wurden importiert."
+      },
       "ACTION_WRITE_INS": "Write-Ins zuweisen"
-    }
+    },
+    "LIST_TITLE": "Importierte Ergebnisse",
+    "TITLE": "Ergebnisse importieren",
+    "IMPORT": "Ergebnisse importieren",
+    "EXPLANATION": "Sowohl die eCH-0222- als auch die eCH-0110-Datei müssen ausgewählt und miteinander hochgeladen werden.",
+    "SELECT_FILE": "Datei auswählen",
+    "E_CH_STANDARD": "eCH-Datenstandard",
+    "E_CH_TYPES": {
+      "eCH-0222": "eCH-0222 - Schnittstelle Rohdaten Wahlen und Abstimmungen",
+      "eCH-0110": "eCH-0110 - Benötigt für die Anzahl Stimmrechtsausweise"
+    },
+    "DRAG_FILE": "Datei hierher ziehen",
+    "OR": "oder…",
+    "CHOOSE_FILE": "Datei zum Hochladen auswählen",
+    "CHOSEN_FILES": "Ausgewählte Dateien",
+    "FILENAME": "Dateiname",
+    "IMPORT_DONE": "Import wird verarbeitet…",
+    "STARTED_BY": "Importiert durch",
+    "STARTED": "Datum/Uhrzeit",
+    "IMPORTED_COUNTING_CIRCLES": "Importierte Auszählungskreise",
+    "IGNORED_COUNTING_CIRCLES": "Ignorierte Auszählungskreise",
+    "IGNORED_COUNTING_CIRCLE": {
+      "TEST_COUNTING_CIRCLE": "(Testurne)",
+      "NON_TEST_COUNTING_CIRCLE": "(Keine Testurne!)"
+    },
+    "DELETED_FILE_NAME": "Importierte Ergebnisse gelöscht",
+    "DELETE": "Importierte Ergebnisse löschen",
+    "DELETE_CONFIRM_TITLE": "Sind Sie sicher?",
+    "DELETE_CONFIRM_MSG": "Sind Sie sicher, dass Sie die importierten Ergebnisse wieder löschen wollen?",
+    "DELETE_SUCCESS": "Import-Daten werden gelöscht…"
   },
   "SECOND_FACTOR_TRANSACTION": {
     "TITLE": "Transaktionsbestätigung",

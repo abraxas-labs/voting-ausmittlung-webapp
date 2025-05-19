@@ -146,7 +146,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { BooleanStatusLabelComponent } from './components/boolean-status-label/boolean-status-label.component';
 import { ValidValidationPipe } from './pipes/valid-validation.pipe';
-import { ButtonBarComponent } from './components/button-bar/button-bar.component';
+import { PoliticalBusinessResultBundleLogsPipe } from './pipes/political-business-result-bundle-logs.pipe';
+import { ResultImportListDialogComponent } from './components/result-import-list-dialog/result-import-list-dialog.component';
+import { ResultImportDialogComponent } from './components/result-import-dialog/result-import-dialog.component';
+import { ImportFileSelectComponent } from './components/result-import-dialog/import-file-select/import-file-select.component';
 
 @NgModule({
   declarations: [
@@ -255,7 +258,10 @@ import { ButtonBarComponent } from './components/button-bar/button-bar.component
     ContestCountingCircleElectorateAssignDialogComponent,
     BooleanStatusLabelComponent,
     ValidValidationPipe,
-    ButtonBarComponent,
+    PoliticalBusinessResultBundleLogsPipe,
+    ResultImportListDialogComponent,
+    ResultImportDialogComponent,
+    ImportFileSelectComponent,
   ],
   imports: [
     CommonModule,
@@ -317,6 +323,7 @@ import { ButtonBarComponent } from './components/button-bar/button-bar.component
     ContestDetailInfoComponent,
     BooleanStatusLabelComponent,
     AdmonitionComponent,
+    ResultImportListDialogComponent,
   ],
 })
 export class AusmittlungLibModule {

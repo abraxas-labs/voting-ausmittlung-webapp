@@ -15,6 +15,7 @@ import { VoteResultService } from '../../../../services/vote-result.service';
   selector: 'vo-ausm-contest-vote-detail-result-entry',
   templateUrl: './contest-vote-detail-result-entry.component.html',
   styleUrls: ['./contest-vote-detail-result-entry.component.scss'],
+  standalone: false,
 })
 export class ContestVoteDetailResultEntryComponent implements OnInit {
   public readonly resultEntries: typeof VoteResultEntry = VoteResultEntry;

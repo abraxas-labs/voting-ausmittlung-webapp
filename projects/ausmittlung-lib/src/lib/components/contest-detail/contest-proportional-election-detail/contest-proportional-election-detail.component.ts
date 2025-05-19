@@ -30,6 +30,7 @@ import { cloneDeep } from 'lodash';
   selector: 'vo-ausm-contest-proportional-election-detail',
   templateUrl: './contest-proportional-election-detail.component.html',
   styleUrls: ['./contest-proportional-election-detail.component.scss'],
+  standalone: false,
 })
 export class ContestProportionalElectionDetailComponent
   extends AbstractContestPoliticalBusinessDetailComponent<ProportionalElectionResult, ProportionalElectionResultService>

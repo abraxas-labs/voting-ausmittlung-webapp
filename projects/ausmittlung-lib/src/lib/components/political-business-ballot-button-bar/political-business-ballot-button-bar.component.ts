@@ -10,6 +10,7 @@ import { Component, EventEmitter, HostListener, Input, Output } from '@angular/c
   selector: 'vo-ausm-political-business-ballot-button-bar',
   templateUrl: './political-business-ballot-button-bar.component.html',
   styleUrls: ['./political-business-ballot-button-bar.component.scss'],
+  standalone: false,
 })
 export class PoliticalBusinessBallotButtonBarComponent {
   @Input()

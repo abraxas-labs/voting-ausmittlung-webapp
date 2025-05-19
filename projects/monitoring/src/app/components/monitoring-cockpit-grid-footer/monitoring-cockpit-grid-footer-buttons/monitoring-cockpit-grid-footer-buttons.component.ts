@@ -22,6 +22,7 @@ import { ThemeService } from '@abraxas/voting-lib';
   selector: 'app-monitoring-cockpit-grid-footer-buttons',
   templateUrl: './monitoring-cockpit-grid-footer-buttons.component.html',
   styleUrls: ['./monitoring-cockpit-grid-footer-buttons.component.scss'],
+  standalone: false,
 })
 export class MonitoringCockpitGridFooterButtonsComponent implements OnInit, OnChanges {
   public readonly states: typeof CountingCircleResultState = CountingCircleResultState;

@@ -7,6 +7,7 @@
 export enum VotingDataSource {
   Conventional,
   EVoting,
+  ECounting,
   Total,
 }
 
@@ -16,6 +17,8 @@ export function dataSourceToPropertyPrefix(dataSource: VotingDataSource): string
       return 'conventionalSubTotal';
     case VotingDataSource.EVoting:
       return 'eVotingSubTotal';
+    case VotingDataSource.ECounting:
+      return 'eCountingSubTotal';
     default:
       return undefined;
   }

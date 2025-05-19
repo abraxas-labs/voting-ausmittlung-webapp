@@ -23,6 +23,7 @@ const stepperOptions: StepperOptions = {
       useValue: stepperOptions,
     },
   ],
+  standalone: false,
 })
 export class BallotReviewStepperComponent {
   public readonly reviewStates: typeof ReviewState = ReviewState;

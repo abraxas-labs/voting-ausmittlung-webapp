@@ -30,6 +30,7 @@ export type Contest = {
   state: ContestState;
   locked: boolean;
   cantonDefaults: ContestCantonDefaults;
+  eCountingResultsImported: boolean;
 };
 export { ContestSummaryProto };
 export type ContestSummary = Contest & {

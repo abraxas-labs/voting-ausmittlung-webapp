@@ -25,6 +25,7 @@ import {
   selector: 'app-proportional-election-manual-end-result-dialog',
   templateUrl: './proportional-election-manual-end-result-dialog.component.html',
   styleUrls: ['./proportional-election-manual-end-result-dialog.component.scss'],
+  standalone: false,
 })
 export class ProportionalElectionManualEndResultDialogComponent {
   @ViewChild(MatStepper, { static: true })

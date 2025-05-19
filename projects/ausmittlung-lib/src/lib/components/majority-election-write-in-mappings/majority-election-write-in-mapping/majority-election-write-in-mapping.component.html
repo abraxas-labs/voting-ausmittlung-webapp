@@ -4,10 +4,10 @@
     <div *ngIf="availableWriteInMappings.length === 0; else availableMappings">
       <p class="no-data" translate>RESULT_IMPORT.WRITE_INS.NO_MORE_DATA</p>
       <bc-button
-        *ngIf="canShowNextElection"
+        *ngIf="canShowNextGroup"
         variant="tertiary"
         [label]="'RESULT_IMPORT.WRITE_INS.NEXT_ELECTION' | translate"
-        (buttonClick)="showNextElection.emit()"
+        (buttonClick)="showNextGroup.emit()"
       >
       </bc-button>
     </div>

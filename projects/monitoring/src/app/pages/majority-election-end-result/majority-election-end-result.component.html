@@ -45,16 +45,20 @@
     <div class="additional-infos">
       <bc-button *ngIf="hasLotDecisions && endResult.allCountingCirclesDone && !endResult.contest.locked && !isPartialResult"
                  [label]="'END_RESULT.ELECTION.LOT_DECISION.OPEN' | translate"
-                 (buttonClick)="openUpdateLotDecisions()">
+                 (buttonClick)="openUpdateLotDecisions()"
+                 [disabled]="lotDecisionProcessing">
       </bc-button>
+      <bc-spinner class="ml-3" *ngIf="lotDecisionProcessing"></bc-spinner>
     </div>
 
     <app-majority-election-end-result-candidates-list [endResult]="endResult"
                                                       [eVoting]="endResult.contest.eVoting"
+                                                      [eCounting]="endResult.contest.eCountingResultsImported"
                                                       [showLotDecision]="!hasOpenRequiredLotDecisions && hasLotDecisions"></app-majority-election-end-result-candidates-list>
     <ng-container *ngFor="let secondaryMajorityElectionEndResult of endResult.secondaryMajorityElectionEndResults">
       <app-majority-election-end-result-candidates-list [endResult]="secondaryMajorityElectionEndResult"
                                                         [eVoting]="endResult.contest.eVoting"
+                                                        [eCounting]="endResult.contest.eCountingResultsImported"
                                                         [showLotDecision]="!hasOpenRequiredLotDecisions && hasLotDecisions"
                                                         [showTitle]="true"></app-majority-election-end-result-candidates-list>
     </ng-container>

@@ -41,6 +41,7 @@ export interface BallotQuestionEndResult {
   totalCountOfAnswer2: number;
   totalCountOfAnswerUnspecified: number;
   eVotingSubTotal: QuestionResultSubTotal;
+  eCountingSubTotal: QuestionResultSubTotal;
   conventionalSubTotal: QuestionResultSubTotal;
   countOfCountingCircle1: number;
   countOfCountingCircle2: number;
@@ -55,6 +56,7 @@ export interface TieBreakQuestionEndResult {
   totalCountOfAnswer2: number;
   totalCountOfAnswerUnspecified: number;
   eVotingSubTotal: QuestionResultSubTotal;
+  eCountingSubTotal: QuestionResultSubTotal;
   conventionalSubTotal: QuestionResultSubTotal;
   countOfCountingCircle1: number;
   countOfCountingCircle2: number;

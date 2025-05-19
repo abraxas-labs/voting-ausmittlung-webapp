@@ -25,11 +25,12 @@ import { DomainOfInfluenceCanton } from '@abraxas/voting-ausmittlung-service-pro
   selector: 'vo-ausm-proportional-election-results',
   templateUrl: './proportional-election-results.component.html',
   styleUrls: ['./proportional-election-results.component.scss'],
+  standalone: false,
 })
 export class ProportionalElectionResultsComponent implements OnDestroy {
   public readonly listResultColumns = [
     'orderNumber',
-    'description',
+    'shortDescription',
     'unmodifiedListVotesCount',
     'unmodifiedListBlankRowsCount',
     'modifiedListVotesCount',

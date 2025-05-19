@@ -24,6 +24,7 @@ import { DomainOfInfluenceType } from '@abraxas/voting-ausmittlung-service-proto
   templateUrl: './contest-political-business-detail-footer.component.html',
   styleUrls: ['./contest-political-business-detail-footer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class ContestPoliticalBusinessDetailFooterComponent implements OnInit {
   public readonly domainOfInfluenceTypes: typeof DomainOfInfluenceType = DomainOfInfluenceType;

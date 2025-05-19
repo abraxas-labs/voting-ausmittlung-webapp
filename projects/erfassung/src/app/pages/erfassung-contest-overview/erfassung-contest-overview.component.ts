@@ -18,6 +18,7 @@ import {
 @Component({
   selector: 'app-erfassung-contest-overview',
   templateUrl: './erfassung-contest-overview.component.html',
+  standalone: false,
 })
 export class ErfassungContestOverviewComponent {
   constructor(

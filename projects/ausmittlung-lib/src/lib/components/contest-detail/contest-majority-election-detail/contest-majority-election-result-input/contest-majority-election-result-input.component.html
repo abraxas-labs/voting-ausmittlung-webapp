@@ -11,8 +11,9 @@
       <bc-label [label]="'CANDIDATE.NR' | translate"></bc-label>
       <bc-label [label]="'CANDIDATE.CANDIDACY' | translate"></bc-label>
       <bc-label [label]="'MAJORITY_ELECTION.PARTY' | translate"></bc-label>
-      <bc-label *ngIf="eVotingValue" [label]="'ELECTION.VOTE_COUNT_CONVENTIONAL' | translate"></bc-label>
+      <bc-label *ngIf="eVotingValue || eCountingValue" [label]="'ELECTION.VOTE_COUNT_CONVENTIONAL' | translate"></bc-label>
       <bc-label *ngIf="eVotingValue" [label]="'ELECTION.VOTE_COUNT_E_VOTING' | translate"></bc-label>
+      <bc-label *ngIf="eCountingValue" [label]="'ELECTION.VOTE_COUNT_E_COUNTING' | translate"></bc-label>
       <bc-label [label]="'ELECTION.VOTE_COUNT' | translate"></bc-label>
       <ng-container *ngFor="let candidate of result.candidateResults">
         <span class="candidate-number">{{ candidate.candidate.number }}</span>
@@ -27,7 +28,8 @@
           [subscriptSizing]="'dynamic'"
         ></bc-number>
         <bc-number *ngIf="eVotingValue" [readonly]="true" [tabIndex]="-1" [value]="candidate.eVotingExclWriteInsVoteCount + candidate.eVotingWriteInsVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
-        <bc-number *ngIf="eVotingValue" [readonly]="true" [tabIndex]="-1" [value]="(candidate.conventionalVoteCount ?? 0) + candidate.eVotingExclWriteInsVoteCount + candidate.eVotingWriteInsVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
+        <bc-number *ngIf="eCountingValue" [readonly]="true" [tabIndex]="-1" [value]="candidate.eCountingExclWriteInsVoteCount + candidate.eCountingWriteInsVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
+        <bc-number *ngIf="eCountingValue || eVotingValue" [readonly]="true" [tabIndex]="-1" [value]="(candidate.conventionalVoteCount ?? 0) + candidate.eVotingExclWriteInsVoteCount + candidate.eVotingWriteInsVoteCount + candidate.eCountingExclWriteInsVoteCount + candidate.eCountingWriteInsVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
       </ng-container>
 
       <ng-container *ngIf="showIndividualVotes">
@@ -51,7 +53,14 @@
           [value]="result.eVotingSubTotal.individualVoteCount"
           [subscriptSizing]="'dynamic'"
         ></bc-number>
-        <bc-number *ngIf="eVotingValue" [readonly]="true" [tabIndex]="-1" [value]="result.individualVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
+        <bc-number
+          *ngIf="eCountingValue"
+          [readonly]="true"
+          [tabIndex]="-1"
+          [value]="result.eCountingSubTotal.individualVoteCount"
+          [subscriptSizing]="'dynamic'"
+        ></bc-number>
+        <bc-number *ngIf="eVotingValue || eCountingValue" [readonly]="true" [tabIndex]="-1" [value]="result.individualVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
       </ng-container>
 
       <ng-container *ngIf="showEmptyVotes">
@@ -68,7 +77,8 @@
           [subscriptSizing]="'dynamic'"
         ></bc-number>
         <bc-number *ngIf="eVotingValue" [readonly]="true" [tabIndex]="-1" [value]="result.eVotingSubTotal.emptyVoteCountWriteIns + result.eVotingSubTotal.emptyVoteCountExclWriteIns" [subscriptSizing]="'dynamic'"></bc-number>
-        <bc-number *ngIf="eVotingValue" [readonly]="true" [tabIndex]="-1" [value]="(result.conventionalSubTotal.emptyVoteCountExclWriteIns ?? 0) + result.eVotingSubTotal.emptyVoteCountWriteIns + result.eVotingSubTotal.emptyVoteCountExclWriteIns" [subscriptSizing]="'dynamic'"></bc-number>
+        <bc-number *ngIf="eCountingValue" [readonly]="true" [tabIndex]="-1" [value]="result.eCountingSubTotal.emptyVoteCountWriteIns + result.eCountingSubTotal.emptyVoteCountExclWriteIns" [subscriptSizing]="'dynamic'"></bc-number>
+        <bc-number *ngIf="eVotingValue || eCountingValue" [readonly]="true" [tabIndex]="-1" [value]="(result.conventionalSubTotal.emptyVoteCountExclWriteIns ?? 0) + result.eVotingSubTotal.emptyVoteCountWriteIns + result.eVotingSubTotal.emptyVoteCountExclWriteIns + result.eCountingSubTotal.emptyVoteCountWriteIns + result.eCountingSubTotal.emptyVoteCountExclWriteIns" [subscriptSizing]="'dynamic'"></bc-number>
       </ng-container>
 
       <ng-container *ngIf="showInvalidVotes">
@@ -86,7 +96,8 @@
           [subscriptSizing]="'dynamic'"
         ></bc-number>
         <bc-number *ngIf="eVotingValue" [readonly]="true" [tabIndex]="-1" [value]="result.eVotingSubTotal.invalidVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
-        <bc-number *ngIf="eVotingValue" [readonly]="true" [tabIndex]="-1" [value]="result.invalidVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
+        <bc-number *ngIf="eCountingValue" [readonly]="true" [tabIndex]="-1" [value]="result.eCountingSubTotal.invalidVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
+        <bc-number *ngIf="eVotingValue || eCountingValue" [readonly]="true" [tabIndex]="-1" [value]="result.invalidVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
       </ng-container>
     </div>
   </div>

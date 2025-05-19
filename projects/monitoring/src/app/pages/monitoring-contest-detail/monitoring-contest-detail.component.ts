@@ -10,5 +10,6 @@ import { Component } from '@angular/core';
   selector: 'app-monitoring-contest-detail',
   templateUrl: './monitoring-contest-detail.component.html',
   styleUrls: ['./monitoring-contest-detail.component.scss'],
+  standalone: false,
 })
 export class MonitoringContestDetailComponent {}

@@ -3,12 +3,9 @@
   display: flex;
   column-gap: 5rem;
 
-  .left {
-    width: 67%;
-  }
-
   .right {
-    width: 33%;
+    flex-grow: 1;
+    width: 40%;
   }
 }
 
@@ -18,4 +15,9 @@
   .mat-mdc-option {
     padding-right: 1rem !important;
   }
+}
+
+.flex {
+  display: flex;
+  justify-content: flex-end;
 }

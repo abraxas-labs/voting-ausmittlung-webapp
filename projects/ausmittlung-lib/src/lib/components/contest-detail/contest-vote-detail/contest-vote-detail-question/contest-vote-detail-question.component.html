@@ -1,99 +1,112 @@
 <div class="question-results vertical">
   <div class="result-entry">
     <div class="input-container">
-      <bc-label *ngIf="eVoting && ballotNumberOfQuestions > 1" class="source-label" [label]="'VOTING_DATA_SOURCE.CONVENTIONAL' | translate"></bc-label>
+      <bc-label *ngIf="(eVoting || eCounting) && ballotNumberOfQuestions > 1"
+                class="source-label"
+                [label]="'VOTING_DATA_SOURCE.CONVENTIONAL' | translate"></bc-label>
       <bc-number class="label-no-wrap label-space"
-                    [label]="result.question | translateVoteQuestion: isTieBreakQuestion:'answer1Short':ballotNumberOfQuestions:ballotSubType"
-                    [min]="0"
-                    [required]="true"
-                    [readonly]="readonly"
-                    [error]="result.conventionalSubTotal.totalCountOfAnswer1 !== undefined && result.conventionalSubTotal.totalCountOfAnswer1 < 0"
-                    [(value)]="result.conventionalSubTotal.totalCountOfAnswer1"
-                    (valueChange)="updateTotal()"
-                    [subscriptSizing]="'dynamic'"></bc-number>
+                 [label]="result.question | translateVoteQuestion: isTieBreakQuestion:'answer1Short':ballotNumberOfQuestions:ballotSubType"
+                 [min]="0"
+                 [required]="true"
+                 [readonly]="readonly"
+                 [error]="result.conventionalSubTotal.totalCountOfAnswer1 !== undefined && result.conventionalSubTotal.totalCountOfAnswer1 < 0"
+                 [(value)]="result.conventionalSubTotal.totalCountOfAnswer1"
+                 (valueChange)="updateTotal()"
+                 [subscriptSizing]="'dynamic'"></bc-number>
       <bc-number class="label-no-wrap label-space"
-                    [label]="result.question | translateVoteQuestion: isTieBreakQuestion:'answer2Short':ballotNumberOfQuestions:ballotSubType"
-                    [min]="0"
-                    [required]="true"
-                    [readonly]="readonly"
-                    [error]="result.conventionalSubTotal.totalCountOfAnswer2 !== undefined && result.conventionalSubTotal.totalCountOfAnswer2 < 0"
-                    [(value)]="result.conventionalSubTotal.totalCountOfAnswer2"
-                    (valueChange)="updateTotal()"
-                    [subscriptSizing]="'dynamic'"></bc-number>
+                 [label]="result.question | translateVoteQuestion: isTieBreakQuestion:'answer2Short':ballotNumberOfQuestions:ballotSubType"
+                 [min]="0"
+                 [required]="true"
+                 [readonly]="readonly"
+                 [error]="result.conventionalSubTotal.totalCountOfAnswer2 !== undefined && result.conventionalSubTotal.totalCountOfAnswer2 < 0"
+                 [(value)]="result.conventionalSubTotal.totalCountOfAnswer2"
+                 (valueChange)="updateTotal()"
+                 [subscriptSizing]="'dynamic'"></bc-number>
       <bc-number class="label-no-wrap label-space"
-                    [label]="'VOTE.BALLOT.ANSWER.UNSPECIFIED_SHORT' | translate"
-                    [min]="0"
-                    *ngIf="ballotNumberOfQuestions > 1"
-                    [required]="true"
-                    [readonly]="readonly"
-                    [error]="result.conventionalSubTotal.totalCountOfAnswerUnspecified !== undefined && result.conventionalSubTotal.totalCountOfAnswerUnspecified < 0"
-                    [(value)]="result.conventionalSubTotal.totalCountOfAnswerUnspecified"
-                    (valueChange)="updateTotal()"
-                    [subscriptSizing]="'dynamic'"></bc-number>
+                 [label]="'VOTE.BALLOT.ANSWER.UNSPECIFIED_SHORT' | translate"
+                 [min]="0"
+                 *ngIf="ballotNumberOfQuestions > 1"
+                 [required]="true"
+                 [readonly]="readonly"
+                 [error]="result.conventionalSubTotal.totalCountOfAnswerUnspecified !== undefined && result.conventionalSubTotal.totalCountOfAnswerUnspecified < 0"
+                 [(value)]="result.conventionalSubTotal.totalCountOfAnswerUnspecified"
+                 (valueChange)="updateTotal()"
+                 [subscriptSizing]="'dynamic'"></bc-number>
     </div>
   </div>
   <ng-container *ngIf="eVoting">
+    <ng-container *ngTemplateOutlet="resultEntry; context: {label: 'E_VOTING', subTotal: result.eVotingSubTotal}"></ng-container>
+  </ng-container>
+  <ng-container *ngIf="eCounting">
+    <ng-container *ngTemplateOutlet="resultEntry; context: {label: 'E_COUNTING', subTotal: result.eCountingSubTotal}"></ng-container>
+  </ng-container>
+  <ng-template #resultEntry let-label="label" let-subTotal="subTotal">
     <div class="result-entry">
-        <div class="input-container">
-          <bc-label *ngIf="eVoting && ballotNumberOfQuestions > 1" class="source-label" [label]="'VOTING_DATA_SOURCE.E_VOTING' | translate"></bc-label>
-          <bc-number
-            class="label-no-wrap"
-            [readonly]="true"
-            [tabIndex]="-1"
-            [required]="true"
-            [label]="''"
-            [value]="result.eVotingSubTotal.totalCountOfAnswer1"
-            [subscriptSizing]="'dynamic'"></bc-number>
-          <bc-number
-            class="label-no-wrap"
-            [readonly]="true"
-            [tabIndex]="-1"
-            [required]="true"
-            [label]="''"
-            [value]="result.eVotingSubTotal.totalCountOfAnswer2"
-            [subscriptSizing]="'dynamic'"></bc-number>
-          <bc-number
-            class="label-no-wrap"
-            [readonly]="true"
-            [tabIndex]="-1"
-            [label]="''"
-            [min]="0"
-            *ngIf="ballotNumberOfQuestions > 1"
-            [required]="true"
-            [(value)]="result.eVotingSubTotal.totalCountOfAnswerUnspecified"
-            (valueChange)="updateTotal()"
-            [subscriptSizing]="'dynamic'"></bc-number>
-        </div>
+      <div class="input-container">
+        <bc-label *ngIf="ballotNumberOfQuestions > 1"
+                  class="source-label"
+                  [label]="'VOTING_DATA_SOURCE.' + label | translate"></bc-label>
+        <bc-number
+          class="label-no-wrap"
+          [readonly]="true"
+          [tabIndex]="-1"
+          [required]="true"
+          [label]="''"
+          [value]="subTotal.totalCountOfAnswer1"
+          [subscriptSizing]="'dynamic'"></bc-number>
+        <bc-number
+          class="label-no-wrap"
+          [readonly]="true"
+          [tabIndex]="-1"
+          [required]="true"
+          [label]="''"
+          [value]="subTotal.totalCountOfAnswer2"
+          [subscriptSizing]="'dynamic'"></bc-number>
+        <bc-number
+          class="label-no-wrap"
+          [readonly]="true"
+          [tabIndex]="-1"
+          [label]="''"
+          [min]="0"
+          *ngIf="ballotNumberOfQuestions > 1"
+          [required]="true"
+          [(value)]="subTotal.totalCountOfAnswerUnspecified"
+          (valueChange)="updateTotal()"
+          [subscriptSizing]="'dynamic'"></bc-number>
       </div>
-      <div class="result-entry">
-          <div class="input-container">
-            <bc-label *ngIf="eVoting && ballotNumberOfQuestions > 1" class="source-label" [label]="'VOTING_DATA_SOURCE.TOTAL' | translate"></bc-label>
-            <bc-number
-              class="label-no-wrap"
-              [readonly]="true"
-              [tabIndex]="-1"
-              [required]="true"
-              [label]="''"
-              [value]="result.totalCountOfAnswer1"
-              [subscriptSizing]="'dynamic'"></bc-number>
-            <bc-number
-              class="label-no-wrap"
-              [readonly]="true"
-              [tabIndex]="-1"
-              [required]="true"
-              [label]="''"
-              [value]="result.totalCountOfAnswer2"
-              [subscriptSizing]="'dynamic'"></bc-number>
-            <bc-number
-              class="label-no-wrap"
-              [readonly]="true"
-              [tabIndex]="-1"
-              [required]="true"
-              *ngIf="ballotNumberOfQuestions > 1"
-              [label]="''"
-              [value]="result.totalCountOfAnswerUnspecified"
-              [subscriptSizing]="'dynamic'"></bc-number>
-          </div>
-        </div>
-      </ng-container>
     </div>
+  </ng-template>
+  <ng-container *ngIf="eCounting || eVoting">
+    <div class="result-entry">
+      <div class="input-container">
+        <bc-label *ngIf="ballotNumberOfQuestions > 1" class="source-label"
+                  [label]="'VOTING_DATA_SOURCE.TOTAL' | translate"></bc-label>
+        <bc-number
+          class="label-no-wrap"
+          [readonly]="true"
+          [tabIndex]="-1"
+          [required]="true"
+          [label]="''"
+          [value]="result.totalCountOfAnswer1"
+          [subscriptSizing]="'dynamic'"></bc-number>
+        <bc-number
+          class="label-no-wrap"
+          [readonly]="true"
+          [tabIndex]="-1"
+          [required]="true"
+          [label]="''"
+          [value]="result.totalCountOfAnswer2"
+          [subscriptSizing]="'dynamic'"></bc-number>
+        <bc-number
+          class="label-no-wrap"
+          [readonly]="true"
+          [tabIndex]="-1"
+          [required]="true"
+          *ngIf="ballotNumberOfQuestions > 1"
+          [label]="''"
+          [value]="result.totalCountOfAnswerUnspecified"
+          [subscriptSizing]="'dynamic'"></bc-number>
+      </div>
+    </div>
+  </ng-container>
+</div>

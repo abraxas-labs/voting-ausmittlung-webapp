@@ -13,6 +13,7 @@ import { RemoveCandidateRangeData } from '../proportional-election-ballot-candid
   selector: 'vo-ausm-proportional-election-ballot-candidate-modify',
   templateUrl: './proportional-election-ballot-candidate-modify.component.html',
   styleUrls: ['./proportional-election-ballot-candidate-modify.component.scss'],
+  standalone: false,
 })
 export class ProportionalElectionBallotCandidateModifyComponent {
   @ViewChild('addCandidateInput', { static: true })

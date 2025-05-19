@@ -11,10 +11,12 @@ import { TranslateService } from '@ngx-translate/core';
 import {
   dataSourceToPropertyPrefix,
   DoubleProportionalResultApportionmentState,
+  EventLogService,
   groupBySingle,
   ProportionalElectionCandidateEndResult,
   ProportionalElectionCandidateEndResultState,
   ProportionalElectionEndResult,
+  ProportionalElectionEndResultEventTypes,
   ProportionalElectionEndResultLotDecision,
   ProportionalElectionListEndResult,
   ProportionalElectionMandateAlgorithm,
@@ -42,6 +44,7 @@ import { EndResultStep } from '../../models/end-result-step.model';
   selector: 'app-proportional-election-end-result',
   templateUrl: './proportional-election-end-result.component.html',
   styleUrls: ['./proportional-election-end-result.component.scss'],
+  standalone: false,
 })
 export class ProportionalElectionEndResultComponent implements OnDestroy {
   public dataPrefix?: string;
@@ -57,12 +60,15 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
   public listColumns: string[] = [];
   public candidateColumns: string[] = [];
   public isPartialResult = false;
+  private proportionalElectionId: string = '';
+  private politicalBusinessUnionId?: string;
   public isNonUnionDoubleProportional = false;
   public endResultStep?: EndResultStep;
   public finalizeEnabled = false;
   public showMandateDistributionTrigger = false;
 
   private readonly routeSubscription: Subscription;
+  private watchSubscription?: Subscription;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -73,24 +79,40 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
     private readonly i18n: TranslateService,
     private readonly toast: SnackbarService,
     private readonly secondFactorTransactionService: SecondFactorTransactionService,
+    private readonly eventLogService: EventLogService,
   ) {
     this.routeSubscription = combineLatest([this.route.params, this.route.queryParams])
       .pipe(
         debounceTime(10), // could fire twice if both params change at the same time
-        map(results => ({
-          politicalBusinessId: results[0].politicalBusinessId,
-          politicalBusinessUnionId: results[0].politicalBusinessUnionId,
-          isPartialResult: results[1].partialResult,
+        map(([params, queryParams]) => ({
+          politicalBusinessId: params.politicalBusinessId,
+          politicalBusinessUnionId: params.politicalBusinessUnionId,
+          isPartialResult: queryParams.partialResult,
         })),
       )
-      .subscribe(({ politicalBusinessId, politicalBusinessUnionId, isPartialResult }) => {
+      .subscribe(async ({ politicalBusinessId, politicalBusinessUnionId, isPartialResult }) => {
         this.isPartialResult = isPartialResult;
-        this.loadData(politicalBusinessId, politicalBusinessUnionId);
+        this.politicalBusinessUnionId = politicalBusinessUnionId;
+        this.proportionalElectionId = politicalBusinessId;
+
+        this.watchSubscription?.unsubscribe();
+        delete this.watchSubscription;
+
+        await this.loadData();
+
+        this.watchSubscription = this.eventLogService
+          .watch([...ProportionalElectionEndResultEventTypes], {
+            contestId: this.endResult!.contest.id,
+            politicalBusinessId: this.proportionalElectionId,
+          })
+          .pipe(debounceTime(1000)) // refresh once a second at max
+          .subscribe(() => this.loadData(false));
       });
   }
 
   public async ngOnDestroy(): Promise<void> {
     this.routeSubscription.unsubscribe();
+    this.watchSubscription?.unsubscribe();
   }
 
   public setDataPrefix(dataSource: VotingDataSource): void {
@@ -221,7 +243,7 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
       listLotDecisions: this.endResult.listLotDecisions,
     };
 
-    const result = await this.dialogService.openForResult<
+    await this.dialogService.openForResult<
       ProportionalElectionManualEndResultDialogComponent,
       ProportionalElectionManualEndResultDialogResult
     >(ProportionalElectionManualEndResultDialogComponent, data);
@@ -242,13 +264,13 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
     await this.router.navigate(['double-proportional-results'], { relativeTo: this.route });
   }
 
-  private async loadData(proportionalElectionId: string, politicalBusinessUnionId: string): Promise<void> {
-    this.loading = true;
+  private async loadData(setLoading: boolean = true): Promise<void> {
+    this.loading = setLoading;
 
     try {
       const endResult = this.isPartialResult
-        ? await this.resultService.getPartialEndResult(proportionalElectionId)
-        : await this.resultService.getEndResult(proportionalElectionId);
+        ? await this.resultService.getPartialEndResult(this.proportionalElectionId)
+        : await this.resultService.getEndResult(this.proportionalElectionId);
       this.isNonUnionDoubleProportional = ProportionalElectionService.isNonUnionDoubleProportional(endResult.election.mandateAlgorithm);
       this.finalizeEnabled = !endResult.contest.cantonDefaults.endResultFinalizeDisabled;
 
@@ -261,14 +283,14 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
       // otherwise the end result type selector does not set the disabled state.
       if (
         !this.isPartialResult &&
-        !!politicalBusinessUnionId &&
+        !!this.politicalBusinessUnionId &&
         (endResult.election.mandateAlgorithm ===
           ProportionalElectionMandateAlgorithm.PROPORTIONAL_ELECTION_MANDATE_ALGORITHM_DOUBLE_PROPORTIONAL_N_DOIS_5_DOI_OR_3_TOT_QUORUM ||
           endResult.election.mandateAlgorithm ===
             ProportionalElectionMandateAlgorithm.PROPORTIONAL_ELECTION_MANDATE_ALGORITHM_DOUBLE_PROPORTIONAL_N_DOIS_5_DOI_QUORUM)
       ) {
         try {
-          const dpResult = await this.unionResultService.getDoubleProportionalResult(politicalBusinessUnionId);
+          const dpResult = await this.unionResultService.getDoubleProportionalResult(this.politicalBusinessUnionId);
           this.dpResultIncomplete =
             dpResult.subApportionmentState !==
             DoubleProportionalResultApportionmentState.DOUBLE_PROPORTIONAL_RESULT_APPORTIONMENT_STATE_COMPLETED;
@@ -368,12 +390,11 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
   }
 
   private refreshTableColumns(): void {
-    this.listColumns = ['orderNumber', 'description'];
-    if (this.endResult?.mandateDistributionTriggered) {
-      this.listColumns.push('listVotesCount', 'blankRowsCount', 'totalVoteCount');
-      if (this.endResult?.allCountingCirclesDone) {
-        this.listColumns.push('nrOfMandates');
-      }
+    const showCalculationDetails = this.endResult?.mandateDistributionTriggered && this.endResult?.allCountingCirclesDone;
+    this.listColumns = ['orderNumber', 'shortDescription', 'listVotesCount', 'blankRowsCount', 'totalVoteCount'];
+
+    if (showCalculationDetails) {
+      this.listColumns.push('nrOfMandates');
     }
 
     if (
@@ -383,16 +404,15 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
       this.listColumns.push('listUnion', 'subListUnion');
     }
 
-    this.candidateColumns = ['number', 'lastName', 'firstName'];
-    if (this.endResult?.mandateDistributionTriggered) {
-      this.candidateColumns.push('voteCount');
-      if (this.endResult?.mandateDistributionTriggered && this.endResult?.allCountingCirclesDone) {
-        this.candidateColumns.push('rank');
-      }
-      this.candidateColumns.push('state');
-      if (this.endResult?.mandateDistributionTriggered && this.hasLotDecisions && !this.hasOpenRequiredLotDecisions) {
-        this.candidateColumns.push('lotDecision');
-      }
+    this.candidateColumns = ['number', 'lastName', 'firstName', 'voteCount'];
+    if (showCalculationDetails) {
+      this.candidateColumns.push('rank');
+    }
+
+    this.candidateColumns.push('state');
+
+    if (showCalculationDetails && this.hasLotDecisions && !this.hasOpenRequiredLotDecisions) {
+      this.candidateColumns.push('lotDecision');
     }
   }
 }

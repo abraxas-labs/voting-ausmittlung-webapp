@@ -12,6 +12,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   selector: 'vo-ausm-confirm-comment-dialog',
   templateUrl: './confirm-comment-dialog.component.html',
   styleUrls: ['./confirm-comment-dialog.component.scss'],
+  standalone: false,
 })
 export class ConfirmCommentDialogComponent {
   public readonly title: string;

@@ -7,9 +7,8 @@
 import { ProportionalElectionReviewProcedure } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/proportional_election_pb';
 import { DialogService, SnackbarService, ThemeService } from '@abraxas/voting-lib';
 import { Component, HostListener } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable } from 'rxjs';
 import {
   ProportionalElectionNewBundleComponent,
   ProportionalElectionNewBundleComponentData,
@@ -24,11 +23,15 @@ import { ProportionalElectionBallotComponent } from '../proportional-election-ba
 import { ExportService } from '../../../services/export.service';
 import { DatePipe } from '@angular/common';
 import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/political_business_pb';
+import { EventLogService } from '../../../services/event-log.service';
+import { Event, EventType, ProportionalElectionResultBundleEventTypes } from '../../../models/event-log.model';
+import { BallotBundleState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/ballot_bundle_pb';
 
 @Component({
   selector: 'vo-ausm-proportional-election-bundle-overview',
   templateUrl: './proportional-election-bundle-overview.component.html',
   styleUrls: ['./proportional-election-bundle-overview.component.scss'],
+  standalone: false,
 })
 export class ProportionalElectionBundleOverviewComponent extends PoliticalBusinessBundleOverviewComponent<ProportionalElectionResultBundles> {
   public readonly reviewProcedures: typeof ProportionalElectionReviewProcedure = ProportionalElectionReviewProcedure;
@@ -43,10 +46,27 @@ export class ProportionalElectionBundleOverviewComponent extends PoliticalBusine
     themeService: ThemeService,
     resultExportService: ResultExportService,
     exportService: ExportService,
+    eventLogService: EventLogService,
     datePipe: DatePipe,
     private readonly resultBundleService: ProportionalElectionResultBundleService,
   ) {
-    super(permissionService, i18n, toast, dialog, route, router, themeService, resultExportService, exportService, datePipe);
+    super(
+      permissionService,
+      i18n,
+      toast,
+      dialog,
+      route,
+      router,
+      themeService,
+      resultExportService,
+      exportService,
+      eventLogService,
+      datePipe,
+    );
+  }
+
+  public get watcherEventTypes(): EventType[] {
+    return [...ProportionalElectionResultBundleEventTypes];
   }
 
   @HostListener('document:keydown.control.alt.q')
@@ -140,8 +160,8 @@ export class ProportionalElectionBundleOverviewComponent extends PoliticalBusine
     return this.resultBundleService.getBundles(resultId);
   }
 
-  protected startChangesListener(resultId: string, onRetry: () => {}): Observable<ProportionalElectionResultBundle> {
-    return this.resultBundleService.getBundleChanges(resultId, onRetry);
+  protected async loadBundle(id: string): Promise<ProportionalElectionResultBundle> {
+    return (await this.resultBundleService.getBundle(id)).bundle;
   }
 
   protected get politicalBusinessType(): PoliticalBusinessType {
@@ -150,5 +170,34 @@ export class ProportionalElectionBundleOverviewComponent extends PoliticalBusine
 
   protected get resultId(): string | undefined {
     return this.result?.politicalBusinessResult.id;
+  }
+
+  protected async handleEvent(e: Event, params: Params): Promise<void> {
+    await super.handleEvent(e, params);
+
+    switch (e.type) {
+      case 'ProportionalElectionResultBundleCreated':
+        await this.handleBundleCreated(e.entityId);
+        break;
+      case 'ProportionalElectionResultBundleDeleted':
+        this.setBundleState(e.entityId, BallotBundleState.BALLOT_BUNDLE_STATE_DELETED, e.data.bundleLog!);
+        break;
+      case 'ProportionalElectionResultBundleReviewSucceeded':
+        this.setBundleState(e.entityId, BallotBundleState.BALLOT_BUNDLE_STATE_REVIEWED, e.data.bundleLog!);
+        break;
+      case 'ProportionalElectionResultBundleReviewRejected':
+        this.setBundleState(e.entityId, BallotBundleState.BALLOT_BUNDLE_STATE_IN_CORRECTION, e.data.bundleLog!);
+        break;
+      case 'ProportionalElectionResultBundleSubmissionFinished':
+      case 'ProportionalElectionResultBundleCorrectionFinished':
+        this.setBundleState(e.entityId, BallotBundleState.BALLOT_BUNDLE_STATE_READY_FOR_REVIEW, e.data.bundleLog!);
+        break;
+      case 'ProportionalElectionResultBallotCreated':
+        this.adjustCountOfBallots(e.entityId, 1);
+        break;
+      case 'ProportionalElectionResultBallotDeleted':
+        this.adjustCountOfBallots(e.entityId, -1);
+        break;
+    }
   }
 }

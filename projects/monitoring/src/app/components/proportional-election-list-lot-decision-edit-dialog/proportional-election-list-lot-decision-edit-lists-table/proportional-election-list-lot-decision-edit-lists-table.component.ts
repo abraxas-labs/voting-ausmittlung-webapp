@@ -13,6 +13,7 @@ import { ProportionalElectionList } from 'ausmittlung-lib';
   selector: 'app-proportional-election-list-lot-decision-edit-lists-table',
   templateUrl: './proportional-election-list-lot-decision-edit-lists-table.component.html',
   styleUrls: ['proportional-election-list-lot-decision-edit-lists-table.component.scss'],
+  standalone: false,
 })
 export class ProportionalElectionListLotDecisionEditListsTableComponent {
   public readonly columns = ['select', 'shortDescription'];

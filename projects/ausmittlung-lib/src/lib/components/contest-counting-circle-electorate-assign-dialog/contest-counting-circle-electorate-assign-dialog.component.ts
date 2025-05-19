@@ -15,6 +15,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   selector: 'vo-ausm-contest-counting-circle-electorate-assign-dialog',
   templateUrl: './contest-counting-circle-electorate-assign-dialog.component.html',
   styleUrls: ['./contest-counting-circle-electorate-assign-dialog.component.scss'],
+  standalone: false,
 })
 export class ContestCountingCircleElectorateAssignDialogComponent {
   public readonly columns = ['select', 'domainOfInfluenceType'];

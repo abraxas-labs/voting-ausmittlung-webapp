@@ -58,6 +58,7 @@ import {
   BallotQuestionResultSubTotalProto,
   BallotResult,
   BallotResultProto,
+  mapToCountOfVoters,
   mapToNullableCountOfVoters,
   QuestionResultNullableSubTotal,
   QuestionResultSubTotal,
@@ -137,6 +138,7 @@ export class VoteResultService extends PoliticalBusinessResultBaseService<
       totalCountOfAnswerUnspecified: result.getTotalCountOfAnswerUnspecified(),
       conventionalSubTotal: VoteResultService.mapToBallotQuestionResultNullableSubTotal(result.getConventionalSubTotal()!),
       eVotingSubTotal: VoteResultService.mapToBallotQuestionResultSubTotal(result.getEVotingSubTotal()!),
+      eCountingSubTotal: VoteResultService.mapToBallotQuestionResultSubTotal(result.getECountingSubTotal()!),
     };
   }
 
@@ -150,6 +152,7 @@ export class VoteResultService extends PoliticalBusinessResultBaseService<
       totalCountOfAnswerUnspecified: result.getTotalCountOfAnswerUnspecified(),
       conventionalSubTotal: VoteResultService.mapToTieBreakQuestionResultNullableSubTotal(result.getConventionalSubTotal()!),
       eVotingSubTotal: VoteResultService.mapToTieBreakQuestionResultSubTotal(result.getEVotingSubTotal()!),
+      eCountingSubTotal: VoteResultService.mapToTieBreakQuestionResultSubTotal(result.getECountingSubTotal()!),
     };
   }
 
@@ -482,7 +485,7 @@ export class VoteResultService extends PoliticalBusinessResultBaseService<
   private mapToBallotEndResults(data: BallotEndResultProto[]): BallotEndResult[] {
     return data.map(ballotResult => ({
       ballot: ballotResult.getBallot()!.toObject(),
-      countOfVoters: ballotResult.getCountOfVoters()!.toObject(),
+      countOfVoters: mapToCountOfVoters(ballotResult.getCountOfVoters()!.toObject()),
       questionEndResults: this.mapToBallotQuestionEndResults(ballotResult.getQuestionEndResultsList()),
       tieBreakQuestionEndResults: this.mapToTieBreakQuestionEndResults(ballotResult.getTieBreakQuestionEndResultsList()),
     }));
@@ -496,6 +499,7 @@ export class VoteResultService extends PoliticalBusinessResultBaseService<
       question: ballotQuestionResult.getQuestion()!.toObject(),
       conventionalSubTotal: VoteResultService.mapToBallotQuestionResultSubTotal(ballotQuestionResult.getConventionalSubTotal()!),
       eVotingSubTotal: VoteResultService.mapToBallotQuestionResultSubTotal(ballotQuestionResult.getEVotingSubTotal()!),
+      eCountingSubTotal: VoteResultService.mapToBallotQuestionResultSubTotal(ballotQuestionResult.getECountingSubTotal()!),
       countOfCountingCircle1: ballotQuestionResult.getCountOfCountingCircleYes(),
       countOfCountingCircle2: ballotQuestionResult.getCountOfCountingCircleNo(),
       hasCountingCircleMajority: ballotQuestionResult.getHasCountingCircleMajority(),
@@ -512,6 +516,7 @@ export class VoteResultService extends PoliticalBusinessResultBaseService<
       question: tieBreakQuestionResult.getQuestion()!.toObject(),
       conventionalSubTotal: VoteResultService.mapToTieBreakQuestionResultSubTotal(tieBreakQuestionResult.getConventionalSubTotal()!),
       eVotingSubTotal: VoteResultService.mapToTieBreakQuestionResultSubTotal(tieBreakQuestionResult.getEVotingSubTotal()!),
+      eCountingSubTotal: VoteResultService.mapToTieBreakQuestionResultSubTotal(tieBreakQuestionResult.getECountingSubTotal()!),
       countOfCountingCircle1: tieBreakQuestionResult.getCountOfCountingCircleQ1(),
       countOfCountingCircle2: tieBreakQuestionResult.getCountOfCountingCircleQ2(),
       hasCountingCircleQ1Majority: tieBreakQuestionResult.getHasCountingCircleQ1Majority(),

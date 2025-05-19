@@ -25,6 +25,7 @@ import { FilteredCountingCircleResults } from '../monitoring-cockpit-grid/monito
   selector: 'app-monitoring-cockpit-grid-footer',
   templateUrl: './monitoring-cockpit-grid-footer.component.html',
   styleUrls: ['./monitoring-cockpit-grid-footer.component.scss'],
+  standalone: false,
 })
 export class MonitoringCockpitGridFooterComponent {
   @Input()

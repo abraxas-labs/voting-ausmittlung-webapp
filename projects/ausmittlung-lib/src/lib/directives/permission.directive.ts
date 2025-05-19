@@ -10,6 +10,7 @@ import { PermissionService } from '../services/permission.service';
 @Directive({
   // eslint-disable-next-line @angular-eslint/directive-selector
   selector: '[voAusmPermission]',
+  standalone: false,
 })
 export class PermissionDirective implements OnChanges {
   @Input('voAusmPermission')

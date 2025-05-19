@@ -1,6 +1,9 @@
 <ng-container *ngIf="ballotResult">
   <h4 class="mb-2" translate>POLITICAL_BUSINESS.RESULT</h4>
-  <div *ngFor="let questionResult of ballotResult.questionResults" [ngClass]="eVoting ? 'result-graph-e-voting' : 'result-graph'">
+  <div *ngFor="let questionResult of ballotResult.questionResults"
+       class="result-graph"
+       [class.result-graph-xl]="eCounting && eVoting"
+       [class.result-graph-l]="eCounting || eVoting">
     <vo-ausm-vote-results-graph
       [countLeft]="questionResult.totalCountOfAnswer1"
       [countRight]="questionResult.totalCountOfAnswer2"
@@ -9,7 +12,11 @@
       [resultLabelRight]="questionResult.question | translateVoteQuestion: false:'answer2Short':ballotResult.questionResults.length:ballotResult.ballot.ballotSubType">
     </vo-ausm-vote-results-graph>
   </div>
-  <div *ngFor="let tieBreakQuestionResult of ballotResult.tieBreakQuestionResults" [ngClass]="eVoting ? 'result-graph-e-voting' : 'result-graph'">
+
+  <div *ngFor="let tieBreakQuestionResult of ballotResult.tieBreakQuestionResults"
+       class="result-graph"
+       [class.result-graph-xl]="eCounting && eVoting"
+       [class.result-graph-l]="eCounting || eVoting">
     <vo-ausm-vote-results-graph
       [countLeft]="tieBreakQuestionResult.totalCountOfAnswer1"
       [countRight]="tieBreakQuestionResult.totalCountOfAnswer2"

@@ -19,6 +19,7 @@ import { Subscription } from 'rxjs';
   selector: 'vo-ausm-contest-detail-info-dialog',
   templateUrl: './contest-detail-info-dialog.component.html',
   styleUrls: ['./contest-detail-info-dialog.component.scss'],
+  standalone: false,
 })
 export class ContestDetailInfoDialogComponent implements OnDestroy {
   public readonly countingMachines: EnumItemDescription<CountingMachine>[] = [];

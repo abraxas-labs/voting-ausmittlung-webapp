@@ -89,12 +89,12 @@
       <div class="state-colorbox"
            [ngClass]="'result-state-' + result.minResultState"></div>
       <div class="clickable"
-           (click)="openDetail(result.countingCircle)">{{result.countingCircle.name}}</div>
+           (click)="openDetail(result.countingCircleWithDetails.countingCircle)">{{result.countingCircleWithDetails.countingCircle.name}}</div>
       <ng-container *ngFor="let type of filteredDomainOfInfluenceTypes">
         <ng-container *ngFor="let politicalBusiness of filteredPoliticalBusinessesByDoiType[type]">
           <app-monitoring-cockpit-grid-entry
             *ngIf="!politicalBusinessFilter || politicalBusiness === politicalBusinessFilter"
-            (openDetail)="openDetail(result.countingCircle, politicalBusiness)"
+            (openDetail)="openDetail(result.countingCircleWithDetails.countingCircle, politicalBusiness)"
             [showDetails]="showDetails"
             [results]="[result.resultsByPoliticalBusinessId[politicalBusiness.id]]"
             [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
@@ -107,7 +107,7 @@
         <ng-container *ngFor="let politicalBusinessUnion of filteredPoliticalBusinessUnionsByDoiType[type]">
           <app-monitoring-cockpit-grid-entry
             *ngIf="!politicalBusinessUnionFilter || politicalBusinessUnion === politicalBusinessUnionFilter"
-            (openDetail)="openDetail(result.countingCircle, undefined)"
+            (openDetail)="openDetail(result.countingCircleWithDetails.countingCircle, undefined)"
             [showDetails]="showDetails"
             [results]="result.resultsByPoliticalBusinessUnionId[politicalBusinessUnion.id] ?? []"
             [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
@@ -120,9 +120,9 @@
       </ng-container>
 
       <div *ngIf="showNotOwnedPoliticalBusinessColumn">
-        <div *ngIf="result.resultsByCountingCircleId[result.countingCircle.id] as results"
+        <div *ngIf="result.resultsByCountingCircleId[result.countingCircleWithDetails.countingCircle.id] as results"
              class="not-owned-political-business-container"
-             (click)="openDetail(result.countingCircle, undefined)">
+             (click)="openDetail(result.countingCircleWithDetails.countingCircle, undefined)">
           <span>{{ ('MONITORING_COCKPIT.NOT_OWNED_POLITICAL_BUSINESS.' + (results.length > 1 ? 'MULTIPLE' : 'SINGLE')) | translate: { count: results.length } }}</span>
         </div>
       </div>

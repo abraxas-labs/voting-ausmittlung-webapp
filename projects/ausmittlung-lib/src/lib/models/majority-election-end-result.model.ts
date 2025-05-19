@@ -36,6 +36,7 @@ export interface MajorityElectionEndResult extends PoliticalBusinessEndResult, M
   candidateEndResults: MajorityElectionCandidateEndResult[];
   secondaryMajorityElectionEndResults: SecondaryMajorityElectionEndResult[];
   eVotingSubTotal: MajorityElectionResultSubTotal;
+  eCountingSubTotal: MajorityElectionResultSubTotal;
   conventionalSubTotal: MajorityElectionResultSubTotal;
 }
 
@@ -43,6 +44,7 @@ export interface SecondaryMajorityElectionEndResult extends MajorityElectionResu
   election: SecondaryMajorityElection;
   candidateEndResults: MajorityElectionCandidateEndResult[];
   eVotingSubTotal: MajorityElectionResultSubTotal;
+  eCountingSubTotal: MajorityElectionResultSubTotal;
   conventionalSubTotal: MajorityElectionResultSubTotal;
 }
 
@@ -50,6 +52,7 @@ export interface MajorityElectionCandidateEndResult {
   candidate: MajorityElectionCandidate;
   voteCount: number;
   eVotingVoteCount: number;
+  eCountingVoteCount: number;
   conventionalVoteCount: number;
   rank: number;
   lotDecision: boolean;

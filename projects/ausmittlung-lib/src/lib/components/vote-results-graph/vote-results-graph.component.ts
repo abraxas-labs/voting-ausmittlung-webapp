@@ -10,6 +10,7 @@ import { Component, Input } from '@angular/core';
   selector: 'vo-ausm-vote-results-graph',
   templateUrl: './vote-results-graph.component.html',
   styleUrls: ['./vote-results-graph.component.scss'],
+  standalone: false,
 })
 export class VoteResultsGraphComponent {
   @Input()

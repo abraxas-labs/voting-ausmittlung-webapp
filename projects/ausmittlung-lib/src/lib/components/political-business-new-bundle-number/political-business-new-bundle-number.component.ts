@@ -12,6 +12,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   selector: 'vo-ausm-political-business-new-bundle-number',
   templateUrl: './political-business-new-bundle-number.component.html',
   styleUrls: ['./political-business-new-bundle-number.component.scss'],
+  standalone: false,
 })
 export class PoliticalBusinessNewBundleNumberComponent {
   public bundleNumber?: number;

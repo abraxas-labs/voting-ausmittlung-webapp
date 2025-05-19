@@ -13,6 +13,7 @@ import { groupBySingle } from '../../../services/utils/array.utils';
   selector: 'vo-ausm-majority-election-ballot-content',
   templateUrl: './majority-election-ballot-content.component.html',
   styleUrls: ['./majority-election-ballot-content.component.scss'],
+  standalone: false,
 })
 export class MajorityElectionBallotContentComponent implements OnChanges {
   @Input()

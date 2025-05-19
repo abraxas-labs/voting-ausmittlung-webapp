@@ -12,6 +12,7 @@ import { BallotNumberGeneration } from '../../models';
 @Component({
   selector: 'vo-ausm-ballot-number-generation-selector',
   templateUrl: './ballot-number-generation-selector.component.html',
+  standalone: false,
 })
 export class BallotNumberGenerationSelectorComponent {
   public readonly ballotNumberGenerationChoices: RadioButton[];

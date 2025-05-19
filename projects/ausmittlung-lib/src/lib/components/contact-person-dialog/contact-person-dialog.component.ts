@@ -11,6 +11,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 @Component({
   selector: 'vo-ausm-contact-person-dialog',
   templateUrl: './contact-person-dialog.component.html',
+  standalone: false,
 })
 export class ContactPersonDialogComponent {
   public readonly domainOfInfluences: DomainOfInfluence[];

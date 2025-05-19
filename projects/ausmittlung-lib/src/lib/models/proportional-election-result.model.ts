@@ -24,7 +24,7 @@ import {
   ProportionalElectionListResultSubTotal as ProportionalElectionListResultSubTotalProto,
   ProportionalElectionResultSubTotal as ProportionalElectionResultSubTotalProto,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/proportional_election_result_sub_total_pb';
-import { PoliticalBusinessResultBundle } from './ballot-bundle.model';
+import { PoliticalBusinessResultBundle, PoliticalBusinessResultBundles } from './ballot-bundle.model';
 import { PoliticalBusinessNullableCountOfVoters } from './count-of-voters.model';
 import { CountingCircle } from './counting-circle.model';
 import { ElectionResultBallot } from './election-result-ballot.model';
@@ -60,6 +60,7 @@ export interface ProportionalElectionResult extends CountingCircleResult {
   allBundlesReviewedOrDeleted: boolean;
   countingCircle: CountingCircle;
   eVotingSubTotal: ProportionalElectionResultSubTotal;
+  eCountingSubTotal: ProportionalElectionResultSubTotal;
   conventionalSubTotal: ProportionalElectionResultSubTotal;
 }
 
@@ -76,9 +77,8 @@ export interface ProportionalElectionUnmodifiedListResult {
   conventionalVoteCount: number;
 }
 
-export interface ProportionalElectionResultBundles {
+export interface ProportionalElectionResultBundles extends PoliticalBusinessResultBundles<ProportionalElectionResultBundle> {
   politicalBusinessResult: ProportionalElectionResult;
-  bundles: ProportionalElectionResultBundle[];
 }
 
 export interface ProportionalElectionResultBundleDetails {

@@ -11,6 +11,7 @@ import { ValidationResult } from '../../models';
   selector: 'vo-ausm-validation-result',
   templateUrl: './validation-result.component.html',
   styleUrls: ['./validation-result.component.scss'],
+  standalone: false,
 })
 export class ValidationResultComponent {
   @Input()

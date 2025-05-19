@@ -13,6 +13,7 @@ import {
   CountingCircleResultState,
   distinct,
   DomainOfInfluenceType,
+  EventLogService,
   flatten,
   groupBy,
   groupBySingle,
@@ -23,6 +24,7 @@ import {
   ResultOverviewCountingCircleResult,
   ResultOverviewCountingCircleResults,
   ResultService,
+  ResultStateChangeEvent,
   SimplePoliticalBusiness,
   VoteResultService,
 } from 'ausmittlung-lib';
@@ -36,6 +38,7 @@ import { StorageService } from '../../services/storage.service';
   selector: 'app-monitoring-cockpit-grid',
   templateUrl: './monitoring-cockpit-grid.component.html',
   styleUrls: ['./monitoring-cockpit-grid.component.scss'],
+  standalone: false,
 })
 export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
   private readonly toCheckStates: CountingCircleResultState[] = [
@@ -105,11 +108,12 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
   private contestId: string = '';
   private tenant?: Tenant;
 
-  private stateChangesSubscription?: Subscription;
+  private watchStateSubscription?: Subscription;
 
   constructor(
     private readonly router: Router,
     private readonly route: ActivatedRoute,
+    private readonly eventLogService: EventLogService,
     private readonly resultService: ResultService,
     private readonly i18n: TranslateService,
     private readonly auth: AuthorizationService,
@@ -126,7 +130,7 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.stateChangesSubscription?.unsubscribe();
+    this.watchStateSubscription?.unsubscribe();
 
     this.contestId = this.resultOverview.contest.id;
     this.contestCantonDefaults = this.resultOverview.contest.cantonDefaults;
@@ -152,7 +156,7 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
       x => x.politicalBusiness.id,
       x => x.union,
     );
-    this.sortCountingCircleResults();
+    this.setCountingCircleResults();
 
     this.resultsById = groupBySingle(
       flatten(this.countingCircleResults.map(r => r.results.map(x => ({ result: x, countingCircleResults: r })))),
@@ -160,7 +164,7 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
       x => x,
     );
 
-    this.countingCircles = this.countingCircleResults.map(x => x.countingCircle!);
+    this.countingCircles = this.countingCircleResults.map(x => x.countingCircleWithDetails.countingCircle!);
 
     this.updateFilters();
     this.startChangesListener();
@@ -173,7 +177,7 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.stateChangesSubscription?.unsubscribe();
+    this.watchStateSubscription?.unsubscribe();
   }
 
   public domainOfInfluenceTypeFilterClicked(value: DomainOfInfluenceType): void {
@@ -309,28 +313,11 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.stateChangesSubscription?.unsubscribe();
-    this.stateChangesSubscription = this.resultService
-      .getStateChanges(this.contestId, this.onStateChangeListenerRetry.bind(this))
-      .subscribe(({ id, newState }) => this.updateState(id, newState));
+    this.watchStateSubscription?.unsubscribe();
+    this.watchStateSubscription = this.eventLogService.watchResultState(this.contestId).subscribe(e => this.handleResultStateChange(e));
   }
 
-  private async onStateChangeListenerRetry(): Promise<void> {
-    if (!this.stateChangesSubscription) {
-      return;
-    }
-
-    // When the export state change listener fails, it is being retried with an exponential backoff
-    // During that retry backoff, changes aren't being delivered -> we need to poll for them
-    const data = await this.resultService.getOverview(this.contestId);
-    for (const countingCircleResult of data.countingCircleResults) {
-      for (const result of countingCircleResult.results) {
-        this.updateState(result.id, result.state);
-      }
-    }
-  }
-
-  private updateState(id: string, newState: CountingCircleResultState): void {
+  private updateState(id: string, newState: CountingCircleResultState, timestamp: Date): void {
     const { result, countingCircleResults } = this.resultsById[id] || {};
     if (!result || result.state === newState) {
       return;
@@ -345,34 +332,40 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
         break;
       case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION:
         result.submissionDoneTimestamp = undefined;
-        result.readyForCorrectionTimestamp = new Date();
+        result.readyForCorrectionTimestamp = timestamp;
         break;
       case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE:
-        result.submissionDoneTimestamp = new Date();
+        result.submissionDoneTimestamp = timestamp;
         break;
       case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE:
-        result.submissionDoneTimestamp = new Date();
+        result.submissionDoneTimestamp = timestamp;
         result.readyForCorrectionTimestamp = undefined;
         break;
       case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY:
-        result.auditedTentativelyTimestamp = new Date();
+        result.auditedTentativelyTimestamp = timestamp;
         break;
       case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED:
-        result.plausibilisedTimestamp = new Date();
+        result.plausibilisedTimestamp = timestamp;
         break;
     }
 
-    this.sortCountingCircleResults();
+    this.setCountingCircleResults();
     this.updateFilters();
     this.updateStateFilters();
   }
 
-  private sortCountingCircleResults(): void {
+  private sortFilteredCountingCircleResults(): void {
+    this.filteredCountingCircleResults = this.filteredCountingCircleResults.sort((a, b) =>
+      this.filteredCountingCircleResultsComparer(a, b, this.notOwnedPoliticalBusinessIds),
+    );
+  }
+
+  private setCountingCircleResults(): void {
     if (!this.resultOverview) {
       return;
     }
 
-    this.countingCircleResults = this.resultOverview.countingCircleResults.sort(this.countingCircleResultsComparer).map(x => ({
+    this.countingCircleResults = this.resultOverview.countingCircleResults.map(x => ({
       ...x,
       minResultState: this.getMinResultState(x),
       isCorrected: false,
@@ -440,7 +433,7 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
 
     if (this.countingCircleFilter) {
       this.filteredCountingCircleResults = this.filteredCountingCircleResults.filter(
-        x => x.countingCircle?.id === this.countingCircleFilter?.id,
+        x => x.countingCircleWithDetails.countingCircle?.id === this.countingCircleFilter?.id,
       );
     }
 
@@ -455,6 +448,8 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
     this.filteredCountingCircleResults = this.filteredCountingCircleResults.filter(
       x => this.stateFilter.length === 0 || this.stateFilter.includes(x.minResultState),
     );
+
+    this.sortFilteredCountingCircleResults();
   }
 
   private removeUnneededPoliticalBusiness(): void {
@@ -517,17 +512,23 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
     ) as CountingCircleResultState;
   }
 
-  private countingCircleResultsComparer(a: ResultOverviewCountingCircleResults, b: ResultOverviewCountingCircleResults): number {
+  private filteredCountingCircleResultsComparer(
+    a: FilteredCountingCircleResults,
+    b: FilteredCountingCircleResults,
+    notOwnedPoliticalBusinessIds: string[],
+  ): number {
     // 1. order criteria: descending ResultState.Done count
-    const aCompletedCount = a.results.filter(
+    const aCompletedCount = a.filteredResults.filter(
       x =>
-        x.state === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE ||
-        x.state === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE,
+        !notOwnedPoliticalBusinessIds.includes(x.politicalBusinessId) &&
+        (x.state === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE ||
+          x.state === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE),
     ).length;
-    const bCompletedCount = b.results.filter(
+    const bCompletedCount = b.filteredResults.filter(
       x =>
-        x.state === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE ||
-        x.state === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE,
+        !notOwnedPoliticalBusinessIds.includes(x.politicalBusinessId) &&
+        (x.state === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE ||
+          x.state === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE),
     ).length;
 
     if (aCompletedCount !== bCompletedCount) {
@@ -536,13 +537,13 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
 
     // 2. order criteria: ascending by the latest done timestamp
     if (aCompletedCount > 0) {
-      const aLatestTimestamp = a.results
-        .filter(x => !!x.submissionDoneTimestamp)
+      const aLatestTimestamp = a.filteredResults
+        .filter(x => !notOwnedPoliticalBusinessIds.includes(x.politicalBusinessId) && !!x.submissionDoneTimestamp)
         .map(x => x.submissionDoneTimestamp!)
         .reduce((x, y) => (x > y ? x : y))
         .getTime();
-      const bLatestTimestamp = b.results
-        .filter(x => !!x.submissionDoneTimestamp)
+      const bLatestTimestamp = b.filteredResults
+        .filter(x => !notOwnedPoliticalBusinessIds.includes(x.politicalBusinessId) && !!x.submissionDoneTimestamp)
         .map(x => x.submissionDoneTimestamp!)
         .reduce((x, y) => (x > y ? x : y))
         .getTime();
@@ -553,7 +554,7 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
     }
 
     // 3. order criteria: ascending by cc name
-    return a.countingCircle!.name.localeCompare(b.countingCircle!.name);
+    return a.countingCircleWithDetails.countingCircle!.name.localeCompare(b.countingCircleWithDetails.countingCircle!.name);
   }
 
   private updateStateFilters(): void {
@@ -583,25 +584,43 @@ export class MonitoringCockpitGridComponent implements OnInit, OnDestroy {
   private mapStateFilterToValue(): string {
     switch (this.stateFilter) {
       case this.toCheckStates:
-        return this.storageService.stateFilterSessionStorageValueToCheck;
+        return this.storageService.stateFilterToCheck;
       case this.checkedStates:
-        return this.storageService.stateFilterSessionStorageValueChecked;
+        return this.storageService.stateFilterChecked;
       case this.emptyStates:
-        return this.storageService.stateFilterSessionStorageValueAll;
+        return this.storageService.stateFilterAll;
       default:
         throw new Error('Invalid state filter value');
     }
   }
   private mapValueToStateFilter(value: string): CountingCircleResultState[] {
     switch (value) {
-      case this.storageService.stateFilterSessionStorageValueToCheck:
+      case this.storageService.stateFilterToCheck:
         return this.toCheckStates;
-      case this.storageService.stateFilterSessionStorageValueChecked:
+      case this.storageService.stateFilterChecked:
         return this.checkedStates;
-      case this.storageService.stateFilterSessionStorageValueAll:
+      case this.storageService.stateFilterAll:
         return this.emptyStates;
       default:
         throw new Error('Invalid state filter');
+    }
+  }
+
+  private async handleResultStateChange(e: ResultStateChangeEvent): Promise<void> {
+    if (e.isReconnect) {
+      await this.reloadAllStates();
+      return;
+    }
+
+    this.updateState(e.event.aggregateId, e.newState, e.event.timestamp);
+  }
+
+  private async reloadAllStates() {
+    const data = await this.resultService.getOverview(this.contestId);
+    for (const countingCircleResult of data.countingCircleResults) {
+      for (const result of countingCircleResult.results) {
+        this.updateState(result.id, result.state, new Date());
+      }
     }
   }
 }

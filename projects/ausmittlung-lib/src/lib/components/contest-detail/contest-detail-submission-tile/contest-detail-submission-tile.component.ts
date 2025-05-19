@@ -10,6 +10,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   selector: 'vo-ausm-contest-detail-submission-tile',
   templateUrl: './contest-detail-submission-tile.component.html',
   styleUrls: ['./contest-detail-submission-tile.component.scss'],
+  standalone: false,
 })
 export class ContestDetailSubmissionTileComponent {
   @Input()

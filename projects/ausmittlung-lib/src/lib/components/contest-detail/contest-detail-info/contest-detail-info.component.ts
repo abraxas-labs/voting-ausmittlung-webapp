@@ -33,6 +33,7 @@ import { DomainOfInfluenceCanton } from '@abraxas/voting-ausmittlung-service-pro
   selector: 'vo-ausm-contest-detail-info',
   templateUrl: './contest-detail-info.component.html',
   styleUrls: ['./contest-detail-info.component.scss'],
+  standalone: false,
 })
 export class ContestDetailInfoComponent {
   public readonly votingChannels: typeof VotingChannel = VotingChannel;
@@ -56,6 +57,12 @@ export class ContestDetailInfoComponent {
 
   @Input()
   public eVoting: boolean = false;
+
+  @Input()
+  public eCounting: boolean = false;
+
+  @Input()
+  public eCountingResultsImported: boolean = false;
 
   @Input()
   public enabledVoterTypes: VoterType[] = [];
@@ -256,6 +263,8 @@ export class ContestDetailInfoComponent {
       countOfVotersInformation: this.countOfVotersValue,
       votingCards: this.votingCardsValue,
       eVoting: this.eVoting,
+      eCounting: this.eCounting,
+      eCountingResultsImported: this.eCountingResultsImported,
     };
 
     await this.contestCountingCircleDetailsService.updateDetails(details);

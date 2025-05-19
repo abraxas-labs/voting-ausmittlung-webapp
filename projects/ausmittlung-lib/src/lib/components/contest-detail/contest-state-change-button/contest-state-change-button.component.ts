@@ -23,6 +23,7 @@ import { Permissions } from '../../../models/permissions.model';
   selector: 'vo-ausm-contest-state-change-button',
   templateUrl: './contest-state-change-button.component.html',
   styleUrls: ['./contest-state-change-button.component.scss'],
+  standalone: false,
 })
 export class ContestStateChangeButtonComponent implements OnDestroy, OnChanges, OnInit {
   @Input()
@@ -119,6 +120,7 @@ export class ContestStateChangeButtonComponent implements OnDestroy, OnChanges, 
       await this.executeStateUpdate(CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING, this.resultList.results);
       this.resetDetails(this.resultList.details);
       this.updateCanResetResultsInTestingPhase();
+      this.resetComments(this.resultList.results);
     } finally {
       this.isActionExecuting = false;
     }
@@ -195,5 +197,11 @@ export class ContestStateChangeButtonComponent implements OnDestroy, OnChanges, 
     // trigger cd
     details.votingCards = [...details.votingCards];
     details.countOfVotersInformation = { ...details.countOfVotersInformation };
+  }
+
+  private resetComments(results: ResultListResult[]): void {
+    for (const result of results) {
+      result.hasComments = false;
+    }
   }
 }

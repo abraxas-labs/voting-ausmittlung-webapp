@@ -22,6 +22,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   selector: 'app-proportional-election-lot-decision-dialog',
   templateUrl: './proportional-election-lot-decision-dialog.component.html',
   styleUrls: ['./proportional-election-lot-decision-dialog.component.scss'],
+  standalone: false,
 })
 export class ProportionalElectionLotDecisionDialogComponent extends ElectionLotDecisionDialogComponent {
   @ViewChild(MatStepper, { static: true })
@@ -45,9 +46,7 @@ export class ProportionalElectionLotDecisionDialogComponent extends ElectionLotD
     dialog: DialogService,
   ) {
     super(dialog);
-
     this.lists = this.sortLists(dialogData.lists);
-
     this.selectionChanged(0);
   }
 
@@ -152,14 +151,7 @@ export class ProportionalElectionLotDecisionDialogComponent extends ElectionLotD
   private sortLists(lists: ProportionalElectionListEndResult[]): ProportionalElectionListEndResult[] {
     // .sort() sorts in place, so we need to make a copy first
     const copy = [...lists];
-    return copy.sort((a, b) => {
-      if (a.hasOpenRequiredLotDecisions === b.hasOpenRequiredLotDecisions) {
-        return b.list.shortDescription.localeCompare(a.list.shortDescription);
-      }
-
-      // first required lot decisions, then others
-      return a.hasOpenRequiredLotDecisions ? -1 : 1;
-    });
+    return copy.sort((a, b) => a.list.orderNumber.localeCompare(b.list.orderNumber));
   }
 }
 

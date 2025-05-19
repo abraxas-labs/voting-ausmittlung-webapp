@@ -30,6 +30,7 @@ import { AuthorizationService, TableDataSource, Tenant } from '@abraxas/base-com
   selector: 'app-erfassung-finish-submission',
   templateUrl: './erfassung-finish-submission.component.html',
   styleUrls: ['./erfassung-finish-submission.component.scss'],
+  standalone: false,
 })
 export class ErfassungFinishSubmissionComponent implements OnInit, OnDestroy {
   public readonly columns = [

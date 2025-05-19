@@ -1,5 +1,7 @@
 <div class="wrapper">
-  <app-ballot-end-result-count-of-voters [countOfVoters]="endResult.countOfVoters" [eVoting]="eVoting">
+  <app-ballot-end-result-count-of-voters [countOfVoters]="endResult.countOfVoters"
+                                         [eVoting]="eVoting"
+                                         [eCounting]="eCounting">
   </app-ballot-end-result-count-of-voters>
 
   <div class="ballot-results">
@@ -10,6 +12,7 @@
       <div class="question-results">
         <app-question-popular-majority-algorithm-end-result *ngIf="isPopularMajorityAlgorithm"
                                                             [eVoting]="eVoting"
+                                                            [eCounting]="eCounting"
                                                             [isTieBreakQuestion]="false"
                                                             [ballotNumberOfQuestions]="endResult.questionEndResults.length"
                                                             [ballotSubType]="endResult.ballot.ballotSubType"
@@ -34,6 +37,7 @@
       <div class="question-results">
         <app-question-popular-majority-algorithm-end-result *ngIf="isPopularMajorityAlgorithm"
                                                             [eVoting]="eVoting"
+                                                            [eCounting]="eCounting"
                                                             [isTieBreakQuestion]="true"
                                                             [ballotNumberOfQuestions]="endResult.questionEndResults.length"
                                                             [endResult]="tieBreakQuestionEndResult">

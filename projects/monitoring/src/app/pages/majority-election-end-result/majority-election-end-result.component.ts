@@ -15,8 +15,10 @@ import {
   MajorityElectionEndResultLotDecision,
   MajorityElectionResultService,
   SecondFactorTransactionService,
+  MajorityElectionEndResultEventTypes,
+  EventLogService,
 } from 'ausmittlung-lib';
-import { combineLatest, debounceTime, map, Subscription } from 'rxjs';
+import { combineLatest, debounce, debounceTime, map, Subscription } from 'rxjs';
 import {
   MajorityElectionLotDecisionDialogComponent,
   MajorityElectionLotDecisionDialogData,
@@ -28,6 +30,7 @@ import { EndResultStep } from '../../models/end-result-step.model';
   selector: 'app-majority-election-end-result',
   templateUrl: './majority-election-end-result.component.html',
   styleUrls: ['./majority-election-end-result.component.scss'],
+  standalone: false,
 })
 export class MajorityElectionEndResultComponent implements OnDestroy {
   public loading: boolean = true;
@@ -36,10 +39,13 @@ export class MajorityElectionEndResultComponent implements OnDestroy {
   public hasLotDecisions: boolean = false;
   public hasOpenRequiredLotDecisions: boolean = false;
   public isPartialResult = false;
+  public majorityElectionId = '';
   public endResultStep?: EndResultStep;
   public finalizeEnabled = false;
+  public lotDecisionProcessing = false;
 
   private readonly routeSubscription: Subscription;
+  private watchSubscription?: Subscription;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -48,20 +54,44 @@ export class MajorityElectionEndResultComponent implements OnDestroy {
     private readonly i18n: TranslateService,
     private readonly toast: SnackbarService,
     private readonly secondFactorTransactionService: SecondFactorTransactionService,
+    private readonly eventLogService: EventLogService,
   ) {
     this.routeSubscription = combineLatest([this.route.params, this.route.queryParams])
       .pipe(
         debounceTime(10), // could fire twice if both params change at the same time
-        map(results => ({ politicalBusinessId: results[0].politicalBusinessId, isPartialResult: results[1].partialResult })),
+        map(([params, queryParams]) => ({ politicalBusinessId: params.politicalBusinessId, isPartialResult: queryParams.partialResult })),
       )
-      .subscribe(({ politicalBusinessId, isPartialResult }) => {
+      .subscribe(async ({ politicalBusinessId, isPartialResult }) => {
         this.isPartialResult = isPartialResult;
-        this.loadData(politicalBusinessId);
+        this.majorityElectionId = politicalBusinessId;
+
+        this.watchSubscription?.unsubscribe();
+        delete this.watchSubscription;
+
+        await this.loadData();
+
+        this.watchSubscription = this.eventLogService
+          .watch([...MajorityElectionEndResultEventTypes], {
+            contestId: this.endResult!.contest.id,
+            politicalBusinessId: this.majorityElectionId,
+          })
+          .pipe(debounceTime(1000)) // refresh once a second at max
+          .subscribe(e => {
+            this.loadData(false);
+
+            if (
+              e.type === 'MajorityElectionEndResultLotDecisionsUpdated' ||
+              e.type === 'MajorityElectionEndResultSecondaryLotDecisionsUpdated'
+            ) {
+              this.lotDecisionProcessing = false;
+            }
+          });
       });
   }
 
   public async ngOnDestroy(): Promise<void> {
     this.routeSubscription.unsubscribe();
+    this.watchSubscription?.unsubscribe();
   }
 
   public async handleEndResultStepChange(newStep: EndResultStep): Promise<void> {
@@ -139,15 +169,17 @@ export class MajorityElectionEndResultComponent implements OnDestroy {
       MajorityElectionLotDecisionDialogResult
     >(MajorityElectionLotDecisionDialogComponent, data);
 
-    this.updateEndResultByLotDecisions(result?.lotDecisions);
+    if (result?.success) {
+      this.lotDecisionProcessing = true;
+    }
   }
 
-  private async loadData(majorityElectionId: string): Promise<void> {
-    this.loading = true;
+  private async loadData(setLoading: boolean = true): Promise<void> {
+    this.loading = setLoading;
     try {
       this.endResult = this.isPartialResult
-        ? await this.resultService.getPartialEndResult(majorityElectionId)
-        : await this.resultService.getEndResult(majorityElectionId);
+        ? await this.resultService.getPartialEndResult(this.majorityElectionId)
+        : await this.resultService.getEndResult(this.majorityElectionId);
       this.finalizeEnabled = !this.endResult.contest.cantonDefaults.endResultFinalizeDisabled;
 
       const secondaryCandidateEndResults = Array.prototype.concat.apply(
@@ -169,68 +201,5 @@ export class MajorityElectionEndResultComponent implements OnDestroy {
     } finally {
       this.loading = false;
     }
-  }
-
-  private updateEndResultByLotDecisions(lotDecisions: MajorityElectionEndResultLotDecision[] | undefined): void {
-    if (!lotDecisions || !this.endResult) {
-      return;
-    }
-
-    let candidateEndResultsById = groupBySingle(
-      this.endResult.candidateEndResults,
-      x => x.candidate.id,
-      x => x,
-    );
-    for (const secondaryMajorityElectionEndResult of this.endResult.secondaryMajorityElectionEndResults) {
-      candidateEndResultsById = {
-        ...candidateEndResultsById,
-        ...groupBySingle(
-          secondaryMajorityElectionEndResult.candidateEndResults,
-          x => x.candidate.id,
-          x => x,
-        ),
-      };
-    }
-
-    for (const lotDecision of lotDecisions) {
-      const candidateEndResult = candidateEndResultsById[lotDecision.candidateId];
-      const electionCandidateEndResults = this.getElectionCandidateEndResults(lotDecision.candidateId);
-
-      if (!!lotDecision.rank) {
-        candidateEndResult.lotDecision = true;
-        candidateEndResult.rank = lotDecision.rank;
-      } else {
-        const minRank = electionCandidateEndResults.map(c => c.voteCount).indexOf(candidateEndResult.voteCount) + 1;
-        candidateEndResult.rank = minRank;
-        candidateEndResult.lotDecision = false;
-      }
-    }
-
-    this.endResult.candidateEndResults = this.endResult.candidateEndResults.sort((a, b) => a.rank - b.rank);
-    for (const secondaryMajorityElectionEndResult of this.endResult.secondaryMajorityElectionEndResults) {
-      secondaryMajorityElectionEndResult.candidateEndResults = secondaryMajorityElectionEndResult.candidateEndResults.sort(
-        (a, b) => a.rank - b.rank,
-      );
-    }
-
-    this.hasOpenRequiredLotDecisions = false;
-  }
-
-  private getElectionCandidateEndResults(candidateId: string): MajorityElectionCandidateEndResult[] {
-    if (!this.endResult) {
-      return [];
-    }
-
-    if (this.endResult.candidateEndResults.find(e => e.candidate.id == candidateId)) {
-      return this.endResult.candidateEndResults;
-    }
-
-    for (const secondaryEndResult of this.endResult.secondaryMajorityElectionEndResults) {
-      if (secondaryEndResult.candidateEndResults.find(e => e.candidate.id == candidateId)) {
-        return secondaryEndResult.candidateEndResults;
-      }
-    }
-
-    throw new Error('Election candidate end results not found');
   }
 }

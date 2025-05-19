@@ -13,6 +13,7 @@ import { DomainOfInfluenceCanton } from '@abraxas/voting-ausmittlung-service-pro
 @Component({
   selector: 'app-end-result-page',
   templateUrl: './end-result-page.component.html',
+  standalone: false,
 })
 export class EndResultPageComponent implements OnDestroy {
   public hasPoliticalBusinessUnionContext: boolean = false;

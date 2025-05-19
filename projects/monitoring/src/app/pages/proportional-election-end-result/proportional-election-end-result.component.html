@@ -59,9 +59,12 @@
     </bc-button>
   </div>
 
-  <vo-ausm-voting-data-source-tabs *ngIf="endResult && endResult.contest.eVoting" class="mt-2 mb-2"
+  <vo-ausm-voting-data-source-tabs *ngIf="endResult && (endResult.contest.eVoting || endResult.contest.eCountingResultsImported)"
+                                   class="mt-2 mb-2"
+                                   [eCounting]="endResult.contest.eCountingResultsImported"
+                                   [eVoting]="endResult.contest.eVoting"
                                    (dataSourceChange)="setDataPrefix($event)"></vo-ausm-voting-data-source-tabs>
-  <vo-lib-split-screen [class.mt-2]="endResult && !endResult.contest.eVoting">
+  <vo-lib-split-screen [class.mt-2]="endResult && !endResult.contest.eVoting && !endResult.contest.eCountingResultsImported">
     <bc-table selection left *ngIf="endResult" class="pr-4" [dataSource]="endResult.listEndResults">
 
       <ng-container columnDef="orderNumber">
@@ -70,10 +73,10 @@
         <bc-data-cell *dataCellDef="let element">{{ element.list.orderNumber }}</bc-data-cell>
       </ng-container>
 
-      <ng-container columnDef="description">
-        <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.DESCRIPTION_ABBREVIATION' | translate
+      <ng-container columnDef="shortDescription">
+        <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.SHORT_DESCRIPTION_ABBREVIATION' | translate
           }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">{{ element.list.description }}</bc-data-cell>
+        <bc-data-cell *dataCellDef="let element">{{ element.list.shortDescription }}</bc-data-cell>
       </ng-container>
 
       <ng-container columnDef="listVotesCount">
@@ -112,9 +115,14 @@
       </ng-container>
 
       <bc-header-row *headerRowDef="let row; columns: listColumns"></bc-header-row>
-      <bc-data-row *dataRowDef="let row; columns: listColumns; let i = index" selectionToggle
-                   [selectionToggleValue]="row" selectionRow [selectionRowValue]="row"
-                   (click)="selectListEndResult(row)"></bc-data-row>
+      <bc-data-row
+        *dataRowDef="let row; columns: listColumns; let i = index"
+        #rowSelection="selectionToggle"
+        selectionToggle
+        [selectionToggleValue]="row"
+        selectionRow
+        [selectionRowValue]="row"
+        (click)="rowSelection.toggle(); selectListEndResult(row)"></bc-data-row>
     </bc-table>
 
     <div right class="pl-4">

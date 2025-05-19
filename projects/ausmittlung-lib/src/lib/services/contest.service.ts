@@ -115,6 +115,7 @@ export class ContestService extends GrpcService<ContestServicePromiseClient> {
       locked: state === ContestState.CONTEST_STATE_PAST_LOCKED || state === ContestState.CONTEST_STATE_ARCHIVED,
       cantonDefaults: ContestService.mapToCantonDefaults(data.getCantonDefaults()!),
       domainOfInfluence: this.mapToDomainOfInfluence(data.getDomainOfInfluence()!),
+      eCountingResultsImported: data.getECountingResultsImported(),
     };
   }
 

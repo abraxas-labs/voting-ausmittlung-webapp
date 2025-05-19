@@ -11,7 +11,7 @@ import {
   ResultOverview as ResultOverviewProto,
   ResultOverviewCountingCircleResult as ResultOverviewCountingCircleResultProto,
   ResultOverviewCountingCircleResults as ResultOverviewCountingCircleResultsProto,
-  ResultStateChange as ResultStateChangeProto,
+  ResultOverviewCountingCircleWithDetails as ResultOverviewCountingCircleWithDetailsProto,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/results_pb';
 import { ContestCountingCircleDetails } from './contest-counting-circle-details.model';
 import { Contest } from './contest.model';
@@ -23,12 +23,12 @@ import { PoliticalBusinessUnion } from './political-business-union.model';
 import { VoterType } from './voter-type.model';
 
 export {
-  ResultStateChangeProto,
   ResultOverviewProto,
   ResultListProto,
   ResultOverviewCountingCircleResultsProto,
   ResultOverviewCountingCircleResultProto,
   ResultListResultProto,
+  ResultOverviewCountingCircleWithDetailsProto,
 };
 
 export interface ResultOverview {
@@ -41,8 +41,13 @@ export interface ResultOverview {
 }
 
 export interface ResultOverviewCountingCircleResults {
-  countingCircle: CountingCircle;
+  countingCircleWithDetails: ResultOverviewCountingCircleWithDetails;
   results: ResultOverviewCountingCircleResult[];
+}
+
+export interface ResultOverviewCountingCircleWithDetails {
+  countingCircle: CountingCircle;
+  details: ContestCountingCircleDetails;
 }
 
 export interface ResultOverviewCountingCircleResult
@@ -54,6 +59,26 @@ export interface ResultOverviewCountingCircleResult
   readyForCorrectionTimestamp?: Date;
   auditedTentativelyTimestamp?: Date;
   plausibilisedTimestamp?: Date;
+
+  // add all these vote properties to this model to reduce boilerplate for data accessors in the base component table
+  mainBallotTotalCountYes?: number;
+  mainBallotTotalCountNo?: number;
+  mainBallotTotalCountUnspecified?: number;
+  counterProposal1TotalCountYes?: number;
+  counterProposal1TotalCountNo?: number;
+  counterProposal1TotalCountUnspecified?: number;
+  counterProposal2TotalCountYes?: number;
+  counterProposal2TotalCountNo?: number;
+  counterProposal2TotalCountUnspecified?: number;
+  tieBreak1TotalCountYes?: number;
+  tieBreak1TotalCountNo?: number;
+  tieBreak1TotalCountUnspecified?: number;
+  tieBreak2TotalCountYes?: number;
+  tieBreak2TotalCountNo?: number;
+  tieBreak2TotalCountUnspecified?: number;
+  tieBreak3TotalCountYes?: number;
+  tieBreak3TotalCountNo?: number;
+  tieBreak3TotalCountUnspecified?: number;
 }
 
 export interface ResultList {
@@ -66,7 +91,7 @@ export interface ResultList {
   enabledVoterTypes: VoterType[];
   contestCountingCircleContactPersonId: string;
   mustUpdateContactPersons: boolean;
-  hasUnmappedEVotingWriteIns: boolean;
+  hasUnmappedWriteIns: boolean;
   enabledVotingCardChannels: VotingCardChannel[];
   electorateSummary: ContestCountingCircleElectorateSummary;
 }

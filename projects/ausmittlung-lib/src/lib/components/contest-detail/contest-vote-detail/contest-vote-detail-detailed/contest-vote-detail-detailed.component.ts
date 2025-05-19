@@ -15,6 +15,7 @@ import { BallotType } from '@abraxas/voting-ausmittlung-service-proto/grpc/model
   selector: 'vo-ausm-contest-vote-detail-detailed',
   templateUrl: './contest-vote-detail-detailed.component.html',
   styleUrls: ['./contest-vote-detail-detailed.component.scss'],
+  standalone: false,
 })
 export class ContestVoteDetailDetailedComponent {
   public readonly ballotTypes: typeof BallotType = BallotType;
@@ -24,6 +25,9 @@ export class ContestVoteDetailDetailedComponent {
 
   @Input()
   public eVoting: boolean = true;
+
+  @Input()
+  public eCounting: boolean = true;
 
   @Input()
   public totalCountOfVoters!: number;

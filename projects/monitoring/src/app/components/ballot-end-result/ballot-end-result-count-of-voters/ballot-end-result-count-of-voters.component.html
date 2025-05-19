@@ -1,34 +1,40 @@
 <h3 translate>VOTE.BALLOT_CARD</h3>
 
-<ng-container *ngIf="eVoting; else conventional">
-  <div class="wrapper-evoting">
+<ng-container *ngIf="(eVoting || eCounting); else conventional">
+  <div class="wrapper-multiline"
+      [style.--wrapper-row-count]="eVoting && eCounting ? 5 : 4">
     <span></span>
     <span translate>VOTING_DATA_SOURCE.CONVENTIONAL</span>
-    <span translate>VOTING_DATA_SOURCE.E_VOTING</span>
+    <span *ngIf="eVoting" translate>VOTING_DATA_SOURCE.E_VOTING</span>
+    <span *ngIf="eCounting" translate>VOTING_DATA_SOURCE.E_COUNTING</span>
     <span translate>VOTING_DATA_SOURCE.TOTAL</span>
 
     <span translate>BALLOT_COUNT.RECEIVED</span>
-    <span>{{ countOfVoters.conventionalReceivedBallots | number }}</span>
-    <span>{{ countOfVoters.eVotingReceivedBallots | number }}</span>
+    <span>{{ countOfVoters.conventionalSubTotal.receivedBallots | number }}</span>
+    <span *ngIf="eVoting">{{ countOfVoters.eVotingSubTotal.receivedBallots | number }}</span>
+    <span *ngIf="eCounting">{{ countOfVoters.eCountingSubTotal.receivedBallots | number }}</span>
     <span>{{ countOfVoters.totalReceivedBallots | number }}</span>
 
     <span translate>BALLOT_COUNT.BLANK</span>
-    <span>{{ countOfVoters.conventionalBlankBallots | number }}</span>
-    <span>{{ countOfVoters.eVotingBlankBallots | number }}</span>
+    <span>{{ countOfVoters.conventionalSubTotal.blankBallots | number }}</span>
+    <span *ngIf="eVoting">{{ countOfVoters.eVotingSubTotal.blankBallots | number }}</span>
+    <span *ngIf="eCounting">{{ countOfVoters.eCountingSubTotal.blankBallots | number }}</span>
     <span>{{ countOfVoters.totalBlankBallots | number }}</span>
 
     <span translate>BALLOT_COUNT.INVALID</span>
-    <span>{{ countOfVoters.conventionalInvalidBallots | number }}</span>
-    <span>{{ countOfVoters.eVotingInvalidBallots | number }}</span>
+    <span>{{ countOfVoters.conventionalSubTotal.invalidBallots | number }}</span>
+    <span *ngIf="eVoting">{{ countOfVoters.eVotingSubTotal.invalidBallots | number }}</span>
+    <span *ngIf="eCounting">{{ countOfVoters.eCountingSubTotal.invalidBallots | number }}</span>
     <span>{{ countOfVoters.totalInvalidBallots | number }}</span>
 
     <span translate>BALLOT_COUNT.VALID</span>
-    <span>{{ countOfVoters.conventionalAccountedBallots | number }}</span>
-    <span>{{ countOfVoters.eVotingAccountedBallots | number }}</span>
+    <span>{{ countOfVoters.conventionalSubTotal.accountedBallots | number }}</span>
+    <span *ngIf="eVoting">{{ countOfVoters.eVotingSubTotal.accountedBallots | number }}</span>
+    <span *ngIf="eCounting">{{ countOfVoters.eCountingSubTotal.accountedBallots | number }}</span>
     <span>{{ countOfVoters.totalAccountedBallots | number }}</span>
 
     <span translate>VOTE.VOTER_PARTICIPATION</span>
-    <span>{{ countOfVoters.voterParticipation | percent: '1.2-2' }}</span>
+    <span class="last-row">{{ countOfVoters.voterParticipation | percent: '1.2-2' }}</span>
   </div>
 </ng-container>
 

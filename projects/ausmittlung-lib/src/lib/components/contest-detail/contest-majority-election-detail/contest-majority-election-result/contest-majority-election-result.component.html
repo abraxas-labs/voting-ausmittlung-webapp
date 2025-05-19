@@ -9,24 +9,27 @@
         <bc-label [label]="'CANDIDATE.NR' | translate"></bc-label>
         <bc-label [label]="'CANDIDATE.CANDIDACY' | translate"></bc-label>
         <bc-label [label]="'MAJORITY_ELECTION.PARTY' | translate"></bc-label>
-        <bc-label *ngIf="eVotingValue" [label]="'ELECTION.VOTE_COUNT_CONVENTIONAL' | translate" class="candidate-vote-count"></bc-label>
+        <bc-label *ngIf="eVotingValue || eCountingValue" [label]="'ELECTION.VOTE_COUNT_CONVENTIONAL' | translate" class="candidate-vote-count"></bc-label>
         <bc-label *ngIf="eVotingValue" [label]="'ELECTION.VOTE_COUNT_E_VOTING' | translate" class="candidate-vote-count"></bc-label>
+        <bc-label *ngIf="eCountingValue" [label]="'ELECTION.VOTE_COUNT_E_COUNTING' | translate" class="candidate-vote-count"></bc-label>
         <bc-label class="candidate-vote-count" [label]="'ELECTION.VOTE_COUNT' | translate"></bc-label>
         <ng-container *ngFor="let candidate of result.candidateResults">
           <span class="candidate-number">{{candidate.candidate.number + (candidateCheckDigit ? candidate.candidate.checkDigit : '')}}</span>
           <span>{{candidate.candidate.politicalLastName}} {{candidate.candidate.politicalFirstName}}</span>
           <span>{{candidate.candidate.party}}</span>
-          <span *ngIf="eVotingValue" class="candidate-vote-count">{{candidate.conventionalVoteCount | number}}</span>
+          <span *ngIf="eVotingValue || eCountingValue" class="candidate-vote-count">{{candidate.conventionalVoteCount | number}}</span>
           <span *ngIf="eVotingValue" class="candidate-vote-count">{{(candidate.eVotingExclWriteInsVoteCount + candidate.eVotingWriteInsVoteCount) | number}}</span>
-          <span class="candidate-vote-count">{{((candidate.conventionalVoteCount ?? 0) + candidate.eVotingExclWriteInsVoteCount + candidate.eVotingWriteInsVoteCount) | number}}</span>
+          <span *ngIf="eCountingValue" class="candidate-vote-count">{{(candidate.eCountingExclWriteInsVoteCount + candidate.eCountingWriteInsVoteCount) | number}}</span>
+          <span class="candidate-vote-count">{{((candidate.conventionalVoteCount ?? 0) + candidate.eVotingExclWriteInsVoteCount + candidate.eCountingExclWriteInsVoteCount + candidate.eVotingWriteInsVoteCount + candidate.eCountingWriteInsVoteCount) | number}}</span>
           <ng-container *ngTemplateOutlet="votePercentIndicator; context: {$implicit: candidate.voteCount}"></ng-container>
         </ng-container>
 
         <ng-container *ngIf="showIndividualVotes">
           <span translate class="candidate-candidacy">MAJORITY_ELECTION.INDIVIDUAL</span>
           <span><!-- party --></span>
-          <span *ngIf="eVotingValue" class="candidate-vote-count">{{result.conventionalSubTotal.individualVoteCount | number}}</span>
+          <span *ngIf="eVotingValue || eCountingValue" class="candidate-vote-count">{{result.conventionalSubTotal.individualVoteCount | number}}</span>
           <span *ngIf="eVotingValue" class="candidate-vote-count">{{result.eVotingSubTotal.individualVoteCount | number}}</span>
+          <span *ngIf="eCountingValue" class="candidate-vote-count">{{result.eCountingSubTotal.individualVoteCount | number}}</span>
           <span class="candidate-vote-count">{{result.individualVoteCount | number}}</span>
           <ng-container *ngTemplateOutlet="votePercentIndicator; context: {$implicit: result.individualVoteCount}"></ng-container>
         </ng-container>
@@ -34,16 +37,18 @@
         <ng-container *ngIf="showEmptyVotes">
           <span translate class="candidate-candidacy">MAJORITY_ELECTION.EMPTY_VOTES</span>
           <span><!-- party --></span>
-          <span *ngIf="eVotingValue" class="candidate-vote-count">{{result.conventionalSubTotal.emptyVoteCountExclWriteIns | number}}</span>
+          <span *ngIf="eVotingValue || eCountingValue" class="candidate-vote-count">{{result.conventionalSubTotal.emptyVoteCountExclWriteIns | number}}</span>
           <span *ngIf="eVotingValue" class="candidate-vote-count">{{result.eVotingSubTotal.emptyVoteCountExclWriteIns | number}}</span>
+          <span *ngIf="eCountingValue" class="candidate-vote-count">{{result.eCountingSubTotal.emptyVoteCountExclWriteIns | number}}</span>
           <span class="candidate-vote-count">{{result.emptyVoteCount | number}}</span>
         </ng-container>
 
         <ng-container *ngIf="showInvalidVotes">
           <span translate class="candidate-candidacy">MAJORITY_ELECTION.INVALID_VOTES</span>
           <span><!-- party --></span>
-          <span *ngIf="eVotingValue" class="candidate-vote-count">{{result.conventionalSubTotal.invalidVoteCount | number}}</span>
+          <span *ngIf="eVotingValue || eCountingValue" class="candidate-vote-count">{{result.conventionalSubTotal.invalidVoteCount | number}}</span>
           <span *ngIf="eVotingValue" class="candidate-vote-count">{{result.eVotingSubTotal.invalidVoteCount | number}}</span>
+          <span *ngIf="eCountingValue" class="candidate-vote-count">{{result.eCountingSubTotal.invalidVoteCount | number}}</span>
           <span class="candidate-vote-count">{{result.invalidVoteCount | number}}</span>
         </ng-container>
       </div>

@@ -7,24 +7,33 @@
                                  [voteCountUnspecified]="endResult.conventionalSubTotal.totalCountOfAnswerUnspecified"
                                  [hasUnspecifiedVoteCount]="ballotNumberOfQuestions > 1">
   </app-question-end-result-entry>
-  <ng-container *ngIf="eVoting">
-    <app-question-end-result-entry titleText="VOTE.COUNT_OF_VOTES.E_VOTING"
-                                   [labelLeft]="endResult.question | translateVoteQuestion: isTieBreakQuestion:'answer1Short':ballotNumberOfQuestions:ballotSubType"
-                                   [voteCountLeft]="endResult.eVotingSubTotal.totalCountOfAnswer1"
-                                   [labelRight]="endResult.question | translateVoteQuestion: isTieBreakQuestion:'answer2Short':ballotNumberOfQuestions:ballotSubType"
-                                   [voteCountRight]="endResult.eVotingSubTotal.totalCountOfAnswer2"
-                                   [voteCountUnspecified]="endResult.eVotingSubTotal.totalCountOfAnswerUnspecified"
-                                   [hasUnspecifiedVoteCount]="ballotNumberOfQuestions > 1">
-    </app-question-end-result-entry>
-    <app-question-end-result-entry titleText="VOTE.COUNT_OF_VOTES.TOTAL"
-                                   [labelLeft]="endResult.question | translateVoteQuestion: isTieBreakQuestion:'answer1Short':ballotNumberOfQuestions:ballotSubType"
-                                   [voteCountLeft]="endResult.totalCountOfAnswer1"
-                                   [labelRight]="endResult.question | translateVoteQuestion: isTieBreakQuestion:'answer2Short':ballotNumberOfQuestions:ballotSubType"
-                                   [voteCountRight]="endResult.totalCountOfAnswer2"
-                                   [voteCountUnspecified]="endResult.totalCountOfAnswerUnspecified"
-                                   [hasUnspecifiedVoteCount]="ballotNumberOfQuestions > 1">
-    </app-question-end-result-entry>
-  </ng-container>
+  <app-question-end-result-entry *ngIf="eVoting"
+                                 titleText="VOTE.COUNT_OF_VOTES.E_VOTING"
+                                 [labelLeft]="endResult.question | translateVoteQuestion: isTieBreakQuestion:'answer1Short':ballotNumberOfQuestions:ballotSubType"
+                                 [voteCountLeft]="endResult.eVotingSubTotal.totalCountOfAnswer1"
+                                 [labelRight]="endResult.question | translateVoteQuestion: isTieBreakQuestion:'answer2Short':ballotNumberOfQuestions:ballotSubType"
+                                 [voteCountRight]="endResult.eVotingSubTotal.totalCountOfAnswer2"
+                                 [voteCountUnspecified]="endResult.eVotingSubTotal.totalCountOfAnswerUnspecified"
+                                 [hasUnspecifiedVoteCount]="ballotNumberOfQuestions > 1">
+  </app-question-end-result-entry>
+  <app-question-end-result-entry *ngIf="eCounting"
+                                 titleText="VOTE.COUNT_OF_VOTES.E_COUNTING"
+                                 [labelLeft]="endResult.question | translateVoteQuestion: isTieBreakQuestion:'answer1Short':ballotNumberOfQuestions:ballotSubType"
+                                 [voteCountLeft]="endResult.eCountingSubTotal.totalCountOfAnswer1"
+                                 [labelRight]="endResult.question | translateVoteQuestion: isTieBreakQuestion:'answer2Short':ballotNumberOfQuestions:ballotSubType"
+                                 [voteCountRight]="endResult.eCountingSubTotal.totalCountOfAnswer2"
+                                 [voteCountUnspecified]="endResult.eCountingSubTotal.totalCountOfAnswerUnspecified"
+                                 [hasUnspecifiedVoteCount]="ballotNumberOfQuestions > 1">
+  </app-question-end-result-entry>
+  <app-question-end-result-entry *ngIf="eVoting || eCounting"
+                                 titleText="VOTE.COUNT_OF_VOTES.TOTAL"
+                                 [labelLeft]="endResult.question | translateVoteQuestion: isTieBreakQuestion:'answer1Short':ballotNumberOfQuestions:ballotSubType"
+                                 [voteCountLeft]="endResult.totalCountOfAnswer1"
+                                 [labelRight]="endResult.question | translateVoteQuestion: isTieBreakQuestion:'answer2Short':ballotNumberOfQuestions:ballotSubType"
+                                 [voteCountRight]="endResult.totalCountOfAnswer2"
+                                 [voteCountUnspecified]="endResult.totalCountOfAnswerUnspecified"
+                                 [hasUnspecifiedVoteCount]="ballotNumberOfQuestions > 1">
+  </app-question-end-result-entry>
   <vo-ausm-vote-results-graph [countLeft]="endResult.totalCountOfAnswer1"
                               [countRight]="endResult.totalCountOfAnswer2"
                               [equalityRightWins]="!isTieBreakQuestion"

@@ -10,6 +10,7 @@ import { Component, Input } from '@angular/core';
   selector: 'vo-ausm-contest-detail-voting-cards-expansion-panel',
   templateUrl: './contest-detail-voting-cards-expansion-panel.component.html',
   styleUrls: ['./contest-detail-voting-cards-expansion-panel.component.scss'],
+  standalone: false,
 })
 export class ContestDetailVotingCardsExpansionPanelComponent {
   @Input()

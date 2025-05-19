@@ -1,3 +1,9 @@
+@use '@abraxas/voting-lib/style/color' as *;
+@use '@abraxas/voting-lib/style/spacing' as *;
+
+$color-winning: $color-info-25;
+$color-losing: $color-error-25;
+
 .state-colorbox {
   border-radius: 4px;
   display: flex;
@@ -17,5 +23,151 @@
 }
 
 .bc-column-counting-circle {
-  width: 33%;
+  width: 10rem;
+}
+
+.bc-column-received-ballots {
+  width: 8rem;
+}
+
+.bc-column-blank-ballots {
+  width: 8rem;
+}
+
+.bc-column-invalid-ballots {
+  width: 8rem;
+}
+
+.bc-column-accounted-ballots {
+  width: 8rem;
+}
+
+.bc-column-total-count-of-voters {
+  width: 8rem;
+}
+
+.bc-column-voting-cards-ballot-box {
+  width: 8rem;
+}
+
+.bc-column-voting-cards-paper {
+  width: 8rem;
+}
+
+.bc-column-voting-cards-by-mail-valid {
+  width: 8rem;
+}
+
+.bc-column-voting-cards-by-mail-invalid {
+  width: 8rem;
+}
+
+.bc-column-main-ballot-total-count-yes {
+  width: 8rem;
+}
+
+.bc-column-main-ballot-total-count-no {
+  width: 8rem;
+}
+
+.bc-column-main-ballot-total-count-unspecified {
+  width: 8rem;
+}
+
+.bc-column-counter-proposal1total-count-yes {
+  width: 8rem;
+}
+
+.bc-column-counter-proposal1total-count-no {
+  width: 8rem;
+}
+
+.bc-column-counter-proposal1total-count-unspecified {
+  width: 8rem;
+}
+
+.bc-column-counter-proposal2total-count-yes {
+  width: 8rem;
+}
+
+.bc-column-counter-proposal2total-count-no {
+  width: 8rem;
+}
+
+.bc-column-counter-proposal2total-count-unspecified {
+  width: 8rem;
+}
+
+.bc-column-tie-break1total-count-yes {
+  width: 8rem;
+}
+
+.bc-column-tie-break1total-count-no {
+  width: 8rem;
+}
+
+.bc-column-tie-break1total-count-unspecified {
+  width: 8rem;
+}
+
+.bc-column-tie-break2total-count-yes {
+  width: 8rem;
+}
+
+.bc-column-tie-break2total-count-no {
+  width: 8rem;
+}
+
+.bc-column-tie-break2total-count-unspecified {
+  width: 8rem;
+}
+
+.bc-column-tie-break3total-count-yes {
+  width: 8rem;
+}
+
+.bc-column-tie-break3total-count-no {
+  width: 8rem;
+}
+
+.bc-column-tie-break3total-count-unspecified {
+  width: 8rem;
+}
+
+::ng-deep .small-filter .mat-mdc-form-field-icon-suffix {
+  padding-left: 0;
+}
+
+::ng-deep .small-filter .formfield .mat-mdc-form-field-icon-suffix {
+  margin-left: 0;
+}
+
+::ng-deep .small-filter .formfield .mat-form-field-appearance-outline .mat-mdc-form-field-flex {
+  padding-right: 0;
+  padding-left: 4px;
+}
+
+::ng-deep .small-filter .formfield .mat-mdc-form-field-icon-prefix {
+  margin-right: 0;
+}
+
+.flex {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  column-gap: 1rem;
+  margin-right: 1rem;
+}
+
+.winning {
+  background-color: $color-winning;
+}
+
+.losing {
+  background-color: $color-losing;
+}
+
+bc-table {
+  overflow: auto;
+  max-height: 44rem;
 }

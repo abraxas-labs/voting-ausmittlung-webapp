@@ -22,6 +22,7 @@ import { HasUnsavedChanges } from '../../../services/guards/has-unsaved-changes.
   selector: 'vo-ausm-majority-election-ballot-groups',
   templateUrl: './majority-election-ballot-groups.component.html',
   styleUrls: ['./majority-election-ballot-groups.component.scss'],
+  standalone: false,
 })
 export class MajorityElectionBallotGroupsComponent implements OnInit, OnDestroy, HasUnsavedChanges {
   @HostListener('window:beforeunload')

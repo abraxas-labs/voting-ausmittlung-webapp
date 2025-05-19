@@ -6,13 +6,13 @@
   </div>
 
   <div footer>
-    <vo-ausm-button-bar [sticky]="false"
+    <vo-lib-button-bar [sticky]="false"
                         [cancelLabel]="'APP.CLOSE' | translate"
                         [saveLabel]="saveLabel | translate"
                         [saveIcon]="saveIcon"
                         [hintLabel]="(hintLabel ?? '') | translate"
                         [hasSaveButton]="hasSaveButton"
                         (save)="save()"
-                        (cancel)="close()"></vo-ausm-button-bar>
+                        (cancel)="close()"></vo-lib-button-bar>
   </div>
 </vo-lib-dialog>

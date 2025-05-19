@@ -10,6 +10,7 @@ import { HasUnsavedChanges, UnsavedChangesService } from 'ausmittlung-lib';
 @Component({
   selector: 'app-erfassung-contest-detail',
   templateUrl: './erfassung-contest-detail.component.html',
+  standalone: false,
 })
 export class ErfassungContestDetailComponent implements HasUnsavedChanges, OnDestroy {
   @HostListener('window:beforeunload')

@@ -42,6 +42,7 @@ import {
   RevertMajorityElectionEndResultFinalizationRequest,
   UpdateMajorityElectionEndResultLotDecisionRequest,
   UpdateMajorityElectionEndResultLotDecisionsRequest,
+  UpdateMajorityElectionEndResultSecondaryLotDecisionsRequest,
   ValidateEnterMajorityElectionCandidateResultsRequest,
   ValidateEnterMajorityElectionCountOfVotersRequest,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/majority_election_result_requests_pb';
@@ -57,6 +58,7 @@ import {
   MajorityElectionResultEntry,
   MajorityElectionResultEntryParams,
   MajorityElectionResultProto,
+  mapToCountOfVoters,
   mapToNullableCountOfVoters,
   PoliticalBusinessNullableCountOfVoters,
   ValidationSummary,
@@ -355,6 +357,16 @@ export class MajorityElectionResultService extends PoliticalBusinessResultBaseSe
     return this.requestEmptyResp(c => c.updateEndResultLotDecisions, req);
   }
 
+  public updateEndResultSecondaryLotDecisions(
+    majorityElectionId: string,
+    lotDecisions: MajorityElectionEndResultLotDecision[],
+  ): Promise<void> {
+    const req = new UpdateMajorityElectionEndResultSecondaryLotDecisionsRequest();
+    req.setMajorityElectionId(majorityElectionId);
+    req.setLotDecisionsList(lotDecisions.map(x => this.mapToUpdateLotDecisionRequest(x)));
+    return this.requestEmptyResp(c => c.updateEndResultSecondaryLotDecisions, req);
+  }
+
   public prepareFinalizeEndResult(majorityElectionId: string): Promise<SecondFactorTransaction> {
     const req = new FinalizeMajorityElectionEndResultRequest();
     req.setMajorityElectionId(majorityElectionId);
@@ -441,7 +453,7 @@ export class MajorityElectionResultService extends PoliticalBusinessResultBaseSe
       countOfDoneCountingCircles: data.getCountOfDoneCountingCircles(),
       totalCountOfCountingCircles: data.getTotalCountOfCountingCircles(),
       allCountingCirclesDone: data.getAllCountingCirclesDone(),
-      countOfVoters: data.getCountOfVoters()!.toObject(),
+      countOfVoters: mapToCountOfVoters(data.getCountOfVoters()!.toObject()),
       candidateEndResults: this.mapToCandidateEndResults(data.getCandidateEndResultsList()),
       secondaryMajorityElectionEndResults: this.mapToSecondaryMajorityElectionEndResults(data.getSecondaryMajorityElectionEndResultsList()),
       individualVoteCount: data.getIndividualVoteCount(),
@@ -451,6 +463,7 @@ export class MajorityElectionResultService extends PoliticalBusinessResultBaseSe
       totalCandidateVoteCountInclIndividual: data.getTotalCandidateVoteCountInclIndividual(),
       finalized: data.getFinalized(),
       eVotingSubTotal: data.getEVotingSubTotal()!.toObject(),
+      eCountingSubTotal: data.getECountingSubTotal()!.toObject(),
       conventionalSubTotal: data.getConventionalSubTotal()!.toObject(),
     };
   }
@@ -461,6 +474,7 @@ export class MajorityElectionResultService extends PoliticalBusinessResultBaseSe
       voteCount: x.getVoteCount(),
       conventionalVoteCount: x.getConventionalVoteCount(),
       eVotingVoteCount: x.getEVotingVoteCount(),
+      eCountingVoteCount: x.getECountingVoteCount(),
       rank: x.getRank(),
       lotDecision: x.getLotDecision(),
       lotDecisionEnabled: x.getLotDecisionEnabled(),
@@ -479,6 +493,7 @@ export class MajorityElectionResultService extends PoliticalBusinessResultBaseSe
       totalCandidateVoteCountInclIndividual: x.getTotalCandidateVoteCountInclIndividual(),
       totalCandidateVoteCountExclIndividual: x.getTotalCandidateVoteCountExclIndividual(),
       eVotingSubTotal: x.getEVotingSubTotal()!.toObject(),
+      eCountingSubTotal: x.getECountingSubTotal()!.toObject(),
       conventionalSubTotal: x.getConventionalSubTotal()!.toObject(),
     }));
   }

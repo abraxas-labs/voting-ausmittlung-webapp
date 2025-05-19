@@ -1,11 +1,11 @@
 <ng-container *ngIf="!readOnly">
-  <bc-button class="full-width my-2"
+  <bc-button class="full-width full-height my-2"
              *ngIf="!canResetAllToAuditedTentatively && !statePlausibilisedDisabled"
              (buttonClick)="updateAllStates.emit(states.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED)"
              [label]="'MONITORING_COCKPIT.ALL_TO_STATE' | translate : { state: stateDescriptionsByState[states.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED] ?? 'COUNTING_CIRCLE_RESULT_STATE.' + states.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED | translate }"
              [disabled]="disabled || !canPlausibiliseAll">
   </bc-button>
-  <bc-button class="full-width my-2"
+  <bc-button class="full-width full-height my-2"
              *ngIf="canResetAllToAuditedTentatively"
              (buttonClick)="updateAllStates.emit(states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY)"
              [label]="'MONITORING_COCKPIT.ALL_TO_STATE' | translate: { state: stateDescriptionsByState[states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY] ?? 'COUNTING_CIRCLE_RESULT_STATE.' + states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY | translate }"
@@ -13,7 +13,7 @@
   </bc-button>
 </ng-container>
 <bc-button
-  class="full-width my-2"
+  class="full-width full-height my-2"
   (buttonClick)="navigateToResults()"
   [label]="'MONITORING_COCKPIT.VIEW_RESULTS' | translate">
 </bc-button>

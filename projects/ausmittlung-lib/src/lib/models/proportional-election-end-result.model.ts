@@ -50,6 +50,7 @@ export interface ProportionalElectionListEndResult {
   blankRowsCount: number;
   totalVoteCount: number;
   eVotingSubTotal: ProportionalElectionListResultSubTotal;
+  eCountingSubTotal: ProportionalElectionListResultSubTotal;
   conventionalSubTotal: ProportionalElectionListResultSubTotal;
   candidateEndResults: ProportionalElectionCandidateEndResult[];
   listUnion?: ProportionalElectionListUnion;
@@ -66,6 +67,7 @@ export interface ProportionalElectionCandidateEndResult {
   lotDecisionRequired: boolean;
   state: ProportionalElectionCandidateEndResultState;
   eVotingSubTotal: ProportionalElectionCandidateResultSubTotal;
+  eCountingSubTotal: ProportionalElectionCandidateResultSubTotal;
   conventionalSubTotal: ProportionalElectionCandidateResultSubTotal;
 }
 

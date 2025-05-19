@@ -18,6 +18,7 @@
   <div class="mb-3" *ngIf="doubleProportionalResult && steps">
     <div class="stepper">
       <div></div>
+      <!-- RM Comment -->
       <mat-horizontal-stepper labelPosition="bottom"
                               (selectionChange)="selectedStepIndex = $event.selectedIndex">
         <ng-template matStepperIcon="number" let-index="index">

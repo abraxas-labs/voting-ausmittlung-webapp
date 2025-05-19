@@ -10,29 +10,33 @@ import { DialogService, SnackbarService, ThemeService } from '@abraxas/voting-li
 import { Directive, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { ShortcutDialogComponent, ShortcutDialogData } from '../../components/ballot-shortcut-dialog/shortcut-dialog.component';
 import {
   MajorityElectionResultBundles,
   PoliticalBusinessResultBundle,
-  ProportionalElectionResultBundle,
+  PoliticalBusinessResultBundleLog,
+  PoliticalBusinessResultBundles,
   ProportionalElectionResultBundles,
   ProtocolExport,
-  ProtocolExportStateChange,
   VoteResultBundles,
 } from '../../models';
 import { ResultExportService } from '../../services/result-export.service';
 import { PermissionService } from '../../services/permission.service';
-import { groupBy, groupBySingle } from '../../services/utils/array.utils';
+import { groupBySingle } from '../../services/utils/array.utils';
 import { Permissions } from '../../models/permissions.model';
 import { ExportService } from '../../services/export.service';
 import { ProtocolExportState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/export_pb';
 import { DatePipe } from '@angular/common';
 import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/political_business_pb';
+import { Event, EventType, ProtocolEventTypes } from '../../models/event-log.model';
+import { EventLogService } from '../../services/event-log.service';
 
 @Directive()
 export abstract class PoliticalBusinessBundleOverviewComponent<
-    T extends ProportionalElectionResultBundles | MajorityElectionResultBundles | VoteResultBundles,
+    T extends (ProportionalElectionResultBundles | MajorityElectionResultBundles | VoteResultBundles) &
+      PoliticalBusinessResultBundles<TBundle>,
+    TBundle extends PoliticalBusinessResultBundle = T extends PoliticalBusinessResultBundles<infer U> ? U : never,
   >
   implements OnInit, OnDestroy
 {
@@ -41,15 +45,10 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
   public loading: boolean = true;
   public canCreateBundle: boolean = false;
 
-  public openBundles: PoliticalBusinessResultBundle[] | ProportionalElectionResultBundle[] = [];
-  public reviewedBundles: PoliticalBusinessResultBundle[] | ProportionalElectionResultBundle[] = [];
-  public deletedBundles: PoliticalBusinessResultBundle[] | ProportionalElectionResultBundle[] = [];
-
-  private bundlesById: Record<string, PoliticalBusinessResultBundle | ProportionalElectionResultBundle> = {};
+  private bundlesById: Record<string, TBundle> = {};
 
   private routeParamsSubscription?: Subscription;
-  private bundleStateChangesSubscription?: Subscription;
-  private stateChangesSubscription?: Subscription;
+  private watchSubscription?: Subscription;
 
   protected constructor(
     protected readonly permissionService: PermissionService,
@@ -61,6 +60,7 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
     protected readonly themeService: ThemeService,
     protected readonly resultExportService: ResultExportService,
     protected readonly exportService: ExportService,
+    private readonly eventLogService: EventLogService,
     private readonly datePipe: DatePipe,
   ) {}
 
@@ -71,8 +71,7 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
 
   public ngOnDestroy(): void {
     this.routeParamsSubscription?.unsubscribe();
-    this.bundleStateChangesSubscription?.unsubscribe();
-    this.stateChangesSubscription?.unsubscribe();
+    this.watchSubscription?.unsubscribe();
   }
 
   public async back(): Promise<void> {
@@ -119,9 +118,8 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
 
     await this.deleteBundleById(bundle.id);
 
-    const oldState = bundle.state;
     bundle.state = BallotBundleState.BALLOT_BUNDLE_STATE_DELETED;
-    this.moveBundle(bundle, oldState);
+    this.updateBundles();
     this.toast.success(this.i18n.instant('APP.DELETED'));
   }
 
@@ -147,17 +145,8 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
     }
 
     // set state immediately to generating to show the loading bar
-    bundle.protocolExport = {
-      state: ProtocolExportState.PROTOCOL_EXPORT_STATE_GENERATING,
-      started: new Date(),
-      fileName: '',
-      exportTemplateId: '',
-      protocolExportId: '',
-      description: '',
-      entityDescription: '',
-    };
-
-    bundle.protocolExport.protocolExportId = await this.exportService.startBundleReviewExport(bundle.id, this.politicalBusinessType);
+    this.setProtocolExportState(bundle, ProtocolExportState.PROTOCOL_EXPORT_STATE_GENERATING);
+    bundle.protocolExport!.protocolExportId = await this.exportService.startBundleReviewExport(bundle.id, this.politicalBusinessType);
   }
 
   public async downloadBundleReviewExport(bundle: PoliticalBusinessResultBundle): Promise<void> {
@@ -175,15 +164,13 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
 
   protected abstract loadBundles(resultId: string, params: Params): Promise<T>;
 
+  protected abstract loadBundle(id: string): Promise<TBundle>;
+
   protected abstract get politicalBusinessType(): PoliticalBusinessType;
 
   protected abstract get resultId(): string | undefined;
 
-  protected abstract startChangesListener(
-    resultId: string,
-    params: Params,
-    onRetry: () => {},
-  ): Observable<PoliticalBusinessResultBundle | ProportionalElectionResultBundle>;
+  protected abstract get watcherEventTypes(): EventType[];
 
   protected getUsedBundleNumbers(bundles: PoliticalBusinessResultBundle[]): number[] {
     return bundles.map(x => x.number);
@@ -196,11 +183,75 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
       .map(x => x.number);
   }
 
+  protected async handleBundleCreated(id: string): Promise<void> {
+    if (this.bundlesById[id]) {
+      return;
+    }
+
+    await this.reloadBundle(id);
+  }
+
+  protected setBundleState(id: string, state: BallotBundleState, log: PoliticalBusinessResultBundleLog): void {
+    const bundle = this.bundlesById[id];
+    if (!bundle) {
+      return;
+    }
+
+    bundle.state = state;
+    bundle.logs = [...bundle.logs, log];
+    this.updateBundles();
+  }
+
+  protected adjustCountOfBallots(bundleId: string, delta: number): void {
+    const bundle = this.bundlesById[bundleId];
+    if (!!bundle) {
+      bundle.countOfBallots += delta;
+    }
+  }
+
+  protected async reloadBundle(id: string): Promise<void> {
+    const bundle = await this.loadBundle(id);
+    this.bundleCreatedOrUpdated(bundle);
+  }
+
+  protected async handleEvent(e: Event, params: Params): Promise<void> {
+    switch (e.type) {
+      case '_reconnectAttempt':
+        const result = await this.loadBundles(params.resultId, params);
+        for (const bundle of result.bundles) {
+          this.bundleCreatedOrUpdated(bundle);
+        }
+
+        break;
+      case 'ProtocolExportStarted':
+        this.setProtocolExportState(
+          this.bundlesById[e.politicalBusinessBundleId],
+          ProtocolExportState.PROTOCOL_EXPORT_STATE_GENERATING,
+          e.entityId,
+        );
+        break;
+      case 'ProtocolExportCompleted':
+        this.setProtocolExportState(
+          this.bundlesById[e.politicalBusinessBundleId],
+          ProtocolExportState.PROTOCOL_EXPORT_STATE_COMPLETED,
+          e.entityId,
+        );
+        break;
+      case 'ProtocolExportFailed':
+        this.setProtocolExportState(
+          this.bundlesById[e.politicalBusinessBundleId],
+          ProtocolExportState.PROTOCOL_EXPORT_STATE_FAILED,
+          e.entityId,
+        );
+        break;
+    }
+  }
+
   private async loadData(params: Params): Promise<void> {
     this.loading = true;
     try {
-      this.bundleStateChangesSubscription?.unsubscribe();
-      this.stateChangesSubscription?.unsubscribe();
+      this.watchSubscription?.unsubscribe();
+      delete this.watchSubscription;
       this.result = await this.loadBundles(params.resultId, params);
 
       this.bundlesById = groupBySingle(
@@ -208,7 +259,6 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
         x => x.id,
         x => x,
       );
-      this.updateBundleGroups();
 
       this.resultReadOnly =
         this.result.politicalBusinessResult.politicalBusiness.contest!.locked ||
@@ -216,163 +266,33 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
           this.result.politicalBusinessResult.state !== CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION);
 
       if (!this.resultReadOnly) {
-        this.bundleStateChangesSubscription = this.startChangesListener(
-          params.resultId,
-          params,
-          this.onChangesListenerRetry.bind(this, params),
-        ).subscribe(x => this.bundleUpdated(x));
-
-        if (!this.resultId) {
-          return;
-        }
-
-        this.stateChangesSubscription = this.exportService
-          .getBundleReviewExportStateChanges(
-            this.resultId,
-            this.politicalBusinessType,
-            this.onBundleReviewExportStateChangeListenerRetry.bind(this, params),
-          )
-          .subscribe(changed => this.bundleReviewExportStateChanged(changed));
+        this.watchSubscription = this.eventLogService
+          .watch([...ProtocolEventTypes, ...this.watcherEventTypes], {
+            contestId: this.result.politicalBusinessResult.politicalBusiness.contestId,
+            politicalBusinessResultId: this.result.politicalBusinessResult.id,
+          })
+          .subscribe(e => this.handleEvent(e, params));
       }
     } finally {
       this.loading = false;
     }
   }
 
-  private async onChangesListenerRetry(params: Params): Promise<void> {
-    if (!this.bundleStateChangesSubscription) {
-      return;
-    }
-
-    // When the change listener fails, it is being retried with an exponential backoff
-    // During that retry backoff, changes aren't being delivered -> we need to poll for them
-    const result = await this.loadBundles(params.resultId, params);
-    for (const bundle of result.bundles) {
-      this.bundleUpdated(bundle);
-    }
-  }
-
-  private bundleUpdated(b: PoliticalBusinessResultBundle | ProportionalElectionResultBundle): void {
+  private bundleCreatedOrUpdated(b: TBundle): void {
     if (!this.result) {
       return;
     }
 
     const bundle = this.bundlesById[b.id];
     if (!!bundle) {
-      if (bundle.state === b.state) {
-        // Nothing got updated, probably a "synthetic change" from a polling attempt
-        return;
-      }
-
-      const oldState = bundle.state;
       Object.assign(this.bundlesById[b.id], b);
-      this.moveBundle(b, oldState);
+      this.updateBundles();
       return;
     }
 
     this.bundlesById[b.id] = b;
     this.result.bundles.push(b);
-    this.moveBundle(b);
-  }
-
-  private updateBundleGroups(): void {
-    if (!this.result) {
-      return;
-    }
-
-    const grouped = groupBy(
-      this.result.bundles,
-      x => x.state,
-      x => x,
-    );
-    this.openBundles = [
-      ...(grouped[BallotBundleState.BALLOT_BUNDLE_STATE_READY_FOR_REVIEW] || []),
-      ...(grouped[BallotBundleState.BALLOT_BUNDLE_STATE_IN_CORRECTION] || []),
-      ...(grouped[BallotBundleState.BALLOT_BUNDLE_STATE_IN_PROCESS] || []),
-    ];
-    this.reviewedBundles = grouped[BallotBundleState.BALLOT_BUNDLE_STATE_REVIEWED] || [];
-    this.deletedBundles = grouped[BallotBundleState.BALLOT_BUNDLE_STATE_DELETED] || [];
-  }
-
-  private moveBundle(bundle: PoliticalBusinessResultBundle, oldState?: BallotBundleState): void {
-    if (oldState === BallotBundleState.BALLOT_BUNDLE_STATE_REVIEWED) {
-      this.reviewedBundles = this.reviewedBundles.filter(x => x.id !== bundle.id);
-    } else if (oldState !== undefined) {
-      this.openBundles = this.openBundles.filter(x => x.id !== bundle.id);
-    }
-
-    switch (bundle.state) {
-      case BallotBundleState.BALLOT_BUNDLE_STATE_REVIEWED:
-        this.reviewedBundles = [bundle, ...this.reviewedBundles.filter(b => b.id !== bundle.id)];
-        break;
-      case BallotBundleState.BALLOT_BUNDLE_STATE_DELETED:
-        this.deletedBundles = [bundle, ...this.deletedBundles.filter(b => b.id !== bundle.id)];
-        break;
-      default:
-        this.openBundles = [bundle, ...this.openBundles.filter(b => b.id !== bundle.id)].sort((a, b) => this.sortOpenBundles(a, b));
-        break;
-    }
-  }
-
-  private sortOpenBundles(a: PoliticalBusinessResultBundle, b: PoliticalBusinessResultBundle): number {
-    const diff = this.getOpenBundleOrderNumber(a.state) - this.getOpenBundleOrderNumber(b.state);
-    if (diff !== 0) {
-      return diff;
-    }
-
-    return a.number - b.number;
-  }
-
-  private getOpenBundleOrderNumber(state: BallotBundleState): number {
-    if (state === BallotBundleState.BALLOT_BUNDLE_STATE_READY_FOR_REVIEW) {
-      return 0;
-    }
-
-    if (state === BallotBundleState.BALLOT_BUNDLE_STATE_IN_CORRECTION) {
-      return 1;
-    }
-
-    if (state === BallotBundleState.BALLOT_BUNDLE_STATE_IN_PROCESS) {
-      return 2;
-    }
-
-    throw new Error('Bad bundle state parameter');
-  }
-
-  private bundleReviewExportStateChanged(changed: ProtocolExportStateChange): void {
-    const bundle = this.openBundles.find(t => t.protocolExport?.protocolExportId === changed.protocolExportId);
-
-    if (!bundle || !bundle.protocolExport) {
-      return;
-    }
-
-    bundle.protocolExport.state = changed.newState;
-    bundle.protocolExport.started = changed.started;
-    bundle.protocolExport.fileName = changed.fileName;
-  }
-
-  private async onBundleReviewExportStateChangeListenerRetry(params: Params): Promise<void> {
-    if (!this.stateChangesSubscription || !this.result) {
-      return;
-    }
-
-    // When the change listener fails, it is being retried with an exponential backoff
-    // During that retry backoff, changes aren't being delivered -> we need to poll for them
-    const result = await this.loadBundles(params.resultId, params);
-    for (const bundle of result.bundles) {
-      if (!bundle.protocolExport) {
-        continue;
-      }
-
-      const syntheticStateChange: ProtocolExportStateChange = {
-        exportTemplateId: bundle.protocolExport.exportTemplateId,
-        protocolExportId: bundle.protocolExport.protocolExportId,
-        newState: bundle.protocolExport.state,
-        started: bundle.protocolExport.started,
-        fileName: bundle.protocolExport.fileName,
-      };
-      this.bundleReviewExportStateChanged(syntheticStateChange);
-    }
+    this.updateBundles();
   }
 
   private async confirmGenerationIfNeeded(protocolExport?: ProtocolExport): Promise<boolean> {
@@ -388,5 +308,41 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
     const started = this.datePipe.transform(protocolExport.started, 'dd.MM.yyyy, HH:mm')!;
     const message = this.i18n.instant(`${i18nPrefix}.MESSAGE.${protocolExport.state}`, { started });
     return await this.dialog.confirm(`${i18nPrefix}.TITLE`, message, `${i18nPrefix}.CONFIRM`);
+  }
+
+  private updateBundles(): void {
+    if (!this.result) {
+      return;
+    }
+
+    this.result.bundles = [...this.result.bundles];
+  }
+
+  private setProtocolExportState(
+    bundle: PoliticalBusinessResultBundle | undefined = undefined,
+    state: ProtocolExportState | undefined = undefined,
+    protocolExportId: string = '',
+  ): void {
+    if (!bundle) {
+      return;
+    }
+
+    if (bundle.protocolExport) {
+      if (state !== undefined) {
+        bundle.protocolExport.state = state;
+      }
+
+      return;
+    }
+
+    bundle.protocolExport = {
+      state: state ?? ProtocolExportState.PROTOCOL_EXPORT_STATE_GENERATING,
+      started: new Date(),
+      fileName: '',
+      exportTemplateId: '',
+      protocolExportId,
+      description: '',
+      entityDescription: '',
+    };
   }
 }

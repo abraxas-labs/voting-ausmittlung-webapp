@@ -13,6 +13,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   selector: 'vo-ausm-comments-dialog',
   templateUrl: './comments-dialog.component.html',
   styleUrls: ['./comments-dialog.component.scss'],
+  standalone: false,
 })
 export class CommentsDialogComponent implements OnInit {
   public loading: boolean = true;

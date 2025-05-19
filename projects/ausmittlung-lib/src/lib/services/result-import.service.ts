@@ -5,32 +5,25 @@
  */
 
 import {
-  DeleteResultImportDataRequest,
+  DeleteECountingResultImportDataRequest,
+  DeleteEVotingResultImportDataRequest,
   GetMajorityElectionWriteInMappingsRequest,
-  GetResultImportChangesRequest,
-  GetMajorityElectionWriteInMappingChangesRequest,
-  ListResultImportsRequest,
+  ListECountingResultImportsRequest,
+  ListEVotingResultImportsRequest,
   MapMajorityElectionWriteInRequest,
   MapMajorityElectionWriteInsRequest,
   ResetMajorityElectionWriteInMappingsRequest,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/result_import_requests_pb';
 import { ResultImportServicePromiseClient } from '@abraxas/voting-ausmittlung-service-proto/grpc/result_import_service_grpc_web_pb';
-import { GrpcBackendService, GrpcEnvironment, GrpcService, retryForeverWithBackoff } from '@abraxas/voting-lib';
+import { GrpcBackendService, GrpcEnvironment, GrpcService } from '@abraxas/voting-lib';
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
-import {
-  ContestMajorityElectionWriteInMappings,
-  MajorityElectionWriteInMapping,
-  MajorityElectionWriteInMappings,
-  PoliticalBusinessType,
-  ResultImport,
-  ResultImportChangeProto,
-  WriteInMappingsChangeProto,
-} from '../models';
+import { MajorityElectionWriteInMappings, PoliticalBusinessType, ResultImport } from '../models';
 import { MajorityElectionWriteInMappingsProto, MajorityElectionWriteInMappingTarget } from '../models/result-import.model';
 import { PoliticalBusinessService } from './political-business.service';
 import { GRPC_ENV_INJECTION_TOKEN, REST_API_URL_INJECTION_TOKEN } from './tokens';
-import { firstValueFrom, Observable } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
+import { ResultImportType } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/import_pb';
 
 @Injectable({
   providedIn: 'root',
@@ -48,18 +41,46 @@ export class ResultImportService extends GrpcService<ResultImportServicePromiseC
     this.apiUrl = `${restApiUrl ?? 'http://localhost:5100/api'}/result_import/`;
   }
 
-  public async import(contestId: string, eCH0222File: File, eCH0110File: File): Promise<void> {
+  public async import(
+    importType: ResultImportType,
+    contestId: string,
+    countingCircleId: string | undefined,
+    eCH0222File: File,
+    eCH0110File?: File,
+  ): Promise<void> {
     const data = new FormData();
     data.append('ech0222File', eCH0222File, eCH0222File.name);
-    data.append('ech0110File', eCH0110File, eCH0110File.name);
-    await firstValueFrom(this.http.post(`${this.apiUrl}${contestId}`, data));
+
+    if (eCH0110File) {
+      data.append('ech0110File', eCH0110File, eCH0110File.name);
+    }
+
+    const path = (
+      {
+        [ResultImportType.RESULT_IMPORT_TYPE_EVOTING]: `e-voting/${contestId}`,
+        [ResultImportType.RESULT_IMPORT_TYPE_ECOUNTING]: `e-counting/${contestId}/${countingCircleId}`,
+      } as Partial<Record<ResultImportType, string>>
+    )[importType];
+    await firstValueFrom(this.http.post(this.apiUrl + path, data));
   }
 
-  public listImportedResultFiles(contestId: string): Promise<ResultImport[]> {
-    const req = new ListResultImportsRequest();
+  public listImportedResultFiles(importType: ResultImportType, contestId: string, countingCircleId?: string): Promise<ResultImport[]> {
+    switch (importType) {
+      case ResultImportType.RESULT_IMPORT_TYPE_EVOTING:
+        return this.listImportedEVotingResultFiles(contestId);
+      case ResultImportType.RESULT_IMPORT_TYPE_ECOUNTING:
+        return this.listImportedECountingResultFiles(contestId, countingCircleId!);
+      default:
+        throw new Error('unknown import type ' + importType);
+    }
+  }
+
+  public listImportedECountingResultFiles(contestId: string, countingCircleId: string): Promise<ResultImport[]> {
+    const req = new ListECountingResultImportsRequest();
     req.setContestId(contestId);
+    req.setCountingCircleId(countingCircleId);
     return this.request(
-      c => c.listImports,
+      c => c.listECountingImports,
       req,
       r =>
         r.getImportsList().map(x => ({
@@ -69,26 +90,54 @@ export class ResultImportService extends GrpcService<ResultImportServicePromiseC
     );
   }
 
-  public deleteResultImportData(contestId: string): Promise<void> {
-    const req = new DeleteResultImportDataRequest();
+  public listImportedEVotingResultFiles(contestId: string): Promise<ResultImport[]> {
+    const req = new ListEVotingResultImportsRequest();
     req.setContestId(contestId);
-    return this.requestEmptyResp(c => c.deleteImportData, req);
+    return this.request(
+      c => c.listEVotingImports,
+      req,
+      r =>
+        r.getImportsList().map(x => ({
+          ...x.toObject(),
+          started: x.getStarted()!.toDate(),
+        })),
+    );
   }
 
-  public async mapMajorityElectionWriteIns(
-    importId: string,
-    electionId: string,
-    countingCircleId: string,
-    pbType: PoliticalBusinessType,
-    mappings: MajorityElectionWriteInMapping[],
-  ): Promise<void> {
+  public async deleteResultImportData(importType: ResultImportType, contestId: string, countingCircleId?: string): Promise<void> {
+    switch (importType) {
+      case ResultImportType.RESULT_IMPORT_TYPE_EVOTING:
+        await this.deleteEVotingResultImportData(contestId);
+        break;
+      case ResultImportType.RESULT_IMPORT_TYPE_ECOUNTING:
+        await this.deleteECountingResultImportData(contestId, countingCircleId!);
+        break;
+      default:
+        throw new Error('unknown import type ' + importType);
+    }
+  }
+
+  public deleteEVotingResultImportData(contestId: string): Promise<void> {
+    const req = new DeleteEVotingResultImportDataRequest();
+    req.setContestId(contestId);
+    return this.requestEmptyResp(c => c.deleteEVotingImportData, req);
+  }
+
+  public deleteECountingResultImportData(contestId: string, countingCircleId: string): Promise<void> {
+    const req = new DeleteECountingResultImportDataRequest();
+    req.setContestId(contestId);
+    req.setCountingCircleId(countingCircleId);
+    return this.requestEmptyResp(c => c.deleteECountingImportData, req);
+  }
+
+  public async mapMajorityElectionWriteIns(mappings: MajorityElectionWriteInMappings, countingCircleId: string): Promise<void> {
     const req = new MapMajorityElectionWriteInsRequest();
-    req.setImportId(importId);
-    req.setElectionId(electionId);
-    req.setPoliticalBusinessType(pbType);
+    req.setImportId(mappings.importId);
+    req.setElectionId(mappings.election.id);
+    req.setPoliticalBusinessType(mappings.election.businessType);
     req.setCountingCircleId(countingCircleId);
     req.setMappingsList(
-      mappings.map(m => {
+      mappings.writeInMappings.map(m => {
         const protoMapping = new MapMajorityElectionWriteInRequest();
         protoMapping.setWriteInId(m.id);
         protoMapping.setTarget(m.target);
@@ -106,61 +155,49 @@ export class ResultImportService extends GrpcService<ResultImportServicePromiseC
   public async getMajorityElectionWriteInMappings(
     contestId: string,
     countingCircleId: string,
-  ): Promise<ContestMajorityElectionWriteInMappings> {
+    electionId?: string,
+    importType?: ResultImportType,
+  ): Promise<MajorityElectionWriteInMappings[]> {
     const req = new GetMajorityElectionWriteInMappingsRequest();
     req.setCountingCircleId(countingCircleId);
     req.setContestId(contestId);
+
+    if (importType !== undefined) {
+      req.setImportType(importType);
+    }
+
+    if (electionId) {
+      req.setElectionId(electionId);
+    }
+
     const resp = await this.request(
       c => c.getMajorityElectionWriteInMappings,
       req,
       res => res,
     );
 
-    return {
-      importId: resp.getImportId(),
-      writeInGroups: resp.getElectionWriteInMappingsList().map(x => this.mapMajorityElectionWriteIn(x)),
-    };
+    return resp.getWriteInMappingsList().map(x => this.mapMajorityElectionWriteIn(x));
   }
 
   public async resetMajorityElectionWriteIns(
+    importId: string,
     electionId: string,
     countingCircleId: string,
-    contestId: string,
     pbType: PoliticalBusinessType,
   ): Promise<void> {
     const req = new ResetMajorityElectionWriteInMappingsRequest();
+    req.setImportId(importId);
     req.setCountingCircleId(countingCircleId);
-    req.setContestId(contestId);
     req.setElectionId(electionId);
     req.setPoliticalBusinessType(pbType);
     await this.requestEmptyResp(c => c.resetMajorityElectionWriteIns, req);
   }
 
-  public getWriteInMappingChanges(contestId: string, countingCircleId: string): Observable<WriteInMappingsChangeProto.AsObject> {
-    const req = new GetMajorityElectionWriteInMappingChangesRequest();
-    req.setContestId(contestId);
-    req.setCountingCircleId(countingCircleId);
-    return this.requestServerStream(
-      c => c.getMajorityElectionWriteInMappingChanges,
-      req,
-      r => r.toObject(),
-    ).pipe(retryForeverWithBackoff());
-  }
-
-  public getImportChanges(contestId: string, countingCircleId: string): Observable<ResultImportChangeProto.AsObject> {
-    const req = new GetResultImportChangesRequest();
-    req.setContestId(contestId);
-    req.setCountingCircleId(countingCircleId);
-    return this.requestServerStream(
-      c => c.getImportChanges,
-      req,
-      r => r.toObject(),
-    ).pipe(retryForeverWithBackoff());
-  }
-
   private mapMajorityElectionWriteIn(proto: MajorityElectionWriteInMappingsProto): MajorityElectionWriteInMappings {
     const obj = proto.toObject();
     return {
+      importId: obj.importId,
+      importType: obj.importType,
       election: PoliticalBusinessService.mapToPoliticalBusiness(proto.getElection()!),
       invalidVotes: obj.invalidVotes,
       individualVotes: obj.individualVotes,

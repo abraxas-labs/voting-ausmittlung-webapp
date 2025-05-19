@@ -12,6 +12,7 @@ import { BallotSubType } from '@abraxas/voting-ausmittlung-service-proto/grpc/mo
   selector: 'app-question-counting-circle-algorithm-end-result',
   templateUrl: './question-counting-circle-algorithm-end-result.html',
   styleUrls: ['./question-counting-circle-algorithm-end-result.scss'],
+  standalone: false,
 })
 export class QuestionCountingCircleAlgorithmEndResultComponent implements OnInit {
   @Input()

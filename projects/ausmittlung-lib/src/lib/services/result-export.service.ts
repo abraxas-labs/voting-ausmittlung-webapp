@@ -6,13 +6,7 @@
 
 import { FileDownloadService } from '@abraxas/voting-lib';
 import { Inject, Injectable } from '@angular/core';
-import {
-  FetchProtocolExportsRequest,
-  GenerateResultBundleReviewExportRequest,
-  GenerateResultExportsRequest,
-  ProtocolExport,
-  ResultExportTemplate,
-} from '../models';
+import { FetchProtocolExportsRequest, GenerateResultExportsRequest, ProtocolExport, ResultExportTemplate } from '../models';
 import { REST_API_URL_INJECTION_TOKEN } from './tokens';
 
 @Injectable({

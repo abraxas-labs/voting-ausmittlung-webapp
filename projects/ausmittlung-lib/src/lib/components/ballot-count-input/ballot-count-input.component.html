@@ -1,51 +1,52 @@
 <h4 class="mb-2">{{ header | translate }}</h4>
 <div class="input-container">
-  <bc-label [class.col-2]="eVoting" [label]="'BALLOT_COUNT.RECEIVED' | translate"></bc-label>
+  <bc-label [class.col-2]="hasMultipleRows" [label]="'BALLOT_COUNT.RECEIVED' | translate"></bc-label>
   <bc-label [label]="'BALLOT_COUNT.BLANK' | translate"></bc-label>
   <bc-label [label]="'BALLOT_COUNT.INVALID' | translate"></bc-label>
   <bc-label [label]="'BALLOT_COUNT.VALID' | translate"></bc-label>
   <bc-label class="col-6 align-right" [label]="participationLabel | translate"></bc-label>
-  <bc-label *ngIf="eVoting" class="col-1" [label]="'VOTING_DATA_SOURCE.CONVENTIONAL' | translate"></bc-label>
+  <bc-label *ngIf="hasMultipleRows" class="col-1" [label]="'VOTING_DATA_SOURCE.CONVENTIONAL' | translate"></bc-label>
   <bc-number
     #receivedFormfield
-    [class.col-1]="!eVoting"
+    [class.col-1]="!hasMultipleRows"
     [readonly]="readonly"
     [min]="0"
-    [error]="countOfVoters.conventionalReceivedBallots !== undefined && countOfVoters.conventionalReceivedBallots < 0"
-    [(value)]="countOfVoters.conventionalReceivedBallots"
+    [error]="countOfVoters.conventionalSubTotal.receivedBallots !== undefined && countOfVoters.conventionalSubTotal.receivedBallots < 0"
+    [(value)]="countOfVoters.conventionalSubTotal.receivedBallots"
     (valueChange)="changed()"
     [subscriptSizing]="'dynamic'"
   ></bc-number>
   <bc-number
     [readonly]="readonly"
     [min]="0"
-    [error]="countOfVoters.conventionalBlankBallots !== undefined && countOfVoters.conventionalBlankBallots < 0"
-    [(value)]="countOfVoters.conventionalBlankBallots"
+    [error]="countOfVoters.conventionalSubTotal.blankBallots !== undefined && countOfVoters.conventionalSubTotal.blankBallots < 0"
+    [(value)]="countOfVoters.conventionalSubTotal.blankBallots"
     (valueChange)="changed()"
     [subscriptSizing]="'dynamic'"
   ></bc-number>
   <bc-number
     [readonly]="readonly"
     [min]="0"
-    [error]="countOfVoters.conventionalInvalidBallots !== undefined && countOfVoters.conventionalInvalidBallots < 0"
-    [(value)]="countOfVoters.conventionalInvalidBallots"
+    [error]="countOfVoters.conventionalSubTotal.invalidBallots !== undefined && countOfVoters.conventionalSubTotal.invalidBallots < 0"
+    [(value)]="countOfVoters.conventionalSubTotal.invalidBallots"
     (valueChange)="changed()"
     [subscriptSizing]="'dynamic'"
   ></bc-number>
   <bc-number
     [readonly]="readonly"
     [min]="0"
-    [error]="countOfVoters.conventionalAccountedBallots !== undefined && countOfVoters.conventionalAccountedBallots < 0"
-    [(value)]="countOfVoters.conventionalAccountedBallots"
+    [error]="countOfVoters.conventionalSubTotal.accountedBallots !== undefined && countOfVoters.conventionalSubTotal.accountedBallots < 0"
+    [(value)]="countOfVoters.conventionalSubTotal.accountedBallots"
     (valueChange)="changed()"
     [subscriptSizing]="'dynamic'"
   ></bc-number>
   <ng-container *ngIf="eVoting">
-    <bc-label class="col-1" [label]="'VOTING_DATA_SOURCE.E_VOTING' | translate"></bc-label>
-    <bc-number [readonly]="true" [tabIndex]="-1" [value]="countOfVoters.eVotingReceivedBallots" [subscriptSizing]="'dynamic'"></bc-number>
-    <bc-number [readonly]="true" [tabIndex]="-1" [(value)]="countOfVoters.eVotingBlankBallots" [subscriptSizing]="'dynamic'"></bc-number>
-    <bc-number [readonly]="true" [tabIndex]="-1" [(value)]="countOfVoters.eVotingInvalidBallots" [subscriptSizing]="'dynamic'"></bc-number>
-    <bc-number [readonly]="true" [tabIndex]="-1" [value]="countOfVoters.eVotingAccountedBallots" [subscriptSizing]="'dynamic'"></bc-number>
+    <ng-container *ngTemplateOutlet="subTotal; context: {label: 'E_VOTING', subTotal: countOfVoters.eVotingSubTotal}"></ng-container>
+  </ng-container>
+  <ng-container *ngIf="eCounting">
+    <ng-container *ngTemplateOutlet="subTotal; context: {label: 'E_COUNTING', subTotal: countOfVoters.eCountingSubTotal}"></ng-container>
+  </ng-container>
+  <ng-container *ngIf="hasMultipleRows">
     <bc-label class="col-1" [label]="'VOTING_DATA_SOURCE.TOTAL' | translate"></bc-label>
     <bc-number [readonly]="true" [tabIndex]="-1" [value]="countOfVoters.totalReceivedBallots" [subscriptSizing]="'dynamic'"></bc-number>
     <bc-number [readonly]="true" [tabIndex]="-1" [(value)]="countOfVoters.totalBlankBallots" [subscriptSizing]="'dynamic'"></bc-number>
@@ -59,4 +60,12 @@
     [value]="!countOfVoters.voterParticipation ? '-' : (countOfVoters.voterParticipation | percent: '1.2-2')"
     [subscriptSizing]="'dynamic'"
   ></bc-text>
+
+  <ng-template #subTotal let-label="label" let-subTotal="subTotal">
+    <bc-label class="col-1" [label]="'VOTING_DATA_SOURCE.' + label | translate"></bc-label>
+    <bc-number [readonly]="true" [tabIndex]="-1" [value]="subTotal.receivedBallots" [subscriptSizing]="'dynamic'"></bc-number>
+    <bc-number [readonly]="true" [tabIndex]="-1" [(value)]="subTotal.blankBallots" [subscriptSizing]="'dynamic'"></bc-number>
+    <bc-number [readonly]="true" [tabIndex]="-1" [(value)]="subTotal.invalidBallots" [subscriptSizing]="'dynamic'"></bc-number>
+    <bc-number [readonly]="true" [tabIndex]="-1" [value]="subTotal.accountedBallots" [subscriptSizing]="'dynamic'"></bc-number>
+  </ng-template>
 </div>

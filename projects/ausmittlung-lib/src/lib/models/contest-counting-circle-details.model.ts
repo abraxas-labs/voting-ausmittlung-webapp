@@ -17,5 +17,7 @@ export interface ContestCountingCircleDetails {
   countOfVotersInformation: CountOfVotersInformation;
   votingCards: VotingCardResultDetail[];
   eVoting: boolean;
+  eCounting: boolean;
+  eCountingResultsImported: boolean;
   countingMachine: CountingMachine;
 }

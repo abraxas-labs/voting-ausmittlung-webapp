@@ -12,6 +12,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   templateUrl: './result-state-box.component.html',
   styleUrls: ['./result-state-box.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class ResultStateBoxComponent {
   @Input()

@@ -55,6 +55,9 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
   public eVoting: boolean = false;
 
   @Input()
+  public eCounting: boolean = false;
+
+  @Input()
   public contestCountingCircleDetails!: ContestCountingCircleDetails;
 
   @Input()
@@ -337,10 +340,10 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
 
   protected areCountOfVotersValid(countOfVoters: PoliticalBusinessNullableCountOfVoters): boolean {
     return (
-      (countOfVoters.conventionalReceivedBallots ?? 0) >= 0 &&
-      (countOfVoters.conventionalAccountedBallots ?? 0) >= 0 &&
-      (countOfVoters.conventionalInvalidBallots ?? 0) >= 0 &&
-      (countOfVoters.conventionalBlankBallots ?? 0) >= 0
+      (countOfVoters.conventionalSubTotal.receivedBallots ?? 0) >= 0 &&
+      (countOfVoters.conventionalSubTotal.accountedBallots ?? 0) >= 0 &&
+      (countOfVoters.conventionalSubTotal.invalidBallots ?? 0) >= 0 &&
+      (countOfVoters.conventionalSubTotal.blankBallots ?? 0) >= 0
     );
   }
 

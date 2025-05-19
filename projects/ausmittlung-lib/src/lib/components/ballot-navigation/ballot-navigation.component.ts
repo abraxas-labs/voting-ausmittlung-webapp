@@ -11,6 +11,7 @@ import { TextComponent } from '@abraxas/base-components';
   selector: 'vo-ausm-ballot-navigation',
   templateUrl: './ballot-navigation.component.html',
   styleUrls: ['./ballot-navigation.component.scss'],
+  standalone: false,
 })
 export class BallotNavigationComponent {
   @Input()

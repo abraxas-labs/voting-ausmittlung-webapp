@@ -12,6 +12,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 @Component({
   selector: 'vo-ausm-contest-past-unlock-dialog',
   templateUrl: './contest-past-unlock-dialog.component.html',
+  standalone: false,
 })
 export class ContestPastUnlockDialogComponent {
   public readonly contest: Contest;

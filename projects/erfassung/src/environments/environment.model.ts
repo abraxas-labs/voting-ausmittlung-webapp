@@ -16,4 +16,5 @@ export interface Environment extends TenantConfig, UserConfig, AuthorizationConf
   restApiEndpoint: string;
   votingBasisWebApp: string;
   votingAusmittlungMonitoringWebApp: string;
+  includeDelegations: boolean;
 }

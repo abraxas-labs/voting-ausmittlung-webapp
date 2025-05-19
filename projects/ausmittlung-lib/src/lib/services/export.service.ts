@@ -9,33 +9,19 @@ import {
   ListDataExportTemplatesRequest,
   ListProtocolExportsRequest,
   ListResultExportConfigurationsRequest,
+  StartBundleReviewExportRequest,
   StartProtocolExportsRequest,
   TriggerResultExportRequest,
   UpdatePoliticalBusinessExportMetadataRequest,
   UpdateResultExportConfigurationRequest,
-  GetProtocolExportStateChangesRequest,
-  StartBundleReviewExportRequest,
-  GetBundleReviewExportStateChangesRequest,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/export_requests_pb';
-import { GrpcBackendService, GrpcEnvironment, GrpcService, retryForeverWithBackoff } from '@abraxas/voting-lib';
+import { GrpcBackendService, GrpcEnvironment, GrpcService } from '@abraxas/voting-lib';
 import { Inject, Injectable } from '@angular/core';
 import { Int32Value } from 'google-protobuf/google/protobuf/wrappers_pb';
-import {
-  PoliticalBusinessExportMetadata,
-  ProtocolExportStateChange,
-  ResultExportConfiguration,
-  ResultExportTemplate,
-  ResultExportTemplateContainer,
-} from '../models';
+import { PoliticalBusinessExportMetadata, ResultExportConfiguration, ResultExportTemplate, ResultExportTemplateContainer } from '../models';
 import { GRPC_ENV_INJECTION_TOKEN } from './tokens';
-import {
-  DataExportTemplates,
-  ProtocolExport,
-  ProtocolExports,
-  ProtocolExportStateChange as ProtocolExportStateChangeProto,
-} from '@abraxas/voting-ausmittlung-service-proto/grpc/models/export_pb';
+import { DataExportTemplates, ProtocolExports } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/export_pb';
 import { ContestService } from './contest.service';
-import { Observable } from 'rxjs';
 import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/political_business_pb';
 
 @Injectable({
@@ -87,25 +73,6 @@ export class ExportService extends GrpcService<ExportServicePromiseClient> {
     req.setExportTemplateIdsList(exports.map(e => e.exportTemplateId));
 
     return this.requestEmptyResp(c => c.startProtocolExports, req);
-  }
-
-  public getProtocolExportStateChanges(
-    contestId: string,
-    countingCircleId: string | undefined,
-    onRetry: () => {},
-  ): Observable<ProtocolExportStateChange> {
-    const req = new GetProtocolExportStateChangesRequest();
-    req.setContestId(contestId);
-
-    if (countingCircleId !== undefined) {
-      req.setCountingCircleId(countingCircleId);
-    }
-
-    return this.requestServerStream(
-      c => c.getProtocolExportStateChanges,
-      req,
-      r => this.mapToProtocolExportStateChange(r),
-    ).pipe(retryForeverWithBackoff(onRetry));
   }
 
   public listResultExportConfigurations(contestId: string): Promise<ResultExportConfiguration[]> {
@@ -175,22 +142,6 @@ export class ExportService extends GrpcService<ExportServicePromiseClient> {
     );
   }
 
-  public getBundleReviewExportStateChanges(
-    politicalBusinessResultId: string,
-    politicalBusinessType: PoliticalBusinessType,
-    onRetry: () => {},
-  ): Observable<ProtocolExportStateChange> {
-    const req = new GetBundleReviewExportStateChangesRequest();
-    req.setPoliticalBusinessResultId(politicalBusinessResultId);
-    req.setPoliticalBusinessType(politicalBusinessType);
-
-    return this.requestServerStream(
-      c => c.getBundleReviewExportStateChanges,
-      req,
-      r => this.mapToProtocolExportStateChange(r),
-    ).pipe(retryForeverWithBackoff(onRetry));
-  }
-
   private mapToMetadataMap(metadata: [string, PoliticalBusinessExportMetadata][]): Map<string, PoliticalBusinessExportMetadata> {
     const map = new Map<string, PoliticalBusinessExportMetadata>();
     for (const entry of metadata) {
@@ -223,16 +174,6 @@ export class ExportService extends GrpcService<ExportServicePromiseClient> {
       })),
       contest: ContestService.mapToContest(exports.getContest()!),
       countingCircle: exports.getCountingCircle()?.toObject(),
-    };
-  }
-
-  private mapToProtocolExportStateChange(stateChange: ProtocolExportStateChangeProto): ProtocolExportStateChange {
-    return {
-      exportTemplateId: stateChange.getExportTemplateId(),
-      protocolExportId: stateChange.getProtocolExportId(),
-      newState: stateChange.getNewState(),
-      fileName: stateChange.getFileName(),
-      started: stateChange.getStarted()?.toDate()!,
     };
   }
 }

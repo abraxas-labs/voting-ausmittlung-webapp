@@ -29,6 +29,7 @@ import { ProportionalElectionService } from '../../../services/proportional-elec
   selector: 'vo-ausm-proportional-election-ballot-review',
   templateUrl: './proportional-election-ballot-review.component.html',
   styleUrls: ['./proportional-election-ballot-review.component.scss'],
+  standalone: false,
 })
 export class ProportionalElectionBallotReviewComponent implements OnDestroy {
   public loading: boolean = true;

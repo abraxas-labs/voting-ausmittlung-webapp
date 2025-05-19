@@ -21,6 +21,7 @@
         (finishSubmission)="finishSubmission()"
         [stateDescriptionsByState]="resultList.contest.cantonDefaults.countingCircleResultStateDescriptionsByState"></vo-ausm-contest-state-change-button>
       <bc-button *ngIf="showExport" variant="tertiary" (buttonClick)="export()" [label]="'CONTEST.DETAIL.EXPORT' | translate"></bc-button>
+      <bc-button *ngIf="showImports" variant="tertiary" (buttonClick)="import()" [label]="'RESULT_IMPORT.BUTTON_TITLE' | translate"></bc-button>
     </div>
   </vo-lib-page-header>
 
@@ -30,6 +31,8 @@
 
       <vo-ausm-contest-detail-info
         [eVoting]="resultList.details.eVoting"
+        [eCounting]="resultList.details.eCounting"
+        [eCountingResultsImported]="resultList.details.eCountingResultsImported"
         [enabledVoterTypes]="resultList.enabledVoterTypes"
         [countOfVoters]="resultList.details.countOfVotersInformation"
         [votingCards]="resultList.details.votingCards"

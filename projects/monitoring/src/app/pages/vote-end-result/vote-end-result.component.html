@@ -26,6 +26,7 @@
     <div *ngFor="let ballotEndResult of endResult.ballotEndResults">
       <app-ballot-end-result [endResult]="ballotEndResult"
                              [eVoting]="endResult.contest.eVoting"
+                             [eCounting]="endResult.contest.eCountingResultsImported"
                              [voteResultAlgorithm]="endResult.vote.resultAlgorithm">
       </app-ballot-end-result>
     </div>

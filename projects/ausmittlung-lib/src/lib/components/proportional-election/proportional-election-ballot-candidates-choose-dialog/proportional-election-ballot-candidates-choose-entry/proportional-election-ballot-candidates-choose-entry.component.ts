@@ -12,6 +12,7 @@ import { ProportionalElectionCandidate } from '../../../../models';
   selector: 'vo-ausm-proportional-election-ballot-candidates-choose-entry',
   templateUrl: './proportional-election-ballot-candidates-choose-entry.component.html',
   styleUrls: ['./proportional-election-ballot-candidates-choose-entry.component.scss'],
+  standalone: false,
 })
 export class ProportionalElectionBallotCandidatesChooseEntryComponent implements Highlightable {
   @Input()

@@ -11,6 +11,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   templateUrl: './info-panel-entry.component.html',
   styleUrls: ['./info-panel-entry.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class InfoPanelEntryComponent {
   @Input()

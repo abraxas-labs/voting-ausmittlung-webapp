@@ -26,6 +26,7 @@ export interface RemoveCandidatePositionEvent extends CandidatePositionEvent {
   selector: 'vo-ausm-proportional-election-ballot-candidates',
   templateUrl: './proportional-election-ballot-candidates.component.html',
   styleUrls: ['./proportional-election-ballot-candidates.component.scss'],
+  standalone: false,
 })
 export class ProportionalElectionBallotCandidatesComponent {
   @Input()

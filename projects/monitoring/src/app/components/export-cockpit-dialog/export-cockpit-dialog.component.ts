@@ -14,6 +14,7 @@ import { ExportService, ResultExportConfiguration, SimplePoliticalBusiness } fro
   selector: 'app-export-cockpit-dialog',
   templateUrl: './export-cockpit-dialog.component.html',
   styleUrls: ['./export-cockpit-dialog.component.scss'],
+  standalone: false,
 })
 export class ExportCockpitDialogComponent implements OnInit {
   public loading: boolean = true;

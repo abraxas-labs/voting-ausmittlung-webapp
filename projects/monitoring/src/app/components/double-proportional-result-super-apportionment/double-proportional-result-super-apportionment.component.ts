@@ -17,6 +17,7 @@ const defaultGridRows = 4;
   selector: 'app-double-proportional-result-super-apportionment',
   templateUrl: './double-proportional-result-super-apportionment.component.html',
   styleUrls: ['./double-proportional-result-super-apportionment.component.scss'],
+  standalone: false,
 })
 export class DoubleProportionalResultSuperApportionmentComponent {
   private doubleProportionalResultValue?: DoubleProportionalResult;

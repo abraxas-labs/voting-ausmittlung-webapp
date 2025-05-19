@@ -31,7 +31,7 @@
           [disabled]="actionExecuting"
           [showInvalidVotes]="politicalBusinessResult.election.contest!.cantonDefaults!.majorityElectionInvalidVotes"
           [automaticEmptyVoteCounting]="politicalBusinessResult.entryParams.automaticEmptyVoteCounting"
-          [showEmptyVotes]="politicalBusinessResult.election.numberOfMandates !== 1"
+          [showEmptyVotes]="politicalBusinessResult.election.numberOfMandates !== 1 || politicalBusinessResult.secondaryMajorityElectionResults.length > 0"
           [readonly]="!bundleInProcessOrCorrection
             || !canUpdateBallot
             || politicalBusinessResult.election.contest!.locked"

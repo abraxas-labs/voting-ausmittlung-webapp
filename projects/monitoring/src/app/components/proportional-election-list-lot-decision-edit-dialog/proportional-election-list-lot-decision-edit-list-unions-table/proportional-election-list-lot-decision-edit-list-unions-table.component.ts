@@ -13,6 +13,7 @@ import { ProportionalElectionListUnion } from 'ausmittlung-lib';
   selector: 'app-proportional-election-list-lot-decision-edit-list-unions-table',
   templateUrl: './proportional-election-list-lot-decision-edit-list-unions-table.component.html',
   styleUrls: ['proportional-election-list-lot-decision-edit-list-unions-table.component.scss'],
+  standalone: false,
 })
 export class ProportionalElectionListLotDecisionEditListUnionsTableComponent {
   public readonly columns = ['select', 'description'];

@@ -30,6 +30,7 @@ import { ElectionBallotComponent } from '../../election-ballot/election-ballot.c
   selector: 'vo-ausm-majority-election-ballot',
   templateUrl: './majority-election-ballot.component.html',
   styleUrls: ['./majority-election-ballot.component.scss'],
+  standalone: false,
 })
 export class MajorityElectionBallotComponent extends ElectionBallotComponent<
   MajorityElectionResult,
@@ -101,13 +102,15 @@ export class MajorityElectionBallotComponent extends ElectionBallotComponent<
   }
 
   protected async createNewBallot(): Promise<MajorityElectionResultBallot> {
+    const showEmptyVoteCount =
+      this.politicalBusinessResult!.election.numberOfMandates !== 1 ||
+      this.politicalBusinessResult!.secondaryMajorityElectionResults.length > 0;
+
     this.ballot = {
       isNew: true,
       number: this.currentMaxBallotNumber,
-      computedEmptyVoteCount:
-        this.politicalBusinessResult!.election.numberOfMandates === 1 ? 0 : this.politicalBusinessResult!.election.numberOfMandates,
-      emptyVoteCount:
-        this.politicalBusinessResult!.election.numberOfMandates === 1 ? 0 : this.politicalBusinessResult!.election.numberOfMandates,
+      computedEmptyVoteCount: !showEmptyVoteCount ? 0 : this.politicalBusinessResult!.election.numberOfMandates,
+      emptyVoteCount: !showEmptyVoteCount ? 0 : this.politicalBusinessResult!.election.numberOfMandates,
       individualVoteCount: 0,
       invalidVoteCount: 0,
       election: this.politicalBusinessResult!.election,
@@ -160,6 +163,7 @@ export class MajorityElectionBallotComponent extends ElectionBallotComponent<
       number: this.route.snapshot.queryParams.bundleNumber,
       createdBy: await this.userService.getUser(),
       ballotNumbersToReview: [],
+      logs: [],
     };
     this.computeBundleData();
     await this.loadCandidates(this.politicalBusinessResult.election.id);
@@ -188,7 +192,10 @@ export class MajorityElectionBallotComponent extends ElectionBallotComponent<
       this.ballot !== undefined &&
       this.ballot.computedEmptyVoteCount === this.politicalBusinessResult!.election.numberOfMandates &&
       this.ballot.individualVoteCount === 0 &&
-      this.ballot.invalidVoteCount === 0
+      this.ballot.invalidVoteCount === 0 &&
+      this.ballot.secondaryMajorityElectionBallots.every(
+        b => b.computedEmptyVoteCount === b.election.numberOfMandates && b.individualVoteCount === 0 && b.invalidVoteCount === 0,
+      )
     );
   }
 

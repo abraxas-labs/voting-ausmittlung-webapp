@@ -57,6 +57,7 @@ import { Observable } from 'rxjs';
 import {
   DoubleProportionalResult,
   DoubleProportionalResultSuperApportionmentLotDecision,
+  mapCountOfVotersProtoToModel,
   mapToNullableCountOfVoters,
   PoliticalBusinessNullableCountOfVoters,
   ProportionalElectionCandidateEndResult,
@@ -128,6 +129,7 @@ export class ProportionalElectionResultService extends PoliticalBusinessResultBa
       totalCountOfVoters: proportionalElectionResult.getTotalCountOfVoters(),
       conventionalSubTotal: proportionalElectionResult.getConventionalSubTotal()!.toObject(),
       eVotingSubTotal: proportionalElectionResult.getEVotingSubTotal()!.toObject(),
+      eCountingSubTotal: proportionalElectionResult.getECountingSubTotal()!.toObject(),
     };
   }
 
@@ -462,7 +464,7 @@ export class ProportionalElectionResultService extends PoliticalBusinessResultBa
       countOfDoneCountingCircles: data.getCountOfDoneCountingCircles(),
       totalCountOfCountingCircles: data.getTotalCountOfCountingCircles(),
       allCountingCirclesDone: data.getAllCountingCirclesDone(),
-      countOfVoters: data.getCountOfVoters()!.toObject(),
+      countOfVoters: mapCountOfVotersProtoToModel(data.getCountOfVoters()!.toObject()),
       listEndResults: this.mapToListEndResults(data.getListEndResultsList()),
       finalized: data.getFinalized(),
       manualEndResultRequired: data.getManualEndResultRequired(),
@@ -483,6 +485,7 @@ export class ProportionalElectionResultService extends PoliticalBusinessResultBa
       subListUnion: x.getSubListUnion()?.toObject(),
       hasOpenRequiredLotDecisions: x.getHasOpenRequiredLotDecisions(),
       eVotingSubTotal: x.getEVotingSubTotal()!.toObject(),
+      eCountingSubTotal: x.getECountingSubTotal()!.toObject(),
       conventionalSubTotal: x.getConventionalSubTotal()!.toObject(),
     }));
   }
@@ -497,6 +500,7 @@ export class ProportionalElectionResultService extends PoliticalBusinessResultBa
       state: x.getState(),
       lotDecisionRequired: x.getLotDecisionRequired(),
       eVotingSubTotal: x.getEVotingSubTotal()!.toObject(),
+      eCountingSubTotal: x.getECountingSubTotal()!.toObject(),
       conventionalSubTotal: x.getConventionalSubTotal()!.toObject(),
     }));
   }

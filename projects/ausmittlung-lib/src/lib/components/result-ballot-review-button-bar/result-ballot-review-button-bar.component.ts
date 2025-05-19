@@ -10,6 +10,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   selector: 'vo-ausm-result-ballot-review-button-bar',
   templateUrl: './result-ballot-review-button-bar.component.html',
   styleUrls: ['./result-ballot-review-button-bar.component.scss'],
+  standalone: false,
 })
 export class ResultBallotReviewButtonBarComponent {
   @Input()

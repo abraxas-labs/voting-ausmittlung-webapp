@@ -11,6 +11,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 @Component({
   selector: 'vo-ausm-validation-overview-dialog',
   templateUrl: './validation-overview-dialog.component.html',
+  standalone: false,
 })
 export class ValidationOverviewDialogComponent {
   public readonly validationSummaries: ValidationSummary[];

@@ -2,14 +2,17 @@
   <h3 header translate>RESULT_IMPORT.TITLE</h3>
 
   <div content>
-    <p translate>RESULT_IMPORT.EXPLANATION</p>
-    <app-import-file-select content (filesChange)="filesChanged($event)"></app-import-file-select>
+    <p *ngIf="requireECH110">{{ 'RESULT_IMPORT.EXPLANATION' | translate }}</p>
+    <vo-ausm-import-file-select content
+                                [ech0110Supported]="requireECH110"
+                                (filesChange)="filesChanged($event)"></vo-ausm-import-file-select>
   </div>
 
   <div footer class="mr-3">
     <vo-lib-button-bar footer
                        [saveLabel]="'RESULT_IMPORT.IMPORT' | translate"
                        (save)="import()"
+                       [hasSaveButton]="canImport"
                        [canSave]="filesValid"
                        [saving]="importing"
                        (cancel)="close()"></vo-lib-button-bar>

@@ -10,6 +10,7 @@ import { VoteResult } from '../../../models';
 @Component({
   selector: 'vo-ausm-vote-info',
   templateUrl: './vote-info.component.html',
+  standalone: false,
 })
 export class VoteInfoComponent {
   @Input()

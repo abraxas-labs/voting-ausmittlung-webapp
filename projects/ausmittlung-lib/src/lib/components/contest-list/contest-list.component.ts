@@ -12,6 +12,7 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'vo-ausm-contest-list',
   templateUrl: './contest-list.component.html',
+  standalone: false,
 })
 export class ContestListComponent implements OnInit, AfterViewInit, OnChanges {
   public readonly dateColumn = 'date';

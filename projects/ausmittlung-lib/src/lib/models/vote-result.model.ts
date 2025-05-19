@@ -25,7 +25,7 @@ import {
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/vote_result_sub_total_pb';
 import { VoteResultEntry } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/vote_pb';
 import { BallotQuestionAnswer, TieBreakQuestionAnswer } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/vote_result_pb';
-import { PoliticalBusinessResultBallot, PoliticalBusinessResultBundle } from './ballot-bundle.model';
+import { PoliticalBusinessResultBallot, PoliticalBusinessResultBundle, PoliticalBusinessResultBundles } from './ballot-bundle.model';
 import { PoliticalBusinessNullableCountOfVoters } from './count-of-voters.model';
 import { CountingCircle } from './counting-circle.model';
 import { CountingCircleResult } from './result.model';
@@ -87,13 +87,13 @@ export interface BallotQuestionResult {
   totalCountOfAnswer2: number;
   totalCountOfAnswerUnspecified: number;
   eVotingSubTotal: QuestionResultSubTotal;
+  eCountingSubTotal: QuestionResultSubTotal;
   conventionalSubTotal: QuestionResultNullableSubTotal;
 }
 
-export interface VoteResultBundles {
+export interface VoteResultBundles extends PoliticalBusinessResultBundles {
   politicalBusinessResult: VoteResult;
   ballotResult: BallotResult;
-  bundles: PoliticalBusinessResultBundle[];
 }
 
 export interface VoteResultBundleDetails {
@@ -124,5 +124,6 @@ export interface TieBreakQuestionResult {
   totalCountOfAnswer2: number;
   totalCountOfAnswerUnspecified: number;
   eVotingSubTotal: QuestionResultSubTotal;
+  eCountingSubTotal: QuestionResultSubTotal;
   conventionalSubTotal: QuestionResultNullableSubTotal;
 }

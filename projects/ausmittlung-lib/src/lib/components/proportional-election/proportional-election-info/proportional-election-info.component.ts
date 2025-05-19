@@ -11,6 +11,7 @@ import { ProportionalElectionResult } from '../../../models';
   selector: 'vo-ausm-proportional-election-info',
   templateUrl: './proportional-election-info.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  standalone: false,
 })
 export class ProportionalElectionInfoComponent {
   @Input()

@@ -15,4 +15,5 @@ export interface Environment extends TenantConfig, UserConfig, AuthorizationConf
   grpcApiEndpoint: string;
   restApiEndpoint: string;
   votingBasisWebApp: string;
+  includeDelegations: boolean;
 }

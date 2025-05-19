@@ -4,20 +4,24 @@
  * For license information see LICENSE file.
  */
 
-import { Component, ElementRef, EventEmitter, HostListener, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { EchType, ImportFile } from '../import-file.model';
 import { EnumItemDescription, EnumUtil } from '@abraxas/voting-lib';
 
 @Component({
-  selector: 'app-import-file-select',
+  selector: 'vo-ausm-import-file-select',
   templateUrl: './import-file-select.component.html',
   styleUrls: ['./import-file-select.component.scss'],
+  standalone: false,
 })
-export class ImportFileSelectComponent {
-  public readonly echTypes: EnumItemDescription<EchType>[];
+export class ImportFileSelectComponent implements OnInit {
+  public echTypes: EnumItemDescription<EchType>[];
   public selectedFiles: ImportFile[] = [];
   public selectedEchType: EchType = EchType.Ech0222;
   public draggingFiles: boolean = false;
+
+  @Input()
+  public ech0110Supported: boolean = true;
 
   @Output()
   public filesChange: EventEmitter<ImportFile[]> = new EventEmitter<ImportFile[]>();
@@ -27,6 +31,12 @@ export class ImportFileSelectComponent {
 
   constructor(readonly enumUtil: EnumUtil) {
     this.echTypes = enumUtil.getArrayWithDescriptions<EchType>(EchType, 'RESULT_IMPORT.E_CH_TYPES.');
+  }
+
+  public ngOnInit(): void {
+    if (!this.ech0110Supported) {
+      this.echTypes = this.echTypes.filter(x => x.value !== EchType.Ech0110);
+    }
   }
 
   @HostListener('window:drop', ['$event'])

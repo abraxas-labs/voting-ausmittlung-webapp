@@ -15,6 +15,7 @@ import { DomainOfInfluenceCanton } from '@abraxas/voting-ausmittlung-service-pro
   selector: 'vo-ausm-contest-detail-voting-cards-electorate',
   templateUrl: './contest-detail-voting-cards-electorate.component.html',
   styleUrls: ['./contest-detail-voting-cards-electorate.component.scss'],
+  standalone: false,
 })
 export class ContestDetailVotingCardsElectorateComponent {
   public readonly votingChannels: typeof VotingChannel = VotingChannel;

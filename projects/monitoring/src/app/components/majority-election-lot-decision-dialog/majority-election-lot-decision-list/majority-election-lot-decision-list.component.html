@@ -24,10 +24,12 @@
   <ng-template #rankDropdownTemplate let-lotDecision>
     <span>
       <bc-dropdown #rankDropdownInput
-                   [(value)]="lotDecision.selectedRank"
+                   [value]="lotDecision.selectedRank"
+                   (valueChange)="updateSelectedRank(lotDecision, $event)"
                    valueExpr="value"
                    displayExpr="description"
                    [items]="lotDecision.selectableRanks"
+                   [disabled]="disabled"
                    [subscriptSizing]="'dynamic'"></bc-dropdown>
     </span>
   </ng-template>

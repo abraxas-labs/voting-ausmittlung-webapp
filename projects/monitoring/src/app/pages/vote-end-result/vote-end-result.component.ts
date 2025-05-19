@@ -8,7 +8,13 @@ import { DialogService, SnackbarService } from '@abraxas/voting-lib';
 import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { SecondFactorTransactionService, VoteEndResult, VoteResultService } from 'ausmittlung-lib';
+import {
+  SecondFactorTransactionService,
+  VoteEndResult,
+  VoteResultService,
+  VoteEndResultEventTypes,
+  EventLogService,
+} from 'ausmittlung-lib';
 import { combineLatest, debounceTime, map, Subscription } from 'rxjs';
 import { EndResultStep } from '../../models/end-result-step.model';
 
@@ -16,16 +22,19 @@ import { EndResultStep } from '../../models/end-result-step.model';
   selector: 'app-vote-end-result',
   templateUrl: './vote-end-result.component.html',
   styleUrls: ['./vote-end-result.component.scss'],
+  standalone: false,
 })
 export class VoteEndResultComponent implements OnDestroy {
   public loading: boolean = true;
   public stepActionLoading: boolean = false;
   public endResult?: VoteEndResult;
   public isPartialResult = false;
+  public voteId = '';
   public endResultStep?: EndResultStep;
   public finalizeEnabled = false;
 
   private readonly routeSubscription: Subscription;
+  private watchSubscription?: Subscription;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -33,21 +42,33 @@ export class VoteEndResultComponent implements OnDestroy {
     private readonly i18n: TranslateService,
     private readonly toast: SnackbarService,
     private readonly dialog: DialogService,
+    private readonly eventLogService: EventLogService,
     private readonly secondFactorTransactionService: SecondFactorTransactionService,
   ) {
     this.routeSubscription = combineLatest([this.route.params, this.route.queryParams])
       .pipe(
         debounceTime(10), // could fire twice if both params change at the same time
-        map(results => ({ politicalBusinessId: results[0].politicalBusinessId, isPartialResult: results[1].partialResult })),
+        map(([params, queryParams]) => ({ politicalBusinessId: params.politicalBusinessId, isPartialResult: queryParams.partialResult })),
       )
-      .subscribe(({ politicalBusinessId, isPartialResult }) => {
+      .subscribe(async ({ politicalBusinessId, isPartialResult }) => {
         this.isPartialResult = isPartialResult;
-        this.loadData(politicalBusinessId);
+        this.voteId = politicalBusinessId;
+
+        this.watchSubscription?.unsubscribe();
+        delete this.watchSubscription;
+
+        await this.loadData(politicalBusinessId);
+
+        this.watchSubscription = this.eventLogService
+          .watch([...VoteEndResultEventTypes], { contestId: this.endResult!.contest.id, politicalBusinessId: this.voteId })
+          .pipe(debounceTime(1000)) // refresh once a second at max
+          .subscribe(() => this.loadData(false));
       });
   }
 
   public async ngOnDestroy(): Promise<void> {
     this.routeSubscription.unsubscribe();
+    this.watchSubscription?.unsubscribe();
   }
 
   public async handleEndResultStepChange(newStep: EndResultStep): Promise<void> {
@@ -107,12 +128,12 @@ export class VoteEndResultComponent implements OnDestroy {
     this.endResult.finalized = finalize;
   }
 
-  private async loadData(voteId: string): Promise<void> {
-    this.loading = true;
+  private async loadData(setLoading: boolean = true): Promise<void> {
+    this.loading = setLoading;
     try {
       this.endResult = this.isPartialResult
-        ? await this.resultService.getPartialEndResult(voteId)
-        : await this.resultService.getEndResult(voteId);
+        ? await this.resultService.getPartialEndResult(this.voteId)
+        : await this.resultService.getEndResult(this.voteId);
       this.finalizeEnabled = !this.endResult.contest.cantonDefaults.endResultFinalizeDisabled;
       this.endResultStep = !this.endResult.allCountingCirclesDone
         ? EndResultStep.CountingCirclesCounting

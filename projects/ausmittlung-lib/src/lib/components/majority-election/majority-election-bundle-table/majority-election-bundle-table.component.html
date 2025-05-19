@@ -5,8 +5,8 @@
              [disabled]="!canReviewMultiple"
              (buttonClick)="succeedBundleReview.emit(selection.selected)"
              [label]="'ELECTION.BALLOT_DETAIL.SUCCEED_MULTIPLE' | translate"></bc-button>
-  <bc-table selection filter sort [sortActive]="[{ id: numberColumn, direction: 'asc' }]"
-            [filterDisabled]="!enableFiltering" [sortDisabled]="!enableSorting" [dataSource]="dataSource">
+  <bc-table selection filter sort [sortActive]="[{ id: stateColumn, direction: 'asc' }, { id: numberColumn, direction: 'asc' }]"
+            [filterDisabled]="!enableFiltering" [sortDisabled]="!enableSorting" [sortMultiple]="true" [dataSource]="dataSource">
     <ng-container [columnDef]="selectColumn">
       <bc-header-cell *headerCellDef>
         <bc-checkbox class="ml-2 mb-0" (checkedChange)="toggleAllRows($event)"
@@ -54,7 +54,9 @@
         {{ 'APP.STATE' | translate }}
       </bc-header-cell>
       <bc-data-cell *dataCellDef="let element">
-        <vo-ausm-result-bundle-state-chip [state]="element.state"></vo-ausm-result-bundle-state-chip>
+        <vo-ausm-result-bundle-state-chip
+          [state]="element.state"
+          [tooltip]="element.logs | politicalBusinessResultBundleLogs"></vo-ausm-result-bundle-state-chip>
       </bc-data-cell>
     </ng-container>
 

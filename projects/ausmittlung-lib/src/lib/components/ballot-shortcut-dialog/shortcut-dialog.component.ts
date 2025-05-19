@@ -11,6 +11,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
   selector: 'vo-ausm-shortcut-dialog',
   templateUrl: './shortcut-dialog.component.html',
   styleUrls: ['./shortcut-dialog.component.scss'],
+  standalone: false,
 })
 export class ShortcutDialogComponent {
   public title: string;

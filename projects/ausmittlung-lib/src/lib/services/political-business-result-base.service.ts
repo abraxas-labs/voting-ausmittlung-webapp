@@ -48,10 +48,10 @@ export abstract class PoliticalBusinessResultBaseService<
 
   protected mapToCountOfVotersProto(countOfVoters: PoliticalBusinessNullableCountOfVoters): EnterPoliticalBusinessCountOfVotersRequest {
     const countOfVotersProto = new EnterPoliticalBusinessCountOfVotersRequest();
-    countOfVotersProto.setConventionalAccountedBallots(createInt32Value(countOfVoters.conventionalAccountedBallots));
-    countOfVotersProto.setConventionalBlankBallots(createInt32Value(countOfVoters.conventionalBlankBallots));
-    countOfVotersProto.setConventionalInvalidBallots(createInt32Value(countOfVoters.conventionalInvalidBallots));
-    countOfVotersProto.setConventionalReceivedBallots(createInt32Value(countOfVoters.conventionalReceivedBallots));
+    countOfVotersProto.setConventionalAccountedBallots(createInt32Value(countOfVoters.conventionalSubTotal.accountedBallots));
+    countOfVotersProto.setConventionalBlankBallots(createInt32Value(countOfVoters.conventionalSubTotal.blankBallots));
+    countOfVotersProto.setConventionalInvalidBallots(createInt32Value(countOfVoters.conventionalSubTotal.invalidBallots));
+    countOfVotersProto.setConventionalReceivedBallots(createInt32Value(countOfVoters.conventionalSubTotal.receivedBallots));
     return countOfVotersProto;
   }
 }

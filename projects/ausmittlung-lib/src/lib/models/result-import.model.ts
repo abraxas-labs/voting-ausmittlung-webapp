@@ -8,14 +8,11 @@ import {
   MajorityElectionContestWriteInMappings as MajorityElectionContestWriteInMappingsProto,
   MajorityElectionWriteInMapping as MajorityElectionWriteInMappingProto,
   MajorityElectionWriteInMappings as MajorityElectionWriteInMappingsProto,
-  MajorityElectionWriteInMappingsChange as WriteInMappingsChangeProto,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/majority_election_write_in_pb';
-import {
-  ResultImport as ResultImportProto,
-  ResultImportChange as ResultImportChangeProto,
-} from '@abraxas/voting-ausmittlung-service-proto/grpc/models/results_pb';
+import { ResultImport as ResultImportProto } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/results_pb';
 import { MajorityElectionWriteInMappingTarget } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/majority_election_write_in_pb';
 import { SimplePoliticalBusiness } from './political-business.model';
+import { ResultImportType } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/import_pb';
 
 export interface ResultImport extends Omit<ResultImportProto.AsObject, 'started'> {
   started: Date;
@@ -26,11 +23,11 @@ export {
   MajorityElectionContestWriteInMappingsProto,
   MajorityElectionWriteInMappingsProto,
   MajorityElectionWriteInMappingProto,
-  ResultImportChangeProto,
-  WriteInMappingsChangeProto,
 };
 
 export interface MajorityElectionWriteInMappings {
+  importId: string;
+  importType: ResultImportType;
   election: SimplePoliticalBusiness;
   invalidVotes: boolean;
   individualVotes: boolean;
@@ -39,9 +36,4 @@ export interface MajorityElectionWriteInMappings {
 
 export interface MajorityElectionWriteInMapping extends MajorityElectionWriteInMappingProto.AsObject {
   selected: boolean;
-}
-
-export interface ContestMajorityElectionWriteInMappings {
-  importId: string;
-  writeInGroups: MajorityElectionWriteInMappings[];
 }

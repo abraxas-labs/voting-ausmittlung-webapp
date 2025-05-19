@@ -18,6 +18,7 @@ import { CountingCircleResultState } from '@abraxas/voting-ausmittlung-service-p
   selector: 'vo-ausm-contest-header',
   templateUrl: './contest-header.component.html',
   styleUrls: ['./contest-header.component.scss'],
+  standalone: false,
 })
 export class ContestHeaderComponent implements OnChanges {
   @Input()

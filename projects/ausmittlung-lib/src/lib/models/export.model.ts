@@ -5,12 +5,11 @@
  */
 
 import {
-  ExportFileFormat,
-  ResultExportConfiguration as ResultExportConfigurationProto,
-  PoliticalBusinessExportMetadata as PoliticalBusinessExportMetadataProto,
   DataExportTemplate as DataExportTemplateProto,
+  ExportFileFormat,
+  PoliticalBusinessExportMetadata as PoliticalBusinessExportMetadataProto,
   ProtocolExport as ProtocolExportProto,
-  ProtocolExportState as ProtocolExportStateProto,
+  ResultExportConfiguration as ResultExportConfigurationProto,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/export_pb';
 import { Contest } from './contest.model';
 import { CountingCircle } from './counting-circle.model';
@@ -38,22 +37,6 @@ export type FetchProtocolExportsRequest = {
   contestId: string;
   countingCircleId: string | undefined;
   protocolExportIds: string[];
-};
-
-export type ProtocolExportStateChange = {
-  exportTemplateId: string;
-  protocolExportId: string;
-  newState: ProtocolExportStateProto;
-  fileName: string;
-  started: Date;
-};
-
-export type GenerateResultBundleReviewExportRequest = {
-  templateKey: string;
-  contestId: string;
-  countingCircleId: string;
-  politicalBusinessResultBundleId: string;
-  politicalBusinessId: string;
 };
 
 export type ResultExportConfiguration = Omit<

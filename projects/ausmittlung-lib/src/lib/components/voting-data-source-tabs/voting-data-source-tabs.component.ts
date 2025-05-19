@@ -4,33 +4,40 @@
  * For license information see LICENSE file.
  */
 
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { VotingDataSource } from '../../models';
 
 @Component({
   selector: 'vo-ausm-voting-data-source-tabs',
   templateUrl: './voting-data-source-tabs.component.html',
   styleUrls: ['./voting-data-source-tabs.component.scss'],
+  standalone: false,
 })
 export class VotingDataSourceTabsComponent {
+  @Input()
+  public eVoting: boolean = false;
+
+  @Input()
+  public eCounting: boolean = false;
+
   @Output()
   public dataSourceChange: EventEmitter<VotingDataSource> = new EventEmitter<VotingDataSource>();
 
-  public changeDataSource(index: number): void {
-    let dataSource = VotingDataSource.Total;
+  private get dataSources(): VotingDataSource[] {
+    const dataSources: VotingDataSource[] = [VotingDataSource.Total, VotingDataSource.Conventional];
 
-    switch (index) {
-      case 0:
-        dataSource = VotingDataSource.Total;
-        break;
-      case 1:
-        dataSource = VotingDataSource.Conventional;
-        break;
-      case 2:
-        dataSource = VotingDataSource.EVoting;
-        break;
+    if (this.eVoting) {
+      dataSources.push(VotingDataSource.EVoting);
     }
 
-    this.dataSourceChange.emit(dataSource);
+    if (this.eCounting) {
+      dataSources.push(VotingDataSource.ECounting);
+    }
+
+    return dataSources;
+  }
+
+  public changeDataSource(index: number): void {
+    this.dataSourceChange.emit(this.dataSources[index]);
   }
 }

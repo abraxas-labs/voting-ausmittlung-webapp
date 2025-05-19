@@ -12,6 +12,7 @@ import { BallotEndResult, VoteResultAlgorithm } from 'ausmittlung-lib';
   selector: 'app-ballot-end-result',
   templateUrl: './ballot-end-result.component.html',
   styleUrls: ['./ballot-end-result.component.scss'],
+  standalone: false,
 })
 export class BallotEndResultComponent implements OnInit {
   public BallotType: typeof BallotType = BallotType;
@@ -21,6 +22,9 @@ export class BallotEndResultComponent implements OnInit {
 
   @Input()
   public eVoting: boolean = false;
+
+  @Input()
+  public eCounting: boolean = false;
 
   @Input()
   public voteResultAlgorithm!: VoteResultAlgorithm;

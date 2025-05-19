@@ -11,6 +11,7 @@ import { ValidationSummary } from '../../models';
   selector: 'vo-ausm-validation-summary',
   templateUrl: './validation-summary.component.html',
   styleUrls: ['./validation-summary.component.scss'],
+  standalone: false,
 })
 export class ValidationSummaryComponent {
   @Input()

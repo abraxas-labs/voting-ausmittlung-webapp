@@ -6,49 +6,47 @@
 
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { MajorityElectionWriteInMapping, SimplePoliticalBusiness } from '../../../models';
+import { MajorityElectionWriteInMapping, MajorityElectionWriteInMappings } from '../../../models';
 import { ResultImportService } from '../../../services/result-import.service';
-import { groupBySingle } from '../../../services/utils/array.utils';
 import { MajorityElectionWriteInMappingTarget } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/majority_election_write_in_pb';
+import { ResultImportType } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/import_pb';
+import { TranslateService } from '@ngx-translate/core';
+import { SnackbarService } from '@abraxas/voting-lib';
 
 @Component({
   selector: 'vo-ausm-majority-election-write-in-mapping-dialog',
   templateUrl: './majority-election-write-in-mapping-dialog.component.html',
   styleUrls: ['./majority-election-write-in-mapping-dialog.component.scss'],
+  standalone: false,
 })
 export class MajorityElectionWriteInMappingDialogComponent implements OnInit {
   public saving: boolean = false;
   public loading: boolean = true;
 
-  public hasInvalidVotes: boolean = false;
-  public hasIndividualVotes: boolean = false;
-  public mappings: MajorityElectionWriteInMapping[] = [];
-
-  public selectedElection?: SimplePoliticalBusiness;
+  public selectedWriteInGroup?: MajorityElectionWriteInMappings;
   public readonly electionId?: string;
-  public electionHasWriteIns: boolean = false;
+  public selectedGroupIndex: number = 0;
 
-  public selectedElectionIndex: number = 0;
+  public writeInGroups: MajorityElectionWriteInMappings[] = [];
 
-  public elections: SimplePoliticalBusiness[] = [];
+  public useGroupTitleWithImportType: boolean = false;
+  public useGroupTitleWithElection: boolean = false;
 
-  private hasInvalidVotesByElectionId: Record<string, boolean> = {};
-  private hasIndividualVotesByElectionId: Record<string, boolean> = {};
-  private mappingsByElectionId: Record<string, MajorityElectionWriteInMapping[]> = {};
-
-  private electionsById: Record<string, SimplePoliticalBusiness> = {};
-  private importId: string = '';
   private readonly contestId: string;
   private readonly countingCircleId: string;
+  public importType?: ResultImportType;
 
   constructor(
     private readonly dialogRef: MatDialogRef<void>,
     private readonly resultImportService: ResultImportService,
+    private readonly i18n: TranslateService,
+    private readonly toast: SnackbarService,
     @Inject(MAT_DIALOG_DATA) dialogData: ResultImportWriteInMappingDialogData,
   ) {
     this.contestId = dialogData.contestId;
     this.countingCircleId = dialogData.countingCircleId;
     this.electionId = dialogData.electionId;
+    this.importType = dialogData.importType;
 
     // enforce user to click on cancel to differ between reset write ins and normally close dialog
     this.dialogRef.disableClose = true;
@@ -58,57 +56,42 @@ export class MajorityElectionWriteInMappingDialogComponent implements OnInit {
     try {
       this.loading = true;
 
-      const contestWriteIns = await this.resultImportService.getMajorityElectionWriteInMappings(this.contestId, this.countingCircleId);
+      this.writeInGroups = await this.resultImportService.getMajorityElectionWriteInMappings(
+        this.contestId,
+        this.countingCircleId,
+        this.electionId,
+        this.importType,
+      );
 
-      if (this.electionId) {
-        contestWriteIns.writeInGroups = contestWriteIns.writeInGroups.filter(m => m.election.id === this.electionId);
+      this.useGroupTitleWithElection = this.electionId === undefined;
+      this.useGroupTitleWithImportType = this.importType === undefined;
+      if (this.writeInGroups.length === 0) {
+        return;
       }
 
-      this.importId = contestWriteIns.importId;
-      this.elections = contestWriteIns.writeInGroups.map(m => m.election);
-      this.electionsById = groupBySingle(
-        this.elections,
-        x => x.id,
-        x => x,
-      );
-
-      this.hasInvalidVotesByElectionId = groupBySingle(
-        contestWriteIns.writeInGroups,
-        x => x.election.id,
-        x => x.invalidVotes,
-      );
-
-      this.hasIndividualVotesByElectionId = groupBySingle(
-        contestWriteIns.writeInGroups,
-        x => x.election.id,
-        x => x.individualVotes,
-      );
-
-      this.mappingsByElectionId = groupBySingle(
-        contestWriteIns.writeInGroups,
-        x => x.election.id,
-        x => x.writeInMappings,
-      );
-      if (this.elections.length > 0) {
-        this.selectElection(0);
+      this.useGroupTitleWithElection &&= this.writeInGroups.some(w => w.election.id !== this.writeInGroups[0].election.id);
+      if (this.importType === undefined && this.writeInGroups.every(w => w.importType === this.writeInGroups[0].importType)) {
+        this.useGroupTitleWithImportType = false;
+        this.importType = this.writeInGroups[0].importType;
       }
+
+      this.selectGroup(0);
     } finally {
       this.loading = false;
     }
   }
 
   public setMappings(mappings: MajorityElectionWriteInMapping[]): void {
-    if (this.selectedElection === undefined) {
+    if (this.selectedWriteInGroup === undefined) {
       return;
     }
 
-    this.mappings = mappings;
-    this.mappingsByElectionId[this.selectedElection.id] = mappings;
+    this.selectedWriteInGroup.writeInMappings = mappings;
   }
 
-  public async selectedElectionChange(index: number): Promise<void> {
+  public async selectedGroupChange(index: number): Promise<void> {
     await this.save();
-    this.selectElection(index);
+    this.selectGroup(index);
   }
 
   public close(): void {
@@ -116,58 +99,53 @@ export class MajorityElectionWriteInMappingDialogComponent implements OnInit {
   }
 
   public async save(): Promise<void> {
-    if (this.selectedElection === undefined) {
+    if (this.selectedWriteInGroup === undefined) {
       return;
     }
 
     try {
       this.saving = true;
-      await this.resultImportService.mapMajorityElectionWriteIns(
-        this.importId,
-        this.selectedElection.id,
-        this.countingCircleId,
-        this.selectedElection.businessType,
-        this.mappings,
-      );
+      await this.resultImportService.mapMajorityElectionWriteIns(this.selectedWriteInGroup, this.countingCircleId);
     } finally {
       this.saving = false;
     }
   }
 
   public async resetWriteIns(): Promise<void> {
-    if (this.selectedElection === undefined) {
+    if (this.selectedWriteInGroup == undefined) {
       return;
     }
 
     try {
       this.saving = true;
       await this.resultImportService.resetMajorityElectionWriteIns(
-        this.selectedElection.id,
+        this.selectedWriteInGroup.importId,
+        this.selectedWriteInGroup.election.id,
         this.countingCircleId,
-        this.contestId,
-        this.selectedElection.businessType,
+        this.selectedWriteInGroup.election.businessType,
       );
+      this.toast.success(this.i18n.instant('RESULT_IMPORT.WRITE_INS.RESETTED'));
     } finally {
       this.saving = false;
     }
   }
 
   public hasUnmappedWriteIns(): boolean {
-    return this.mappings.some(m => m.target === MajorityElectionWriteInMappingTarget.MAJORITY_ELECTION_WRITE_IN_MAPPING_TARGET_UNSPECIFIED);
+    return (
+      this.selectedWriteInGroup?.writeInMappings.some(
+        m => m.target === MajorityElectionWriteInMappingTarget.MAJORITY_ELECTION_WRITE_IN_MAPPING_TARGET_UNSPECIFIED,
+      ) == true
+    );
   }
 
-  private selectElection(index: number): void {
-    if (index === this.elections.length) {
+  private selectGroup(index: number): void {
+    if (index === this.writeInGroups.length) {
       this.dialogRef.close();
       return;
     }
 
-    this.electionHasWriteIns = true;
-    this.selectedElectionIndex = index;
-    this.selectedElection = this.elections[index];
-    this.mappings = this.mappingsByElectionId[this.selectedElection.id];
-    this.hasInvalidVotes = this.hasInvalidVotesByElectionId[this.selectedElection.id];
-    this.hasIndividualVotes = this.hasIndividualVotesByElectionId[this.selectedElection.id];
+    this.selectedGroupIndex = index;
+    this.selectedWriteInGroup = this.writeInGroups[index];
   }
 }
 
@@ -175,4 +153,5 @@ export interface ResultImportWriteInMappingDialogData {
   contestId: string;
   countingCircleId: string;
   electionId?: string;
+  importType?: ResultImportType;
 }

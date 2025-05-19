@@ -7,9 +7,8 @@
 import { MajorityElectionReviewProcedure } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/majority_election_pb';
 import { DialogService, SnackbarService, ThemeService } from '@abraxas/voting-lib';
 import { Component, HostListener } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Observable } from 'rxjs';
 import {
   PoliticalBusinessNewBundleNumberComponent,
   PoliticalBusinessNewBundleNumberComponentData,
@@ -23,11 +22,15 @@ import { MajorityElectionBallotComponent } from '../majority-election-ballot/maj
 import { ExportService } from '../../../services/export.service';
 import { DatePipe } from '@angular/common';
 import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/political_business_pb';
+import { EventLogService } from '../../../services/event-log.service';
+import { Event, EventType, MajorityElectionResultBundleEventTypes } from '../../../models/event-log.model';
+import { BallotBundleState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/ballot_bundle_pb';
 
 @Component({
   selector: 'vo-ausm-majority-election-bundle-overview',
   templateUrl: './majority-election-bundle-overview.component.html',
   styleUrls: ['./majority-election-bundle-overview.component.scss'],
+  standalone: false,
 })
 export class MajorityElectionBundleOverviewComponent extends PoliticalBusinessBundleOverviewComponent<MajorityElectionResultBundles> {
   public readonly reviewProcedures: typeof MajorityElectionReviewProcedure = MajorityElectionReviewProcedure;
@@ -46,9 +49,26 @@ export class MajorityElectionBundleOverviewComponent extends PoliticalBusinessBu
     themeService: ThemeService,
     resultExportService: ResultExportService,
     exportService: ExportService,
+    eventLogService: EventLogService,
     datePipe: DatePipe,
   ) {
-    super(permissionService, i18n, toast, dialog, route, router, themeService, resultExportService, exportService, datePipe);
+    super(
+      permissionService,
+      i18n,
+      toast,
+      dialog,
+      route,
+      router,
+      themeService,
+      resultExportService,
+      exportService,
+      eventLogService,
+      datePipe,
+    );
+  }
+
+  public get watcherEventTypes(): EventType[] {
+    return [...MajorityElectionResultBundleEventTypes];
   }
 
   @HostListener('document:keydown.control.alt.q')
@@ -149,8 +169,8 @@ export class MajorityElectionBundleOverviewComponent extends PoliticalBusinessBu
     return this.resultBundleService.getBundles(resultId);
   }
 
-  protected startChangesListener(resultId: string, onRetry: () => {}): Observable<PoliticalBusinessResultBundle> {
-    return this.resultBundleService.getBundleChanges(resultId, onRetry);
+  protected async loadBundle(id: string): Promise<PoliticalBusinessResultBundle> {
+    return (await this.resultBundleService.getBundle(id)).bundle;
   }
 
   protected get politicalBusinessType(): PoliticalBusinessType {
@@ -159,5 +179,34 @@ export class MajorityElectionBundleOverviewComponent extends PoliticalBusinessBu
 
   protected get resultId(): string | undefined {
     return this.result?.politicalBusinessResult.id;
+  }
+
+  protected async handleEvent(e: Event, params: Params): Promise<void> {
+    await super.handleEvent(e, params);
+
+    switch (e.type) {
+      case 'MajorityElectionResultBundleCreated':
+        await this.handleBundleCreated(e.entityId);
+        break;
+      case 'MajorityElectionResultBundleDeleted':
+        this.setBundleState(e.entityId, BallotBundleState.BALLOT_BUNDLE_STATE_DELETED, e.data.bundleLog!);
+        break;
+      case 'MajorityElectionResultBundleReviewSucceeded':
+        this.setBundleState(e.entityId, BallotBundleState.BALLOT_BUNDLE_STATE_REVIEWED, e.data.bundleLog!);
+        break;
+      case 'MajorityElectionResultBundleReviewRejected':
+        this.setBundleState(e.entityId, BallotBundleState.BALLOT_BUNDLE_STATE_IN_CORRECTION, e.data.bundleLog!);
+        break;
+      case 'MajorityElectionResultBundleSubmissionFinished':
+      case 'MajorityElectionResultBundleCorrectionFinished':
+        this.setBundleState(e.entityId, BallotBundleState.BALLOT_BUNDLE_STATE_READY_FOR_REVIEW, e.data.bundleLog!);
+        break;
+      case 'MajorityElectionResultBallotCreated':
+        this.adjustCountOfBallots(e.entityId, 1);
+        break;
+      case 'MajorityElectionResultBallotDeleted':
+        this.adjustCountOfBallots(e.entityId, -1);
+        break;
+    }
   }
 }

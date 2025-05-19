@@ -18,6 +18,7 @@ import { ProtocolExportState } from '@abraxas/voting-ausmittlung-service-proto/g
   selector: 'vo-ausm-proportional-election-bundle-table',
   templateUrl: './proportional-election-bundle-table.component.html',
   styleUrls: ['./proportional-election-bundle-table.component.scss'],
+  standalone: false,
 })
 export class ProportionalElectionBundleTableComponent
   extends ResultBundleTableComponent<ProportionalElectionResultBundle>

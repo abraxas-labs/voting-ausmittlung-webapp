@@ -19,12 +19,12 @@
     </div>
   </vo-lib-page-header>
 
-  <bc-tab-bar *ngIf="resultOverview?.currentTenantIsContestManager; else monitoringCockpitGrid">
+  <bc-tab-bar *ngIf="resultOverview?.currentTenantIsContestManager; else monitoringCockpitGrid" (selectedChange)="tabChanged($event)" [selectedIndex]="initialSelectedTab" [rounded]="true">
     <bc-tab [label]="'MONITORING_COCKPIT.TAB_MONITORING' | translate">
       <ng-container *ngTemplateOutlet="monitoringCockpitGrid"></ng-container>
     </bc-tab>
     <bc-tab [label]="'MONITORING_COCKPIT.TAB_POLITICAL_BUSINESS_OVERVIEW' | translate">
-      <app-monitoring-political-businesses-overview *ngIf="resultOverview" [contestId]="contestId">
+      <app-monitoring-political-businesses-overview *ngIf="resultOverview" [resultOverview]="resultOverview">
       </app-monitoring-political-businesses-overview>
     </bc-tab>
   </bc-tab-bar>

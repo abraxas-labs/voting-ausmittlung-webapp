@@ -12,6 +12,7 @@ import { BallotSubType } from '@abraxas/voting-ausmittlung-service-proto/grpc/mo
   selector: 'vo-ausm-contest-vote-detail-results-graph',
   templateUrl: './contest-vote-detail-results-graph.component.html',
   styleUrls: ['./contest-vote-detail-results-graph.component.scss'],
+  standalone: false,
 })
 export class ContestVoteDetailResultsGraphComponent {
   @Input()
@@ -19,4 +20,7 @@ export class ContestVoteDetailResultsGraphComponent {
 
   @Input()
   public eVoting: boolean = false;
+
+  @Input()
+  public eCounting: boolean = false;
 }

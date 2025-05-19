@@ -12,8 +12,8 @@
     "NO_DATA": "Keine Daten vorhanden.",
     "ALL_TO_STATE": "Alle auf '{{state}}' setzen",
     "VIEW_RESULTS": "Ergebnisse",
-    "TAB_MONITORING": "Monitoring",
-    "TAB_POLITICAL_BUSINESS_OVERVIEW": "Geschäftsübersicht",
+    "TAB_MONITORING": "Auszählungskreise",
+    "TAB_POLITICAL_BUSINESS_OVERVIEW": "Geschäfte",
     "NOT_OWNED_POLITICAL_BUSINESS": {
       "TITLE": "Gemeinde",
       "SINGLE": "1 Geschäft",
@@ -32,14 +32,39 @@
     "STATE": "Fortschritt",
     "DOMAIN_OF_INFLUENCE_TYPE": "E",
     "COUNTING_CIRCLES": "Auszählungskreise",
+    "NUMBER_OF_MANDATES": "Mandate",
     "COUNTING_CIRCLE": "Auszählungskreis",
     "DOMAIN_OF_INFLUENCE": "Wahlkreis",
-    "RECEIVED_BALLOTS": "eingeg",
-    "BLANK_BALLOTS": "leer",
-    "INVALID_BALLOTS": "ungültig",
-    "ACCOUNTED_BALLOTS": "gültig",
+    "RECEIVED_BALLOTS": "SZ",
+    "BLANK_BALLOTS": "SZ leer",
+    "INVALID_BALLOTS": "SZ ungül",
+    "ACCOUNTED_BALLOTS": "SZ gül",
+    "TOTAL_COUNT_OF_VOTERS": "SBe",
+    "VOTING_CARDS_BALLOT_BOX": "SRA Urne",
+    "VOTING_CARDS_PAPER": "SRA pre",
+    "VOTING_CARDS_BY_MAIL_VALID": "SRA brief",
+    "VOTING_CARDS_BY_MAIL_INVALID": "SRA ungül",
+    "MAIN_BALLOT_TOTAL_COUNT_YES": "SG Ja",
+    "MAIN_BALLOT_TOTAL_COUNT_NO": "SG Nein",
+    "MAIN_BALLOT_TOTAL_COUNT_UNSPECIFIED": "SG oA",
+    "COUNTER_PROPOSAL_1_TOTAL_COUNT_YES": "Ggv 1 Ja",
+    "COUNTER_PROPOSAL_1_TOTAL_COUNT_NO": "Ggv 1 Nein",
+    "COUNTER_PROPOSAL_1_TOTAL_COUNT_UNSPECIFIED": "Ggv 1 oA",
+    "COUNTER_PROPOSAL_2_TOTAL_COUNT_YES": "Ggv 2 Ja",
+    "COUNTER_PROPOSAL_2_TOTAL_COUNT_NO": "Ggv 2 Nein",
+    "COUNTER_PROPOSAL_2_TOTAL_COUNT_UNSPECIFIED": "Ggv 2 oA",
+    "TIE_BREAK_1_TOTAL_COUNT_YES": "SF 1 Ja",
+    "TIE_BREAK_1_TOTAL_COUNT_NO": "SF 1 Nein",
+    "TIE_BREAK_1_TOTAL_COUNT_UNSPECIFIED": "SF 1 oA",
+    "TIE_BREAK_2_TOTAL_COUNT_YES": "SF 2 Ja",
+    "TIE_BREAK_2_TOTAL_COUNT_NO": "SF 2 Nein",
+    "TIE_BREAK_2_TOTAL_COUNT_UNSPECIFIED": "SF 2 oA",
+    "TIE_BREAK_3_TOTAL_COUNT_YES": "SF 3 Ja",
+    "TIE_BREAK_3_TOTAL_COUNT_NO": "SF 3 Nein",
+    "TIE_BREAK_3_TOTAL_COUNT_UNSPECIFIED": "SF 3 oA",
     "NO_POLITICAL_BUSINESSES": "Keine Geschäfte vorhanden...",
     "NO_COUNTING_CIRCLES": "Keine Auszählungskreise vorhanden...",
+    "ALL_FIELDS": "Alle Felder",
     "POLITICAL_BUSINESS": {
       "TITLE": "Geschäfte: {{count}}"
     },
@@ -228,7 +253,9 @@
         "4": "Absolutes Mehr verpasst / nicht gewählt",
         "5": "Gewählt",
         "6": "Nicht gewählt",
-        "7": "Nicht wählbar"
+        "7": "Nicht wählbar",
+        "8": "Hauptwahl verpasst / nicht wählbar",
+        "9": "Hauptwahl überzählig / nicht wählbar"
       }
     }
   },
@@ -254,6 +281,9 @@
     },
     "SUB_LIST_UNION": {
       "SUB_LIST_UNION_ABBREVIATION": "LUV"
+    },
+    "LOT_DECISION": {
+      "LIST_SELECT": "Listen-Nr. auswählen"
     }
   },
   "VOTE_END_RESULT": {
@@ -297,39 +327,15 @@
       }
     }
   },
-  "ERROR_MESSAGES": {
-    "CountingCircleResultInInvalidStateForEVotingImportException": "eVoting Resultate können nur importiert werden, wenn noch kein Resultat geprüft wurde.",
-    "EVotingNotActiveException": "eVoting ist auf mind. einem Auszählungskreis mit zu importierenden Resultaten nicht aktiv."
+  "MAJORITY_ELECTION_END_RESULT": {
+    "LOT_DECISION": {
+      "PRIMARY_ELECTION": "Hauptwahl",
+      "SECONDARY_ELECTION": "Nebenwahlen"
+    }
   },
-  "RESULT_IMPORT": {
-    "LIST_TITLE": "Importierte Ergebnisse",
-    "TITLE": "Ergebnisse importieren",
-    "IMPORT": "Ergebnisse importieren",
-    "EXPLANATION": "Sowohl die eCH-0222- als auch die eCH-0110-Datei müssen ausgewählt und miteinander hochgeladen werden.",
-    "SELECT_FILE": "Datei auswählen",
-    "E_CH_STANDARD": "eCH-Datenstandard",
-    "E_CH_TYPES": {
-      "eCH-0222": "eCH-0222 - Schnittstelle Rohdaten Wahlen und Abstimmungen",
-      "eCH-0110": "eCH-0110 - Benötigt für die Anzahl Stimmrechtsausweise"
-    },
-    "DRAG_FILE": "Datei hierher ziehen",
-    "OR": "oder…",
-    "CHOOSE_FILE": "Datei zum Hochladen auswählen",
-    "CHOSEN_FILES": "Ausgewählte Dateien",
-    "FILENAME": "Dateiname",
-    "IMPORT_DONE": "Import wird verarbeitet…",
-    "STARTED_BY": "Importiert durch",
-    "STARTED": "Datum/Uhrzeit",
-    "IMPORTED_COUNTING_CIRCLES": "Importierte Auszählungskreise",
-    "IGNORED_COUNTING_CIRCLES": "Ignorierte Auszählungskreise",
-    "IGNORED_COUNTING_CIRCLE": {
-      "TEST_COUNTING_CIRCLE": "(Testurne)",
-      "NON_TEST_COUNTING_CIRCLE": "(Keine Testurne!)"
-    },
-    "DELETED_FILE_NAME": "Importierte Ergebnisse gelöscht",
-    "DELETE": "Importierte Ergebnisse löschen",
-    "DELETE_CONFIRM_TITLE": "Sind Sie sicher?",
-    "DELETE_CONFIRM_MSG": "Sind Sie sicher, dass Sie die importierten Ergebnisse wieder löschen wollen?",
-    "DELETE_SUCCESS": "Import-Daten werden gelöscht…"
+  "ERROR_MESSAGES": {
+    "UnknownCountingCircleInImportException": "Es können nur Resultate zum aktuellen Auszählungskreis importiert werden.",
+    "CountingCircleResultInInvalidStateForImportException": "Resultate können nur importiert werden, wenn noch kein Resultat geprüft wurde.",
+    "EVotingNotActiveException": "eVoting ist auf mind. einem Auszählungskreis mit zu importierenden Resultaten nicht aktiv."
   }
 }

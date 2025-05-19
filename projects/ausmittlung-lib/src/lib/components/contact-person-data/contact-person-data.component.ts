@@ -11,6 +11,7 @@ import { ContactPerson } from '../../models';
   selector: 'vo-ausm-contact-person-data',
   templateUrl: './contact-person-data.component.html',
   styleUrls: ['./contact-person-data.component.scss'],
+  standalone: false,
 })
 export class ContactPersonDataComponent {
   @Input()

@@ -1,6 +1,7 @@
 <div class="content">
   <vo-ausm-ballot-count-input header="ELECTION.BALLOT_CARD"
                               [eVoting]="eVoting"
+                              [eCounting]="eCounting"
                               [readonly]="readonly || !canEnterResults"
                               [totalCountOfVoters]="resultDetail.totalCountOfVoters"
                               [participationLabel]="'ELECTION.VOTER_PARTICIPATION'"
@@ -23,7 +24,7 @@
         (buttonClick)="openBundles()">
       </vo-ausm-contest-detail-submission-tile>
       <vo-ausm-contest-detail-submission-tile
-        *ngIf="!readonly && eVoting"
+        *ngIf="!readonly && (eVoting || eCounting)"
         [titleText]="'MAJORITY_ELECTION.MAP_WRITE_INS' | translate"
         [buttonText]="'MAJORITY_ELECTION.MAP'"
         (buttonClick)="openWriteIns(resultDetail.election.id)">
@@ -36,11 +37,12 @@
   <vo-ausm-contest-majority-election-result class="mb-4"
                                             [accountedBallots]="resultDetail.countOfVoters.totalAccountedBallots"
                                             [eVoting]="eVoting"
+                                            [eCounting]="eCounting"
                                             [result]="resultDetail"
                                             [candidateCheckDigit]="resultDetail.entryParams?.candidateCheckDigit"
                                             [showInvalidVotes]="resultDetail.election.contest!.cantonDefaults!.majorityElectionInvalidVotes"
                                             [showIndividualVotes]="!resultDetail.election.individualCandidatesDisabled"
-                                            [showEmptyVotes]="resultDetail.election.numberOfMandates !== 1"></vo-ausm-contest-majority-election-result>
+                                            [showEmptyVotes]="resultDetail.election.numberOfMandates !== 1 || resultDetail.secondaryMajorityElectionResults.length > 0"></vo-ausm-contest-majority-election-result>
 </div>
 
 <div class="content results">
@@ -48,6 +50,7 @@
                                             class="mt-3"
                                             [showElectionHeader]="true"
                                             [eVoting]="eVoting"
+                                            [eCounting]="eCounting"
                                             [buttonsTemplate]="tileTemplate"
                                             [accountedBallots]="resultDetail.countOfVoters.totalAccountedBallots"
                                             [result]="result"
@@ -57,7 +60,7 @@
 </div>
 
 <ng-template #tileTemplate let-electionId='electionId'>
-  <div *ngIf="!readonly && eVoting">
+  <div *ngIf="!readonly && (eVoting || eCounting)">
     <h4 translate>POLITICAL_BUSINESS.SUBMISSION</h4>
     <vo-ausm-contest-detail-submission-tile
       [titleText]="'MAJORITY_ELECTION.MAP_WRITE_INS' | translate"

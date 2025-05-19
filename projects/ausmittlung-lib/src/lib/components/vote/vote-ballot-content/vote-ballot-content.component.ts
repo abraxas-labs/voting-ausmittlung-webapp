@@ -12,6 +12,7 @@ import { BallotResult, VoteResultBallot, VoteResultBallotQuestionAnswer, VoteRes
   selector: 'vo-ausm-vote-ballot-content',
   templateUrl: './vote-ballot-content.component.html',
   styleUrls: ['./vote-ballot-content.component.scss'],
+  standalone: false,
 })
 export class VoteBallotContentComponent {
   @Input()

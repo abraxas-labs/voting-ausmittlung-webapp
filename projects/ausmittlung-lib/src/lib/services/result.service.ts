@@ -10,18 +10,18 @@ import {
   GetResultCommentsRequest,
   GetResultListRequest,
   GetResultOverviewRequest,
-  GetResultStateChangesRequest,
   ResetCountingCircleResultsRequest,
   ValidateCountingCircleResultsRequest,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/result_requests_pb';
 import { ResultServiceClient, ResultServicePromiseClient } from '@abraxas/voting-ausmittlung-service-proto/grpc/result_service_grpc_web_pb';
-import { GrpcBackendService, GrpcEnvironment, GrpcStreamingService, retryForeverWithBackoff } from '@abraxas/voting-lib';
+import { GrpcBackendService, GrpcEnvironment, GrpcStreamingService } from '@abraxas/voting-lib';
 import { Inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   Comment,
   CommentProto,
   ContestCountingCircleDetails,
+  ContestCountingCircleDetailsProto,
   CountingMachine,
   ResultList,
   ResultListProto,
@@ -32,11 +32,10 @@ import {
   ResultOverviewCountingCircleResultProto,
   ResultOverviewCountingCircleResults,
   ResultOverviewCountingCircleResultsProto,
+  ResultOverviewCountingCircleWithDetails,
+  ResultOverviewCountingCircleWithDetailsProto,
   ResultOverviewProto,
-  ResultStateChangeProto,
   ValidationSummaries,
-  PoliticalBusinessUnionProto,
-  PoliticalBusinessUnion,
 } from '../models';
 import { ContestCountingCircleDetailsService } from './contest-counting-circle-details.service';
 import { ContestService } from './contest.service';
@@ -45,6 +44,9 @@ import { GRPC_ENV_INJECTION_TOKEN } from './tokens';
 import { ValidationMappingService } from './validation-mapping.service';
 import { SecondFactorTransaction } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/second_factor_transaction_pb';
 import { PoliticalBusinessUnionService } from './political-business-union.service';
+import * as models_vote_result_pb from '@abraxas/voting-ausmittlung-service-proto/grpc/models/vote_result_pb';
+import { BallotQuestionResult } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/vote_result_pb';
+import { BallotSubType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/vote_pb';
 
 @Injectable({
   providedIn: 'root',
@@ -87,16 +89,6 @@ export class ResultService extends GrpcStreamingService<ResultServicePromiseClie
       req,
       r => r.getCommentsList().map(c => this.mapToComment(c)),
     );
-  }
-
-  public getStateChanges(contestId: string, onRetry: () => {}): Observable<ResultStateChangeProto.AsObject> {
-    const req = new GetResultStateChangesRequest();
-    req.setContestId(contestId);
-    return this.requestServerStream(
-      c => c.getStateChanges,
-      req,
-      r => r.toObject(),
-    ).pipe(retryForeverWithBackoff(onRetry));
   }
 
   public resetCountingCircleResults(contestId: string, countingCircleId: string): Promise<void> {
@@ -149,7 +141,7 @@ export class ResultService extends GrpcStreamingService<ResultServicePromiseClie
     return {
       ...data.toObject(),
       contest: ContestService.mapToContest(data.getContest()!),
-      details: this.mapToContestCountingCircleDetails(data),
+      details: this.mapToContestCountingCircleDetails(data.getDetails(), data.getContest()!.getId(), data.getCountingCircle()!.getId()),
       countingCircle: data.getCountingCircle()!.toObject(),
       results,
       currentTenantIsResponsible: data.getCurrentTenantIsResponsible(),
@@ -185,8 +177,17 @@ export class ResultService extends GrpcStreamingService<ResultServicePromiseClie
 
   private mapToResultOverviewCountingCircleResults(data: ResultOverviewCountingCircleResultsProto): ResultOverviewCountingCircleResults {
     return {
-      countingCircle: data.getCountingCircle()!.toObject(),
+      countingCircleWithDetails: this.mapToResultOverCountingCircleWithDetails(data.getCountingCircle()!),
       results: data.getResultsList().map(x => this.mapToResultOverviewCountingCircleResult(x)),
+    };
+  }
+
+  private mapToResultOverCountingCircleWithDetails(
+    data: ResultOverviewCountingCircleWithDetailsProto,
+  ): ResultOverviewCountingCircleWithDetails {
+    return {
+      countingCircle: data.getCountingCircle()!.toObject(),
+      details: this.mapToContestCountingCircleDetails(data.getDetails()),
     };
   }
 
@@ -198,29 +199,188 @@ export class ResultService extends GrpcStreamingService<ResultServicePromiseClie
       readyForCorrectionTimestamp: data.getReadyForCorrectionTimestamp()?.toDate(),
       auditedTentativelyTimestamp: data.getAuditedTentativelyTimestamp()?.toDate(),
       plausibilisedTimestamp: data.getPlausibilisedTimestamp()?.toDate(),
+      mainBallotTotalCountYes:
+        obj.ballotResultsList.length > 0 ? obj.ballotResultsList[0].questionResultsList[0].totalCountOfAnswerYes : undefined,
+      mainBallotTotalCountNo:
+        obj.ballotResultsList.length > 0 ? obj.ballotResultsList[0].questionResultsList[0].totalCountOfAnswerNo : undefined,
+      mainBallotTotalCountUnspecified:
+        obj.ballotResultsList.length > 0 ? obj.ballotResultsList[0].questionResultsList[0].totalCountOfAnswerUnspecified : undefined,
+      counterProposal1TotalCountYes: this.getCounterProposal1Result(obj.ballotResultsList)?.totalCountOfAnswerYes,
+      counterProposal1TotalCountNo: this.getCounterProposal1Result(obj.ballotResultsList)?.totalCountOfAnswerNo,
+      counterProposal1TotalCountUnspecified: this.getCounterProposal1Result(obj.ballotResultsList)?.totalCountOfAnswerUnspecified,
+      counterProposal2TotalCountYes: this.getCounterProposal2Result(obj.ballotResultsList)?.totalCountOfAnswerYes,
+      counterProposal2TotalCountNo: this.getCounterProposal2Result(obj.ballotResultsList)?.totalCountOfAnswerNo,
+      counterProposal2TotalCountUnspecified: this.getCounterProposal2Result(obj.ballotResultsList)?.totalCountOfAnswerUnspecified,
+      tieBreak1TotalCountYes: this.getTieBreakTotalCountYes(obj.ballotResultsList, 0, BallotSubType.BALLOT_SUB_TYPE_TIE_BREAK_1),
+      tieBreak1TotalCountNo: this.getTieBreakTotalCountNo(obj.ballotResultsList, 0, BallotSubType.BALLOT_SUB_TYPE_TIE_BREAK_1),
+      tieBreak1TotalCountUnspecified: this.getTieBreakTotalCountUnspecified(
+        obj.ballotResultsList,
+        0,
+        BallotSubType.BALLOT_SUB_TYPE_TIE_BREAK_1,
+      ),
+      tieBreak2TotalCountYes: this.getTieBreakTotalCountYes(obj.ballotResultsList, 1, BallotSubType.BALLOT_SUB_TYPE_TIE_BREAK_2),
+      tieBreak2TotalCountNo: this.getTieBreakTotalCountNo(obj.ballotResultsList, 1, BallotSubType.BALLOT_SUB_TYPE_TIE_BREAK_2),
+      tieBreak2TotalCountUnspecified: this.getTieBreakTotalCountUnspecified(
+        obj.ballotResultsList,
+        1,
+        BallotSubType.BALLOT_SUB_TYPE_TIE_BREAK_2,
+      ),
+      tieBreak3TotalCountYes: this.getTieBreakTotalCountYes(obj.ballotResultsList, 2, BallotSubType.BALLOT_SUB_TYPE_TIE_BREAK_3),
+      tieBreak3TotalCountNo: this.getTieBreakTotalCountNo(obj.ballotResultsList, 2, BallotSubType.BALLOT_SUB_TYPE_TIE_BREAK_3),
+      tieBreak3TotalCountUnspecified: this.getTieBreakTotalCountUnspecified(
+        obj.ballotResultsList,
+        2,
+        BallotSubType.BALLOT_SUB_TYPE_TIE_BREAK_3,
+      ),
     };
   }
 
-  private mapToContestCountingCircleDetails(resultList: ResultListProto): ContestCountingCircleDetails {
-    const data = resultList.getDetails();
-    if (!data) {
+  private getCounterProposal1Result(
+    ballotResults: Array<models_vote_result_pb.BallotResult.AsObject>,
+  ): BallotQuestionResult.AsObject | undefined {
+    if (ballotResults.length === 0) {
+      return undefined;
+    }
+
+    if (ballotResults.length === 1 && ballotResults[0].questionResultsList.length > 1) {
+      return ballotResults[0].questionResultsList[1];
+    }
+
+    if (ballotResults.length > 1) {
+      const counterProposal1Result = ballotResults.find(x => x.ballot?.ballotSubType === BallotSubType.BALLOT_SUB_TYPE_COUNTER_PROPOSAL_1);
+      if (!counterProposal1Result) {
+        return undefined;
+      }
+
+      return counterProposal1Result.questionResultsList[0];
+    }
+
+    return undefined;
+  }
+
+  private getCounterProposal2Result(
+    ballotResults: Array<models_vote_result_pb.BallotResult.AsObject>,
+  ): BallotQuestionResult.AsObject | undefined {
+    if (ballotResults.length === 0) {
+      return undefined;
+    }
+
+    if (ballotResults.length === 1 && ballotResults[0].questionResultsList.length > 2) {
+      return ballotResults[0].questionResultsList[2];
+    }
+
+    if (ballotResults.length > 2) {
+      const counterProposal2Result = ballotResults.find(x => x.ballot?.ballotSubType === BallotSubType.BALLOT_SUB_TYPE_COUNTER_PROPOSAL_2);
+      if (!counterProposal2Result) {
+        return undefined;
+      }
+
+      return counterProposal2Result.questionResultsList[0];
+    }
+
+    return undefined;
+  }
+
+  private getTieBreakTotalCountYes(
+    ballotResults: Array<models_vote_result_pb.BallotResult.AsObject>,
+    index: number,
+    ballotSubType: BallotSubType,
+  ): number | undefined {
+    if (ballotResults.length === 0) {
+      return undefined;
+    }
+
+    if (ballotResults.length === 1 && ballotResults[0].tieBreakQuestionResultsList.length > index) {
+      return ballotResults[0].tieBreakQuestionResultsList[index].totalCountOfAnswerQ1;
+    }
+
+    if (ballotResults.length > 1) {
+      const tieBreakResult = ballotResults.find(x => x.ballot?.ballotSubType === ballotSubType);
+      if (!tieBreakResult) {
+        return undefined;
+      }
+
+      return tieBreakResult.questionResultsList[0].totalCountOfAnswerYes;
+    }
+
+    return undefined;
+  }
+
+  private getTieBreakTotalCountNo(
+    ballotResults: Array<models_vote_result_pb.BallotResult.AsObject>,
+    index: number,
+    ballotSubType: BallotSubType,
+  ): number | undefined {
+    if (ballotResults.length === 0) {
+      return undefined;
+    }
+
+    if (ballotResults.length === 1 && ballotResults[0].tieBreakQuestionResultsList.length > index) {
+      return ballotResults[0].tieBreakQuestionResultsList[index].totalCountOfAnswerQ2;
+    }
+
+    if (ballotResults.length > 1) {
+      const tieBreakResult = ballotResults.find(x => x.ballot?.ballotSubType === ballotSubType);
+      if (!tieBreakResult) {
+        return undefined;
+      }
+
+      return tieBreakResult.questionResultsList[0].totalCountOfAnswerNo;
+    }
+
+    return undefined;
+  }
+
+  private getTieBreakTotalCountUnspecified(
+    ballotResults: Array<models_vote_result_pb.BallotResult.AsObject>,
+    index: number,
+    ballotSubType: BallotSubType,
+  ): number | undefined {
+    if (ballotResults.length === 0) {
+      return undefined;
+    }
+
+    if (ballotResults.length === 1 && ballotResults[0].tieBreakQuestionResultsList.length > index) {
+      return ballotResults[0].tieBreakQuestionResultsList[index].totalCountOfAnswerUnspecified;
+    }
+
+    if (ballotResults.length > 1) {
+      const tieBreakResult = ballotResults.find(x => x.ballot?.ballotSubType === ballotSubType);
+      if (!tieBreakResult) {
+        return undefined;
+      }
+
+      return tieBreakResult.questionResultsList[0].totalCountOfAnswerUnspecified;
+    }
+
+    return undefined;
+  }
+
+  private mapToContestCountingCircleDetails(
+    details?: ContestCountingCircleDetailsProto,
+    contestId?: string,
+    countingCircleId?: string,
+  ): ContestCountingCircleDetails {
+    if (!details) {
       return {
         countOfVotersInformation: {
           subTotalInfoList: [],
           totalCountOfVoters: 0,
         },
         votingCards: [],
-        countingCircleId: resultList.getCountingCircle()!.getId(),
-        contestId: resultList.getContest()!.getId(),
+        countingCircleId: countingCircleId!,
+        contestId: contestId!,
         eVoting: false,
+        eCounting: false,
+        eCountingResultsImported: false,
         countingMachine: CountingMachine.COUNTING_MACHINE_UNSPECIFIED,
       };
     }
 
     return {
-      ...data.toObject(),
-      countOfVotersInformation: ContestCountingCircleDetailsService.mapToCountOfVotersInformation(data.getCountOfVotersInformation()!),
-      votingCards: data.getVotingCardsList().map(v => ContestCountingCircleDetailsService.mapToVotingCard(v)),
+      ...details.toObject(),
+      countOfVotersInformation: ContestCountingCircleDetailsService.mapToCountOfVotersInformation(details.getCountOfVotersInformation()!),
+      votingCards: details.getVotingCardsList().map(v => ContestCountingCircleDetailsService.mapToVotingCard(v)),
     };
   }
 

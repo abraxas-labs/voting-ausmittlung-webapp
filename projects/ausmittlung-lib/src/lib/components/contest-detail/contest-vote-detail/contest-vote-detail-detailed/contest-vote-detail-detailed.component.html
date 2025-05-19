@@ -3,6 +3,7 @@
     <div class="flex">
       <vo-ausm-ballot-count-input header="VOTE.BALLOT_CARD"
                                   [eVoting]="eVoting"
+                                  [eCounting]="eCounting"
                                   [readonly]="readonly"
                                   [totalCountOfVoters]="totalCountOfVoters"
                                   [participationLabel]="'VOTE.VOTER_PARTICIPATION'"
@@ -21,6 +22,7 @@
           {{ 'VOTE.BALLOT.QUESTION_TYPE.TYPES.' + questionResult.question.type + (ballotResult.questionResults.length > 2 && questionResult.question.number > 1 ? '_WITH_NUMBER' : '') | translate: { number: questionResult.question.number - 1 } }}
         </h4>
         <vo-ausm-contest-vote-detail-question [eVoting]="eVoting"
+                                              [eCounting]="eCounting"
                                               [readonly]="true"
                                               [ballotNumberOfQuestions]="ballotResult.questionResults.length"
                                               [result]="questionResult"></vo-ausm-contest-vote-detail-question>
@@ -31,6 +33,7 @@
           {{ 'VOTE.BALLOT.QUESTION_TYPE.TIE_BREAK' + (ballotResult.tieBreakQuestionResults.length > 1 ? '_WITH_NUMBER' : '') | translate: { number: tieBreakQuestionResult.question.number } }}
         </h4>
         <vo-ausm-contest-vote-detail-question [eVoting]="eVoting"
+                                              [eCounting]="eCounting"
                                               [readonly]="true"
                                               [isTieBreakQuestion]="true"
                                               [ballotNumberOfQuestions]="ballotResult.questionResults.length"
@@ -39,7 +42,8 @@
     </div>
     <div>
       <vo-ausm-contest-vote-detail-results-graph [ballotResult]="ballotResult"
-                                                 [eVoting]="eVoting"></vo-ausm-contest-vote-detail-results-graph>
+                                                 [eVoting]="eVoting"
+                                                 [eCounting]="eCounting"></vo-ausm-contest-vote-detail-results-graph>
     </div>
   </div>
 </div>

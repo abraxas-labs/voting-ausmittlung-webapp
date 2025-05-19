@@ -12,6 +12,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   selector: 'vo-ausm-select-counting-circle-dialog',
   templateUrl: './select-counting-circle-dialog.component.html',
   styleUrls: ['./select-counting-circle-dialog.component.scss'],
+  standalone: false,
 })
 export class SelectCountingCircleDialogComponent {
   public readonly countingCircles: CountingCircle[];

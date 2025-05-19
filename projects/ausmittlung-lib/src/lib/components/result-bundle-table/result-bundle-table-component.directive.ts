@@ -122,15 +122,17 @@ export abstract class ResultBundleTableComponent<T extends PoliticalBusinessResu
     this.canUpdateAll = await this.permissionService.hasPermission(Permissions.PoliticalBusinessResultBundle.UpdateAll);
     this.canRead = await this.permissionService.hasPermission(Permissions.PoliticalBusinessResultBallot.Read);
     this.canReadAll = await this.permissionService.hasPermission(Permissions.PoliticalBusinessResultBallot.ReadAll);
-    this.stateList = this.enumUtil.getArrayWithDescriptions<BallotBundleState>(BallotBundleState, 'ELECTION.BUNDLE_STATES.');
-    this.dataSource.filterDataAccessor = (data: T, filterId: string) => this.dataAccessor(data, filterId);
-    this.dataSource.sortingDataAccessor = (data: T, filterId: string) => this.dataAccessor(data, filterId);
+    const allStates = this.enumUtil.getArrayWithDescriptions<BallotBundleState>(BallotBundleState, 'ELECTION.BUNDLE_STATES.');
+    this.stateList = allStates.map(x => ({ ...x, value: this.getBundleOrderNumber(x.value) }));
   }
 
   public ngAfterViewInit(): void {
     if (this.enablePagination && this.paginator) {
       this.dataSource.paginator = this.paginator;
     }
+
+    this.dataSource.filterDataAccessor = (data: T, filterId: string) => this.dataAccessor(data, filterId);
+    this.dataSource.sortingDataAccessor = (data: T, filterId: string) => this.dataAccessor(data, filterId);
 
     this.dataSource.sort = this.sort;
     this.dataSource.filter = this.filter;
@@ -207,6 +209,27 @@ export abstract class ResultBundleTableComponent<T extends PoliticalBusinessResu
       return data.reviewedBy?.fullName ?? '';
     }
 
+    if (filterId === this.stateColumn) {
+      return this.getBundleOrderNumber(data.state);
+    }
+
     return (data as Record<string, any>)[filterId] ?? '';
+  }
+
+  private getBundleOrderNumber(state: BallotBundleState): number {
+    switch (state) {
+      case BallotBundleState.BALLOT_BUNDLE_STATE_READY_FOR_REVIEW:
+        return 1;
+      case BallotBundleState.BALLOT_BUNDLE_STATE_IN_CORRECTION:
+        return 2;
+      case BallotBundleState.BALLOT_BUNDLE_STATE_IN_PROCESS:
+        return 3;
+      case BallotBundleState.BALLOT_BUNDLE_STATE_REVIEWED:
+        return 4;
+      case BallotBundleState.BALLOT_BUNDLE_STATE_DELETED:
+        return 5;
+      default:
+        throw new Error('invalid bundle state');
+    }
   }
 }

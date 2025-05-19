@@ -16,6 +16,7 @@
       <vo-ausm-contest-vote-detail-ballot
         *ngFor="let ballotResult of resultDetail.results"
         [eVoting]="eVoting"
+        [eCounting]="eCounting"
         [totalCountOfVoters]="resultDetail.totalCountOfVoters"
         (countOfVotersChange)="updateCountOfVotersValid(); updateUnsavedChanges()"
         (countOfAnswersChanged)="updateUnsavedChanges()"
@@ -27,6 +28,7 @@
     <ng-template #detailedResultsContent>
         <vo-ausm-contest-vote-detail-detailed
           [eVoting]="eVoting"
+          [eCounting]="eCounting"
           [totalCountOfVoters]="resultDetail.totalCountOfVoters"
           (countOfVotersChange)="updateCountOfVotersValid(); updateUnsavedChanges()"
           [readonly]="resultReadonly || !canEnterResults"

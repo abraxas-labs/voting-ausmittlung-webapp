@@ -12,6 +12,7 @@ import { PoliticalBusinessNullableCountOfVoters, updateCountOfVotersCalculatedFi
   selector: 'vo-ausm-ballot-count-input',
   templateUrl: './ballot-count-input.component.html',
   styleUrls: ['./ballot-count-input.component.scss'],
+  standalone: false,
 })
 export class BallotCountInputComponent {
   @Input()
@@ -25,6 +26,13 @@ export class BallotCountInputComponent {
 
   @Input()
   public eVoting: boolean = false;
+
+  @Input()
+  public eCounting: boolean = false;
+
+  public get hasMultipleRows(): boolean {
+    return this.eVoting || this.eCounting;
+  }
 
   @Input()
   public countOfVoters!: PoliticalBusinessNullableCountOfVoters;

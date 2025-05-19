@@ -11,6 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
 
 @Pipe({
   name: 'validationGroup',
+  standalone: false,
 })
 export class ValidationGroupPipe implements PipeTransform {
   constructor(private readonly i18n: TranslateService) {}

@@ -32,6 +32,7 @@ import { BallotHeaderComponent } from '../../../components/ballot-header/ballot-
   selector: 'vo-ausm-vote-ballot',
   templateUrl: './vote-ballot.component.html',
   styleUrls: ['./vote-ballot.component.scss'],
+  standalone: false,
 })
 export class VoteBallotComponent extends PoliticalBusinessBallotComponent<VoteResult, PoliticalBusinessResultBundle, VoteResultBallot> {
   public BallotType: typeof BallotType = BallotType;
@@ -185,6 +186,7 @@ export class VoteBallotComponent extends PoliticalBusinessBallotComponent<VoteRe
       number: this.route.snapshot.queryParams.bundleNumber,
       createdBy: await this.userService.getUser(),
       ballotNumbersToReview: [],
+      logs: [],
     };
     this.computeBundleData();
   }

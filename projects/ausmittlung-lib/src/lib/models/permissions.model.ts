@@ -136,9 +136,14 @@ export class Permissions {
 
   private static readonly ImportPrefix = 'Import';
   public static readonly Import = {
-    ImportData: Permissions.ImportPrefix + ':import',
-    Read: Permissions.ImportPrefix + ReadSuffix,
-    Delete: Permissions.ImportPrefix + DeleteSuffix,
+    ImportECounting: Permissions.ImportPrefix + ':import-ecounting',
+    ReadECounting: Permissions.ImportPrefix + ':read-ecounting',
+    DeleteECounting: Permissions.ImportPrefix + ':delete-ecounting',
+
+    ImportEVoting: Permissions.ImportPrefix + ':import-evoting',
+    ReadEVoting: Permissions.ImportPrefix + ':read-evoting',
+    DeleteEVoting: Permissions.ImportPrefix + ':delete-evoting',
+
     ListenToImportChanges: Permissions.ImportPrefix + ':listen-import-changes',
   };
 
