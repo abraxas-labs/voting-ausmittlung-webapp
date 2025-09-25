@@ -12,8 +12,8 @@ import {
   PoliticalBusinessNullableCountOfVoters as PoliticalBusinessNullableCountOfVotersProto,
   PoliticalBusinessNullableCountOfVotersSubTotal as PoliticalBusinessNullableCountOfVotersSubTotalProto,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/count_of_voters_pb';
-import { SexType, VoterType } from '.';
 import { ReplaceProtoOptionalInts } from '../services/utils/proto.utils';
+import { DomainOfInfluenceType, SexType, VoterType } from '.';
 
 export {
   CountOfVotersInformationProto,
@@ -44,6 +44,14 @@ export interface CountOfVotersInformationSubTotal {
   sex: SexType;
   voterType: VoterType;
   countOfVoters?: number;
+  domainOfInfluenceType: DomainOfInfluenceType;
+}
+
+export interface ElectorateCountOfVotersInformationSubTotal {
+  sex: SexType;
+  voterType: VoterType;
+  countOfVoters?: number;
+  domainOfInfluenceTypes: DomainOfInfluenceType[];
 }
 
 export function updateCountOfVotersCalculatedFields(

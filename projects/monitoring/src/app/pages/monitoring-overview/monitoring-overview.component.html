@@ -3,7 +3,7 @@
     <vo-ausm-breadcrumbs left [items]="[{name: 'MONITORING_COCKPIT.TITLE'}]"></vo-ausm-breadcrumbs>
     <vo-ausm-contest-header center [contest]="resultOverview?.contest"></vo-ausm-contest-header>
     <div right>
-      <bc-button *ngIf="resultOverview && !resultOverview.contest.locked"
+      <bc-button *ngIf="resultOverview && !resultOverview.contest.locked && exportConfigs.length > 0"
                  variant="tertiary"
                  [label]="'CONTEST.DETAIL.EXPORT_COCKPIT' | translate"
                  (buttonClick)="exportCockpit()"></bc-button>

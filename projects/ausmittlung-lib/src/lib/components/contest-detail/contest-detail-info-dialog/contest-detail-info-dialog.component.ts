@@ -6,7 +6,13 @@
 
 import { Component, HostListener, Inject, OnDestroy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { CountOfVotersInformation, DomainOfInfluenceType, VoterType, VotingCardChannel, VotingCardResultDetail } from '../../../models';
+import {
+  CountOfVotersInformationSubTotal,
+  DomainOfInfluenceType,
+  VoterType,
+  VotingCardChannel,
+  VotingCardResultDetail,
+} from '../../../models';
 import { CountingMachine } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/counting_machine_pb';
 import { DialogService, EnumItemDescription, EnumUtil } from '@abraxas/voting-lib';
 import { ContestCountingCircleElectorateSummary } from '../../../models/contest-counting-circle-electorate.model';
@@ -39,7 +45,7 @@ export class ContestDetailInfoDialogComponent implements OnDestroy {
   public countingMachineEnabled: boolean;
   public eVoting: boolean;
   public enabledVoterTypes: VoterType[];
-  public countOfVoters: CountOfVotersInformation;
+  public countOfVotersInformationSubTotals: CountOfVotersInformationSubTotal[];
   public votingCards: VotingCardResultDetail[];
   public enabledVotingCardChannels: VotingCardChannel[];
   public countingMachine: CountingMachine;
@@ -50,7 +56,7 @@ export class ContestDetailInfoDialogComponent implements OnDestroy {
 
   public hasChanges: boolean = false;
   public originalVotingCards: VotingCardResultDetail[];
-  public originalCountOfVoters: CountOfVotersInformation;
+  public originalCountOfVotersInformationSubTotals: CountOfVotersInformationSubTotal[];
   public originalCountingMachine: CountingMachine;
 
   public readonly backdropClickSubscription: Subscription;
@@ -67,7 +73,7 @@ export class ContestDetailInfoDialogComponent implements OnDestroy {
     this.countingMachineEnabled = dialogData.countingMachineEnabled;
     this.eVoting = dialogData.eVoting;
     this.enabledVoterTypes = dialogData.enabledVoterTypes;
-    this.countOfVoters = cloneDeep(dialogData.countOfVoters);
+    this.countOfVotersInformationSubTotals = cloneDeep(dialogData.countOfVotersInformationSubTotals);
     this.votingCards = dialogData.votingCards;
     this.enabledVotingCardChannels = dialogData.enabledVotingCardChannels;
     this.countingMachine = dialogData.countingMachine;
@@ -78,7 +84,7 @@ export class ContestDetailInfoDialogComponent implements OnDestroy {
     this.countingMachines = enumUtil.getArrayWithDescriptions<CountingMachine>(CountingMachine, 'COUNTING_MACHINES.');
 
     this.originalVotingCards = cloneDeep(this.votingCards);
-    this.originalCountOfVoters = cloneDeep(this.countOfVoters);
+    this.originalCountOfVotersInformationSubTotals = cloneDeep(this.countOfVotersInformationSubTotals);
     this.originalCountingMachine = cloneDeep(this.countingMachine);
 
     this.dialogRef.disableClose = true;
@@ -100,7 +106,7 @@ export class ContestDetailInfoDialogComponent implements OnDestroy {
   public async save(): Promise<void> {
     this.hasChanges = false;
     this.dialogRef.close({
-      countOfVoters: this.countOfVoters,
+      countOfVotersInformationSubTotals: this.countOfVotersInformationSubTotals,
       votingCards: this.votingCards,
       countingMachine: this.countingMachine,
     });
@@ -109,7 +115,7 @@ export class ContestDetailInfoDialogComponent implements OnDestroy {
   public contentChanged(): void {
     this.hasChanges =
       !isEqual(this.votingCards, this.originalVotingCards) ||
-      !isEqual(this.countOfVoters, this.originalCountOfVoters) ||
+      !isEqual(this.countOfVotersInformationSubTotals, this.originalCountOfVotersInformationSubTotals) ||
       !isEqual(this.countingMachine, this.originalCountingMachine);
   }
 
@@ -124,7 +130,7 @@ export interface ContestDetailInfoDialogData {
   countingMachineEnabled: boolean;
   eVoting: boolean;
   enabledVoterTypes: VoterType[];
-  countOfVoters: CountOfVotersInformation;
+  countOfVotersInformationSubTotals: CountOfVotersInformationSubTotal[];
   votingCards: VotingCardResultDetail[];
   enabledVotingCardChannels: VotingCardChannel[];
   countingMachine: CountingMachine;
@@ -135,7 +141,7 @@ export interface ContestDetailInfoDialogData {
 }
 
 export interface ContestDetailInfoDialogResult {
-  countOfVoters: CountOfVotersInformation;
+  countOfVotersInformationSubTotals: CountOfVotersInformationSubTotal[];
   votingCards: VotingCardResultDetail[];
   countingMachine: CountingMachine;
 }

@@ -8,7 +8,9 @@
   },
   "MONITORING_COCKPIT": {
     "TITLE": "Monitoring Cockpit",
-    "FILTER_COUNTING_CIRCLE": "Auszählungskreise",
+    "COUNTING_CIRCLE": "Auszählungskreis",
+    "STATE": "Fortschritt",
+    "DOMAIN_OF_INFLUENCE_TYPE": "Ebene",
     "NO_DATA": "Keine Daten vorhanden.",
     "ALL_TO_STATE": "Alle auf '{{state}}' setzen",
     "VIEW_RESULTS": "Ergebnisse",

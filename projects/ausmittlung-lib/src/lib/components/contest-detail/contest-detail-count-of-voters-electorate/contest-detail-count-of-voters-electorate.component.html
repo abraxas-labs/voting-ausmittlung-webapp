@@ -1,0 +1,44 @@
+<vo-ausm-contest-detail-voting-cards-expansion-panel
+  [header]="expansionPanelHeaderTitle">
+  <ng-container *ngFor="let voterTypeGroup of voterTypeGroups">
+    <bc-label *ngIf="voterTypeGroup.label" [label]="voterTypeGroup.label | translate"></bc-label>
+
+    <div class="count-of-voters mb-2">
+      <bc-number
+        [readonly]="readonly"
+        [required]="true"
+        [min]="0"
+        [(value)]="voterTypeGroup.menSubTotal.countOfVoters"
+        (valueChange)="updateTotal()"
+        [label]="'CONTEST.DETAIL.MEN' | translate"
+        [subscriptSizing]="'dynamic'"
+      ></bc-number>
+
+      <bc-number
+        [readonly]="readonly"
+        [required]="true"
+        [min]="0"
+        [(value)]="voterTypeGroup.womenSubTotal.countOfVoters"
+        (valueChange)="updateTotal()"
+        [label]="'CONTEST.DETAIL.WOMEN' | translate"
+        [subscriptSizing]="'dynamic'"
+      ></bc-number>
+
+      <bc-number
+        [readonly]="true"
+        [tabIndex]="-1"
+        [required]="true"
+        [value]="voterTypeGroup.total"
+        [label]="'CONTEST.DETAIL.TOTAL' | translate"
+        [subscriptSizing]="'dynamic'">
+      </bc-number>
+    </div>
+  </ng-container>
+
+  <bc-checkbox
+    [disabled]="true"
+    [label]="'CONTEST.DETAIL.E_VOTING_ACTIVE' | translate"
+    [checked]="eVoting"
+    [subscriptSizing]="'dynamic'"
+  ></bc-checkbox>
+</vo-ausm-contest-detail-voting-cards-expansion-panel>

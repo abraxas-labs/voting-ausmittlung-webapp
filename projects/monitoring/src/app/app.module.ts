@@ -32,6 +32,7 @@ import {
   TenantModule,
   TextModule,
   TooltipModule,
+  TruncateWithTooltipModule,
   UserModule,
 } from '@abraxas/base-components';
 import { ENV_INJECTION_TOKEN, GRPC_INTERCEPTORS, VotingLibModule } from '@abraxas/voting-lib';
@@ -68,8 +69,7 @@ import { MajorityElectionEndResultCandidatesListComponent } from './components/m
 import { MajorityElectionLotDecisionDialogComponent } from './components/majority-election-lot-decision-dialog/majority-election-lot-decision-dialog.component';
 import { MajorityElectionLotDecisionListComponent } from './components/majority-election-lot-decision-dialog/majority-election-lot-decision-list/majority-election-lot-decision-list.component';
 import { MonitoringCockpitGridEntryComponent } from './components/monitoring-cockpit-grid-entry/monitoring-cockpit-grid-entry.component';
-import { MonitoringCockpitGridFooterButtonsComponent } from './components/monitoring-cockpit-grid-footer/monitoring-cockpit-grid-footer-buttons/monitoring-cockpit-grid-footer-buttons.component';
-import { MonitoringCockpitGridFooterComponent } from './components/monitoring-cockpit-grid-footer/monitoring-cockpit-grid-footer.component';
+import { MonitoringCockpitGridButtonsComponent } from './components/monitoring-cockpit-grid-button-container/monitoring-cockpit-grid-buttons/monitoring-cockpit-grid-buttons.component';
 import { MonitoringCockpitGridComponent } from './components/monitoring-cockpit-grid/monitoring-cockpit-grid.component';
 import { ProportionalElectionLotDecisionDialogComponent } from './components/proportional-election-lot-decision-dialog/proportional-election-lot-decision-dialog.component';
 import { MajorityElectionEndResultComponent } from './pages/majority-election-end-result/majority-election-end-result.component';
@@ -100,6 +100,7 @@ import { ProportionalElectionListLotDecisionEditDialogComponent } from './compon
 import { ProportionalElectionListLotDecisionEditListsTableComponent } from './components/proportional-election-list-lot-decision-edit-dialog/proportional-election-list-lot-decision-edit-lists-table/proportional-election-list-lot-decision-edit-lists-table.component';
 import { ProportionalElectionListLotDecisionEditListUnionsTableComponent } from './components/proportional-election-list-lot-decision-edit-dialog/proportional-election-list-lot-decision-edit-list-unions-table/proportional-election-list-lot-decision-edit-list-unions-table.component';
 import { StorageService } from './services/storage.service';
+import { MonitoringCockpitGridButtonContainerComponent } from './components/monitoring-cockpit-grid-button-container/monitoring-cockpit-grid-button-container.component';
 
 registerLocaleData(localeDeCh);
 
@@ -111,7 +112,6 @@ registerLocaleData(localeDeCh);
     MonitoringContestDetailComponent,
     MonitoringContestOverviewComponent,
     MonitoringOverviewComponent,
-    MonitoringCockpitGridFooterComponent,
     EndResultPageComponent,
     VoteEndResultComponent,
     BallotEndResultComponent,
@@ -126,7 +126,7 @@ registerLocaleData(localeDeCh);
     ProportionalElectionEndResultComponent,
     ProportionalElectionLotDecisionDialogComponent,
     ProportionalElectionManualEndResultDialogComponent,
-    MonitoringCockpitGridFooterButtonsComponent,
+    MonitoringCockpitGridButtonsComponent,
     ExportCockpitDialogComponent,
     ExportCockpitPoliticalBusinessesComponent,
     MonitoringPoliticalBusinessesOverviewComponent,
@@ -145,6 +145,7 @@ registerLocaleData(localeDeCh);
     ProportionalElectionListLotDecisionsDialogComponent,
     ProportionalElectionListLotDecisionEditListsTableComponent,
     ProportionalElectionListLotDecisionEditListUnionsTableComponent,
+    MonitoringCockpitGridButtonContainerComponent,
   ],
   imports: [
     BrowserModule,
@@ -189,6 +190,7 @@ registerLocaleData(localeDeCh);
     SwitchModule,
     StatusLabelModule,
     DividerModule,
+    TruncateWithTooltipModule,
   ],
   providers: [
     ...getCommonProviders(),

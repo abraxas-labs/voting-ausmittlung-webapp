@@ -35,6 +35,7 @@ import { VOTING_AUSMITTLUNG_MONITORING_WEBAPP_URL } from '../../../tokens';
 import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/political_business_pb';
 import { UnsavedChangesService } from '../../../services/unsaved-changes.service';
 import { cloneDeep, isEqual } from 'lodash';
+import { ResultService } from '../../../services/result.service';
 
 @Directive()
 export abstract class AbstractContestPoliticalBusinessDetailComponent<
@@ -138,8 +139,10 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
     }
 
     this.resultDetail.totalCountOfVoters = sum(
-      values.countOfVotersInformation.subTotalInfoList.filter(x =>
-        this.resultDetail!.politicalBusiness.enabledVoterTypesList.includes(x.voterType),
+      values.countOfVotersInformationSubTotals.filter(
+        x =>
+          this.resultDetail!.politicalBusiness.enabledVoterTypesList.includes(x.voterType) &&
+          this.resultDetail!.politicalBusiness.domainOfInfluence!.type === x.domainOfInfluenceType,
       ),
       x => x.countOfVoters,
     );
@@ -188,30 +191,7 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
       this.lastSavedResultDetail!.state = event.newState;
       this.toast.success(this.i18n.instant('APP.SAVED'));
       this.result.state = this.resultDetail.state = event.newState;
-
-      switch (this.result.state) {
-        case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING:
-          this.result.submissionDoneTimestamp = undefined;
-          break;
-        case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION:
-          this.result.submissionDoneTimestamp = undefined;
-          this.result.readyForCorrectionTimestamp = new Date();
-          break;
-        case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE:
-          this.result.submissionDoneTimestamp = new Date();
-          break;
-        case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE:
-          this.result.submissionDoneTimestamp = new Date();
-          this.result.readyForCorrectionTimestamp = undefined;
-          break;
-        case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY:
-          this.result.auditedTentativelyTimestamp = new Date();
-          break;
-        case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED:
-          this.result.plausibilisedTimestamp = new Date();
-          break;
-      }
-
+      ResultService.updateResultStateTimestamps(this.result, new Date());
       this.politicalBusinessResultService.resultStateChanged(this.resultDetail.id, event.newState, event.comment);
     } finally {
       this.isActionExecuting = false;
@@ -311,13 +291,23 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
         }
 
         if (oldState === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING) {
-          await this.resultService.submissionFinishedAndAuditedTentatively(id);
+          const secondFactorTransaction = await this.resultService.prepareSubmissionFinishedAndAuditedTentatively(id);
+          await this.secondFactorTransactionService.showDialogAndExecuteVerifyAction(
+            () => this.resultService.submissionFinishedAndAuditedTentatively(id, secondFactorTransaction.getId()),
+            secondFactorTransaction.getCode(),
+            secondFactorTransaction.getQrCode(),
+          );
           this.openMonitoring();
           break;
         }
 
         if (oldState === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION) {
-          await this.resultService.correctionFinishedAndAuditedTentatively(id);
+          const secondFactorTransaction = await this.resultService.prepareCorrectionFinishedAndAuditedTentatively(id);
+          await this.secondFactorTransactionService.showDialogAndExecuteVerifyAction(
+            () => this.resultService.correctionFinishedAndAuditedTentatively(id, secondFactorTransaction.getId()),
+            secondFactorTransaction.getCode(),
+            secondFactorTransaction.getQrCode(),
+          );
           this.openMonitoring();
           break;
         }

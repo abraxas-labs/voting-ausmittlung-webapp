@@ -50,7 +50,7 @@ export class ContestCountingCircleDetailsService extends GrpcService<ContestCoun
     };
   }
 
-  private static mapToCountOfVotersInformationSubTotal(data: CountOfVotersInformationSubTotalProto): CountOfVotersInformationSubTotal {
+  public static mapToCountOfVotersInformationSubTotal(data: CountOfVotersInformationSubTotalProto): CountOfVotersInformationSubTotal {
     const protoObj = data.toObject();
     return {
       ...protoObj,
@@ -78,12 +78,13 @@ export class ContestCountingCircleDetailsService extends GrpcService<ContestCoun
       request.addVotingCards(vcDetailReq);
     }
 
-    for (const subtotal of details.countOfVotersInformation.subTotalInfoList) {
+    for (const subtotal of details.countOfVotersInformationSubTotals) {
       const countOfVotersReq = new UpdateCountOfVotersInformationSubTotalRequest();
       countOfVotersReq.setCountOfVoters(createInt32Value(subtotal.countOfVoters));
       countOfVotersReq.setVoterType(subtotal.voterType);
       countOfVotersReq.setSex(subtotal.sex);
-      request.addCountOfVoters(countOfVotersReq);
+      countOfVotersReq.setDomainOfInfluenceType(subtotal.domainOfInfluenceType);
+      request.addCountOfVotersInformationSubTotals(countOfVotersReq);
     }
 
     return request;

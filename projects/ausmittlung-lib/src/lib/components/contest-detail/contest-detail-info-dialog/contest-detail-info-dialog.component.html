@@ -5,7 +5,9 @@
     <vo-ausm-contest-detail-count-of-voters [readonly]="readonly"
                                             [eVoting]="eVoting"
                                             [enabledVoterTypes]="enabledVoterTypes"
-                                            [countOfVoters]="countOfVoters"
+                                            [countOfVotersInformationSubTotals]="countOfVotersInformationSubTotals"
+                                            [domainOfInfluenceTypes]="domainOfInfluenceTypes"
+                                            [electorates]="electorateSummary?.effectiveElectoratesList"
                                             (countOfVotersChange)="contentChanged()"></vo-ausm-contest-detail-count-of-voters>
 
     <vo-ausm-contest-detail-voting-cards *ngIf="domainOfInfluenceTypes"

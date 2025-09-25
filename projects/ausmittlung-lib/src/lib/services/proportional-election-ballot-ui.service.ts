@@ -178,23 +178,6 @@ export class ProportionalElectionBallotUiService {
     this.updateEditableCandidatesForRemovedCandidate(candidate, uiData);
   }
 
-  public removeCandidatesInRange(startNumber: string, endNumber: string, uiData: ProportionalElectionBallotUiData): void {
-    const start = +startNumber;
-    const end = +endNumber;
-
-    if (isNaN(start) || isNaN(end)) {
-      return;
-    }
-
-    for (let i = start; i <= end; i++) {
-      const candidate = uiData.removableCandidatesInRangeByNumber[i];
-      if (!candidate) {
-        continue;
-      }
-      this.removeCandidateAtLastFoundPosition(candidate, uiData);
-    }
-  }
-
   public addCandidateAtFirstAvailablePosition(
     candidate: ProportionalElectionBallotCandidate,
     uiData: ProportionalElectionBallotUiData,

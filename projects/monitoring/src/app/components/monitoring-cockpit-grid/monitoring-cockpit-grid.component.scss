@@ -1,56 +1,11 @@
 @use '@abraxas/voting-lib/style/color' as *;
 @use '@abraxas/voting-lib/style/spacing' as *;
-
-.cockpit-grid {
-  display: grid;
-  grid-gap: 8px;
-  align-items: center;
-  padding-top: 2rem;
-}
-
-.filter {
-  @extend .p-2;
-
-  background-color: $color-grey-7;
-  border: 1px solid $color-grey-6;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-
-  &.large {
-    font-size: 1.1rem;
-  }
-
-  &.active {
-    background-color: $color-primary;
-    color: $color-white;
-  }
-
-  &.not-clickable {
-    cursor: default;
-  }
-}
-
-.counting-circle-filter {
-  min-width: 13rem;
-}
-
-.skip-col-1 {
-  grid-column-start: 2;
-}
-
-.col-span-2 {
-  grid-column: span 2 / span 2;
-}
+@use '@abraxas/voting-lib/style/table' as table;
 
 .state-colorbox {
   border-radius: 4px;
   width: 1.7rem;
   height: 1.7rem;
-}
-
-.clickable {
-  cursor: pointer;
 }
 
 bc-segmented-control-group {
@@ -77,4 +32,25 @@ bc-segmented-control-group {
   span {
     margin-left: 0.5rem;
   }
+}
+
+.sticky-sub-header {
+  top: 103px !important; // height from the normal header, to keep the sub-header below
+}
+
+.bc-column-state {
+  width: 6rem;
+}
+
+.bc-column-counting-circle {
+  width: 10rem;
+}
+
+::ng-deep [class*='bc-column-id-'] {
+  @include table.truncate-long-sortable-table-header();
+}
+
+.flex {
+  display: flex;
+  gap: 3rem;
 }

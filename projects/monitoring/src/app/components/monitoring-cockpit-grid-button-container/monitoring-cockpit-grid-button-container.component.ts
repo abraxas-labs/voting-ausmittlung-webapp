@@ -4,30 +4,28 @@
  * For license information see LICENSE file.
  */
 
-import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/political_business_pb';
-import { SnackbarService } from '@abraxas/voting-lib';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, Input } from '@angular/core';
+import { FilteredCountingCircleResults } from '../monitoring-cockpit-grid/monitoring-cockpit-grid.component';
 import {
   ContestCantonDefaults,
   CountingCircleResultState,
-  DomainOfInfluenceType,
   flatten,
   MajorityElectionResultService,
+  PoliticalBusinessType,
   PoliticalBusinessUnion,
   ProportionalElectionResultService,
   SimplePoliticalBusiness,
   VoteResultService,
 } from 'ausmittlung-lib';
-import { FilteredCountingCircleResults } from '../monitoring-cockpit-grid/monitoring-cockpit-grid.component';
+import { TranslateService } from '@ngx-translate/core';
+import { SnackbarService } from '@abraxas/voting-lib';
 
 @Component({
-  selector: 'app-monitoring-cockpit-grid-footer',
-  templateUrl: './monitoring-cockpit-grid-footer.component.html',
-  styleUrls: ['./monitoring-cockpit-grid-footer.component.scss'],
+  selector: 'app-monitoring-cockpit-button-container',
+  templateUrl: './monitoring-cockpit-grid-button-container.component.html',
   standalone: false,
 })
-export class MonitoringCockpitGridFooterComponent {
+export class MonitoringCockpitGridButtonContainerComponent {
   @Input()
   public filteredCountingCircleResults: FilteredCountingCircleResults[] = [];
 
@@ -35,25 +33,16 @@ export class MonitoringCockpitGridFooterComponent {
   public countingCircleResults: FilteredCountingCircleResults[] = [];
 
   @Input()
-  public filteredDomainOfInfluenceTypes: DomainOfInfluenceType[] = [];
-
-  @Input()
-  public filteredPoliticalBusinessesByDoiType: Record<number, SimplePoliticalBusiness[]> = [];
-
-  @Input()
-  public filteredPoliticalBusinessUnionsByDoiType: Record<number, PoliticalBusinessUnion[]> = [];
-
-  @Input()
-  public politicalBusinessUnionByPoliticalBusinessId: Record<string, PoliticalBusinessUnion> = {};
-
-  @Input()
   public readOnly: boolean = true;
 
   @Input()
   public contestCantonDefaults?: ContestCantonDefaults;
 
-  @Output()
-  public loadingChange: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Input()
+  public politicalBusiness?: SimplePoliticalBusiness;
+
+  @Input()
+  public politicalBusinessUnion?: PoliticalBusinessUnion;
 
   private loadingValue: boolean = false;
 
@@ -71,7 +60,6 @@ export class MonitoringCockpitGridFooterComponent {
 
   public set loading(v: boolean) {
     this.loadingValue = v;
-    this.loadingChange.emit(v);
   }
 
   public async updateAllStates(politicalBusinesses: SimplePoliticalBusiness[], newState: CountingCircleResultState): Promise<void> {

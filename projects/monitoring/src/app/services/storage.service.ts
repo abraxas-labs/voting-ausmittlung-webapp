@@ -5,6 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
+import { DomainOfInfluenceType } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/domain_of_influence_pb';
 
 @Injectable()
 export class StorageService {
@@ -16,6 +17,7 @@ export class StorageService {
   public readonly monitoringCockpitTabPoliticalBusinessOverview: string = 'politicalBusinessOverview';
 
   private readonly stateFilterKey: string = 'stateFilter';
+  private readonly doiTypeFilterKey: string = 'doiTypeFilter';
   private readonly monitoringCockpitTabKey: string = 'monitoringCockpitTab';
   private readonly monitoringCockpitSelectedPoliticalBusinessIdKey: string = 'monitoringCockpitSelectedPoliticalBusinessId';
   private readonly monitoringCockpitColumnIdsKey: string = 'monitoringCockpitColumnIds';
@@ -26,6 +28,19 @@ export class StorageService {
 
   public storeStateFilter(value: string): void {
     sessionStorage.setItem(this.stateFilterKey, value);
+  }
+
+  public getDoiTypeFilter(): DomainOfInfluenceType[] | null {
+    const doiTypes = sessionStorage.getItem(this.doiTypeFilterKey);
+    if (!doiTypes) {
+      return null;
+    }
+
+    return JSON.parse(doiTypes);
+  }
+
+  public storeDoiTypeFilter(value: DomainOfInfluenceType[]): void {
+    sessionStorage.setItem(this.doiTypeFilterKey, JSON.stringify(value));
   }
 
   public getMonitoringCockpitTab(): string | null {

@@ -29,12 +29,14 @@
     <ng-container>
       <h2 class="mt-3" translate>CONTEST.DETAIL.COUNT_OF_VOTERS_AND_VOTING_CARDS</h2>
 
+      <!-- Component should be re-rendered when the counting circle is changed -->
       <vo-ausm-contest-detail-info
+        *ngIf="!loading"
         [eVoting]="resultList.details.eVoting"
         [eCounting]="resultList.details.eCounting"
         [eCountingResultsImported]="resultList.details.eCountingResultsImported"
         [enabledVoterTypes]="resultList.enabledVoterTypes"
-        [countOfVoters]="resultList.details.countOfVotersInformation"
+        [countOfVotersInformationSubTotals]="resultList.details.countOfVotersInformationSubTotals"
         [votingCards]="resultList.details.votingCards"
         [enabledVotingCardChannels]="resultList.enabledVotingCardChannels"
         [domainOfInfluenceTypes]="domainOfInfluenceTypes"

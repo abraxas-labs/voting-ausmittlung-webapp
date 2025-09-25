@@ -5,7 +5,7 @@
  */
 
 import { SnackbarService } from '@abraxas/voting-lib';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { ExportService, ResultExportConfiguration, SimplePoliticalBusiness } from 'ausmittlung-lib';
@@ -16,8 +16,7 @@ import { ExportService, ResultExportConfiguration, SimplePoliticalBusiness } fro
   styleUrls: ['./export-cockpit-dialog.component.scss'],
   standalone: false,
 })
-export class ExportCockpitDialogComponent implements OnInit {
-  public loading: boolean = true;
+export class ExportCockpitDialogComponent {
   public saving: boolean = false;
   public triggeringExport: boolean = false;
   public triggerModeAuto: boolean = false;
@@ -33,16 +32,11 @@ export class ExportCockpitDialogComponent implements OnInit {
     private readonly i18n: TranslateService,
     private readonly toast: SnackbarService,
     @Inject(MAT_DIALOG_DATA) public readonly dialogData: ExportCockpitDialogData,
-  ) {}
+  ) {
+    this.configs = dialogData.exportConfigs;
 
-  public async ngOnInit(): Promise<void> {
-    try {
-      this.configs = await this.exportService.listResultExportConfigurations(this.dialogData.contestId);
-      if (this.configs.length > 0) {
-        this.selectedConfig = this.configs[0];
-      }
-    } finally {
-      this.loading = false;
+    if (this.configs.length > 0) {
+      this.selectedConfig = this.configs[0];
     }
   }
 
@@ -113,4 +107,5 @@ export class ExportCockpitDialogComponent implements OnInit {
 export interface ExportCockpitDialogData {
   contestId: string;
   politicalBusinesses: SimplePoliticalBusiness[];
+  exportConfigs: ResultExportConfiguration[];
 }

@@ -76,6 +76,7 @@
         "3": "E-Voting",
         "4": "vorzeitig",
         "TOTAL_VALID": "Total gültige",
+        "CONVENTIONAL_TOTAL_VALID": "Konventionell gültig",
         "TOTAL": "Total"
       },
       "INFO": {
@@ -114,8 +115,12 @@
         },
         "CONFIRM_DETAILS_RESET": {
           "TITLE": "Elektorate speichern?",
-          "MESSAGE": "Sind Sie sicher dass Sie die Elektorate speichern wollen? Eine Speicherung setzt alle erfassten Stimmrechtsausweise zurück."
+          "MESSAGE": "Sind Sie sicher dass Sie die Elektorate speichern wollen? Eine Speicherung setzt alle erfassten Stimmrechtsausweise und Stimmberechtigte zurück."
         }
+      },
+      "CONFIRM_RESULTS_RESET": {
+        "TITLE": "Status zurücksetzen und Teilergebnisse löschen?",
+        "MESSAGE": "Sollen die erfassten Ergebnisse wirklich gelöscht werden?"
       },
       "STATE_ACTION": {
         "LABEL": "Status ändern",
@@ -451,10 +456,6 @@
       "GENERATE": "Kontrollblatt generieren",
       "START_GENERATE": "Generieren",
       "WITHOUT_LIST": "Wahlzettel ohne Parteibezeichnung",
-      "REMOVE_RANGE": {
-        "START": "Kandidat/in entfernen von",
-        "END": "bis"
-      },
       "SHORTCUT": {
         "BALLOT_DELETE": {
           "TEXT": "Wahlzettel löschen",
@@ -724,6 +725,7 @@
       "2": "abgeschlossen",
       "3": "fehlgeschlagen"
     },
+    "MORE_PROTOCOLS": "Weitere Protokolle",
     "DATA_EXPORT_FAILED": "Export konnte nicht generiert werden. Evtl. schlug die Schema-Validierung fehl."
   },
   "DOMAIN_OF_INFLUENCE": {

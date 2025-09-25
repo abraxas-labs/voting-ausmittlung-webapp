@@ -36,9 +36,13 @@ export abstract class PoliticalBusinessResultBaseService<
 
   public abstract resetToAuditedTentatively(resultIds: string[]): Promise<void>;
 
-  public abstract submissionFinishedAndAuditedTentatively(resultId: string): Promise<void>;
+  public abstract prepareSubmissionFinishedAndAuditedTentatively(resultId: string): Promise<SecondFactorTransaction>;
 
-  public abstract correctionFinishedAndAuditedTentatively(resultId: string): Promise<void>;
+  public abstract submissionFinishedAndAuditedTentatively(resultId: string, secondFactorTransactionId: string): Observable<void>;
+
+  public abstract prepareCorrectionFinishedAndAuditedTentatively(resultId: string): Promise<SecondFactorTransaction>;
+
+  public abstract correctionFinishedAndAuditedTentatively(resultId: string, secondFactorTransactionId: string): Observable<void>;
 
   public abstract publish(resultIds: string[]): Promise<void>;
 

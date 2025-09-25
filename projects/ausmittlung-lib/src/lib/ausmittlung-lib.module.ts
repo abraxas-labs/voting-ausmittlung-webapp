@@ -90,7 +90,6 @@ import { MajorityElectionSecondaryInfoComponent } from './components/majority-el
 import { PoliticalBusinessBallotButtonBarComponent } from './components/political-business-ballot-button-bar/political-business-ballot-button-bar.component';
 import { PoliticalBusinessNewBundleNumberComponent } from './components/political-business-new-bundle-number/political-business-new-bundle-number.component';
 import { ProportionalElectionBallotCandidateModifyComponent } from './components/proportional-election/proportional-election-ballot-candidate-modify/proportional-election-ballot-candidate-modify.component';
-import { ProportionalElectionBallotCandidateRemoveRangeComponent } from './components/proportional-election/proportional-election-ballot-candidate-remove-range/proportional-election-ballot-candidate-remove-range.component';
 import { ProportionalElectionBallotCandidatesChooseDialogComponent } from './components/proportional-election/proportional-election-ballot-candidates-choose-dialog/proportional-election-ballot-candidates-choose-dialog.component';
 import { ProportionalElectionBallotCandidatesChooseEntryComponent } from './components/proportional-election/proportional-election-ballot-candidates-choose-dialog/proportional-election-ballot-candidates-choose-entry/proportional-election-ballot-candidates-choose-entry.component';
 import { ProportionalElectionBallotCandidatesComponent } from './components/proportional-election/proportional-election-ballot-candidates/proportional-election-ballot-candidates.component';
@@ -150,11 +149,14 @@ import { PoliticalBusinessResultBundleLogsPipe } from './pipes/political-busines
 import { ResultImportListDialogComponent } from './components/result-import-list-dialog/result-import-list-dialog.component';
 import { ResultImportDialogComponent } from './components/result-import-dialog/result-import-dialog.component';
 import { ImportFileSelectComponent } from './components/result-import-dialog/import-file-select/import-file-select.component';
+import { ContestDetailCountOfVotersElectorateComponent } from './components/contest-detail/contest-detail-count-of-voters-electorate/contest-detail-count-of-voters-electorate.component';
+import { RouterLink } from '@angular/router';
 
 @NgModule({
   declarations: [
     ContactPersonDataComponent,
     ContestDetailCountOfVotersComponent,
+    ContestDetailCountOfVotersElectorateComponent,
     ContestDetailVotingCardsComponent,
     ContestVoteDetailComponent,
     ContestListComponent,
@@ -236,7 +238,6 @@ import { ImportFileSelectComponent } from './components/result-import-dialog/imp
     ValidationResultComponent,
     ValidationSummaryComponent,
     BallotHeaderComponent,
-    ProportionalElectionBallotCandidateRemoveRangeComponent,
     MajorityElectionWriteInMappingComponent,
     MajorityElectionWriteInMappingDialogComponent,
     ContestDetailVotingCardsElectorateComponent,
@@ -296,6 +297,7 @@ import { ImportFileSelectComponent } from './components/result-import-dialog/imp
     DividerModule,
     TooltipModule,
     ErrorModule,
+    RouterLink,
   ],
   exports: [
     ContestDetailComponent,

@@ -2,7 +2,6 @@
   <div class="ballot-stats">
     <vo-ausm-proportional-election-ballot-candidate-modify
       *ngIf="!readonly"
-      [showRemoveRange]="showRemoveRange"
       [readonly]="disabled"
       [canAddCandidate]="ballotUiData.emptyVoteCount > 0"
       [addableCandidatesByNumber]="ballotUiData.addableCandidatesByNumber"
@@ -10,7 +9,6 @@
       [candidateCheckDigit]="candidateCheckDigit"
       (addCandidate)="addCandidate($event)"
       (removeCandidate)="removeCandidate($event)"
-      (removeCandidateRange)="removeCandidateRange($event)"
       (contentCompleted)="emptyVotesInput.readonly ? contentCompleted.emit($event) : undefined">
     </vo-ausm-proportional-election-ballot-candidate-modify>
 

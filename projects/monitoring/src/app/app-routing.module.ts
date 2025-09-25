@@ -63,6 +63,8 @@ const routes: Routes = [
             component: ResultExportComponent,
             resolve: {
               contestCantonDefaults: (route: ActivatedRouteSnapshot) => inject(ContestCantonDefaultsResolver).resolve(route),
+              linkBaseUrl: () => '/',
+              isMonitoring: () => true,
             },
           },
           {
@@ -77,6 +79,8 @@ const routes: Routes = [
             component: ResultExportComponent,
             resolve: {
               contestCantonDefaults: (route: ActivatedRouteSnapshot) => inject(ContestCantonDefaultsResolver).resolve(route),
+              linkBaseUrl: () => '/',
+              isMonitoring: () => true,
             },
           },
         ],

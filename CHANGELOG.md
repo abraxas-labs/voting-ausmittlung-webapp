@@ -1,4 +1,4 @@
-# ✨ Changelog (`v3.13.1`)
+# ✨ Changelog (`v3.19.0`)
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,149 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Info
 
 ```text
-This version -------- v3.13.1
-Previous version ---- v3.4.6
+This version -------- v3.19.0
+Previous version ---- v3.13.1
 Initial version ----- v1.25.0
-Total commits ------- 29
+Total commits ------- 25
 ```
+
+## [v3.19.0] - 2025-09-03
+
+### 🆕 Added
+
+- add 2FA to submission finished and audited tentatively methods
+
+## [v3.18.7] - 2025-08-12
+
+### 🔄 Changed
+
+- change majority election candidate result bar relative ratios
+
+## [v3.18.6] - 2025-08-06
+
+### 🔄 Changed
+
+- improve viewing counting circle exports in monitoring
+
+## [v3.18.5] - 2025-08-06
+
+### 🔄 Changed
+
+- adjust contest detail info layout depending of sub total labels
+
+## [v3.18.4] - 2025-08-06
+
+### 🔄 Changed
+
+- fix contst detail info electorate layout
+
+## [v3.18.3] - 2025-07-28
+
+### 🔄 Changed
+
+- fix(VOTING-6086): error snackbar
+
+## [v3.18.2] - 2025-07-23
+
+### 🔄 Changed
+
+- fix update contest details after counting circle switch
+
+## [v3.18.1] - 2025-07-22
+
+### 🔄 Changed
+
+- fix bc number clear spacing and perentage display
+
+## [v3.18.0] - 2025-07-11
+
+### 🔄 Changed
+
+- bump BC version
+
+## [v3.17.5] - 2025-07-07
+
+### 🔄 Changed
+
+- show export cockpit only if the tenant has export configs
+
+## [v3.17.4] - 2025-07-03
+
+### ❌ Removed
+
+- removed proportional election candidate range removal
+
+## [v3.17.3] - 2025-07-02
+
+### 🔄 Changed
+
+- reset result state timestamps correctly
+
+## [v3.17.2] - 2025-06-30
+
+### 🔄 Changed
+
+- support counting circle result reset with monitoring states
+
+## [v3.17.1] - 2025-06-19
+
+### 🔄 Changed
+
+- hide monitoring cockpit action buttons only if to check filter is set
+
+## [v3.17.0] - 2025-06-16
+
+### 🔄 Changed
+
+- show conventional total voting cards
+
+## [v3.16.1] - 2025-06-16
+
+### 🔄 Changed
+
+- only show monitoring status bar when all states are displayed
+
+## [v3.16.0] - 2025-06-02
+
+### 🔄 Changed
+
+- count of voters sub total with domain of influence type
+
+## [v3.15.0] - 2025-05-27
+
+### 🔄 Changed
+
+- refactor dockerfile
+- remove redundant file copies
+- add explicit workdir in final image to avoid surprises
+
+### ❌ Removed
+
+- remove entrypoint shell script since its functionality is shifted to the deployment in ops repo
+
+### 🔒 Security
+
+- using explicit nginx user instead of root for copying nginx configs and webroot
+
+## [v3.14.0] - 2025-05-26
+
+### 🆕 Added
+
+- added links to/from erfassung/monitoring exports
+
+### 🔄 Changed
+
+- monitoring cockpit sort filtered counting circle after every filter update
+
+### 🔄 Changed
+
+- monitoring cockpit filters counting circle results by filtered results
+
+### 🔄 Changed
+
+- monitoring cockpit grid sticky header
+
+- move monitoring cockpit grid into base-component table
 
 ## [v3.13.1] - 2025-05-01
 
@@ -136,122 +274,99 @@ revert routing changes in result-export service
 
 ### 🆕 Added
 
-- add political business result bundle logs
+- add 2FA to submission finished and audited tentatively methods
 
 ### 🔄 Changed
 
-- proportional election lot decision sort by order number instead of list description
+- change majority election candidate result bar relative ratios
 
 ### 🔄 Changed
 
-- proportional election result and end result ux improvements
+- improve viewing counting circle exports in monitoring
 
 ### 🔄 Changed
 
-- delete comments if counting circle results are resetted
+- adjust contest detail info layout depending of sub total labels
 
 ### 🔄 Changed
 
-- all state filters are correctly displayed in the dropdown selection of the bundle table
+- fix contst detail info electorate layout
 
 ### 🔄 Changed
 
-- filtering bundle table with correct states
+- fix(VOTING-6086): error snackbar
 
 ### 🔄 Changed
 
-- store selected monitoring cockpit tab into session storage
+- fix update contest details after counting circle switch
 
 ### 🔄 Changed
 
-- consolidate bundle overview tables into one
-
-## [v3.4.6] - 2025-01-24
+- fix bc number clear spacing and perentage display
 
 ### 🔄 Changed
 
-- show view results button in monitoring cockpit for all state filters
-
-## [v3.4.5] - 2025-01-23
+- bump BC version
 
 ### 🔄 Changed
 
-- show counting circles with only non-owned results also in the monitoring cockpit grid
-
-## [v3.4.4] - 2025-01-21
-
-### 🔄 Changed
-
-- update base components
-
-## [v3.4.3] - 2025-01-16
-
-### 🔄 Changed
-
-- adjust spacing in contest header for past locked contests
-
-## [v3.4.2] - 2025-01-13
+- show export cockpit only if the tenant has export configs
 
 ### ❌ Removed
 
-- remove clearing filter for counting circles in monitoring cockpit
-
-## [v3.4.1] - 2025-01-08
+- removed proportional election candidate range removal
 
 ### 🔄 Changed
 
-- change label of submission by ballot groups
+- reset result state timestamps correctly
 
-## [v3.4.0] - 2025-01-07
+### 🔄 Changed
+
+- support counting circle result reset with monitoring states
+
+### 🔄 Changed
+
+- hide monitoring cockpit action buttons only if to check filter is set
+
+### 🔄 Changed
+
+- show conventional total voting cards
+
+### 🔄 Changed
+
+- only show monitoring status bar when all states are displayed
+
+### 🔄 Changed
+
+- refactor dockerfile
+- remove redundant file copies
+- add explicit workdir in final image to avoid surprises
+
+### ❌ Removed
+
+- remove entrypoint shell script since its functionality is shifted to the deployment in ops repo
+
+### 🔒 Security
+
+- using explicit nginx user instead of root for copying nginx configs and webroot
 
 ### 🆕 Added
 
-- add robots meta tag to instruct crawlers to not index content
-- add X-Robots-Tag response header to instruct crawlers to not index content
-
-## [v3.3.6] - 2025-01-07
+- added links to/from erfassung/monitoring exports
 
 ### 🔄 Changed
 
-- rename list votes count and blank rows count for proportional election
-
-## [v3.3.5] - 2025-01-07
+- monitoring cockpit sort filtered counting circle after every filter update
 
 ### 🔄 Changed
 
-- update dependencies
-
-## [v3.3.4] - 2025-01-07
+- monitoring cockpit filters counting circle results by filtered results
 
 ### 🔄 Changed
 
-- rework monitoring cockpit state filter and store filter into session storage
+- monitoring cockpit grid sticky header
 
-## [v3.3.3] - 2024-12-11
-
-### 🔄 Changed
-
-- change disabled form fields to readonly
-
-## [v3.3.2] - 2024-12-05
-
-### 🔄 Changed
-
-- monitoring state filters show correct amount
-
-## [v3.3.1] - 2024-12-05
-
-### 🔄 Changed
-
-- show invalid and empty votes for majority election result
-
-## [v3.3.0] - 2024-12-03
-
-### 🆕 Added
-
-- show roles in header tenant switch
-
-## [v3.2.0] - 2024-11-27
+- move monitoring cockpit grid into base-component table
 
 ### 🔄 Changed
 
@@ -326,92 +441,3 @@ revert routing changes in result-export service
 ### :arrows_counterclockwise: Changed
 
 - show better error message when data export failed to generate
-
-### 🆕 Added
-
-- add political business result bundle logs
-
-### 🔄 Changed
-
-- proportional election lot decision sort by order number instead of list description
-
-### 🔄 Changed
-
-- proportional election result and end result ux improvements
-
-### 🔄 Changed
-
-- delete comments if counting circle results are resetted
-
-### 🔄 Changed
-
-- all state filters are correctly displayed in the dropdown selection of the bundle table
-
-### 🔄 Changed
-
-- filtering bundle table with correct states
-
-### 🔄 Changed
-
-- store selected monitoring cockpit tab into session storage
-
-### 🔄 Changed
-
-- consolidate bundle overview tables into one
-
-### 🔄 Changed
-
-- show view results button in monitoring cockpit for all state filters
-
-### 🔄 Changed
-
-- show counting circles with only non-owned results also in the monitoring cockpit grid
-
-### 🔄 Changed
-
-- update base components
-
-### 🔄 Changed
-
-- adjust spacing in contest header for past locked contests
-
-### ❌ Removed
-
-- remove clearing filter for counting circles in monitoring cockpit
-
-### 🔄 Changed
-
-- change label of submission by ballot groups
-
-### 🆕 Added
-
-- add robots meta tag to instruct crawlers to not index content
-- add X-Robots-Tag response header to instruct crawlers to not index content
-
-### 🔄 Changed
-
-- rename list votes count and blank rows count for proportional election
-
-### 🔄 Changed
-
-- update dependencies
-
-### 🔄 Changed
-
-- rework monitoring cockpit state filter and store filter into session storage
-
-### 🔄 Changed
-
-- change disabled form fields to readonly
-
-### 🔄 Changed
-
-- monitoring state filters show correct amount
-
-### 🔄 Changed
-
-- show invalid and empty votes for majority election result
-
-### 🆕 Added
-
-- show roles in header tenant switch

@@ -10,8 +10,10 @@ import { EnumItemDescription, EnumUtil } from '@abraxas/voting-lib';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   CountingCircleResultState,
+  CountOfVotersInformationSubTotal,
   ResultOverviewCountingCircleResult,
   ResultOverviewCountingCircleWithDetails,
+  sum,
   VotingCardResultDetail,
   VotingChannel,
 } from 'ausmittlung-lib';
@@ -244,6 +246,26 @@ export class CountingCircleTableComponent implements OnInit, AfterViewInit, OnCh
     return votingCards.find(x => x.channel === channel && x.valid === valid)?.countOfReceivedVotingCards;
   }
 
+  public getTotalCountOfVoters(subTotals: CountOfVotersInformationSubTotal[]): number {
+    if (subTotals.length === 0) {
+      return 0;
+    }
+
+    const doiTypes = subTotals.map(st => st.domainOfInfluenceType);
+    let highestHierarchicalDoiType = doiTypes[0];
+
+    for (const doiType of doiTypes) {
+      if (highestHierarchicalDoiType > doiType) {
+        highestHierarchicalDoiType = doiType;
+      }
+    }
+
+    return sum(
+      subTotals.filter(st => st.domainOfInfluenceType === highestHierarchicalDoiType),
+      st => st.countOfVoters ?? 0,
+    );
+  }
+
   private initColumns(): void {
     for (const column of this.allColumns) {
       const active = this.columnsToDisplay.includes(column.id);
@@ -276,7 +298,7 @@ export class CountingCircleTableComponent implements OnInit, AfterViewInit, OnCh
       }
 
       if (columnId === this.totalCountOfVotersColumn) {
-        return this.countingCirclesById[data.countingCircleId].details.countOfVotersInformation.totalCountOfVoters;
+        return this.getTotalCountOfVoters(this.countingCirclesById[data.countingCircleId].details.countOfVotersInformationSubTotals);
       }
 
       if (columnId === this.votingCardsBallotBoxColumn) {

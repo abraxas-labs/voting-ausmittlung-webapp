@@ -1,19 +1,25 @@
+<bc-button
+  class="full-width full-height mb-2"
+  variant="tertiary-tonal"
+  (buttonClick)="navigateToResults()"
+  [label]="'MONITORING_COCKPIT.VIEW_RESULTS' | translate"
+  truncateWithTooltip tooltip>
+</bc-button>
 <ng-container *ngIf="!readOnly">
-  <bc-button class="full-width full-height my-2"
-             *ngIf="!canResetAllToAuditedTentatively && !statePlausibilisedDisabled"
+  <bc-button *ngIf="!canResetAllToAuditedTentatively && !statePlausibilisedDisabled"
+             class="full-width full-height mb-2"
+             variant="tertiary-tonal"
              (buttonClick)="updateAllStates.emit(states.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED)"
              [label]="'MONITORING_COCKPIT.ALL_TO_STATE' | translate : { state: stateDescriptionsByState[states.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED] ?? 'COUNTING_CIRCLE_RESULT_STATE.' + states.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED | translate }"
-             [disabled]="disabled || !canPlausibiliseAll">
+             [disabled]="disabled || !canPlausibiliseAll"
+             truncateWithTooltip tooltip>
   </bc-button>
-  <bc-button class="full-width full-height my-2"
-             *ngIf="canResetAllToAuditedTentatively"
+  <bc-button *ngIf="canResetAllToAuditedTentatively"
+             class="full-width full-height mb-2"
+             variant="tertiary-tonal"
              (buttonClick)="updateAllStates.emit(states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY)"
              [label]="'MONITORING_COCKPIT.ALL_TO_STATE' | translate: { state: stateDescriptionsByState[states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY] ?? 'COUNTING_CIRCLE_RESULT_STATE.' + states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY | translate }"
-             [disabled]="disabled">
+             [disabled]="disabled"
+             truncateWithTooltip tooltip>
   </bc-button>
 </ng-container>
-<bc-button
-  class="full-width full-height my-2"
-  (buttonClick)="navigateToResults()"
-  [label]="'MONITORING_COCKPIT.VIEW_RESULTS' | translate">
-</bc-button>

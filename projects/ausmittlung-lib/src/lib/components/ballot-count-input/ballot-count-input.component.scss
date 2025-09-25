@@ -1,11 +1,3 @@
-bc-input-label.align-right {
-  text-align: right;
-}
-
-.align-right ::ng-deep input {
-  direction: rtl;
-}
-
 .input-container {
   display: grid;
   grid-gap: 0.5rem 0.7rem;

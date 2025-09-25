@@ -19,12 +19,12 @@ import { FilteredCountingCircleResults } from '../../monitoring-cockpit-grid/mon
 import { ThemeService } from '@abraxas/voting-lib';
 
 @Component({
-  selector: 'app-monitoring-cockpit-grid-footer-buttons',
-  templateUrl: './monitoring-cockpit-grid-footer-buttons.component.html',
-  styleUrls: ['./monitoring-cockpit-grid-footer-buttons.component.scss'],
+  selector: 'app-monitoring-cockpit-grid-buttons',
+  templateUrl: './monitoring-cockpit-grid-buttons.component.html',
+  styleUrls: ['./monitoring-cockpit-grid-buttons.component.scss'],
   standalone: false,
 })
-export class MonitoringCockpitGridFooterButtonsComponent implements OnInit, OnChanges {
+export class MonitoringCockpitGridButtonsComponent implements OnInit, OnChanges {
   public readonly states: typeof CountingCircleResultState = CountingCircleResultState;
 
   @Input()

@@ -12,7 +12,6 @@ import {
   ProportionalElectionBallotUiService,
 } from '../../../services/proportional-election-ballot-ui.service';
 import { ProportionalElectionBallotCandidateModifyComponent } from '../proportional-election-ballot-candidate-modify/proportional-election-ballot-candidate-modify.component';
-import { RemoveCandidateRangeData } from '../proportional-election-ballot-candidate-remove-range/proportional-election-ballot-candidate-remove-range.component';
 import {
   ProportionalElectionBallotCandidatesChooseDialogComponent,
   ProportionalElectionBallotCandidatesChooseDialogData,
@@ -46,9 +45,6 @@ export class ProportionalElectionBallotContentComponent {
   public disabled: boolean = true;
 
   @Input()
-  public showRemoveRange: boolean = false;
-
-  @Input()
   public candidateCheckDigit: boolean = false;
 
   @Output()
@@ -80,11 +76,6 @@ export class ProportionalElectionBallotContentComponent {
 
     const position = this.ballotUiService.removeCandidateAtLastFoundPosition(candidate, this.ballotUiData);
     this.scrollToPosition(position);
-    this.contentChanged.emit();
-  }
-
-  public removeCandidateRange({ start, end }: RemoveCandidateRangeData): void {
-    this.ballotUiService.removeCandidatesInRange(start, end, this.ballotUiData);
     this.contentChanged.emit();
   }
 

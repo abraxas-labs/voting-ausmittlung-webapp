@@ -12,6 +12,12 @@
   </vo-lib-page-header>
 
   <div class="mb-4">
+    <p *ngIf="showMoreExportsLink && isMonitoring">
+      <a [routerLink]="linkUrl"><bc-button [label]="'EXPORTS.MORE_PROTOCOLS' | translate"></bc-button></a>
+    </p>
+    <p *ngIf="showMoreExportsLink && !isMonitoring">
+      <a [href]="linkUrl" target="_blank"><bc-button [label]="'EXPORTS.MORE_PROTOCOLS' | translate" icon="external-link"></bc-button></a>
+    </p>
     <bc-tab-bar [selectedIndex]="selectedTab" (selectedChange)="changeTab($event)">
       <bc-tab [label]="'EXPORTS.TABS.PROTOCOLS' | translate" [disabled]="loadingTemplates"></bc-tab>
       <bc-tab [label]="'EXPORTS.TABS.DATA_FILES' | translate" [disabled]="loadingTemplates"></bc-tab>

@@ -4,18 +4,16 @@
  * For license information see LICENSE file.
  */
 
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
 import {
   ContestCountingCircleDetails,
   CountingMachine,
-  CountOfVotersInformation,
   CountOfVotersInformationSubTotal,
   DomainOfInfluenceType,
   SexType,
   VoterType,
   VotingCardChannel,
   VotingCardResultDetail,
-  VotingChannel,
 } from '../../../models';
 import { groupBy, sum } from '../../../services/utils/array.utils';
 import {
@@ -28,6 +26,10 @@ import { ContestCountingCircleDetailsService } from '../../../services/contest-c
 import { TranslateService } from '@ngx-translate/core';
 import { ContestCountingCircleElectorateSummary } from '../../../models/contest-counting-circle-electorate.model';
 import { DomainOfInfluenceCanton } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/domain_of_influence_pb';
+import { VotingChannel } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/voting_channel_pb';
+
+const infosWrappedMinOffsetTop = 50;
+const infosWrappedClassName = 'infos-wrapped';
 
 @Component({
   selector: 'vo-ausm-contest-detail-info',
@@ -35,19 +37,23 @@ import { DomainOfInfluenceCanton } from '@abraxas/voting-ausmittlung-service-pro
   styleUrls: ['./contest-detail-info.component.scss'],
   standalone: false,
 })
-export class ContestDetailInfoComponent {
+export class ContestDetailInfoComponent implements AfterViewInit {
   public readonly votingChannels: typeof VotingChannel = VotingChannel;
   public readonly domainOfInfluenceCantons: typeof DomainOfInfluenceCanton = DomainOfInfluenceCanton;
   public readonly voterTypes: typeof VoterType = VoterType;
 
   public votingCardsByDoiType: { -readonly [key in keyof typeof DomainOfInfluenceType]?: VotingCardResultDetail[] } = {};
+  public subTotalsByDoiType: { -readonly [key in keyof typeof DomainOfInfluenceType]?: SimpleSubTotalResultSummary[] } = {};
+
   public votingCardResultSummaries: SimpleVotingCardResultSummary[] = [];
-  public subTotalInfoSummaries: SimpleSubTotalResultSummary[] = [];
+  public countOfVotersSummaries: SimpleCountOfVotersInformationSummary[] = [];
   public votingCardsValue?: VotingCardResultDetail[];
   public enabledVotingCardChannelsValue: VotingCardChannel[] = [];
   public domainOfInfluenceTypesValue?: DomainOfInfluenceType[];
-  public countOfVotersValue?: CountOfVotersInformation;
+  public countOfVotersInformationSubTotalsValue?: CountOfVotersInformationSubTotal[];
   public electorateSummaryValue?: ContestCountingCircleElectorateSummary;
+  public infosWrapped = false;
+  public showSubTotalLabel = false;
 
   @Input()
   public readonly: boolean = true;
@@ -79,10 +85,21 @@ export class ContestDetailInfoComponent {
   @Input()
   public canton: DomainOfInfluenceCanton = DomainOfInfluenceCanton.DOMAIN_OF_INFLUENCE_CANTON_UNSPECIFIED;
 
+  @ViewChild('votingCards') votingCardsRef!: ElementRef;
+
+  @HostListener('window:resize')
+  public onResize() {
+    this.updateInfosWrapped();
+  }
+
   @Input()
-  public set countOfVoters(v: CountOfVotersInformation) {
-    this.countOfVotersValue = v;
-    this.updateCountOfVoters();
+  public set countOfVotersInformationSubTotals(v: CountOfVotersInformationSubTotal[]) {
+    if (v === this.countOfVotersInformationSubTotalsValue) {
+      return;
+    }
+
+    this.countOfVotersInformationSubTotalsValue = v;
+    this.updateCountOfVotersInformationSubTotals();
   }
 
   @Input()
@@ -103,6 +120,7 @@ export class ContestDetailInfoComponent {
 
     this.electorateSummaryValue = value;
     this.updateVotingCards();
+    this.updateCountOfVotersInformationSubTotals();
   }
 
   @Input()
@@ -123,6 +141,7 @@ export class ContestDetailInfoComponent {
 
     this.domainOfInfluenceTypesValue = v;
     this.updateVotingCards();
+    this.updateCountOfVotersInformationSubTotals();
   }
 
   @Output()
@@ -134,55 +153,77 @@ export class ContestDetailInfoComponent {
     private readonly toast: SnackbarService,
     private readonly i18n: TranslateService,
   ) {}
+  public ngAfterViewInit(): void {
+    // this is needed to ensure that the entire DOM is rendered already.
+    setTimeout(() => this.updateInfosWrapped());
+  }
 
-  public updateCountOfVoters(): void {
-    if (!this.countOfVotersValue) return;
+  public updateCountOfVotersInformationSubTotals(): void {
+    if (!this.countOfVotersInformationSubTotalsValue || !this.domainOfInfluenceTypesValue) return;
 
-    const swissInfos = this.countOfVotersValue.subTotalInfoList.filter(x => x.voterType === VoterType.VOTER_TYPE_SWISS);
-    const swissAbroadInfos = this.countOfVotersValue.subTotalInfoList.filter(x => x.voterType === VoterType.VOTER_TYPE_SWISS_ABROAD);
-    const foreignerInfos = this.countOfVotersValue.subTotalInfoList.filter(x => x.voterType === VoterType.VOTER_TYPE_FOREIGNER);
-    const minorInfos = this.countOfVotersValue.subTotalInfoList.filter(x => x.voterType === VoterType.VOTER_TYPE_MINOR);
+    const subTotalsByDoiType = groupBy(
+      this.countOfVotersInformationSubTotalsValue,
+      x => x.domainOfInfluenceType,
+      x => x,
+    );
 
-    this.subTotalInfoSummaries = [];
-    this.subTotalInfoSummaries.push({
-      label: 'CONTEST.DETAIL.SWISS',
-      voterType: VoterType.VOTER_TYPE_SWISS,
-      men: this.getDetail(VoterType.VOTER_TYPE_SWISS, SexType.SEX_TYPE_MALE).countOfVoters ?? 0,
-      women: this.getDetail(VoterType.VOTER_TYPE_SWISS, SexType.SEX_TYPE_FEMALE).countOfVoters ?? 0,
-      total: sum(Object.values(swissInfos), x => x.countOfVoters),
-    });
+    this.subTotalsByDoiType = {};
 
-    if (this.enabledVoterTypes.includes(VoterType.VOTER_TYPE_SWISS_ABROAD)) {
-      this.subTotalInfoSummaries.push({
-        label: 'CONTEST.DETAIL.SWISS_ABROAD',
-        voterType: VoterType.VOTER_TYPE_SWISS_ABROAD,
-        men: this.getDetail(VoterType.VOTER_TYPE_SWISS_ABROAD, SexType.SEX_TYPE_MALE).countOfVoters ?? 0,
-        women: this.getDetail(VoterType.VOTER_TYPE_SWISS_ABROAD, SexType.SEX_TYPE_FEMALE).countOfVoters ?? 0,
-        total: sum(Object.values(swissAbroadInfos), x => x.countOfVoters),
+    for (const domainOfInfluenceType of this.domainOfInfluenceTypesValue) {
+      const subTotalsForDoiType = subTotalsByDoiType[domainOfInfluenceType] ?? [];
+      const subTotalInfoSummaries = [];
+
+      const swissInfos = subTotalsForDoiType.filter(x => x.voterType === VoterType.VOTER_TYPE_SWISS);
+      const swissAbroadInfos = subTotalsForDoiType.filter(x => x.voterType === VoterType.VOTER_TYPE_SWISS_ABROAD);
+      const foreignerInfos = subTotalsForDoiType.filter(x => x.voterType === VoterType.VOTER_TYPE_FOREIGNER);
+      const minorInfos = subTotalsForDoiType.filter(x => x.voterType === VoterType.VOTER_TYPE_MINOR);
+
+      subTotalInfoSummaries.push({
+        label: 'CONTEST.DETAIL.SWISS',
+        voterType: VoterType.VOTER_TYPE_SWISS,
+        men: this.getDetail(VoterType.VOTER_TYPE_SWISS, SexType.SEX_TYPE_MALE, domainOfInfluenceType).countOfVoters ?? 0,
+        women: this.getDetail(VoterType.VOTER_TYPE_SWISS, SexType.SEX_TYPE_FEMALE, domainOfInfluenceType).countOfVoters ?? 0,
+        total: sum(Object.values(swissInfos), x => x.countOfVoters),
+        domainOfInfluenceType,
       });
+
+      if (this.enabledVoterTypes.includes(VoterType.VOTER_TYPE_SWISS_ABROAD)) {
+        subTotalInfoSummaries.push({
+          label: 'CONTEST.DETAIL.SWISS_ABROAD',
+          voterType: VoterType.VOTER_TYPE_SWISS_ABROAD,
+          men: this.getDetail(VoterType.VOTER_TYPE_SWISS_ABROAD, SexType.SEX_TYPE_MALE, domainOfInfluenceType).countOfVoters ?? 0,
+          women: this.getDetail(VoterType.VOTER_TYPE_SWISS_ABROAD, SexType.SEX_TYPE_FEMALE, domainOfInfluenceType).countOfVoters ?? 0,
+          total: sum(Object.values(swissAbroadInfos), x => x.countOfVoters),
+          domainOfInfluenceType,
+        });
+      }
+
+      if (this.enabledVoterTypes.includes(VoterType.VOTER_TYPE_FOREIGNER)) {
+        subTotalInfoSummaries.push({
+          label: 'CONTEST.DETAIL.FOREIGNER',
+          voterType: VoterType.VOTER_TYPE_FOREIGNER,
+          men: this.getDetail(VoterType.VOTER_TYPE_FOREIGNER, SexType.SEX_TYPE_MALE, domainOfInfluenceType).countOfVoters ?? 0,
+          women: this.getDetail(VoterType.VOTER_TYPE_FOREIGNER, SexType.SEX_TYPE_FEMALE, domainOfInfluenceType).countOfVoters ?? 0,
+          total: sum(Object.values(foreignerInfos), x => x.countOfVoters),
+          domainOfInfluenceType,
+        });
+      }
+
+      if (this.enabledVoterTypes.includes(VoterType.VOTER_TYPE_MINOR)) {
+        subTotalInfoSummaries.push({
+          label: 'CONTEST.DETAIL.MINOR',
+          voterType: VoterType.VOTER_TYPE_MINOR,
+          men: this.getDetail(VoterType.VOTER_TYPE_MINOR, SexType.SEX_TYPE_MALE, domainOfInfluenceType).countOfVoters ?? 0,
+          women: this.getDetail(VoterType.VOTER_TYPE_MINOR, SexType.SEX_TYPE_FEMALE, domainOfInfluenceType).countOfVoters ?? 0,
+          total: sum(Object.values(minorInfos), x => x.countOfVoters),
+          domainOfInfluenceType,
+        });
+      }
+
+      this.subTotalsByDoiType[domainOfInfluenceType] = subTotalInfoSummaries;
     }
 
-    if (this.enabledVoterTypes.includes(VoterType.VOTER_TYPE_FOREIGNER)) {
-      this.subTotalInfoSummaries.push({
-        label: 'CONTEST.DETAIL.FOREIGNER',
-        voterType: VoterType.VOTER_TYPE_FOREIGNER,
-        men: this.getDetail(VoterType.VOTER_TYPE_FOREIGNER, SexType.SEX_TYPE_MALE).countOfVoters ?? 0,
-        women: this.getDetail(VoterType.VOTER_TYPE_FOREIGNER, SexType.SEX_TYPE_FEMALE).countOfVoters ?? 0,
-        total: sum(Object.values(foreignerInfos), x => x.countOfVoters),
-      });
-    }
-
-    if (this.enabledVoterTypes.includes(VoterType.VOTER_TYPE_MINOR)) {
-      this.subTotalInfoSummaries.push({
-        label: 'CONTEST.DETAIL.MINOR',
-        voterType: VoterType.VOTER_TYPE_MINOR,
-        men: this.getDetail(VoterType.VOTER_TYPE_MINOR, SexType.SEX_TYPE_MALE).countOfVoters ?? 0,
-        women: this.getDetail(VoterType.VOTER_TYPE_MINOR, SexType.SEX_TYPE_FEMALE).countOfVoters ?? 0,
-        total: sum(Object.values(minorInfos), x => x.countOfVoters),
-      });
-    }
-
-    this.countOfVotersValue.totalCountOfVoters = sum(this.subTotalInfoSummaries, x => x.total);
+    this.updateCountOfVotersInformationSubTotalSummaries();
   }
 
   public updateVotingCards(): void {
@@ -217,7 +258,12 @@ export class ContestDetailInfoComponent {
   }
 
   public async openDialog(): Promise<void> {
-    if (!this.countOfVotersValue || !this.enabledVotingCardChannelsValue || !this.domainOfInfluenceTypesValue || !this.votingCardsValue)
+    if (
+      !this.countOfVotersInformationSubTotalsValue ||
+      !this.enabledVotingCardChannelsValue ||
+      !this.domainOfInfluenceTypesValue ||
+      !this.votingCardsValue
+    )
       return;
 
     const data: ContestDetailInfoDialogData = {
@@ -226,7 +272,7 @@ export class ContestDetailInfoComponent {
       countingMachineEnabled: this.countingMachineEnabled,
       eVoting: this.eVoting,
       enabledVoterTypes: this.enabledVoterTypes,
-      countOfVoters: this.countOfVotersValue,
+      countOfVotersInformationSubTotals: this.countOfVotersInformationSubTotalsValue,
       enabledVotingCardChannels: this.enabledVotingCardChannelsValue,
       votingCards: this.votingCardsValue,
       countingMachine: this.countingMachine,
@@ -245,7 +291,7 @@ export class ContestDetailInfoComponent {
       return;
     }
 
-    this.countOfVotersValue = result.countOfVoters;
+    this.countOfVotersInformationSubTotalsValue = result.countOfVotersInformationSubTotals;
     this.countingMachine = result.countingMachine;
     this.votingCardsValue = result.votingCards;
 
@@ -253,14 +299,14 @@ export class ContestDetailInfoComponent {
       this.countingMachine = CountingMachine.COUNTING_MACHINE_UNSPECIFIED;
     }
 
-    this.updateCountOfVoters();
+    this.updateCountOfVotersInformationSubTotals();
     this.updateVotingCards();
 
     const details = {
       contestId: this.contestId,
       countingCircleId: this.countingCircleId,
       countingMachine: this.countingMachine,
-      countOfVotersInformation: this.countOfVotersValue,
+      countOfVotersInformationSubTotals: this.countOfVotersInformationSubTotalsValue,
       votingCards: this.votingCardsValue,
       eVoting: this.eVoting,
       eCounting: this.eCounting,
@@ -272,8 +318,10 @@ export class ContestDetailInfoComponent {
     this.saved.emit(details);
   }
 
-  private getDetail(voterType: VoterType, sex: SexType): CountOfVotersInformationSubTotal {
-    let result = this.countOfVotersValue!.subTotalInfoList.find(c => c.voterType === voterType && c.sex === sex);
+  private getDetail(voterType: VoterType, sex: SexType, domainOfInfluenceType: DomainOfInfluenceType): CountOfVotersInformationSubTotal {
+    let result = this.countOfVotersInformationSubTotalsValue!.find(
+      c => c.voterType === voterType && c.sex === sex && c.domainOfInfluenceType === domainOfInfluenceType,
+    );
     if (result) {
       return result;
     }
@@ -282,9 +330,10 @@ export class ContestDetailInfoComponent {
     result = {
       sex,
       voterType,
+      domainOfInfluenceType,
     } as CountOfVotersInformationSubTotal;
 
-    this.countOfVotersValue?.subTotalInfoList.push(result);
+    this.countOfVotersInformationSubTotalsValue!.push(result);
     return result;
   }
 
@@ -298,16 +347,8 @@ export class ContestDetailInfoComponent {
         }
 
         const votingCards = this.votingCardsByDoiType[doiType] ?? [];
-        this.votingCardResultSummaries.push({
-          label: this.i18n.instant('DOMAIN_OF_INFLUENCE.TYPE', { type: this.i18n.instant(`DOMAIN_OF_INFLUENCE_TYPES.${doiType}`) }),
-          votingCards: votingCards,
-          totalVotingCards: sum(votingCards, x => x.countOfReceivedVotingCards ?? 0),
-          totalValidVotingCards: sum(
-            votingCards.filter(x => x.valid),
-            x => x.countOfReceivedVotingCards ?? 0,
-          ),
-          hasInvalidVotingCardChannel: votingCards.some(x => !x.valid),
-        });
+        const label = this.i18n.instant('DOMAIN_OF_INFLUENCE.TYPE', { type: this.i18n.instant(`DOMAIN_OF_INFLUENCE_TYPES.${doiType}`) });
+        this.votingCardResultSummaries.push(this.buildVotingCardResultSummary(label, votingCards));
       }
 
       return;
@@ -317,28 +358,109 @@ export class ContestDetailInfoComponent {
       const doiTypes = electorate.domainOfInfluenceTypesList;
 
       const votingCards = this.votingCardsByDoiType[doiTypes[0]] ?? [];
-      this.votingCardResultSummaries.push({
-        label: this.i18n.instant('DOMAIN_OF_INFLUENCE.TYPE', {
-          type: doiTypes.map(d => this.i18n.instant(`DOMAIN_OF_INFLUENCE_TYPES.${d}`)).join(', '),
-        }),
-        votingCards: votingCards,
-        totalVotingCards: sum(votingCards, x => x.countOfReceivedVotingCards ?? 0),
-        totalValidVotingCards: sum(
-          votingCards.filter(x => x.valid),
-          x => x.countOfReceivedVotingCards ?? 0,
-        ),
-        hasInvalidVotingCardChannel: votingCards.some(x => !x.valid),
+      const label = this.i18n.instant('DOMAIN_OF_INFLUENCE.TYPE', {
+        type: doiTypes.map(d => this.i18n.instant(`DOMAIN_OF_INFLUENCE_TYPES.${d}`)).join(', '),
+      });
+      this.votingCardResultSummaries.push(this.buildVotingCardResultSummary(label, votingCards));
+    }
+  }
+
+  private buildVotingCardResultSummary(label: string, votingCards: VotingCardResultDetail[]): SimpleVotingCardResultSummary {
+    return {
+      label: label,
+      conventionalVotingCards: votingCards.filter(x => x.channel !== VotingChannel.VOTING_CHANNEL_E_VOTING),
+      eVotingVotingCard: votingCards.find(x => x.channel === VotingChannel.VOTING_CHANNEL_E_VOTING),
+      totalVotingCards: sum(votingCards, x => x.countOfReceivedVotingCards ?? 0),
+      totalValidVotingCards: sum(
+        votingCards.filter(x => x.valid),
+        x => x.countOfReceivedVotingCards ?? 0,
+      ),
+      totalValidConventionalVotingCards: sum(
+        votingCards.filter(x => x.valid && x.channel !== VotingChannel.VOTING_CHANNEL_E_VOTING),
+        x => x.countOfReceivedVotingCards ?? 0,
+      ),
+      hasInvalidVotingCardChannel: votingCards.some(x => !x.valid),
+    };
+  }
+
+  private updateCountOfVotersInformationSubTotalSummaries(): void {
+    this.countOfVotersSummaries = [];
+
+    if (!this.electorateSummaryValue) {
+      for (const doiType of this.domainOfInfluenceTypesValue!) {
+        if (this.subTotalsByDoiType[doiType] === undefined) {
+          continue;
+        }
+
+        this.countOfVotersSummaries.push({
+          label: this.i18n.instant('DOMAIN_OF_INFLUENCE.TYPE', { type: this.i18n.instant(`DOMAIN_OF_INFLUENCE_TYPES.${doiType}`) }),
+          subTotalSummaries: this.subTotalsByDoiType[doiType],
+        });
+      }
+    } else {
+      for (const electorate of this.electorateSummaryValue.effectiveElectoratesList) {
+        const doiTypes = electorate.domainOfInfluenceTypesList;
+        const subTotals = this.subTotalsByDoiType[doiTypes[0]] ?? [];
+        this.countOfVotersSummaries.push({
+          label: this.i18n.instant('DOMAIN_OF_INFLUENCE.TYPE', {
+            type: doiTypes.map(d => this.i18n.instant(`DOMAIN_OF_INFLUENCE_TYPES.${d}`)).join(', '),
+          }),
+          subTotalSummaries: subTotals,
+        });
+      }
+    }
+
+    this.showSubTotalLabel =
+      this.countOfVotersSummaries.length > 0 && this.countOfVotersSummaries.some(st => st.subTotalSummaries.length > 1);
+  }
+
+  private updateInfosWrapped(): void {
+    if (!this.votingCardsRef) {
+      return;
+    }
+
+    const votingCardsNativeElement = this.votingCardsRef.nativeElement as HTMLElement;
+    const votingCardsOffsetTopDiff = votingCardsNativeElement.offsetTop - votingCardsNativeElement.parentElement!.offsetTop;
+
+    if (votingCardsOffsetTopDiff > infosWrappedMinOffsetTop) {
+      if (this.infosWrapped) {
+        return;
+      }
+
+      this.infosWrapped = true;
+      this.getVotingCardResultSummaryElements().forEach(e => {
+        e.classList.add(infosWrappedClassName);
+      });
+    } else {
+      if (!this.infosWrapped) {
+        return;
+      }
+
+      this.infosWrapped = false;
+      this.getVotingCardResultSummaryElements().forEach(e => {
+        e.classList.remove(infosWrappedClassName);
       });
     }
+  }
+
+  private getVotingCardResultSummaryElements(): NodeListOf<HTMLElement> {
+    return (this.votingCardsRef.nativeElement as HTMLElement).querySelectorAll('.voting-card-result-summary');
   }
 }
 
 interface SimpleVotingCardResultSummary {
   label: string;
-  votingCards: VotingCardResultDetail[];
+  conventionalVotingCards: VotingCardResultDetail[];
+  eVotingVotingCard?: VotingCardResultDetail;
   totalVotingCards: number;
   totalValidVotingCards: number;
+  totalValidConventionalVotingCards: number;
   hasInvalidVotingCardChannel: boolean;
+}
+
+interface SimpleCountOfVotersInformationSummary {
+  label: string;
+  subTotalSummaries: SimpleSubTotalResultSummary[];
 }
 
 interface SimpleSubTotalResultSummary {
@@ -347,4 +469,5 @@ interface SimpleSubTotalResultSummary {
   men: number;
   women: number;
   total: number;
+  domainOfInfluenceType: DomainOfInfluenceType;
 }

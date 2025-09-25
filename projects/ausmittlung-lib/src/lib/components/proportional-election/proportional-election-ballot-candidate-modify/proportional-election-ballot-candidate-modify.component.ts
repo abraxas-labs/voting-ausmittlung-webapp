@@ -7,7 +7,6 @@
 import { TextComponent } from '@abraxas/base-components';
 import { Component, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
 import { ProportionalElectionBallotCandidate, ProportionalElectionCandidate } from '../../../models';
-import { RemoveCandidateRangeData } from '../proportional-election-ballot-candidate-remove-range/proportional-election-ballot-candidate-remove-range.component';
 
 @Component({
   selector: 'vo-ausm-proportional-election-ballot-candidate-modify',
@@ -35,16 +34,10 @@ export class ProportionalElectionBallotCandidateModifyComponent {
   public readonly: boolean = true;
 
   @Input()
-  public showRemoveRange: boolean = false;
-
-  @Input()
   public candidateCheckDigit: boolean = false;
 
   @Output()
   public addCandidate: EventEmitter<ProportionalElectionBallotCandidate> = new EventEmitter<ProportionalElectionBallotCandidate>();
-
-  @Output()
-  public removeCandidateRange: EventEmitter<RemoveCandidateRangeData> = new EventEmitter<RemoveCandidateRangeData>();
 
   @Output()
   public removeCandidate: EventEmitter<ProportionalElectionBallotCandidate> = new EventEmitter<ProportionalElectionBallotCandidate>();

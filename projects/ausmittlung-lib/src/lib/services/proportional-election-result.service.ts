@@ -31,7 +31,9 @@ import {
   ProportionalElectionResultCorrectionFinishedAndAuditedTentativelyRequest,
   ProportionalElectionResultCorrectionFinishedRequest,
   ProportionalElectionResultFlagForCorrectionRequest,
+  ProportionalElectionResultPrepareCorrectionFinishedAndAuditedTentativelyRequest,
   ProportionalElectionResultPrepareCorrectionFinishedRequest,
+  ProportionalElectionResultPrepareSubmissionFinishedAndAuditedTentativelyRequest,
   ProportionalElectionResultPrepareSubmissionFinishedRequest,
   ProportionalElectionResultPublishRequest,
   ProportionalElectionResultResetToSubmissionFinishedAndFlagForCorrectionRequest,
@@ -275,16 +277,44 @@ export class ProportionalElectionResultService extends PoliticalBusinessResultBa
     await this.requestEmptyResp(c => c.resetToAuditedTentatively, req);
   }
 
-  public submissionFinishedAndAuditedTentatively(proportionalElectionResultId: string): Promise<void> {
-    const req = new ProportionalElectionResultSubmissionFinishedAndAuditedTentativelyRequest();
+  public async prepareSubmissionFinishedAndAuditedTentatively(proportionalElectionResultId: string): Promise<SecondFactorTransaction> {
+    const req = new ProportionalElectionResultPrepareSubmissionFinishedAndAuditedTentativelyRequest();
     req.setElectionResultId(proportionalElectionResultId);
-    return this.requestEmptyResp(c => c.submissionFinishedAndAuditedTentatively, req);
+    return await this.request(
+      c => c.prepareSubmissionFinishedAndAuditedTentatively,
+      req,
+      r => r,
+    );
   }
 
-  public correctionFinishedAndAuditedTentatively(proportionalElectionResultId: string): Promise<void> {
+  public submissionFinishedAndAuditedTentatively(
+    proportionalElectionResultId: string,
+    secondFactorTransactionId: string,
+  ): Observable<void> {
+    const req = new ProportionalElectionResultSubmissionFinishedAndAuditedTentativelyRequest();
+    req.setElectionResultId(proportionalElectionResultId);
+    req.setSecondFactorTransactionId(secondFactorTransactionId);
+    return this.requestClientStreamEmptyResp(c => c.submissionFinishedAndAuditedTentatively, req);
+  }
+
+  public async prepareCorrectionFinishedAndAuditedTentatively(proportionalElectionResultId: string): Promise<SecondFactorTransaction> {
+    const req = new ProportionalElectionResultPrepareCorrectionFinishedAndAuditedTentativelyRequest();
+    req.setElectionResultId(proportionalElectionResultId);
+    return await this.request(
+      c => c.prepareCorrectionFinishedAndAuditedTentatively,
+      req,
+      r => r,
+    );
+  }
+
+  public correctionFinishedAndAuditedTentatively(
+    proportionalElectionResultId: string,
+    secondFactorTransactionId: string,
+  ): Observable<void> {
     const req = new ProportionalElectionResultCorrectionFinishedAndAuditedTentativelyRequest();
     req.setElectionResultId(proportionalElectionResultId);
-    return this.requestEmptyResp(c => c.correctionFinishedAndAuditedTentatively, req);
+    req.setSecondFactorTransactionId(secondFactorTransactionId);
+    return this.requestClientStreamEmptyResp(c => c.correctionFinishedAndAuditedTentatively, req);
   }
 
   public publish(proportionalElectionResultIds: string[]): Promise<void> {

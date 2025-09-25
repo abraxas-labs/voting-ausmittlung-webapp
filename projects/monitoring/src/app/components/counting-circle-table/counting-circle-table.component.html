@@ -42,7 +42,7 @@
   </ng-container>
   <ng-container [columnDef]="totalCountOfVotersColumn">
     <bc-header-cell filter filterType="number" sort *headerCellDef class="small-filter">{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.TOTAL_COUNT_OF_VOTERS' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">{{ countingCirclesById[element.countingCircleId].details.countOfVotersInformation.totalCountOfVoters }}</bc-data-cell>
+    <bc-data-cell *dataCellDef="let element">{{ getTotalCountOfVoters(countingCirclesById[element.countingCircleId].details.countOfVotersInformationSubTotals)}}</bc-data-cell>
   </ng-container>
   <ng-container [columnDef]="votingCardsBallotBoxColumn">
     <bc-header-cell filter filterType="number" sort *headerCellDef class="small-filter">{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.VOTING_CARDS_BALLOT_BOX' | translate }}</bc-header-cell>

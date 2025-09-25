@@ -22,6 +22,7 @@ import {
   CommentProto,
   ContestCountingCircleDetails,
   ContestCountingCircleDetailsProto,
+  CountingCircleResultState,
   CountingMachine,
   ResultList,
   ResultListProto,
@@ -134,6 +135,34 @@ export class ResultService extends GrpcStreamingService<ResultServicePromiseClie
     req.setCountingCircleResultIdsList(resultIds);
     req.setSecondFactorTransactionId(secondFactorTransactionId);
     return this.requestClientStreamEmptyResp(c => c.submissionFinished, req);
+  }
+
+  public static updateResultStateTimestamps(result: ResultListResult, timestamp: Date): void {
+    switch (result.state) {
+      case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING:
+        result.submissionDoneTimestamp = undefined;
+        result.readyForCorrectionTimestamp = undefined;
+        result.auditedTentativelyTimestamp = undefined;
+        result.plausibilisedTimestamp = undefined;
+        break;
+      case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION:
+        result.submissionDoneTimestamp = undefined;
+        result.readyForCorrectionTimestamp = timestamp;
+        break;
+      case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE:
+        result.submissionDoneTimestamp = timestamp;
+        break;
+      case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE:
+        result.submissionDoneTimestamp = timestamp;
+        result.readyForCorrectionTimestamp = undefined;
+        break;
+      case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY:
+        result.auditedTentativelyTimestamp = timestamp;
+        break;
+      case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED:
+        result.plausibilisedTimestamp = timestamp;
+        break;
+    }
   }
 
   private mapToResultList(data: ResultListProto): ResultList {
@@ -363,10 +392,7 @@ export class ResultService extends GrpcStreamingService<ResultServicePromiseClie
   ): ContestCountingCircleDetails {
     if (!details) {
       return {
-        countOfVotersInformation: {
-          subTotalInfoList: [],
-          totalCountOfVoters: 0,
-        },
+        countOfVotersInformationSubTotals: [],
         votingCards: [],
         countingCircleId: countingCircleId!,
         contestId: contestId!,
@@ -379,7 +405,9 @@ export class ResultService extends GrpcStreamingService<ResultServicePromiseClie
 
     return {
       ...details.toObject(),
-      countOfVotersInformation: ContestCountingCircleDetailsService.mapToCountOfVotersInformation(details.getCountOfVotersInformation()!),
+      countOfVotersInformationSubTotals: details
+        .getCountOfVotersInformationSubTotalsList()!
+        .map(ContestCountingCircleDetailsService.mapToCountOfVotersInformationSubTotal),
       votingCards: details.getVotingCardsList().map(v => ContestCountingCircleDetailsService.mapToVotingCard(v)),
     };
   }

@@ -8,6 +8,8 @@ import { DialogService } from '@abraxas/voting-lib';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
+  ExportService,
+  ResultExportConfiguration,
   ResultImportListDialogComponent,
   ResultImportListDialogData,
   ResultImportListDialogResult,
@@ -36,6 +38,7 @@ export class MonitoringOverviewComponent implements OnInit, OnDestroy {
   public publishResultsBeforeAuditedTentatively: boolean = false;
   public contestId?: string;
   public initialSelectedTab: number;
+  public exportConfigs: ResultExportConfiguration[] = [];
 
   private readonly routeParamsSubscription: Subscription;
   private readonly routeDataSubscription: Subscription;
@@ -48,6 +51,7 @@ export class MonitoringOverviewComponent implements OnInit, OnDestroy {
     private readonly dialogService: DialogService,
     private readonly auth: AuthorizationService,
     private readonly storageService: StorageService,
+    private readonly exportService: ExportService,
   ) {
     this.routeParamsSubscription = this.route.params.subscribe(({ contestId }) => this.loadData(contestId));
     this.routeDataSubscription = route.data.subscribe(async ({ contestCantonDefaults }) => {
@@ -98,6 +102,7 @@ export class MonitoringOverviewComponent implements OnInit, OnDestroy {
     const data: ExportCockpitDialogData = {
       contestId: this.resultOverview.contest.id,
       politicalBusinesses: ownedPoliticalBusinesses,
+      exportConfigs: this.exportConfigs,
     };
 
     this.dialogService.open(ExportCockpitDialogComponent, data);
@@ -122,6 +127,7 @@ export class MonitoringOverviewComponent implements OnInit, OnDestroy {
     this.loading = true;
     try {
       this.resultOverview = await this.resultService.getOverview(contestId);
+      this.exportConfigs = await this.exportService.listResultExportConfigurations(contestId);
     } finally {
       this.loading = false;
     }

@@ -18,6 +18,8 @@ import { groupBy } from '../../../services/utils/array.utils';
 import { VoteResultService } from '../../../services/vote-result.service';
 import { PermissionService } from '../../../services/permission.service';
 import { Permissions } from '../../../models/permissions.model';
+import { ConfirmDialogComponent, ConfirmDialogData, ConfirmDialogResult, DialogService, SnackbarService } from '@abraxas/voting-lib';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'vo-ausm-contest-state-change-button',
@@ -67,6 +69,9 @@ export class ContestStateChangeButtonComponent implements OnDestroy, OnChanges, 
     private readonly resultService: ResultService,
     private readonly auth: AuthorizationService,
     private readonly permissionService: PermissionService,
+    private readonly i18n: TranslateService,
+    private readonly dialogService: DialogService,
+    private readonly toast: SnackbarService,
   ) {
     this.resultStateChangedSubscription = politicalBusinessResultService.resultStateChanged$.subscribe(() => this.updateCanSetState());
   }
@@ -103,6 +108,7 @@ export class ContestStateChangeButtonComponent implements OnDestroy, OnChanges, 
 
     for (const result of results) {
       result.state = newState;
+      ResultService.updateResultStateTimestamps(result, new Date());
       this.politicalBusinessResultService.resultStateChanged(result.id, newState);
     }
   }
@@ -114,6 +120,10 @@ export class ContestStateChangeButtonComponent implements OnDestroy, OnChanges, 
   }
 
   public async resetResults(): Promise<void> {
+    if (!(await this.confirmResetResults())) {
+      return;
+    }
+
     try {
       this.isActionExecuting = true;
       await this.resultService.resetCountingCircleResults(this.resultList.contest.id, this.resultList.countingCircle.id);
@@ -121,6 +131,7 @@ export class ContestStateChangeButtonComponent implements OnDestroy, OnChanges, 
       this.resetDetails(this.resultList.details);
       this.updateCanResetResultsInTestingPhase();
       this.resetComments(this.resultList.results);
+      this.toast.success(this.i18n.instant('APP.SAVED'));
     } finally {
       this.isActionExecuting = false;
     }
@@ -175,12 +186,8 @@ export class ContestStateChangeButtonComponent implements OnDestroy, OnChanges, 
       this.canResetResults &&
       this.resultList.currentTenantIsResponsible &&
       !this.resultList.contest.testingPhaseEnded &&
-      !this.resultList.results.find(
-        r =>
-          r.state < CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING ||
-          r.state >= CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY,
-      ) &&
-      !!this.resultList.details.countOfVotersInformation.subTotalInfoList.find(r => r.countOfVoters !== undefined);
+      !this.resultList.results.find(r => r.state < CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING) &&
+      !!this.resultList.details.countOfVotersInformationSubTotals.find(r => r.countOfVoters !== undefined);
   }
 
   private resetDetails(details: ContestCountingCircleDetails): void {
@@ -188,20 +195,33 @@ export class ContestStateChangeButtonComponent implements OnDestroy, OnChanges, 
       delete vc.countOfReceivedVotingCards;
     }
 
-    for (const subTotalInfo of details.countOfVotersInformation.subTotalInfoList) {
+    for (const subTotalInfo of details.countOfVotersInformationSubTotals) {
       delete subTotalInfo.countOfVoters;
     }
 
-    details.countOfVotersInformation.totalCountOfVoters = 0;
-
     // trigger cd
     details.votingCards = [...details.votingCards];
-    details.countOfVotersInformation = { ...details.countOfVotersInformation };
+    details.countOfVotersInformationSubTotals = [...details.countOfVotersInformationSubTotals];
   }
 
   private resetComments(results: ResultListResult[]): void {
     for (const result of results) {
       result.hasComments = false;
     }
+  }
+
+  private async confirmResetResults(): Promise<boolean> {
+    const data: ConfirmDialogData = {
+      title: 'CONTEST.DETAIL.CONFIRM_RESULTS_RESET.TITLE',
+      message: this.i18n.instant('CONTEST.DETAIL.CONFIRM_RESULTS_RESET.MESSAGE'),
+      showCancel: true,
+    };
+
+    const result = await this.dialogService.openForResult<ConfirmDialogComponent, ConfirmDialogResult | undefined>(
+      ConfirmDialogComponent,
+      data,
+    );
+
+    return !!result && result.confirmed;
   }
 }

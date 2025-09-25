@@ -248,30 +248,7 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     const result = this.resultsById[resultId] || {};
     if (result && result.state !== newState) {
       result.state = newState;
-
-      switch (result.state) {
-        case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING:
-          result.submissionDoneTimestamp = undefined;
-          break;
-        case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION:
-          result.submissionDoneTimestamp = undefined;
-          result.readyForCorrectionTimestamp = timestamp;
-          break;
-        case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE:
-          result.submissionDoneTimestamp = timestamp;
-          break;
-        case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE:
-          result.submissionDoneTimestamp = timestamp;
-          result.readyForCorrectionTimestamp = undefined;
-          break;
-        case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY:
-          result.auditedTentativelyTimestamp = timestamp;
-          break;
-        case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED:
-          result.plausibilisedTimestamp = timestamp;
-          break;
-      }
-
+      ResultService.updateResultStateTimestamps(result, timestamp);
       this.politicalBusinessResultService.resultStateChanged(result.id, newState);
     }
 
@@ -500,6 +477,10 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
       vc.countOfReceivedVotingCards = undefined;
     }
 
+    for (const st of this.resultList.details.countOfVotersInformationSubTotals) {
+      st.countOfVoters = undefined;
+    }
+
     this.resultList.electorateSummary.contestCountingCircleElectoratesList = result.electorates;
     this.resultList.electorateSummary.effectiveElectoratesList = [];
 
@@ -528,6 +509,7 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
 
     // trigger cd
     this.resultList.details.votingCards = [...this.resultList.details.votingCards];
+    this.resultList.details.countOfVotersInformationSubTotals = [...this.resultList.details.countOfVotersInformationSubTotals];
   }
 
   private async handleStateChange(e: ResultStateChangeEvent): Promise<void> {

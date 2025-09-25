@@ -21,7 +21,6 @@
 
       <ng-container *ngIf="!loadingBallot && !!ballot; else spinner">
         <vo-ausm-proportional-election-ballot-content class="mb-3"
-                                                      [showRemoveRange]="!!bundle.list"
                                                       [ballotUiData]="ballotUiData"
                                                       [readonly]="!correctionOngoing"
                                                       [disabled]="actionExecuting"

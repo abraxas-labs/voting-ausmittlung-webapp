@@ -1,0 +1,10 @@
+.voting-cards {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  grid-column-gap: 0.2rem;
+
+  > bc-number {
+    // force input fields to be smaller than they like to be, otherwise it overflows
+    min-width: 0;
+  }
+}

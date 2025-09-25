@@ -14,17 +14,24 @@ import { MajorityElectionResult, SecondaryMajorityElectionResult } from '../../.
   standalone: false,
 })
 export class ContestMajorityElectionResultComponent {
+  private resultValue!: MajorityElectionResult | SecondaryMajorityElectionResult;
   public eVotingValue: boolean = false;
   public eCountingValue: boolean = false;
 
-  @Input()
-  public accountedBallots!: number;
+  public maxCandidateVoteCount: number = 0;
 
   @Input()
   public showElectionHeader: boolean = false;
 
+  public get result(): MajorityElectionResult | SecondaryMajorityElectionResult {
+    return this.resultValue;
+  }
+
   @Input()
-  public result!: MajorityElectionResult | SecondaryMajorityElectionResult;
+  public set result(v: MajorityElectionResult | SecondaryMajorityElectionResult) {
+    this.resultValue = v;
+    this.maxCandidateVoteCount = v.candidateResults.length > 0 ? Math.max(...v.candidateResults.map(r => r.voteCount)) : 0;
+  }
 
   @Input()
   public buttonsTemplate?: TemplateRef<HTMLElement>;

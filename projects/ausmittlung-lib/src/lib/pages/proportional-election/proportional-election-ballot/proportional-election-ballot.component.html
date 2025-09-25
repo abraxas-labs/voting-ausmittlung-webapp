@@ -54,7 +54,6 @@
         <ng-container *ngIf="!loadingBallot && !!ballot; else noBallot">
           <vo-ausm-proportional-election-ballot-content
             class="my-3"
-            [showRemoveRange]="!!bundle.list"
             [electionResult]="politicalBusinessResult"
             [ballot]="ballot"
             [ballotUiData]="ballotUiData"

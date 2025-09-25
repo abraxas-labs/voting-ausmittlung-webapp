@@ -22,12 +22,13 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { ResultExportService } from '../../services/result-export.service';
 import { BreadcrumbItem, BreadcrumbsService } from '../../services/breadcrumbs.service';
 import { ProtocolExportState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/export_pb';
-import { DialogService, SnackbarService } from '@abraxas/voting-lib';
+import { DialogService, SnackbarService, ThemeService } from '@abraxas/voting-lib';
 import { TranslateService } from '@ngx-translate/core';
 import { DatePipe } from '@angular/common';
-import { TableDataSource } from '@abraxas/base-components';
+import { AuthorizationService, TableDataSource } from '@abraxas/base-components';
 import { HttpErrorResponse } from '@angular/common/http';
 import { EventLogService } from '../../services/event-log.service';
+import { ResultService } from '../../services/result.service';
 
 enum Tabs {
   PROTOCOLS,
@@ -61,6 +62,9 @@ export class ResultExportComponent implements OnInit, OnDestroy {
   public templates: TableDataSource<ResultExportTemplate> = new TableDataSource<ResultExportTemplate>();
   public selectedTemplates = new SelectionModel<ResultExportTemplate>(true, []);
   public allTemplatesSelected: boolean = false;
+  public showMoreExportsLink: boolean = false;
+  public linkUrl: string = '';
+  public isMonitoring: boolean = false;
 
   private routeParamsSubscription: Subscription = Subscription.EMPTY;
 
@@ -78,6 +82,9 @@ export class ResultExportComponent implements OnInit, OnDestroy {
     private readonly datePipe: DatePipe,
     private readonly toast: SnackbarService,
     private readonly eventLogService: EventLogService,
+    private readonly resultService: ResultService,
+    private readonly themeService: ThemeService,
+    private readonly auth: AuthorizationService,
   ) {}
 
   public async ngOnInit(): Promise<void> {
@@ -86,6 +93,8 @@ export class ResultExportComponent implements OnInit, OnDestroy {
       this.countingCircleId = countingCircleId;
       this.loadData();
     });
+
+    await this.initLinkUrl();
   }
 
   public ngOnDestroy(): void {
@@ -125,9 +134,7 @@ export class ResultExportComponent implements OnInit, OnDestroy {
   }
 
   public async generateSelected(): Promise<void> {
-    if (await this.generateProtocolExports(this.selectedTemplates.selected)) {
-      this.selectedTemplates.clear();
-    }
+    await this.generateProtocolExports(this.selectedTemplates.selected);
   }
 
   public async exportSelected(): Promise<void> {
@@ -293,5 +300,43 @@ export class ResultExportComponent implements OnInit, OnDestroy {
 
   private updateBreadcrumbs(): void {
     this.breadcrumbs = this.breadcrumbsService.forExports();
+  }
+
+  private async initLinkUrl(): Promise<void> {
+    this.isMonitoring = this.route.snapshot.data.isMonitoring;
+    const theme = this.themeService.theme$.value;
+    const linkBaseUrl = `${this.route.snapshot.data.linkBaseUrl}${theme}/contests/${this.contestId}`;
+
+    // When viewing a counting circle result in monitoring, the link should always be present
+    if (this.isMonitoring && !!this.countingCircleId) {
+      this.showMoreExportsLink = true;
+      this.linkUrl = `${linkBaseUrl}/exports`;
+      return;
+    }
+
+    const tenant = await this.auth.getActiveTenant();
+
+    // For monitoring, only jump to a counting circle if the tenant is responsible for it
+    if (!this.countingCircleId) {
+      const resultOverview = await this.resultService.getOverview(this.contestId);
+      const responsibleCcId = resultOverview.countingCircleResults
+        .map(ccr => ccr.countingCircleWithDetails.countingCircle)
+        .find(cc => cc.responsibleAuthority?.secureConnectId === tenant.id)?.id;
+      if (!responsibleCcId) {
+        return;
+      }
+
+      this.showMoreExportsLink = true;
+      this.linkUrl = `${linkBaseUrl}/${responsibleCcId}/exports`;
+      return;
+    }
+
+    const resultList = await this.resultService.getList(this.contestId, this.countingCircleId!);
+    if (!resultList.results.some(r => r.politicalBusiness.domainOfInfluence?.secureConnectId === tenant.id)) {
+      return;
+    }
+
+    this.showMoreExportsLink = true;
+    this.linkUrl = `${linkBaseUrl}/exports`;
   }
 }

@@ -31,9 +31,6 @@ export class MonitoringCockpitGridEntryComponent {
     this.result = results.reduce((x, y) => (x.state < y.state ? x : y));
   }
 
-  @Input()
-  public showDetails: boolean = false;
-
   @Output()
   public openDetail: EventEmitter<void> = new EventEmitter<void>();
 

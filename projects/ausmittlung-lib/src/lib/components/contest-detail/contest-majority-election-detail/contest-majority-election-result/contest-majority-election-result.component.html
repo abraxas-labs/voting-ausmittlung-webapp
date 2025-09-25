@@ -59,7 +59,7 @@
 
 <ng-template #votePercentIndicator let-count>
   <div class="vote-percent-indicator">
-    <div *ngIf="count"
-         [style.width]="100 * (count / (accountedBallots === 0 ? result.totalCandidateVoteCountInclIndividual : accountedBallots)) + '%'"></div>
+    <div *ngIf="count && maxCandidateVoteCount"
+         [style.width]="100 * (count / maxCandidateVoteCount) + '%'"></div>
   </div>
 </ng-template>

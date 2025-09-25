@@ -6,15 +6,19 @@
   @extend .p-3;
 
   background-color: $color-grey-7;
-  display: flex;
-  flex-wrap: wrap;
   border-radius: 4px;
   gap: 1rem 7rem;
+  display: flex;
+  flex-wrap: wrap;
 }
 
-.count-of-voters {
-  display: flex;
-  column-gap: 5rem;
+.voting-cards {
+  .voting-card-result-summary.visible-sub-total-label {
+    &:not(.infos-wrapped) {
+      // bc-label height
+      padding-top: 25.49px;
+    }
+  }
 }
 
 .info-entries {
@@ -55,4 +59,8 @@ button {
   &[disabled] {
     opacity: 0.4;
   }
+}
+
+.bold {
+  font-weight: bold;
 }

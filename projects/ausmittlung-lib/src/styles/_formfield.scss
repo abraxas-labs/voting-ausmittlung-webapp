@@ -13,3 +13,11 @@
 .mat-mdc-select-arrow-wrapper {
   height: 20px !important;
 }
+
+// workaround since the bc-number always show the clear and shifts other elements, related to jira BC-765.
+bc-number {
+  .clear,
+  .mat-mdc-form-field-icon-suffix {
+    display: none !important;
+  }
+}

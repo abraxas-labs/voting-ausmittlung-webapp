@@ -1,0 +1,25 @@
+<app-monitoring-cockpit-grid-buttons
+  *ngIf="politicalBusiness"
+  [readOnly]="readOnly"
+  [politicalBusiness]="politicalBusiness"
+  [countingCircleResults]="countingCircleResults"
+  [filteredCountingCircleResults]="filteredCountingCircleResults"
+  [disabled]="loading"
+  (updateAllStates)="updateAllStates([politicalBusiness], $event)"
+  [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
+  [statePlausibilisedDisabled]="contestCantonDefaults?.statePlausibilisedDisabled"
+>
+</app-monitoring-cockpit-grid-buttons>
+
+<app-monitoring-cockpit-grid-buttons
+  *ngIf="politicalBusinessUnion"
+  [readOnly]="readOnly"
+  [politicalBusinessUnion]="politicalBusinessUnion"
+  [countingCircleResults]="countingCircleResults"
+  [filteredCountingCircleResults]="filteredCountingCircleResults"
+  [disabled]="loading"
+  (updateAllStates)="updateAllStates(politicalBusinessUnion.politicalBusinesses, $event)"
+  [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
+  [statePlausibilisedDisabled]="contestCantonDefaults?.statePlausibilisedDisabled"
+>
+</app-monitoring-cockpit-grid-buttons>

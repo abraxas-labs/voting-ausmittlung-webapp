@@ -1,43 +1,12 @@
 <h4 translate>CONTEST.DETAIL.COUNT_OF_VOTERS</h4>
 
-<ng-container *ngFor="let voterTypeGroup of voterTypeGroups">
-  <bc-label *ngIf="voterTypeGroup.label" [label]="voterTypeGroup.label | translate"></bc-label>
+<vo-ausm-contest-detail-count-of-voters-electorate
+  *ngFor="let electorateVoterTypeGroupsSummary of electorateVoterTypeGroupsSummaries"
+  [domainOfInfluenceTypes]="electorateVoterTypeGroupsSummary.domainOfInfluenceTypes"
+  [voterTypeGroups]="electorateVoterTypeGroupsSummary.voterTypeGroups"
+  (voterTypeGroupsChange)="handleVoterTypeGroupsChange($event)"
+  [eVoting]="eVoting"
+  [readonly]="readonly"
+></vo-ausm-contest-detail-count-of-voters-electorate>
 
-  <div class="count-of-voters mb-2">
-    <bc-number
-      [readonly]="readonly"
-      [required]="true"
-      [min]="0"
-      [(value)]="voterTypeGroup.menSubTotal.countOfVoters"
-      (valueChange)="updateTotal()"
-      [label]="'CONTEST.DETAIL.MEN' | translate"
-      [subscriptSizing]="'dynamic'"
-    ></bc-number>
 
-    <bc-number
-      [readonly]="readonly"
-      [required]="true"
-      [min]="0"
-      [(value)]="voterTypeGroup.womenSubTotal.countOfVoters"
-      (valueChange)="updateTotal()"
-      [label]="'CONTEST.DETAIL.WOMEN' | translate"
-      [subscriptSizing]="'dynamic'"
-    ></bc-number>
-
-    <bc-number
-      [readonly]="true"
-      [tabIndex]="-1"
-      [required]="true"
-      [value]="voterTypeGroup.total"
-      [label]="'CONTEST.DETAIL.TOTAL' | translate"
-      [subscriptSizing]="'dynamic'">
-    </bc-number>
-  </div>
-</ng-container>
-
-<bc-checkbox
-  [disabled]="true"
-  [label]="'CONTEST.DETAIL.E_VOTING_ACTIVE' | translate"
-  [checked]="eVoting"
-  [subscriptSizing]="'dynamic'"
-></bc-checkbox>

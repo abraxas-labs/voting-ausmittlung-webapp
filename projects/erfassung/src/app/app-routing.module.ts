@@ -19,6 +19,7 @@ import { ErfassungContestOverviewComponent } from './pages/erfassung-contest-ove
 import { AuthThemeGuard, ThemeService } from '@abraxas/voting-lib';
 import { ErfassungFinishSubmissionComponent } from './pages/erfassung-finish-submission/erfassung-finish-submission.component';
 import { ContestDateGuard } from './services/contest-date.guard';
+import { environment } from '../environments/environment';
 
 const routes: Routes = [
   {
@@ -57,6 +58,8 @@ const routes: Routes = [
             component: ResultExportComponent,
             resolve: {
               contestCantonDefaults: (route: ActivatedRouteSnapshot) => inject(ContestCantonDefaultsResolver).resolve(route),
+              linkBaseUrl: () => environment.votingAusmittlungMonitoringWebApp,
+              isMonitoring: () => false,
             },
           },
           {
