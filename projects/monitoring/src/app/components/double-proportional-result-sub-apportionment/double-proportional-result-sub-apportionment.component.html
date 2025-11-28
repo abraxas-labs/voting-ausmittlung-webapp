@@ -6,10 +6,14 @@
     ></vo-ausm-admonition>
   </div>
 
-  <app-double-proportional-result-sub-apportionment-lot-decision *ngIf="doubleProportionalResult.hasSubApportionmentRequiredLotDecision"
-                                                                  [doubleProportionalResult]="doubleProportionalResult"
-                                                                  (update)="handleLotDecisionUpdate()"
-  ></app-double-proportional-result-sub-apportionment-lot-decision>
+  <ng-container *ngIf="doubleProportionalResult.hasSubApportionmentRequiredLotDecision">
+    <app-double-proportional-result-sub-apportionment-lot-decision [doubleProportionalResult]="doubleProportionalResult"
+                                                                   (update)="handleLotDecisionUpdate()"
+                                                                   (contentChanged)="refreshTable()"
+    ></app-double-proportional-result-sub-apportionment-lot-decision>
+
+    <div class="my-6 divider-bold"></div>
+  </ng-container>
 
   <div class="sub-apportionment-table" *ngIf="doubleProportionalResult" [style.gridTemplateRows]="gridTemplateRowsStyle">
     <!-- 1. col: domain of influences -->

@@ -66,6 +66,7 @@ export interface DoubleProportionalResultColumn {
   voterNumber: number;
   superApportionmentQuotient: number;
   superApportionmentNumberOfMandates: number;
+  superApportionmentNumberOfMandatesExclLotDecision: number;
   subApportionmentNumberOfMandates: number;
   divisor: number;
   proportionalElectionQuorumReached: boolean;
@@ -90,6 +91,7 @@ export interface DoubleProportionalResultCell {
   proportionalElectionQuorumReached: boolean;
   voterNumber: number;
   subApportionmentNumberOfMandates: number;
+  subApportionmentNumberOfMandatesExclLotDecision: number;
   subApportionmentLotDecisionRequired: boolean;
 }
 

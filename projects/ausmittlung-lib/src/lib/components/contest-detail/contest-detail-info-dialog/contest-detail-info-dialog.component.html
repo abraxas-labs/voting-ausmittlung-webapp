@@ -35,7 +35,7 @@
 
   <div footer>
     <vo-lib-button-bar [hasSaveButton]="!readonly"
-                       [canSave]="!countingMachineEnabled || !!countingMachine"
+                       [canSave]="true"
                        (save)="save()"
                        [sticky]="false"
                        [cancelLabel]="(readonly ? 'APP.CLOSE' : 'COMMON.CANCEL') | translate"

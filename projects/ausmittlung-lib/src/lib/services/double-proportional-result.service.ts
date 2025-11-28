@@ -106,6 +106,7 @@ export class DoubleProportionalResultService {
       voterNumber: data.getVoterNumber(),
       superApportionmentQuotient: data.getSuperApportionmentQuotient(),
       superApportionmentNumberOfMandates: data.getSuperApportionmentNumberOfMandates(),
+      superApportionmentNumberOfMandatesExclLotDecision: data.getSuperApportionmentNumberOfMandatesExclLotDecision(),
       divisor: data.getDivisor(),
       proportionalElectionQuorumReached: !!data.getCellsList().find(x => x.getProportionalElectionQuorumReached()),
       subApportionmentNumberOfMandates: data.getSubApportionmentNumberOfMandates(),

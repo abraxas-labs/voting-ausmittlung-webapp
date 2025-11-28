@@ -4,8 +4,21 @@
 
   <bc-table #selection="selection"
             selection
+            [selectionMultiple]="false"
             [dataSource]="lotDecisions"
             (selectionChange)="lotDecisionChange($event.after.length > 0 ? $event.after[0].value : undefined)">
+
+    <ng-container columnDef="selection">
+      <bc-header-cell *headerCellDef></bc-header-cell>
+      <bc-data-cell *dataCellDef="let element">
+        <bc-radio-button
+          [disabled]="readonly"
+          selectionToggle
+          [selectionToggleValue]="element"
+          [checked]="selection.isSelected(element)"
+        ></bc-radio-button>
+      </bc-data-cell>
+    </ng-container>
 
     <ng-container columnDef="lot">
       <bc-header-cell *headerCellDef>{{ 'DOUBLE_PROPORTIONAL_RESULT.SUB_APPORTIONMENT.LOT_DECISION.LOT' | translate }}</bc-header-cell>
@@ -24,13 +37,13 @@
                  [selectionToggleValue]="row"
                  selectionRow
                  [selectionRowValue]="row"
-                 (click)="rowSelection.toggle()"></bc-data-row>
+                 (click)="!readonly ? rowSelection.toggle() : undefined"></bc-data-row>
   </bc-table>
 
   <div class="buttons">
-    <vo-lib-inline-spinner *ngIf="newLotDecisionSelected && !doubleProportionalResult.contest.locked" [loading]="saving">
+    <vo-lib-inline-spinner [loading]="saving">
       <bc-button variant="primary"
-                 [disabled]="saving"
+                 [disabled]="saving || !newLotDecisionSelected || readonly"
                  [label]="'APP.CONFIRM' | translate"
                  (buttonClick)="updateLotDecision()">
       </bc-button>

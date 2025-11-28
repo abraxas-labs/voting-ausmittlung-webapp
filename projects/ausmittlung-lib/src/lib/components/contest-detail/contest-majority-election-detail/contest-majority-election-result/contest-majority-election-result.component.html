@@ -15,7 +15,7 @@
         <bc-label class="candidate-vote-count" [label]="'ELECTION.VOTE_COUNT' | translate"></bc-label>
         <ng-container *ngFor="let candidate of result.candidateResults">
           <span class="candidate-number">{{candidate.candidate.number + (candidateCheckDigit ? candidate.candidate.checkDigit : '')}}</span>
-          <span>{{candidate.candidate.politicalLastName}} {{candidate.candidate.politicalFirstName}}</span>
+          <vo-ausm-majority-election-candidacy-info [candidate]="candidate.candidate"></vo-ausm-majority-election-candidacy-info>
           <span>{{candidate.candidate.party}}</span>
           <span *ngIf="eVotingValue || eCountingValue" class="candidate-vote-count">{{candidate.conventionalVoteCount | number}}</span>
           <span *ngIf="eVotingValue" class="candidate-vote-count">{{(candidate.eVotingExclWriteInsVoteCount + candidate.eVotingWriteInsVoteCount) | number}}</span>

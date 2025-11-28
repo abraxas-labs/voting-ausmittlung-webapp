@@ -13,7 +13,9 @@
 
   <ng-container columnDef="candidacy">
     <bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.CANDIDACY' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">{{ element.candidate.politicalLastName + (element.candidate.politicalFirstName ? ' ' + element.candidate.politicalFirstName : '') }}</bc-data-cell>
+    <bc-data-cell *dataCellDef="let element">
+      <vo-ausm-majority-election-candidacy-info [candidate]="element.candidate"></vo-ausm-majority-election-candidacy-info>
+    </bc-data-cell>
   </ng-container>
 
   <ng-container columnDef="party">

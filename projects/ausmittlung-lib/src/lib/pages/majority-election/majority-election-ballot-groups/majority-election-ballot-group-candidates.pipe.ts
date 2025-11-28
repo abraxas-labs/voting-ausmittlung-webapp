@@ -28,6 +28,7 @@ export class MajorityElectionBallotGroupCandidatesPipe implements PipeTransform 
       party: '',
       position: 0,
       checkDigit: 0,
+      countToIndividual: false,
     };
   }
 

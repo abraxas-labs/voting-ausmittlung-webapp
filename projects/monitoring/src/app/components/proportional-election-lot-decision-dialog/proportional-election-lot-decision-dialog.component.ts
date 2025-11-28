@@ -63,7 +63,7 @@ export class ProportionalElectionLotDecisionDialogComponent extends ElectionLotD
 
     const availableLotDecisions = this.getAvailableLotDecisions();
     if (availableLotDecisions.length === 0) {
-      this.nextOrClose();
+      await this.nextOrClose();
       return;
     }
 
@@ -75,20 +75,33 @@ export class ProportionalElectionLotDecisionDialogComponent extends ElectionLotD
     this.loading = true;
     try {
       await this.resultService.updateListEndResultLotDecisions(this.selectedList.list.id, lotDecisions);
-      this.selectedList.hasOpenRequiredLotDecisions = false;
+      this.selectedList.hasOpenRequiredLotDecisions = this.hasOpenRequiredLotDecisions(availableLotDecisions);
       this.lotDecisionsByListId[this.selectedList.list.id] = lotDecisions;
       this.toast.success(this.i18n.instant('APP.SAVED'));
     } finally {
       this.loading = false;
     }
 
-    this.nextOrClose();
+    await this.nextOrClose();
   }
 
-  public close(): void {
+  public async close(): Promise<void> {
     const result: ProportionalElectionLotDecisionDialogResult = {
       lotDecisionsByListId: this.lotDecisionsByListId,
     };
+
+    if (
+      this.lists.some(l => l.hasOpenRequiredLotDecisions) &&
+      !(await this.dialog.confirm(
+        'END_RESULT.ELECTION.LOT_DECISION.CLOSE_WITH_OPEN_REQUIRED_LOT_DECISIONS_CONFIRM.TITLE',
+        'END_RESULT.ELECTION.LOT_DECISION.CLOSE_WITH_OPEN_REQUIRED_LOT_DECISIONS_CONFIRM.DESCRIPTION',
+        'APP.CONFIRM',
+        'APP.CLOSE',
+      ))
+    ) {
+      return;
+    }
+
     this.dialogRef.close(result);
   }
 
@@ -104,13 +117,13 @@ export class ProportionalElectionLotDecisionDialogComponent extends ElectionLotD
     return this.availableLotDecisions.lotDecisions;
   }
 
-  private nextOrClose(): void {
+  private async nextOrClose(): Promise<void> {
     if (!this.isLast) {
       this.stepper.selectedIndex = this.stepper.selectedIndex + 1;
       return;
     }
 
-    this.close();
+    await this.close();
   }
 
   private ensureHasValidLotDecisions(): boolean {

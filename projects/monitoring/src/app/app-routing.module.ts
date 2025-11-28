@@ -13,6 +13,7 @@ import {
   ResultExportComponent,
   voteResultRoute,
   PoliticalBusinessCantonDefaultsResolver,
+  HasDeactivateGuard,
 } from 'ausmittlung-lib';
 import { MajorityElectionEndResultComponent } from './pages/majority-election-end-result/majority-election-end-result.component';
 import { MonitoringContestDetailComponent } from './pages/monitoring-contest-detail/monitoring-contest-detail.component';
@@ -109,6 +110,7 @@ const routes: Routes = [
       {
         path: 'proportional-election-end-results/:politicalBusinessId/double-proportional-results',
         component: ProportionalElectionDoubleProportionalResultComponent,
+        canDeactivate: [HasDeactivateGuard],
       },
       {
         path: 'proportional-election-union-end-results/:politicalBusinessUnionId',
@@ -124,6 +126,7 @@ const routes: Routes = [
       {
         path: 'proportional-election-union-end-results/:politicalBusinessUnionId/double-proportional-results',
         component: ProportionalElectionUnionDoubleProportionalResultComponent,
+        canDeactivate: [HasDeactivateGuard],
       },
       proportionalElectionResultRoute,
       majorityElectionResultRoute,

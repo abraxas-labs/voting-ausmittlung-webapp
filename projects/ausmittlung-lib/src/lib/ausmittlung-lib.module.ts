@@ -151,6 +151,7 @@ import { ResultImportDialogComponent } from './components/result-import-dialog/r
 import { ImportFileSelectComponent } from './components/result-import-dialog/import-file-select/import-file-select.component';
 import { ContestDetailCountOfVotersElectorateComponent } from './components/contest-detail/contest-detail-count-of-voters-electorate/contest-detail-count-of-voters-electorate.component';
 import { RouterLink } from '@angular/router';
+import { MajorityElectionCandidacyInfoComponent } from './components/majority-election-candidacy-info/majority-election-candidacy-info.component';
 
 @NgModule({
   declarations: [
@@ -263,6 +264,7 @@ import { RouterLink } from '@angular/router';
     ResultImportListDialogComponent,
     ResultImportDialogComponent,
     ImportFileSelectComponent,
+    MajorityElectionCandidacyInfoComponent,
   ],
   imports: [
     CommonModule,
@@ -326,6 +328,7 @@ import { RouterLink } from '@angular/router';
     BooleanStatusLabelComponent,
     AdmonitionComponent,
     ResultImportListDialogComponent,
+    MajorityElectionCandidacyInfoComponent,
   ],
 })
 export class AusmittlungLibModule {

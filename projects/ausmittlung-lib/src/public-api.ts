@@ -58,6 +58,7 @@ export * from './lib/components/boolean-status-label/boolean-status-label.compon
 export * from './lib/components/admonition/admonition.component';
 export * from './lib/components/result-import-dialog/result-import-dialog.component';
 export * from './lib/components/result-import-list-dialog/result-import-list-dialog.component';
+export * from './lib/components/majority-election-candidacy-info/majority-election-candidacy-info.component';
 
 // pipes
 export * from './lib/pipes/translate-vote-question.pipe';
@@ -85,3 +86,4 @@ export * from './lib/tokens';
 
 // guards
 export * from './lib/services/guards/has-unsaved-changes.guard';
+export * from './lib/services/guards/has-deactivate.guard';

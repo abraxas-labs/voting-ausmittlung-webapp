@@ -28,6 +28,9 @@ export class EndResultStepActionBarComponent {
   @Input()
   public disabled = false;
 
+  @Input()
+  public loading = false;
+
   @Output()
   public stepChange: EventEmitter<EndResultStep> = new EventEmitter<EndResultStep>();
 

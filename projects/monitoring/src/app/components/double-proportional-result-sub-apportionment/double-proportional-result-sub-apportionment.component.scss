@@ -4,6 +4,10 @@
   display: block;
 }
 
+.divider-bold {
+  border-bottom: 2px solid rgb(0 0 0 / 36%);
+}
+
 .sub-apportionment-header {
   @extend .pb-2;
 

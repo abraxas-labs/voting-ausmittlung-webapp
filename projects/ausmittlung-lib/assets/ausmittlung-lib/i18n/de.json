@@ -26,7 +26,8 @@
     "CONTINUE": "Weiter",
     "SHORTCUT_TITLE": "Tastenkombinationen",
     "CONFIRM": "Bestätigen",
-    "OPEN": "Öffnen"
+    "OPEN": "Öffnen",
+    "ERROR_MESSAGE": "Es ist ein Fehler aufgetreten. Bitte führen Sie die Aktion erneut aus."
   },
   "CONTEST": {
     "TITLE": "Urnengänge",
@@ -524,6 +525,7 @@
       "NO_CANDIDATES": "Keine Kandidaturen"
     },
     "INDIVIDUAL": "Vereinzelte",
+    "COUNT_TO_INDIVIDUAL_HINT": "Bei Exports unter Vereinzelte ausgewiesen",
     "EMPTY_VOTES": "Leere Zeilen",
     "INVALID_VOTES": "Ungültige Stimmen",
     "BALLOT_DETAIL": {
@@ -775,6 +777,10 @@
       "3": {
         "VALID": "Total Stimmrechtsausweise darf Total Stimmberechtigte nicht übersteigen.",
         "INVALID": "Total Stimmrechtsausweise darf Total Stimmberechtigte nicht übersteigen."
+      },
+      "4": {
+        "VALID": "Die technischen Hilfsmittel sind erfasst.",
+        "INVALID": "Die technischen Hilfsmittel sind noch nicht erfasst."
       },
       "8": {
         "VALID": "Die Stimmen dieses Geschäfts sind vollständig erfasst.",

@@ -22,22 +22,22 @@
 
     <ng-container *ngIf="!loading; else spinner">
       <ng-container *ngIf="availableLotDecisions && availableLotDecisions?.lotDecisions.length > 0">
-        <bc-label *ngIf="hasAnyRequiredLotDecisions" [label]="'END_RESULT.ELECTION.LOT_DECISION.REQUIRED_HINT' | translate"></bc-label>
-
         <div class="candidate-results">
           <bc-label [label]="'ELECTION.CANDIDATE.RANK' | translate"></bc-label>
           <bc-label [label]="'ELECTION.CANDIDATE.NUMBER' | translate"></bc-label>
           <bc-label class="candidate-name" [label]="'ELECTION.CANDIDATE.CANDIDACY' | translate"></bc-label>
           <bc-label [label]="'ELECTION.VOTE_COUNT' | translate"></bc-label>
           <bc-label [label]="'ELECTION.CANDIDATE.RANK_AFTER_LOT_DECISION' | translate"></bc-label>
+          <bc-label [label]="'ELECTION.CANDIDATE.LOT_DECISION_REQUIRED' | translate"></bc-label>
 
           <ng-container *ngFor="let lotDecision of availableLotDecisions.lotDecisions">
-            <span>{{lotDecision.originalRank}}{{lotDecision.lotDecisionRequired ? '*' : ''}}</span>
+            <span>{{lotDecision.originalRank}}</span>
             <span>{{lotDecision.candidate.number}}</span>
             <span
               class="candidate-name">{{lotDecision.candidate.politicalLastName}} {{lotDecision.candidate.politicalFirstName}}</span>
             <span>{{lotDecision.voteCount}}</span>
             <ng-container *ngTemplateOutlet="rankDropdownTemplate; context: {$implicit: lotDecision}"></ng-container>
+            <span>{{(lotDecision.lotDecisionRequired ? 'APP.YES' : 'APP.NO') | translate}}</span>
           </ng-container>
         </div>
 

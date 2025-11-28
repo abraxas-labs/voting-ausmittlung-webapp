@@ -76,56 +76,63 @@ export class VoteEndResultComponent implements OnDestroy {
       return;
     }
 
+    let success = false;
+
     try {
       this.stepActionLoading = true;
 
       if (newStep === EndResultStep.AllCountingCirclesDone) {
-        await this.setFinalized(false);
+        success = await this.setFinalized(false);
       }
 
       if (newStep === EndResultStep.Finalized) {
-        await this.setFinalized(true);
+        success = await this.setFinalized(true);
       }
 
-      this.endResultStep = newStep;
+      if (success) {
+        this.endResultStep = newStep;
+      }
     } finally {
       this.stepActionLoading = false;
     }
   }
 
-  public async setFinalized(finalize: boolean): Promise<void> {
+  public async setFinalized(finalize: boolean): Promise<boolean> {
     if (!this.endResult || finalize === this.endResult.finalized) {
-      return;
+      return false;
     }
 
-    if (finalize) {
-      this.endResult.finalized = true;
+    try {
+      if (finalize) {
+        const confirmed = await this.dialog.confirm('VOTE_END_RESULT.CONFIRM.TITLE', 'VOTE_END_RESULT.CONFIRM.MESSAGE', 'APP.CONFIRM');
+        if (!confirmed) {
+          return false;
+        }
 
-      const confirmed = await this.dialog.confirm('VOTE_END_RESULT.CONFIRM.TITLE', 'VOTE_END_RESULT.CONFIRM.MESSAGE', 'APP.CONFIRM');
-      if (!confirmed) {
-        this.endResult!.finalized = false;
-        return;
+        const voteId = this.endResult.vote.id;
+        const secondFactorTransaction = await this.resultService.prepareFinalizeEndResult(voteId);
+        this.endResult.finalized = true;
+
+        await this.secondFactorTransactionService
+          .showDialogAndExecuteVerifyAction(
+            () => this.resultService.finalizeEndResult(voteId, secondFactorTransaction.getId()),
+            secondFactorTransaction.getCode(),
+            secondFactorTransaction.getQrCode(),
+          )
+          .catch(err => {
+            this.endResult!.finalized = false;
+            throw err;
+          });
+      } else {
+        await this.resultService.revertEndResultFinalization(this.endResult.vote.id);
+        this.endResult.finalized = false;
       }
 
-      const voteId = this.endResult.vote.id;
-      const secondFactorTransaction = await this.resultService.prepareFinalizeEndResult(voteId);
-
-      await this.secondFactorTransactionService
-        .showDialogAndExecuteVerifyAction(
-          () => this.resultService.finalizeEndResult(voteId, secondFactorTransaction.getId()),
-          secondFactorTransaction.getCode(),
-          secondFactorTransaction.getQrCode(),
-        )
-        .catch(err => {
-          this.endResult!.finalized = false;
-          throw err;
-        });
-    } else {
-      await this.resultService.revertEndResultFinalization(this.endResult.vote.id);
+      this.toast.success(this.i18n.instant('APP.SAVED'));
+      return true;
+    } catch {
+      return false;
     }
-
-    this.toast.success(this.i18n.instant('APP.SAVED'));
-    this.endResult.finalized = finalize;
   }
 
   private async loadData(setLoading: boolean = true): Promise<void> {

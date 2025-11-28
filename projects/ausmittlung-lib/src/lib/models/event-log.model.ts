@@ -61,19 +61,24 @@ export const VoteResultBundleEventTypes = [
 export type VoteResultBundleEventType = (typeof VoteResultBundleEventTypes)[number];
 
 export const VoteEndResultEventTypes = [
-  'VoteResultAuditedTentatively',
-  'VoteResultResettedToSubmissionFinished',
+  'VoteResultSubmissionFinished',
+  'VoteResultCorrectionFinished',
+  'VoteResultFlaggedForCorrection',
   'VoteResultResetted',
 ] as const;
+
+export type VoteEndResultEventType = (typeof VoteEndResultEventTypes)[number];
 
 export const VoteResultStateEventTypes = [
   'VoteResultSubmissionStarted',
   'VoteResultSubmissionFinished',
   'VoteResultCorrectionFinished',
   'VoteResultFlaggedForCorrection',
+  'VoteResultAuditedTentatively',
+  'VoteResultResettedToSubmissionFinished',
   'VoteResultPlausibilised',
   'VoteResultResettedToAuditedTentatively',
-  ...VoteEndResultEventTypes,
+  'VoteResultResetted',
 ] as const;
 
 export type VoteResultStateEventType = (typeof VoteResultStateEventTypes)[number];
@@ -89,7 +94,7 @@ export const VoteResultEventTypes = [
 
 export type VoteResultEventType = (typeof VoteResultEventTypes)[number];
 
-export type VoteEventType = VoteResultBundleEventType | VoteResultStateEventType | VoteResultEventType;
+export type VoteEventType = VoteResultBundleEventType | VoteResultStateEventType | VoteResultEventType | VoteEndResultEventType;
 
 export const ProportionalElectionResultBundleEventTypes = [
   'ProportionalElectionResultBundleCreated',
@@ -106,20 +111,26 @@ export const ProportionalElectionResultBundleEventTypes = [
 export type ProportionalElectionResultBundleEventType = (typeof ProportionalElectionResultBundleEventTypes)[number];
 
 export const ProportionalElectionEndResultEventTypes = [
-  'ProportionalElectionResultAuditedTentatively',
-  'ProportionalElectionResultResettedToSubmissionFinished',
+  'ProportionalElectionResultSubmissionFinished',
+  'ProportionalElectionResultCorrectionFinished',
+  'ProportionalElectionResultFlaggedForCorrection',
   'ProportionalElectionResultResetted',
+  'ProportionalElectionEndResultMandateDistributionStarted',
+  'ProportionalElectionEndResultMandateDistributionReverted',
 ] as const;
+
+type ProportionalElectionEndResultEventType = (typeof ProportionalElectionEndResultEventTypes)[number];
 
 export const ProportionalElectionResultStateEventTypes = [
   'ProportionalElectionResultSubmissionStarted',
   'ProportionalElectionResultSubmissionFinished',
   'ProportionalElectionResultCorrectionFinished',
   'ProportionalElectionResultFlaggedForCorrection',
-  'ProportionalElectionResultPlausibilised',
+  'ProportionalElectionResultAuditedTentatively',
   'ProportionalElectionResultResettedToSubmissionFinished',
+  'ProportionalElectionResultPlausibilised',
   'ProportionalElectionResultResettedToAuditedTentatively',
-  ...ProportionalElectionEndResultEventTypes,
+  'ProportionalElectionResultResetted',
 ] as const;
 
 export type ProportionalElectionResultStateEventType = (typeof ProportionalElectionResultStateEventTypes)[number];
@@ -137,7 +148,8 @@ export type ProportionalElectionResultEventType = (typeof ProportionalElectionRe
 export type ProportionalElectionEventType =
   | ProportionalElectionResultBundleEventType
   | ProportionalElectionResultStateEventType
-  | ProportionalElectionResultEventType;
+  | ProportionalElectionResultEventType
+  | ProportionalElectionEndResultEventType;
 
 export const MajorityElectionResultBundleEventTypes = [
   'MajorityElectionResultBundleCreated',
@@ -154,8 +166,9 @@ export const MajorityElectionResultBundleEventTypes = [
 type MajorityElectionResultBundleEventType = (typeof MajorityElectionResultBundleEventTypes)[number];
 
 export const MajorityElectionEndResultEventTypes = [
-  'MajorityElectionResultAuditedTentatively',
-  'MajorityElectionResultResettedToSubmissionFinished',
+  'MajorityElectionResultSubmissionFinished',
+  'MajorityElectionResultCorrectionFinished',
+  'MajorityElectionResultFlaggedForCorrection',
   'MajorityElectionResultResetted',
   'MajorityElectionEndResultLotDecisionsUpdated',
   'MajorityElectionEndResultSecondaryLotDecisionsUpdated',
@@ -168,10 +181,10 @@ export const MajorityElectionResultStateEventTypes = [
   'MajorityElectionResultSubmissionFinished',
   'MajorityElectionResultCorrectionFinished',
   'MajorityElectionResultFlaggedForCorrection',
-  'MajorityElectionResultPlausibilised',
-  'MajorityElectionResultResettedToAuditedTentatively',
   'MajorityElectionResultAuditedTentatively',
   'MajorityElectionResultResettedToSubmissionFinished',
+  'MajorityElectionResultPlausibilised',
+  'MajorityElectionResultResettedToAuditedTentatively',
   'MajorityElectionResultResetted',
 ] as const;
 

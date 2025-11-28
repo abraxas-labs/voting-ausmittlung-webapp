@@ -332,6 +332,7 @@ export class MajorityElectionWriteInMappingComponent implements OnChanges {
       politicalLastName: this.i18n.instant(name),
       position: -1,
       checkDigit: 0,
+      countToIndividual: false,
     };
   }
 }

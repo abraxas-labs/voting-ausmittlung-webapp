@@ -25,7 +25,7 @@ import {
   standalone: false,
 })
 export class DoubleProportionalResultSubApportionmentLotDecisionComponent implements OnInit {
-  private readonly defaultColumns = ['lot'];
+  private readonly defaultColumns = ['selection', 'lot'];
 
   public columns: string[] = [];
   public lotDecisionColumnDefs: string[] = [];
@@ -35,6 +35,7 @@ export class DoubleProportionalResultSubApportionmentLotDecisionComponent implem
 
   public initialLoading = true;
   public saving = false;
+  public readonly = false;
 
   constructor(
     private readonly proportionalElectionUnionResultService: ProportionalElectionUnionResultService,
@@ -49,11 +50,15 @@ export class DoubleProportionalResultSubApportionmentLotDecisionComponent implem
   @Output()
   public update: EventEmitter<void> = new EventEmitter<void>();
 
+  @Output()
+  public contentChanged: EventEmitter<void> = new EventEmitter<void>();
+
   @ViewChild(SelectionDirective, { static: false })
   public selection!: SelectionDirective<DoubleProportionalResultSubApportionmentLotDecision>;
 
   public async ngOnInit(): Promise<void> {
     this.initialLoading = true;
+    this.readonly = this.doubleProportionalResult.contest.locked;
 
     try {
       this.lotDecisions =
@@ -93,34 +98,6 @@ export class DoubleProportionalResultSubApportionmentLotDecisionComponent implem
       );
       this.toast.success(this.i18n.instant('APP.SAVED'));
 
-      const lotDecisionCells = flatten(this.selectedLotDecision.columns.map(c => c.cells));
-
-      for (const column of this.doubleProportionalResult.columns) {
-        for (const cell of column.cells) {
-          const lotDecisionCell = lotDecisionCells.find(c => c.list.id === cell.list.id);
-          if (!lotDecisionCell) {
-            continue;
-          }
-
-          cell.subApportionmentNumberOfMandates = lotDecisionCell.numberOfMandates;
-        }
-
-        column.subApportionmentNumberOfMandates = sum(column.cells, x => x.subApportionmentNumberOfMandates);
-      }
-
-      for (const row of this.doubleProportionalResult.rows) {
-        for (const cell of row.cells) {
-          const lotDecisionCell = lotDecisionCells.find(c => c.list.id === cell.list.id);
-          if (!lotDecisionCell) {
-            continue;
-          }
-
-          cell.subApportionmentNumberOfMandates = lotDecisionCell.numberOfMandates;
-        }
-
-        row.subApportionmentNumberOfMandates = sum(row.cells, x => x.subApportionmentNumberOfMandates);
-      }
-
       this.doubleProportionalResult.subApportionmentState =
         DoubleProportionalResultApportionmentState.DOUBLE_PROPORTIONAL_RESULT_APPORTIONMENT_STATE_COMPLETED;
       this.doubleProportionalResult.subApportionmentNumberOfMandates = sum(
@@ -137,6 +114,8 @@ export class DoubleProportionalResultSubApportionmentLotDecisionComponent implem
   public lotDecisionChange(selectedLotDecision?: DoubleProportionalResultSubApportionmentLotDecision) {
     this.selectedLotDecision = selectedLotDecision;
     this.newLotDecisionSelected = !!selectedLotDecision;
+    this.updateNumberOfMandates();
+    this.contentChanged.emit();
   }
 
   public getNumberOfMandatesByColumnDef(
@@ -168,5 +147,43 @@ export class DoubleProportionalResultSubApportionmentLotDecisionComponent implem
     }
 
     this.newLotDecisionSelected = false;
+    this.updateNumberOfMandates();
+  }
+
+  private updateNumberOfMandates(): void {
+    const lotDecisionCells = flatten(this.selectedLotDecision?.columns.map(c => c.cells) ?? []);
+
+    for (const column of this.doubleProportionalResult.columns) {
+      for (const cell of column.cells) {
+        const lotDecisionCell = lotDecisionCells.find(c => c.list.id === cell.list.id);
+        if (!lotDecisionCell) {
+          cell.subApportionmentNumberOfMandates = cell.subApportionmentNumberOfMandatesExclLotDecision;
+          continue;
+        }
+
+        cell.subApportionmentNumberOfMandates = lotDecisionCell.numberOfMandates;
+      }
+
+      column.subApportionmentNumberOfMandates = sum(column.cells, x => x.subApportionmentNumberOfMandates);
+    }
+
+    for (const row of this.doubleProportionalResult.rows) {
+      for (const cell of row.cells) {
+        const lotDecisionCell = lotDecisionCells.find(c => c.list.id === cell.list.id);
+        if (!lotDecisionCell) {
+          cell.subApportionmentNumberOfMandates = cell.subApportionmentNumberOfMandatesExclLotDecision;
+          continue;
+        }
+
+        cell.subApportionmentNumberOfMandates = lotDecisionCell.numberOfMandates;
+      }
+
+      row.subApportionmentNumberOfMandates = sum(row.cells, x => x.subApportionmentNumberOfMandates);
+    }
+
+    this.doubleProportionalResult.subApportionmentNumberOfMandates = sum(
+      this.doubleProportionalResult.columns,
+      x => x.subApportionmentNumberOfMandates,
+    );
   }
 }

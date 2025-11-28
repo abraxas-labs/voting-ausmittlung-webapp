@@ -4,12 +4,13 @@
  * For license information see LICENSE file.
  */
 
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import {
   DoubleProportionalResult,
   DoubleProportionalResultApportionmentState,
   ProportionalElectionMandateAlgorithm,
 } from 'ausmittlung-lib';
+import { DoubleProportionalResultSuperApportionmentLotDecisionComponent } from '../double-proportional-result-super-apportionment-lot-decision/double-proportional-result-super-apportionment-lot-decision.component';
 
 const defaultGridRows = 4;
 
@@ -64,6 +65,9 @@ export class DoubleProportionalResultSuperApportionmentComponent {
 
     this.gridTemplateRowsStyle = `repeat(${defaultGridRows + additionalGridRows}, min-content)`;
   }
+
+  @ViewChild(DoubleProportionalResultSuperApportionmentLotDecisionComponent)
+  public lotDecision?: DoubleProportionalResultSuperApportionmentLotDecisionComponent;
 
   @Output()
   public update: EventEmitter<void> = new EventEmitter<void>();

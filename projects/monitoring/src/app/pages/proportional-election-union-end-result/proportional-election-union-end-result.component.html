@@ -21,12 +21,12 @@
 
         <bc-button variant="tertiary"
                    [disabled]="!endResult.finalized || endResult.contest.locked || isPartialResult"
-                   (click)="setFinalized(false)"
+                   (buttonClick)="setFinalized(false)"
                    [label]="'UNION_END_RESULT.REVERT_FINALIZE' | translate"></bc-button>
 
         <bc-button variant="primary"
                    [disabled]="endResult.finalized || endResult.contest.locked || !endResult.allElectionsDone || isPartialResult"
-                   (click)="setFinalized(true)"
+                   (buttonClick)="setFinalized(true)"
                    [label]="'UNION_END_RESULT.FINALIZE' | translate"></bc-button>
 
       </vo-lib-inline-spinner>
@@ -34,7 +34,7 @@
 
     <div class="additional-infos mb-3" *ngIf="endResult.finalized && !finalizing && !isPartialResult">
         <bc-button variant="tertiary"
-                   (click)="viewDpResult()"
+                   (buttonClick)="viewDpResult()"
                    [label]="'UNION_END_RESULT.DOUBLE_PROPORTIONAL_RESULT.REDIRECT' | translate"></bc-button>
     </div>
   </ng-container>

@@ -1,4 +1,4 @@
-# ✨ Changelog (`v3.19.0`)
+# ✨ Changelog (`v3.20.2`)
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Info
 
 ```text
-This version -------- v3.19.0
-Previous version ---- v3.13.1
+This version -------- v3.20.2
+Previous version ---- v3.19.0
 Initial version ----- v1.25.0
-Total commits ------- 25
+Total commits ------- 8
 ```
+
+## [v3.20.2] - 2025-11-14
+
+### 🔄 Changed
+
+- show correct proportional candidate end result state after lot decision
+
+## [v3.20.1] - 2025-10-20
+
+### 🆕 Added
+
+- double proportional lot decision feedback improvements
+
+## [v3.20.0] - 2025-10-13
+
+### 🆕 Added
+
+- add majority election candidate reporting type
+
+## [v3.19.2] - 2025-10-07
+
+### 🔄 Changed
+
+- optimize proportional election lot decisions
+
+## [v3.19.1] - 2025-09-30
+
+### 🔄 Changed
+
+- enable optional fields in update counting circle details
+- update proto
+
+### 🔄 Changed
+
+- enable optional fields in update counting circle details
+
+### 🔄 Changed
+
+- mandate distribution auto-refresh and finalize fixes
+
+### 🔄 Changed
+
+- use correct button click api
 
 ## [v3.19.0] - 2025-09-03
 
@@ -244,33 +287,36 @@ revert routing changes in result-export service
 
 ### 🔄 Changed
 
-- save counting circle details when a previous sub total entry is not enabled anymore
+- show correct proportional candidate end result state after lot decision
 
-## [v3.7.2] - 2025-02-14
+### 🆕 Added
 
-### 🔄 Changed
+- double proportional lot decision feedback improvements
 
-- udpate node version
+### 🆕 Added
 
-## [v3.7.1] - 2025-02-14
-
-### 🔄 Changed
-
-- monitoring cockpit grid footer button height adjusted
-
-## [v3.7.0] - 2025-02-13
+- add majority election candidate reporting type
 
 ### 🔄 Changed
 
-- angular 19 update
+- optimize proportional election lot decisions
 
-## [v3.6.0] - 2025-02-12
+### 🔄 Changed
 
-### :arrows_counterclockwise: Changed
+- enable optional fields in update counting circle details
+- update proto
 
-- show better error message when data export failed to generate
+### 🔄 Changed
 
-## [v3.5.0] - 2025-02-10
+- enable optional fields in update counting circle details
+
+### 🔄 Changed
+
+- mandate distribution auto-refresh and finalize fixes
+
+### 🔄 Changed
+
+- use correct button click api
 
 ### 🆕 Added
 
@@ -421,23 +467,3 @@ revert routing changes in result-export service
 ### 🔄 Changed
 
 - monitoring cockpit filter layout
-
-### 🔄 Changed
-
-- save counting circle details when a previous sub total entry is not enabled anymore
-
-### 🔄 Changed
-
-- udpate node version
-
-### 🔄 Changed
-
-- monitoring cockpit grid footer button height adjusted
-
-### 🔄 Changed
-
-- angular 19 update
-
-### :arrows_counterclockwise: Changed
-
-- show better error message when data export failed to generate

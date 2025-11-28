@@ -24,15 +24,16 @@ import {
   standalone: false,
 })
 export class DoubleProportionalResultSuperApportionmentLotDecisionComponent implements OnInit {
-  private readonly defaultColumns = ['lot'];
+  private readonly defaultColumns = ['selection', 'lot'];
 
   public columns: string[] = [];
   public lotDecisionColumnDefs: string[] = [];
-  public newLotDecisionSelected = false;
   public selectedLotDecision?: DoubleProportionalResultSuperApportionmentLotDecision;
 
   public initialLoading = true;
   public saving = false;
+  public readonly = false;
+  public newLotDecisionSelected = false;
 
   constructor(
     private readonly proportionalElectionResultService: ProportionalElectionResultService,
@@ -54,6 +55,8 @@ export class DoubleProportionalResultSuperApportionmentLotDecisionComponent impl
   public lotDecisions: DoubleProportionalResultSuperApportionmentLotDecision[] = [];
 
   public async ngOnInit(): Promise<void> {
+    this.readonly = this.doubleProportionalResult.contest.locked;
+
     try {
       this.lotDecisions =
         this.doubleProportionalResult.proportionalElectionUnion != null
@@ -104,17 +107,6 @@ export class DoubleProportionalResultSuperApportionmentLotDecisionComponent impl
 
       this.toast.success(this.i18n.instant('APP.SAVED'));
 
-      for (const column of this.doubleProportionalResult.columns) {
-        const lotDecisionColumn = this.selectedLotDecision.columns.find(
-          c => c.unionList?.id === column.unionList?.id && c.list?.id === column.list?.id,
-        );
-        if (!lotDecisionColumn) {
-          continue;
-        }
-
-        column.superApportionmentNumberOfMandates = lotDecisionColumn.numberOfMandates;
-      }
-
       this.doubleProportionalResult.superApportionmentState =
         DoubleProportionalResultApportionmentState.DOUBLE_PROPORTIONAL_RESULT_APPORTIONMENT_STATE_COMPLETED;
       this.update.emit();
@@ -127,6 +119,7 @@ export class DoubleProportionalResultSuperApportionmentLotDecisionComponent impl
   public lotDecisionChange(selectedLotDecision?: DoubleProportionalResultSuperApportionmentLotDecision) {
     this.selectedLotDecision = selectedLotDecision;
     this.newLotDecisionSelected = !!selectedLotDecision;
+    this.updateNumberOfMandates();
   }
 
   public getNumberOfMandatesByColumnDef(
@@ -160,5 +153,21 @@ export class DoubleProportionalResultSuperApportionmentLotDecisionComponent impl
     }
 
     this.newLotDecisionSelected = false;
+    this.updateNumberOfMandates();
+  }
+
+  public updateNumberOfMandates(): void {
+    for (const column of this.doubleProportionalResult.columns) {
+      const lotDecisionColumn = this.selectedLotDecision?.columns.find(
+        c => c.unionList?.id === column.unionList?.id && c.list?.id === column.list?.id,
+      );
+
+      if (!lotDecisionColumn) {
+        column.superApportionmentNumberOfMandates = column.superApportionmentNumberOfMandatesExclLotDecision;
+        continue;
+      }
+
+      column.superApportionmentNumberOfMandates = lotDecisionColumn.numberOfMandates;
+    }
   }
 }

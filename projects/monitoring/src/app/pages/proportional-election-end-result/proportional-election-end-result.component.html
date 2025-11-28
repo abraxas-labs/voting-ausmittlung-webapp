@@ -39,14 +39,15 @@
                                   [step]="endResultStep"
                                   (stepChange)="handleEndResultStepChange($event)"
                                   [showFinalize]="finalizeEnabled"
-                                  [disabled]="stepActionLoading || isPartialResult"
+                                  [loading]="stepActionLoading"
+                                  [disabled]="isPartialResult"
                                   [showMandateDistributionTrigger]="showMandateDistributionTrigger"></app-end-result-step-action-bar>
 
   <div class="additional-infos" *ngIf="endResult">
     <bc-button *ngIf="isNonUnionDoubleProportional && endResult.mandateDistributionTriggered && !isPartialResult"
-               (click)="viewDpResult()"
+               (buttonClick)="viewDpResult()"
                class="mr-4"
-               [label]="'END_RESULT.DOUBLE_PROPORTIONAL_RESULT.REDIRECT' | translate">
+               [label]="'END_RESULT.DOUBLE_PROPORTIONAL_RESULT.' + (hasOpenNonUnionDoubleProportionLotDecision ? 'OPEN_LOT_DECISION_REDIRECT' : 'MANDATE_DISTRIBUTION_REDIRECT') | translate">
     </bc-button>
 
     <bc-button *ngIf="hasLotDecisions && !endResult.contest.locked && !isPartialResult"

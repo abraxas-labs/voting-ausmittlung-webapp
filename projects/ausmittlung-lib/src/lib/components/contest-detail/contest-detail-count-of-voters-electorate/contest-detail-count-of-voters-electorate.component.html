@@ -6,7 +6,7 @@
     <div class="count-of-voters mb-2">
       <bc-number
         [readonly]="readonly"
-        [required]="true"
+        [optionalText]="''"
         [min]="0"
         [(value)]="voterTypeGroup.menSubTotal.countOfVoters"
         (valueChange)="updateTotal()"
@@ -16,7 +16,7 @@
 
       <bc-number
         [readonly]="readonly"
-        [required]="true"
+        [optionalText]="''"
         [min]="0"
         [(value)]="voterTypeGroup.womenSubTotal.countOfVoters"
         (valueChange)="updateTotal()"
@@ -27,7 +27,7 @@
       <bc-number
         [readonly]="true"
         [tabIndex]="-1"
-        [required]="true"
+        [optionalText]="''"
         [value]="voterTypeGroup.total"
         [label]="'CONTEST.DETAIL.TOTAL' | translate"
         [subscriptSizing]="'dynamic'">

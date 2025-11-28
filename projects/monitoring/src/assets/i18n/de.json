@@ -129,7 +129,6 @@
       "LOT_DECISION": {
         "OPEN": "Losentscheide fällen",
         "PENDING": "Ausstehend",
-        "REQUIRED_HINT": "*relevante/zwingende Losentscheide",
         "VOTE_COUNT_GROUP_CONFLICT": {
           "TITLE": "Validierung fehlgeschlagen",
           "MSG": "Es müssen alle Losentscheide einer Gruppe mit gleicher Stimmenzahl gemeinsam getroffen werden."
@@ -137,6 +136,10 @@
         "DUPLICATE_RANK": {
           "TITLE": "Validierung fehlgeschlagen",
           "MSG": "Es darf kein Rang in der selben Wahl mehrmals vorkommen."
+        },
+        "CLOSE_WITH_OPEN_REQUIRED_LOT_DECISIONS_CONFIRM": {
+          "TITLE": "Losentscheide fällen verlassen",
+          "DESCRIPTION": "Sind Sie sicher, dass Sie den Dialog verlassen möchten? Es wurden noch nicht alle relevanten Losentscheide gefällt."
         }
       },
       "BALLOT_COUNT": {
@@ -159,7 +162,8 @@
       }
     },
     "DOUBLE_PROPORTIONAL_RESULT": {
-      "REDIRECT": "Sitzverteilung"
+      "MANDATE_DISTRIBUTION_REDIRECT": "Sitzverteilung anzeigen",
+      "OPEN_LOT_DECISION_REDIRECT": "Losentscheide fällen"
     }
   },
   "UNION_END_RESULT": {
@@ -231,6 +235,10 @@
         "LOT": "Los",
         "LIST": "Liste"
       }
+    },
+    "CLOSE_WITH_OPEN_REQUIRED_LOT_DECISIONS_CONFIRM": {
+      "TITLE": "Losentscheide fällen verlassen",
+      "DESCRIPTION": "Sind Sie sicher, dass Sie die Seite verlassen möchten? Es wurde noch kein Losentscheid gefällt."
     }
   },
   "ELECTION": {
@@ -241,6 +249,7 @@
     "CANDIDATE": {
       "RANK": "Rang",
       "RANK_AFTER_LOT_DECISION": "Rang (nach Losentscheid)",
+      "LOT_DECISION_REQUIRED": "Zwingend",
       "NUMBER": "K-Nr.",
       "CANDIDACY": "Kandidat/in",
       "PARTY": "Partei",

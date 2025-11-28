@@ -4,13 +4,14 @@
  * For license information see LICENSE file.
  */
 
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import {
   DoubleProportionalResult,
   ProportionalElectionUnionList,
   ProportionalElectionList,
   DoubleProportionalResultApportionmentState,
 } from 'ausmittlung-lib';
+import { DoubleProportionalResultSubApportionmentLotDecisionComponent } from '../double-proportional-result-sub-apportionment-lot-decision/double-proportional-result-sub-apportionment-lot-decision.component';
 
 const additionalGridRows = 3; // header + sum of union lists + union list divisor row
 
@@ -48,6 +49,9 @@ export class DoubleProportionalResultSubApportionmentComponent {
 
     this.refreshTable();
   }
+
+  @ViewChild(DoubleProportionalResultSubApportionmentLotDecisionComponent)
+  public lotDecision?: DoubleProportionalResultSubApportionmentLotDecisionComponent;
 
   @Output()
   public update: EventEmitter<void> = new EventEmitter<void>();

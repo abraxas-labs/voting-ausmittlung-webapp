@@ -6,10 +6,13 @@
     ></vo-ausm-admonition>
   </div>
 
-  <app-double-proportional-result-super-apportionment-lot-decision *ngIf="doubleProportionalResult.hasSuperApportionmentRequiredLotDecision"
-                                                                   [doubleProportionalResult]="doubleProportionalResult"
-                                                                   (update)="handleLotDecisionUpdate()"
-  ></app-double-proportional-result-super-apportionment-lot-decision>
+  <ng-container *ngIf="doubleProportionalResult.hasSuperApportionmentRequiredLotDecision">
+    <app-double-proportional-result-super-apportionment-lot-decision [doubleProportionalResult]="doubleProportionalResult"
+                                                                     (update)="handleLotDecisionUpdate()"
+    ></app-double-proportional-result-super-apportionment-lot-decision>
+
+    <div class="my-6 divider-bold"></div>
+  </ng-container>
 
   <div class="super-apportionment-table" [style.gridTemplateRows]="gridTemplateRowsStyle">
     <bc-label class="super-apportionment-table-entry bold header"><!-- empty --></bc-label>

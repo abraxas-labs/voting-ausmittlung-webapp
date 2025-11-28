@@ -1,6 +1,5 @@
 <ng-container *ngIf="lotDecisions.lotDecisions.length > 0">
   <h4 *ngIf="showTitle" class="mt-4 mb-2">{{lotDecisions.election.title}}</h4>
-
   <div class="candidate-results">
     <bc-label [label]="'ELECTION.CANDIDATE.RANK' | translate"></bc-label>
     <bc-label [label]="'ELECTION.CANDIDATE.NUMBER' | translate"></bc-label>
@@ -8,18 +7,18 @@
     <bc-label [label]="'ELECTION.CANDIDATE.PARTY' | translate"></bc-label>
     <bc-label [label]="'ELECTION.VOTE_COUNT' | translate"></bc-label>
     <bc-label [label]="'ELECTION.CANDIDATE.RANK_AFTER_LOT_DECISION' | translate"></bc-label>
+    <bc-label [label]="'ELECTION.CANDIDATE.LOT_DECISION_REQUIRED' | translate"></bc-label>
 
     <ng-container *ngFor="let lotDecision of lotDecisions.lotDecisions">
-      <span>{{lotDecision.originalRank}}{{lotDecision.lotDecisionRequired ? '*' : ''}}</span>
+      <span>{{lotDecision.originalRank}}</span>
       <span>{{lotDecision.candidate.number}}</span>
-      <span class="candidate-name">{{lotDecision.candidate.politicalLastName}} {{lotDecision.candidate.politicalFirstName}}</span>
+      <vo-ausm-majority-election-candidacy-info class="candidate-name" [candidate]="lotDecision.candidate"></vo-ausm-majority-election-candidacy-info>
       <span>{{lotDecision.candidate.party}}</span>
       <span>{{lotDecision.voteCount}}</span>
       <ng-container *ngTemplateOutlet="rankDropdownTemplate; context: {$implicit: lotDecision}"></ng-container>
+      <span>{{(lotDecision.lotDecisionRequired ? 'APP.YES' : 'APP.NO') | translate}}</span>
     </ng-container>
   </div>
-
-  <bc-label *ngIf="hasAnyRequiredLotDecisions" [label]="'END_RESULT.ELECTION.LOT_DECISION.REQUIRED_HINT' | translate"></bc-label>
 
   <ng-template #rankDropdownTemplate let-lotDecision>
     <span>

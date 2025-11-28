@@ -11,7 +11,7 @@
                  [label]="'APP.REVERT' | translate"
                  variant="tertiary"
                  (buttonClick)="revert()"
-                 [disabled]="step < steps.MandateDistributionTriggered || disabled"></bc-button>
+                 [disabled]="step < steps.MandateDistributionTriggered || disabled || loading"></bc-button>
     </div>
   </div>
   <div class="step-action-bar-item" *ngIf="showMandateDistributionTrigger || showFinalize">
@@ -21,13 +21,14 @@
                  [label]="'END_RESULT.STEP_ACTIONS.START_MANDATE_DISTRIBUTION' | translate"
                  variant="tertiary"
                  (buttonClick)="startMandateDistribution()"
-                 [disabled]="step !== steps.AllCountingCirclesDone || disabled"></bc-button>
+                 [disabled]="step !== steps.AllCountingCirclesDone || disabled || loading"></bc-button>
 
       <bc-button *ngIf="showFinalize"
                  [label]="'END_RESULT.STEP_ACTIONS.FINALIZE' | translate"
                  variant="tertiary"
                  (buttonClick)="finalize()"
-                 [disabled]="(step !== steps.AllCountingCirclesDone && !showMandateDistributionTrigger) || (step !== steps.MandateDistributionTriggered && showMandateDistributionTrigger) || disabled"></bc-button>
+                 [disabled]="(step !== steps.AllCountingCirclesDone && !showMandateDistributionTrigger) || (step !== steps.MandateDistributionTriggered && showMandateDistributionTrigger) || disabled || loading"></bc-button>
     </div>
   </div>
+  <bc-spinner *ngIf="loading" class="mt-4"></bc-spinner>
 </div>
