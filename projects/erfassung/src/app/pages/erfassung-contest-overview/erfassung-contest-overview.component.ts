@@ -5,7 +5,7 @@
  */
 
 import { DialogService } from '@abraxas/voting-lib';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   ContestService,
@@ -21,12 +21,10 @@ import {
   standalone: false,
 })
 export class ErfassungContestOverviewComponent {
-  constructor(
-    private readonly route: ActivatedRoute,
-    private readonly router: Router,
-    private readonly dialogService: DialogService,
-    private readonly contestService: ContestService,
-  ) {}
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly dialogService = inject(DialogService);
+  private readonly contestService = inject(ContestService);
 
   public async openDetail(contest: ContestSummary): Promise<void> {
     const countingCircles = await this.contestService.getAccessibleCountingCircles(contest.id);

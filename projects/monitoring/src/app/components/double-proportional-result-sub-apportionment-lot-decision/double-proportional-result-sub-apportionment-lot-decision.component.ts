@@ -6,7 +6,7 @@
 
 import { SelectionDirective } from '@abraxas/base-components';
 import { SnackbarService } from '@abraxas/voting-lib';
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
   DoubleProportionalResult,
@@ -25,6 +25,11 @@ import {
   standalone: false,
 })
 export class DoubleProportionalResultSubApportionmentLotDecisionComponent implements OnInit {
+  private readonly proportionalElectionUnionResultService = inject(ProportionalElectionUnionResultService);
+  private readonly cd = inject(ChangeDetectorRef);
+  private readonly toast = inject(SnackbarService);
+  private readonly i18n = inject(TranslateService);
+
   private readonly defaultColumns = ['selection', 'lot'];
 
   public columns: string[] = [];
@@ -36,13 +41,6 @@ export class DoubleProportionalResultSubApportionmentLotDecisionComponent implem
   public initialLoading = true;
   public saving = false;
   public readonly = false;
-
-  constructor(
-    private readonly proportionalElectionUnionResultService: ProportionalElectionUnionResultService,
-    private readonly cd: ChangeDetectorRef,
-    private readonly toast: SnackbarService,
-    private readonly i18n: TranslateService,
-  ) {}
 
   @Input()
   public doubleProportionalResult!: DoubleProportionalResult;

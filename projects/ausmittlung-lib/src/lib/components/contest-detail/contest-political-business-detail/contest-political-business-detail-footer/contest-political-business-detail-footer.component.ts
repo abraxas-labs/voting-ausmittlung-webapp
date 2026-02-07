@@ -5,10 +5,10 @@
  */
 
 import { CountingCircleResultState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/counting_circle_pb';
-import { DialogService, ThemeService } from '@abraxas/voting-lib';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
+import { DialogService } from '@abraxas/voting-lib';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { StateChange } from '../../../../models';
+import { CountingCircleResult, StateChange } from '../../../../models';
 import { PermissionService } from '../../../../services/permission.service';
 import {
   ConfirmCommentDialogComponent,
@@ -16,8 +16,8 @@ import {
   ConfirmCommentDialogResult,
 } from '../../../confirm-comment-dialog/confirm-comment-dialog.component';
 import { Permissions } from '../../../../models/permissions.model';
-import { VOTING_AUSMITTLUNG_MONITORING_WEBAPP_URL } from '../../../../tokens';
 import { DomainOfInfluenceType } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/domain_of_influence_pb';
+import { VotingUrlService } from '../../../../services/voting-url.service';
 
 @Component({
   selector: 'vo-ausm-contest-political-business-detail-footer',
@@ -27,6 +27,12 @@ import { DomainOfInfluenceType } from '@abraxas/voting-ausmittlung-service-proto
   standalone: false,
 })
 export class ContestPoliticalBusinessDetailFooterComponent implements OnInit {
+  private readonly permissionService = inject(PermissionService);
+  private readonly dialogService = inject(DialogService);
+  private readonly i18n = inject(TranslateService);
+  private readonly cd = inject(ChangeDetectorRef);
+  private readonly votingUrlService = inject(VotingUrlService);
+
   public readonly domainOfInfluenceTypes: typeof DomainOfInfluenceType = DomainOfInfluenceType;
 
   @Input()
@@ -68,6 +74,9 @@ export class ContestPoliticalBusinessDetailFooterComponent implements OnInit {
   @Input()
   public domainOfInfluenceType: DomainOfInfluenceType = DomainOfInfluenceType.DOMAIN_OF_INFLUENCE_TYPE_UNSPECIFIED;
 
+  @Input()
+  public countingCircleResult?: CountingCircleResult;
+
   @Output()
   public selectResultEntry: EventEmitter<void> = new EventEmitter<void>();
 
@@ -83,6 +92,7 @@ export class ContestPoliticalBusinessDetailFooterComponent implements OnInit {
   @Output()
   public stateUpdate: EventEmitter<StateChange> = new EventEmitter<StateChange>();
 
+  public canResetResults: boolean = false;
   public canEnterResults: boolean = false;
   public canFinishSubmission: boolean = false;
   public canFinishSubmissionAndAudit: boolean = false;
@@ -90,16 +100,8 @@ export class ContestPoliticalBusinessDetailFooterComponent implements OnInit {
 
   public readonly states: typeof CountingCircleResultState = CountingCircleResultState;
 
-  constructor(
-    @Inject(VOTING_AUSMITTLUNG_MONITORING_WEBAPP_URL) public readonly votingAusmittlungMonitoringWebAppUrl: string,
-    private readonly permissionService: PermissionService,
-    private readonly dialogService: DialogService,
-    private readonly i18n: TranslateService,
-    private readonly cd: ChangeDetectorRef,
-    private readonly themeService: ThemeService,
-  ) {}
-
   public async ngOnInit(): Promise<void> {
+    this.canResetResults = await this.permissionService.hasPermission(Permissions.PoliticalBusinessResult.ResetResults);
     this.canEnterResults = await this.permissionService.hasPermission(Permissions.PoliticalBusinessResult.EnterResults);
     this.canFinishSubmission = await this.permissionService.hasPermission(Permissions.PoliticalBusinessResult.FinishSubmission);
     this.canFinishSubmissionAndAudit = await this.permissionService.hasPermission(
@@ -150,8 +152,14 @@ export class ContestPoliticalBusinessDetailFooterComponent implements OnInit {
   }
 
   public createProtocol(): void {
+    if (!this.countingCircleResult) {
+      return;
+    }
     window.open(
-      `${this.votingAusmittlungMonitoringWebAppUrl}/${this.themeService.theme$.value}/contests/${this.contestId}/exports`,
+      this.votingUrlService.getMonitoringProxyUrl(
+        this.countingCircleResult.politicalBusiness.politicalBusinessType,
+        this.countingCircleResult.politicalBusinessId,
+      ),
       '_blank',
     );
   }

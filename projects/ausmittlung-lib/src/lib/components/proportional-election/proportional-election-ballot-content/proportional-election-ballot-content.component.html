@@ -1,16 +1,16 @@
 <div class="content">
   <div class="ballot-stats">
-    <vo-ausm-proportional-election-ballot-candidate-modify
-      *ngIf="!readonly"
-      [readonly]="disabled"
-      [canAddCandidate]="ballotUiData.emptyVoteCount > 0"
-      [addableCandidatesByNumber]="ballotUiData.addableCandidatesByNumber"
-      [removableCandidatesByNumber]="ballotUiData.removableCandidatesByNumber"
-      [candidateCheckDigit]="candidateCheckDigit"
-      (addCandidate)="addCandidate($event)"
-      (removeCandidate)="removeCandidate($event)"
-      (contentCompleted)="emptyVotesInput.readonly ? contentCompleted.emit($event) : undefined">
-    </vo-ausm-proportional-election-ballot-candidate-modify>
+    @if (!readonly) {
+      <vo-ausm-proportional-election-ballot-candidate-modify
+        [readonly]="disabled"
+        [canAddCandidate]="ballotUiData.emptyVoteCount > 0"
+        [addableCandidatesByNumber]="ballotUiData.addableCandidatesByNumber"
+        [removableCandidatesByNumber]="ballotUiData.removableCandidatesByNumber"
+        [candidateCheckDigit]="candidateCheckDigit"
+        (addCandidate)="addCandidate($event)"
+        (removeCandidate)="removeCandidate($event)">
+      </vo-ausm-proportional-election-ballot-candidate-modify>
+    }
 
     <bc-number
       #emptyVotesInput
@@ -24,16 +24,15 @@
       [required]="true"
       [allowUndefined]="false"
       [tabIndex]="readonly || electionResult.entryParams.automaticEmptyVoteCounting ? -1 : 0"
-      (keydown.enter)="contentCompleted.emit($event)"
       [subscriptSizing]="'dynamic'">
     </bc-number>
   </div>
   <div class="ml-3">
     <vo-ausm-proportional-election-ballot-candidates [positions]="ballotUiData.listPositions"
-                                                     [readonly]="disabled || readonly"
-                                                     [candidateCheckDigit]="candidateCheckDigit"
-                                                     (addCandidate)="addCandidateAtPosition($event)"
-                                                     (removeCandidate)="removeCandidateAtPosition($event)">
+      [readonly]="disabled || readonly"
+      [candidateCheckDigit]="candidateCheckDigit"
+      (addCandidate)="addCandidateAtPosition($event)"
+      (removeCandidate)="removeCandidateAtPosition($event)">
     </vo-ausm-proportional-election-ballot-candidates>
   </div>
   <div class="spacer"></div>

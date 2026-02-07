@@ -1,12 +1,13 @@
 <h4 translate>CONTEST.DETAIL.COUNT_OF_VOTERS</h4>
 
-<vo-ausm-contest-detail-count-of-voters-electorate
-  *ngFor="let electorateVoterTypeGroupsSummary of electorateVoterTypeGroupsSummaries"
-  [domainOfInfluenceTypes]="electorateVoterTypeGroupsSummary.domainOfInfluenceTypes"
-  [voterTypeGroups]="electorateVoterTypeGroupsSummary.voterTypeGroups"
-  (voterTypeGroupsChange)="handleVoterTypeGroupsChange($event)"
-  [eVoting]="eVoting"
-  [readonly]="readonly"
-></vo-ausm-contest-detail-count-of-voters-electorate>
+@for (electorateVoterTypeGroupsSummary of electorateVoterTypeGroupsSummaries; track electorateVoterTypeGroupsSummary) {
+  <vo-ausm-contest-detail-count-of-voters-electorate
+    [domainOfInfluenceTypes]="electorateVoterTypeGroupsSummary.domainOfInfluenceTypes"
+    [voterTypeGroups]="electorateVoterTypeGroupsSummary.voterTypeGroups"
+    (voterTypeGroupsChange)="handleVoterTypeGroupsChange($event)"
+    [eVoting]="eVoting"
+    [readonly]="readonly"
+  ></vo-ausm-contest-detail-count-of-voters-electorate>
+}
 
 

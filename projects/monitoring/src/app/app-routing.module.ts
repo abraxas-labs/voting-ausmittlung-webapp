@@ -128,6 +128,13 @@ const routes: Routes = [
         component: ProportionalElectionUnionDoubleProportionalResultComponent,
         canDeactivate: [HasDeactivateGuard],
       },
+      {
+        path: 'proportional-election-union-end-results/:politicalBusinessUnionId/proportional-election-end-results/:politicalBusinessId/double-proportional-results',
+        component: ProportionalElectionDoubleProportionalResultComponent,
+        resolve: {
+          contestCantonDefaults: (route: ActivatedRouteSnapshot) => inject(PoliticalBusinessCantonDefaultsResolver).resolve(route),
+        },
+      },
       proportionalElectionResultRoute,
       majorityElectionResultRoute,
       voteResultRoute,

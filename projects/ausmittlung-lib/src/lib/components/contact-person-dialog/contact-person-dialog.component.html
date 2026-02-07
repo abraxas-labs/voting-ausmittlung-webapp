@@ -2,31 +2,29 @@
   <h3 header>{{'CONTEST.DETAIL.CONTACT_DATA.TITLE_AUTHORITY' | translate}}</h3>
 
   <div content>
-    <ng-container *ngFor="let domainOfInfluence of domainOfInfluences">
+    @for (domainOfInfluence of domainOfInfluences; track domainOfInfluence) {
       <div class="my-2 mb-4">
         <h4>{{ domainOfInfluence.name }}</h4>
-        <vo-ausm-contact-person-data
-          *ngIf="
-            !!domainOfInfluence.contactPerson.firstName ||
-              !!domainOfInfluence.contactPerson.familyName ||
-              !!domainOfInfluence.contactPerson.phone ||
-              !!domainOfInfluence.contactPerson.mobilePhone ||
-              !!domainOfInfluence.contactPerson.email;
-            else noData
-          "
-          [contactPerson]="domainOfInfluence.contactPerson"
-        ></vo-ausm-contact-person-data>
+        @if (
+          !!domainOfInfluence.contactPerson?.firstName ||
+          !!domainOfInfluence.contactPerson?.familyName ||
+          !!domainOfInfluence.contactPerson?.phone ||
+          !!domainOfInfluence.contactPerson?.mobilePhone ||
+          !!domainOfInfluence.contactPerson?.email) {
+          <vo-ausm-contact-person-data
+            [contactPerson]="domainOfInfluence.contactPerson"
+          ></vo-ausm-contact-person-data>
+        } @else {
+          <span class="no-data" translate>CONTEST.DETAIL.CONTACT_DATA.NO_DATA</span>
+        }
       </div>
-    </ng-container>
-    <ng-template #noData>
-      <span class="no-data" translate>CONTEST.DETAIL.CONTACT_DATA.NO_DATA</span>
-    </ng-template>
+    }
   </div>
 
   <div footer>
     <vo-lib-button-bar [hasSaveButton]="false"
-                       [sticky]="false"
-                       [cancelLabel]="'APP.CLOSE' | translate"
-                       (cancel)="done()"></vo-lib-button-bar>
+      [sticky]="false"
+      [cancelLabel]="'APP.CLOSE' | translate"
+      (cancel)="done()"></vo-lib-button-bar>
   </div>
 </vo-lib-dialog>

@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { BreadcrumbItem } from '../../services/breadcrumbs.service';
 import { Observable } from 'rxjs';
 import { ThemeService } from '@abraxas/voting-lib';
@@ -20,7 +20,9 @@ export class BreadcrumbsComponent {
 
   public readonly $theme: Observable<string | undefined>;
 
-  constructor(themeService: ThemeService) {
+  constructor() {
+    const themeService = inject(ThemeService);
+
     this.$theme = themeService.theme$;
   }
 }

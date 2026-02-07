@@ -1,48 +1,51 @@
 <vo-lib-page [contentLoading]="loading"
-             header="ELECTION.BALLOT_DETAIL.TITLE">
-  <ng-container *ngIf="politicalBusinessResult && politicalBusinessResult.entryParams && bundle">
+  header="ELECTION.BALLOT_DETAIL.TITLE">
+  @if (politicalBusinessResult && politicalBusinessResult.entryParams && bundle) {
     <div class="content">
       <vo-ausm-majority-election-info [electionResult]="politicalBusinessResult"></vo-ausm-majority-election-info>
-
-      <div>
-        <vo-ausm-majority-election-bundle-table [bundleSize]="politicalBusinessResult.entryParams.ballotBundleSize"
-                                                [bundles]="[bundle]"></vo-ausm-majority-election-bundle-table>
-      </div>
-
       <div class="content-box">
-        <vo-ausm-ballot-header
-          #header
-          [canNavigate]="emptyVoteCountValid"
-          [ballotNumber]="ballot?.number"
-          [minBallotNumber]="minBallotNumber"
-          [maxBallotNumber]="currentMaxBallotNumber"
-          [disabled]="loadingBallot"
-          [actionExecuting]="actionExecuting"
-          [readonly]="!bundleInProcessOrCorrection || politicalBusinessResult.election.contest!.locked"
-          [canDeleteBallot]="!!ballot && ballot.number === currentMaxBallotNumber"
-          (deleteBallot)="deleteBallotAndNavigate()"
-          (ballotNumberChange)="navigateToBallot($event)">
-          <bc-icon right *ngIf="!header.readonly" class="clickable-icon" icon="question-circle-o" (click)="showShortcutDialog()"></bc-icon>
-        </vo-ausm-ballot-header>
-        <vo-ausm-majority-election-ballot-contents
-          (contentChanged)="contentChanged()"
-          [ballot]="ballot"
-          [loadingBallot]="loadingBallot"
-          [disabled]="actionExecuting"
-          [showInvalidVotes]="politicalBusinessResult.election.contest!.cantonDefaults!.majorityElectionInvalidVotes"
-          [automaticEmptyVoteCounting]="politicalBusinessResult.entryParams.automaticEmptyVoteCounting"
-          [showEmptyVotes]="politicalBusinessResult.election.numberOfMandates !== 1 || politicalBusinessResult.secondaryMajorityElectionResults.length > 0"
-          [readonly]="!bundleInProcessOrCorrection
-            || !canUpdateBallot
-            || politicalBusinessResult.election.contest!.locked"
-          [candidateCheckDigit]="politicalBusinessResult.entryParams.candidateCheckDigit"
-          (contentCompleted)="ballotBundleSize && bundle.countOfBallots !== ballotBundleSize
-            ? footer.emitCreateBallot($event)
-            : submitBundleAndNavigate()">
-        </vo-ausm-majority-election-ballot-contents>
+        <div class="ballot-content">
+          <vo-ausm-ballot-header
+            #header
+            [automaticBallotNumberGeneration]="politicalBusinessResult.entryParams.automaticBallotNumberGeneration"
+            [ballotNumber]="ballot?.number"
+            [minBallotNumber]="minBallotNumber"
+            [maxBallotNumber]="currentMaxBallotNumber"
+            [canGoPrevious]="!isFirstBallot"
+            [canGoNext]="!isLastBallot"
+            [disabled]="loadingBallot"
+            [actionExecuting]="actionExecuting"
+            [readonly]="!bundleInProcessOrCorrection || politicalBusinessResult.election.contest!.locked"
+            [canDeleteBallot]="!!ballot && isLastBallot"
+            (deleteBallot)="deleteBallotAndNavigate()"
+            (nextBallotRequest)="nextBallot()"
+            (previousBallotRequest)="previousBallot()"
+            (ballotNumberEntered)="changeBallotNumber($event)">
+            @if (!header.readonly) {
+              <bc-icon right class="clickable-icon" icon="question-circle-o" (click)="showShortcutDialog()"></bc-icon>
+            }
+          </vo-ausm-ballot-header>
+          <vo-ausm-majority-election-ballot-contents
+            (contentChanged)="contentChanged()"
+            [ballot]="ballot"
+            [loadingBallot]="loadingBallot"
+            [disabled]="actionExecuting"
+            [showInvalidVotes]="politicalBusinessResult.election.contest!.cantonDefaults!.majorityElectionInvalidVotes"
+            [automaticEmptyVoteCounting]="politicalBusinessResult.entryParams.automaticEmptyVoteCounting"
+            [showEmptyVotes]="politicalBusinessResult.election.numberOfMandates !== 1 || politicalBusinessResult.secondaryMajorityElectionResults.length > 0"
+            [readonly]="!bundleInProcessOrCorrection
+              || !canUpdateBallot
+              || politicalBusinessResult.election.contest!.locked"
+            [candidateCheckDigit]="politicalBusinessResult.entryParams.candidateCheckDigit">
+          </vo-ausm-majority-election-ballot-contents>
+        </div>
+        <div class="p-3 pl-5">
+          <vo-ausm-ballot-history [logs]="ballot?.logs" header="ELECTION.BALLOT_HISTORY.TITLE"></vo-ausm-ballot-history>
+          <vo-ausm-majority-election-bundle-info [bundleSize]="politicalBusinessResult.entryParams.ballotBundleSize"
+                                                 [bundle]="bundle"></vo-ausm-majority-election-bundle-info>
+        </div>
       </div>
     </div>
-
     <ng-container page-footer>
       <vo-ausm-political-business-ballot-button-bar
         #footer
@@ -51,11 +54,11 @@
         [actionExecuting]="actionExecuting"
         [readonly]="!canSubmitBundle || !bundleInProcessOrCorrection || politicalBusinessResult.election.contest!.locked"
         [canSubmitBundle]="bundle.countOfBallots > 0"
-        [nextBallotEnabled]="!ballot || ballot.number % politicalBusinessResult.entryParams.ballotBundleSize !== 0"
+        [nextBallotEnabled]="!ballot || bundle.countOfBallots < politicalBusinessResult.entryParams.ballotBundleSize || !isLastBallot"
         (nextBallot)="nextBallot()"
         (back)="saveAndBack()"
         (submitBundle)="submitBundleAndNavigate()"></vo-ausm-political-business-ballot-button-bar>
     </ng-container>
-  </ng-container>
+  }
 </vo-lib-page>
 

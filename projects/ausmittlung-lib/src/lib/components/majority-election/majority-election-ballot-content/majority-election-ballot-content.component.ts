@@ -46,9 +46,6 @@ export class MajorityElectionBallotContentComponent implements OnChanges {
   @Output()
   public contentChanged: EventEmitter<void> = new EventEmitter<void>();
 
-  @Output()
-  public contentCompleted: EventEmitter<KeyboardEvent> = new EventEmitter<KeyboardEvent>();
-
   @ViewChild('toggleCandidateInput')
   public toggleCandidateInput!: TextComponent;
 

@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, HostListener, OnDestroy } from '@angular/core';
+import { Component, HostListener, OnDestroy, inject } from '@angular/core';
 import { HasUnsavedChanges, UnsavedChangesService } from 'ausmittlung-lib';
 
 @Component({
@@ -13,12 +13,12 @@ import { HasUnsavedChanges, UnsavedChangesService } from 'ausmittlung-lib';
   standalone: false,
 })
 export class ErfassungContestDetailComponent implements HasUnsavedChanges, OnDestroy {
+  private readonly unsavedChangesService = inject(UnsavedChangesService);
+
   @HostListener('window:beforeunload')
   public beforeUnload(): boolean {
     return !this.unsavedChangesService.hasUnsavedChanges();
   }
-
-  constructor(private readonly unsavedChangesService: UnsavedChangesService) {}
 
   public get hasUnsavedChanges(): boolean {
     return this.unsavedChangesService.hasUnsavedChanges();

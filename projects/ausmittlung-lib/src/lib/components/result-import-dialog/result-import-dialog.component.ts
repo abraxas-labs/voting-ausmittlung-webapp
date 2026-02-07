@@ -5,7 +5,7 @@
  */
 
 import { SnackbarService } from '@abraxas/voting-lib';
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { EchType, ImportFile } from './import-file.model';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -18,6 +18,11 @@ import { ResultImportType } from '@abraxas/voting-ausmittlung-service-proto/grpc
   standalone: false,
 })
 export class ResultImportDialogComponent {
+  private readonly resultImportService = inject(ResultImportService);
+  private readonly dialogRef = inject<MatDialogRef<ResultImportDialogData>>(MatDialogRef);
+  private readonly toast = inject(SnackbarService);
+  private readonly i18n = inject(TranslateService);
+
   public importing: boolean = false;
   public files: ImportFile[] = [];
   public filesValid: boolean = false;
@@ -25,16 +30,12 @@ export class ResultImportDialogComponent {
   private readonly importType: ResultImportType;
   private readonly contestId: string;
   private readonly countingCircleId?: string;
-  public readonly requireECH110: boolean;
+  public readonly eCH0110Supported: boolean;
   public readonly canImport: boolean;
 
-  constructor(
-    private readonly resultImportService: ResultImportService,
-    private readonly dialogRef: MatDialogRef<ResultImportDialogData>,
-    private readonly toast: SnackbarService,
-    private readonly i18n: TranslateService,
-    @Inject(MAT_DIALOG_DATA) dialogData: ResultImportDialogData,
-  ) {
+  constructor() {
+    const dialogData = inject<ResultImportDialogData>(MAT_DIALOG_DATA);
+
     this.importType = dialogData.importType;
     this.contestId = dialogData.contestId;
     this.countingCircleId = dialogData.countingCircleId;
@@ -43,17 +44,15 @@ export class ResultImportDialogComponent {
     // eCH 0220 v1.2 doesn't require eCH 0110 anymore
     // since we don't want a version selector,
     // we decide which version is imported based on the business case.
-    this.requireECH110 = dialogData.importType == ResultImportType.RESULT_IMPORT_TYPE_EVOTING;
+    this.eCH0110Supported = dialogData.importType == ResultImportType.RESULT_IMPORT_TYPE_EVOTING;
   }
 
   public filesChanged(files: ImportFile[]): void {
     this.files = files;
 
-    if (this.requireECH110) {
-      this.filesValid =
-        files.length === 2 && files.some(f => f.echType === EchType.Ech0222) && files.some(f => f.echType === EchType.Ech0110);
-    } else {
-      this.filesValid = files.length === 1 && files[0].echType === EchType.Ech0222;
+    this.filesValid = files.length === 1 && files[0].echType === EchType.Ech0222;
+    if (this.eCH0110Supported && files.length === 2) {
+      this.filesValid = files.some(f => f.echType === EchType.Ech0222) && files.some(f => f.echType === EchType.Ech0110);
     }
   }
 

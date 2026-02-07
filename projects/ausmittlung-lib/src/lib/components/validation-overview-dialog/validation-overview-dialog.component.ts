@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ValidationSummary } from '../../models';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
@@ -14,6 +14,8 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   standalone: false,
 })
 export class ValidationOverviewDialogComponent {
+  private readonly dialogRef = inject<MatDialogRef<boolean>>(MatDialogRef);
+
   public readonly validationSummaries: ValidationSummary[];
   public readonly saveLabel: string;
   public readonly saveIcon?: string;
@@ -22,10 +24,9 @@ export class ValidationOverviewDialogComponent {
   public readonly hintLabel?: string;
   public readonly hasSaveButton: boolean;
 
-  constructor(
-    private readonly dialogRef: MatDialogRef<boolean>,
-    @Inject(MAT_DIALOG_DATA) dialogData: ValidationOverviewDialogData,
-  ) {
+  constructor() {
+    const dialogData = inject<ValidationOverviewDialogData>(MAT_DIALOG_DATA);
+
     this.validationSummaries = dialogData.validationSummaries;
     this.saveLabel = dialogData.saveLabel;
     this.saveIcon = dialogData.saveIcon;

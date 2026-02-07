@@ -1,6 +1,6 @@
 .wrapper-conventional {
   display: grid;
-  grid-gap: 0.5rem;
+  gap: 0.5rem;
   grid-template-rows: repeat(2, 1fr);
   grid-template-columns: repeat(5, 1fr);
   grid-auto-flow: column;
@@ -8,7 +8,7 @@
 
 .wrapper-multiline {
   display: grid;
-  grid-gap: 0.5rem 1rem;
+  gap: 0.5rem 1rem;
   grid-template-rows: repeat(var(--wrapper-row-count), 1fr);
   grid-template-columns: repeat(6, 1fr);
   grid-auto-flow: column;

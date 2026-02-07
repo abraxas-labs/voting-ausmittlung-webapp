@@ -2,21 +2,18 @@
   <h3 header>{{'POLITICAL_BUSINESS.NEW_BUNDLE_TITLE' | translate}}</h3>
   <div content>
     <bc-number class="my-2"
-               [required]="true"
-               [allowUndefined]="false"
-               [label]="'POLITICAL_BUSINESS.BUNDLE_NUMBER' | translate"
-               [value]="bundleNumber"
-               [error]="duplicatedBundleNumber || !bundleNumber"
-               (valueChange)="updateBundleNumber(+$event)"
-               [subscriptSizing]="'dynamic'">
-      <bc-error *ngIf="duplicatedBundleNumber">
-        {{ ('POLITICAL_BUSINESS.DUPLICATED_BUNDLE_NUMBER' | translate) }}
-      </bc-error>
+      [required]="true"
+      [allowUndefined]="false"
+      [label]="'POLITICAL_BUSINESS.BUNDLE_NUMBER' | translate"
+      [value]="bundleNumber"
+      [error]="!bundleNumber"
+      (valueChange)="updateBundleNumber(+$event)"
+      [subscriptSizing]="'dynamic'">
     </bc-number>
   </div>
   <vo-lib-button-bar footer
-                     (cancel)="close()"
-                     [saveLabel]="'POLITICAL_BUSINESS.CREATE_BUNDLE' | translate"
-                     (save)="done()"
-                     [canSave]="!!bundleNumber && !duplicatedBundleNumber"></vo-lib-button-bar>
+    (cancel)="close()"
+    [saveLabel]="'POLITICAL_BUSINESS.CREATE_BUNDLE' | translate"
+    (save)="done()"
+    [canSave]="!!bundleNumber"></vo-lib-button-bar>
 </vo-lib-dialog>

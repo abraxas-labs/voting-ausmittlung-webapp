@@ -14,7 +14,7 @@ import {
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/validation_pb';
 import { EnumItemDescription, EnumUtil } from '@abraxas/voting-lib';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Timestamp } from 'google-protobuf/google/protobuf/timestamp_pb';
 import {
   DomainOfInfluenceType,
@@ -32,14 +32,14 @@ import { groupBy } from './utils/array.utils';
   providedIn: 'root',
 })
 export class ValidationMappingService {
+  private readonly decimalPipe = inject(DecimalPipe);
+  private readonly datePipe = inject(DatePipe);
+  private readonly enumUtil = inject(EnumUtil);
+
   private readonly votingChannels: EnumItemDescription<VotingChannel>[];
   private readonly doiTypes: EnumItemDescription<DomainOfInfluenceType>[];
 
-  constructor(
-    private readonly decimalPipe: DecimalPipe,
-    private readonly datePipe: DatePipe,
-    private readonly enumUtil: EnumUtil,
-  ) {
+  constructor() {
     this.doiTypes = this.enumUtil.getArrayWithDescriptions<DomainOfInfluenceType>(DomainOfInfluenceType, 'DOMAIN_OF_INFLUENCE_TYPES.');
 
     this.votingChannels = this.enumUtil.getArrayWithDescriptions<VotingChannel>(VotingChannel, 'VOTING_CHANNELS.');
@@ -94,6 +94,10 @@ export class ValidationMappingService {
         break;
       case ValidationResultProto.DataCase.PROPORTIONAL_ELECTION_ACCOUNTED_BALLOTS_EQUAL_MODIFIED_PLUS_UNMODIFIED_LISTS_DATA:
         result.data = resultProto.getProportionalElectionAccountedBallotsEqualModifiedPlusUnmodifiedListsData()!.toObject();
+        break;
+      case ValidationResultProto.DataCase
+        .PROPORTIONAL_ELECTION_NUMBER_OF_MANDATES_TIMES_ACCOUNTED_BALLOTS_EQUAL_CAND_VOTES_PLUS_BLANK_ROWS_DATA:
+        result.data = resultProto.getProportionalElectionNumberOfMandatesTimesAccountedBallotsEqualCandVotesPlusBlankRowsData()!.toObject();
         break;
       case ValidationResultProto.DataCase.COMPARISON_VOTER_PARTICIPATIONS_DATA:
         this.mapComparisonVoterParticipationsData(result, resultProto.getComparisonVoterParticipationsData()!.toObject());

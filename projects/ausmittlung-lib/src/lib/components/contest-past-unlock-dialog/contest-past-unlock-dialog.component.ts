@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Contest } from '../../models';
 import { VOTING_BASIS_WEBAPP_URL } from '../../tokens';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -15,13 +15,14 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
   standalone: false,
 })
 export class ContestPastUnlockDialogComponent {
+  readonly votingBasisWebAppUrl = inject(VOTING_BASIS_WEBAPP_URL);
+  private readonly dialogRef = inject<MatDialogRef<any>>(MatDialogRef);
+
   public readonly contest: Contest;
 
-  constructor(
-    @Inject(VOTING_BASIS_WEBAPP_URL) public readonly votingBasisWebAppUrl: string,
-    @Inject(MAT_DIALOG_DATA) dialogData: ContestPastUnlockDialogData,
-    private readonly dialogRef: MatDialogRef<any>,
-  ) {
+  constructor() {
+    const dialogData = inject<ContestPastUnlockDialogData>(MAT_DIALOG_DATA);
+
     this.contest = dialogData.contest;
   }
 

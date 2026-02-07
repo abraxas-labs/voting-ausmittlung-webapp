@@ -5,9 +5,10 @@
  */
 
 import { DialogService } from '@abraxas/voting-lib';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
+  EventLogService,
   ExportService,
   ResultExportConfiguration,
   ResultImportListDialogComponent,
@@ -24,6 +25,7 @@ import {
 import { AuthorizationService, Tenant } from '@abraxas/base-components';
 import { ResultImportType } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/import_pb';
 import { StorageService } from '../../services/storage.service';
+import { ResultImportCompletedEvent } from '../../../../../ausmittlung-lib/src/lib/models';
 
 @Component({
   selector: 'app-monitoring-overview',
@@ -32,6 +34,15 @@ import { StorageService } from '../../services/storage.service';
   standalone: false,
 })
 export class MonitoringOverviewComponent implements OnInit, OnDestroy {
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly resultService = inject(ResultService);
+  private readonly dialogService = inject(DialogService);
+  private readonly auth = inject(AuthorizationService);
+  private readonly storageService = inject(StorageService);
+  private readonly exportService = inject(ExportService);
+  private readonly eventLogService = inject(EventLogService);
+
   public loading: boolean = true;
   public resultOverview?: ResultOverview;
   public manualPublishResultsEnabled: boolean = false;
@@ -42,19 +53,12 @@ export class MonitoringOverviewComponent implements OnInit, OnDestroy {
 
   private readonly routeParamsSubscription: Subscription;
   private readonly routeDataSubscription: Subscription;
+  private importSubscription?: Subscription;
   private tenant?: Tenant;
 
-  constructor(
-    private readonly router: Router,
-    private readonly route: ActivatedRoute,
-    private readonly resultService: ResultService,
-    private readonly dialogService: DialogService,
-    private readonly auth: AuthorizationService,
-    private readonly storageService: StorageService,
-    private readonly exportService: ExportService,
-  ) {
+  constructor() {
     this.routeParamsSubscription = this.route.params.subscribe(({ contestId }) => this.loadData(contestId));
-    this.routeDataSubscription = route.data.subscribe(async ({ contestCantonDefaults }) => {
+    this.routeDataSubscription = this.route.data.subscribe(async ({ contestCantonDefaults }) => {
       this.manualPublishResultsEnabled = contestCantonDefaults.manualPublishResultsEnabled;
       this.publishResultsBeforeAuditedTentatively = contestCantonDefaults.publishResultsBeforeAuditedTentatively;
     });
@@ -74,9 +78,19 @@ export class MonitoringOverviewComponent implements OnInit, OnDestroy {
   }
 
   public async import(): Promise<void> {
+    this?.importSubscription?.unsubscribe();
+
     if (!this.resultOverview) {
       return;
     }
+
+    // Start watching before importing, otherwise we may miss small imports because it could already be processed before we start watching
+    this.importSubscription = this.eventLogService
+      .watch([ResultImportCompletedEvent], {
+        contestId: this.resultOverview.contest.id,
+        dontFireOnReconnectAttempt: true,
+      })
+      .subscribe(_ => this.import());
 
     const result: ResultImportListDialogResult = await this.dialogService.openForResult(ResultImportListDialogComponent, {
       importType: ResultImportType.RESULT_IMPORT_TYPE_EVOTING,
@@ -87,6 +101,10 @@ export class MonitoringOverviewComponent implements OnInit, OnDestroy {
 
     if (result === 'deleted') {
       this.resultOverview.contest.eVotingResultsImported = false;
+    }
+
+    if (result !== 'imported') {
+      this.importSubscription?.unsubscribe();
     }
   }
 

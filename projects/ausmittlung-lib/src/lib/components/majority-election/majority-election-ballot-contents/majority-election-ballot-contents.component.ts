@@ -41,9 +41,6 @@ export class MajorityElectionBallotContentsComponent {
   @Output()
   public contentChanged: EventEmitter<void> = new EventEmitter<void>();
 
-  @Output()
-  public contentCompleted: EventEmitter<KeyboardEvent> = new EventEmitter<KeyboardEvent>();
-
   @ViewChild('primaryElectionBallot')
   private majorityElectionBallotContentComponent?: MajorityElectionBallotContentComponent;
 

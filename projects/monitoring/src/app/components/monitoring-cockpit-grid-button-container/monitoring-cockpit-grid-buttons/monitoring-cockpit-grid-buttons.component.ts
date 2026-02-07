@@ -6,7 +6,7 @@
 
 import { AuthorizationService, Tenant } from '@abraxas/base-components';
 import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/political_business_pb';
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {
   CountingCircleResultState,
@@ -25,6 +25,10 @@ import { ThemeService } from '@abraxas/voting-lib';
   standalone: false,
 })
 export class MonitoringCockpitGridButtonsComponent implements OnInit, OnChanges {
+  private readonly router = inject(Router);
+  private readonly auth = inject(AuthorizationService);
+  private readonly themeService = inject(ThemeService);
+
   public readonly states: typeof CountingCircleResultState = CountingCircleResultState;
 
   @Input()
@@ -66,12 +70,6 @@ export class MonitoringCockpitGridButtonsComponent implements OnInit, OnChanges 
   public politicalBusinessUnionValue?: PoliticalBusinessUnion;
 
   private tenant?: Tenant;
-
-  constructor(
-    private readonly router: Router,
-    private readonly auth: AuthorizationService,
-    private readonly themeService: ThemeService,
-  ) {}
 
   public async ngOnInit(): Promise<void> {
     this.tenant = await this.auth.getActiveTenant();

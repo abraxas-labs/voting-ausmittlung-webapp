@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { GrpcBackendService, GrpcEnvironment, GrpcService, retryForeverWithBackoff } from '@abraxas/voting-lib';
 import { EventLogServicePromiseClient } from '@abraxas/voting-ausmittlung-service-proto/grpc/event_log_service_grpc_web_pb';
 import {
@@ -47,7 +47,10 @@ export class EventLogService extends GrpcService<EventLogServicePromiseClient> {
   );
   private watchCallSubscription?: Subscription;
 
-  constructor(grpcBackend: GrpcBackendService, @Inject(GRPC_ENV_INJECTION_TOKEN) env: GrpcEnvironment) {
+  constructor() {
+    const grpcBackend = inject(GrpcBackendService);
+    const env = inject<GrpcEnvironment>(GRPC_ENV_INJECTION_TOKEN);
+
     super(EventLogServicePromiseClient, env, grpcBackend);
   }
 
@@ -115,6 +118,10 @@ export class EventLogService extends GrpcService<EventLogServicePromiseClient> {
       watchFilter.setPoliticalBusinessResultId(filterParams.politicalBusinessResultId);
     }
 
+    if (filterParams.politicalBusinessUnionId !== undefined) {
+      watchFilter.setPoliticalBusinessUnionId(filterParams.politicalBusinessUnionId);
+    }
+
     this.watchFilters.push(watchFilter);
 
     if (!filterParams.skipCall) {
@@ -141,6 +148,7 @@ export class EventLogService extends GrpcService<EventLogServicePromiseClient> {
             aggregateId: '',
             politicalBusinessId: '',
             politicalBusinessBundleId: '',
+            politicalBusinessUnionId: '',
             entityId: '',
             timestamp: new Date(),
             data: {},

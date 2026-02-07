@@ -54,11 +54,12 @@ import {
   ValidateEnterProportionalElectionCountOfVotersRequest,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/proportional_election_result_requests_pb';
 import { GrpcBackendService, GrpcEnvironment } from '@abraxas/voting-lib';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   DoubleProportionalResult,
   DoubleProportionalResultSuperApportionmentLotDecision,
+  ElectionLotDecisionState,
   mapCountOfVotersProtoToModel,
   mapToNullableCountOfVoters,
   PoliticalBusinessNullableCountOfVoters,
@@ -105,12 +106,13 @@ export class ProportionalElectionResultService extends PoliticalBusinessResultBa
   ProportionalElectionResultServicePromiseClient,
   ProportionalElectionResultServiceClient
 > {
-  constructor(
-    grpcBackend: GrpcBackendService,
-    @Inject(GRPC_ENV_INJECTION_TOKEN) env: GrpcEnvironment,
-    private readonly validationMapping: ValidationMappingService,
-    private readonly electionLotDecisionService: ElectionLotDecisionService,
-  ) {
+  private readonly validationMapping = inject(ValidationMappingService);
+  private readonly electionLotDecisionService = inject(ElectionLotDecisionService);
+
+  constructor() {
+    const grpcBackend = inject(GrpcBackendService);
+    const env = inject<GrpcEnvironment>(GRPC_ENV_INJECTION_TOKEN);
+
     super(ProportionalElectionResultServicePromiseClient, ProportionalElectionResultServiceClient, env, grpcBackend);
   }
 
@@ -182,6 +184,7 @@ export class ProportionalElectionResultService extends PoliticalBusinessResultBa
 
     const resultEntryParamsReq = new DefineProportionalElectionResultEntryParamsRequest();
     resultEntryParamsReq.setAutomaticBallotBundleNumberGeneration(resultEntryParams.automaticBallotBundleNumberGeneration);
+    resultEntryParamsReq.setAutomaticBallotNumberGeneration(resultEntryParams.automaticBallotNumberGeneration);
     resultEntryParamsReq.setAutomaticEmptyVoteCounting(resultEntryParams.automaticEmptyVoteCounting);
     resultEntryParamsReq.setBallotBundleSampleSize(resultEntryParams.ballotBundleSampleSize);
     resultEntryParamsReq.setBallotBundleSize(resultEntryParams.ballotBundleSize);
@@ -486,6 +489,8 @@ export class ProportionalElectionResultService extends PoliticalBusinessResultBa
   }
 
   public static mapToProportionalElectionEndResult(data: ProportionalElectionEndResultProto): ProportionalElectionEndResult {
+    const listEndResults = this.mapToListEndResults(data.getListEndResultsList()) ?? [];
+
     return {
       contest: ContestService.mapToContest(data.getContest()!),
       election: ProportionalElectionService.mapToElection(data.getProportionalElection()!),
@@ -495,11 +500,13 @@ export class ProportionalElectionResultService extends PoliticalBusinessResultBa
       totalCountOfCountingCircles: data.getTotalCountOfCountingCircles(),
       allCountingCirclesDone: data.getAllCountingCirclesDone(),
       countOfVoters: mapCountOfVotersProtoToModel(data.getCountOfVoters()!.toObject()),
-      listEndResults: this.mapToListEndResults(data.getListEndResultsList()),
+      listEndResults,
       finalized: data.getFinalized(),
       manualEndResultRequired: data.getManualEndResultRequired(),
       mandateDistributionTriggered: data.getMandateDistributionTriggered(),
       listLotDecisions: data.getListLotDecisionsList().map(x => this.mapToEndResultListLotDecision(x)),
+      lotDecisionState: this.mapToLotDecisionState(listEndResults),
+      hasOpenRequiredLotDecisions: listEndResults.some(l => l.hasOpenRequiredLotDecisions),
     };
   }
 
@@ -513,7 +520,8 @@ export class ProportionalElectionResultService extends PoliticalBusinessResultBa
       candidateEndResults: this.mapToCandidateEndResults(x.getCandidateEndResultsList()),
       listUnion: x.getListUnion()?.toObject(),
       subListUnion: x.getSubListUnion()?.toObject(),
-      hasOpenRequiredLotDecisions: x.getHasOpenRequiredLotDecisions(),
+      lotDecisionState: x.getLotDecisionState(),
+      hasOpenRequiredLotDecisions: x.getLotDecisionState() === ElectionLotDecisionState.ELECTION_LOT_DECISION_STATE_OPEN_AND_REQUIRED,
       eVotingSubTotal: x.getEVotingSubTotal()!.toObject(),
       eCountingSubTotal: x.getECountingSubTotal()!.toObject(),
       conventionalSubTotal: x.getConventionalSubTotal()!.toObject(),
@@ -614,5 +622,31 @@ export class ProportionalElectionResultService extends PoliticalBusinessResultBa
     req.setListUnionId(data.listUnionId ?? '');
     req.setWinning(data.winning);
     return req;
+  }
+
+  private static mapToLotDecisionState(listEndResults: ProportionalElectionListEndResult[]) {
+    if (listEndResults.length === 0) {
+      return ElectionLotDecisionState.ELECTION_LOT_DECISION_STATE_NONE;
+    }
+
+    const lotDecisionStates = listEndResults.map(l => l.lotDecisionState);
+
+    if (lotDecisionStates.some(s => s === ElectionLotDecisionState.ELECTION_LOT_DECISION_STATE_OPEN_AND_REQUIRED)) {
+      return ElectionLotDecisionState.ELECTION_LOT_DECISION_STATE_OPEN_AND_REQUIRED;
+    }
+
+    if (lotDecisionStates.some(s => s === ElectionLotDecisionState.ELECTION_LOT_DECISION_STATE_OPEN_AND_OPTIONAL)) {
+      return ElectionLotDecisionState.ELECTION_LOT_DECISION_STATE_OPEN_AND_OPTIONAL;
+    }
+
+    if (lotDecisionStates.some(s => s === ElectionLotDecisionState.ELECTION_LOT_DECISION_STATE_DONE)) {
+      return ElectionLotDecisionState.ELECTION_LOT_DECISION_STATE_DONE;
+    }
+
+    if (lotDecisionStates.every(s => s === ElectionLotDecisionState.ELECTION_LOT_DECISION_STATE_NONE)) {
+      return ElectionLotDecisionState.ELECTION_LOT_DECISION_STATE_NONE;
+    }
+
+    return ElectionLotDecisionState.ELECTION_LOT_DECISION_STATE_UNSPECIFIED;
   }
 }

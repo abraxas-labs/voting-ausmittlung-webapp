@@ -5,7 +5,7 @@
  */
 
 import { FileDownloadService } from '@abraxas/voting-lib';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { FetchProtocolExportsRequest, GenerateResultExportsRequest, ProtocolExport, ResultExportTemplate } from '../models';
 import { REST_API_URL_INJECTION_TOKEN } from './tokens';
 
@@ -13,12 +13,13 @@ import { REST_API_URL_INJECTION_TOKEN } from './tokens';
   providedIn: 'root',
 })
 export class ResultExportService {
+  private readonly fileDownloadService = inject(FileDownloadService);
+
   private readonly apiUrl: string = '';
 
-  constructor(
-    private readonly fileDownloadService: FileDownloadService,
-    @Inject(REST_API_URL_INJECTION_TOKEN) restApiUrl: string,
-  ) {
+  constructor() {
+    const restApiUrl = inject(REST_API_URL_INJECTION_TOKEN);
+
     this.apiUrl = `${restApiUrl}/result_export`;
   }
 

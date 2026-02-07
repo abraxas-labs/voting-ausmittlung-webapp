@@ -1,12 +1,12 @@
 <app-end-result-page [loading]="loading"
-                     [contest]="endResult?.contest"
-                     [isPartialResult]="isPartialResult"
-                     [countOfVotersInformation]="endResult?.countOfVotersInformation"
-                     [votingCards]="endResult?.votingCards"
-                     [domainOfInfluenceType]="endResult?.vote?.domainOfInfluence?.type"
-                     [enabledVoterTypes]="endResult?.vote.enabledVoterTypesList"
-                     [canton]="endResult?.vote?.domainOfInfluence?.canton">
-  <ng-container *ngIf="endResult">
+  [contest]="endResult?.contest"
+  [isPartialResult]="isPartialResult"
+  [showExport]="showExport"
+  [countOfVotersInformation]="endResult?.countOfVotersInformation"
+  [votingCards]="endResult?.votingCards"
+  [politicalBusiness]="endResult?.vote"
+  [enabledVoterTypes]="endResult?.vote.enabledVoterTypesList">
+  @if (endResult) {
     <vo-ausm-info-panel>
       <vo-ausm-info-panel-entry label="END_RESULT.POLITICAL_BUSINESS">
         {{endResult.vote.title}}
@@ -18,17 +18,18 @@
         {{'END_RESULT.COUNTING_DONE_OF' | translate: endResult}}
       </vo-ausm-info-panel-entry>
     </vo-ausm-info-panel>
-
     <app-end-result-step-action-bar [step]="endResultStep"
-                                    (stepChange)="handleEndResultStepChange($event)"
-                                    [showFinalize]="finalizeEnabled"
-                                    [disabled]="stepActionLoading || isPartialResult"></app-end-result-step-action-bar>
-    <div *ngFor="let ballotEndResult of endResult.ballotEndResults">
-      <app-ballot-end-result [endResult]="ballotEndResult"
-                             [eVoting]="endResult.contest.eVoting"
-                             [eCounting]="endResult.contest.eCountingResultsImported"
-                             [voteResultAlgorithm]="endResult.vote.resultAlgorithm">
-      </app-ballot-end-result>
-    </div>
-  </ng-container>
+      (stepChange)="handleEndResultStepChange($event)"
+      [showFinalize]="finalizeEnabled"
+    [disabled]="stepActionLoading || isPartialResult"></app-end-result-step-action-bar>
+    @for (ballotEndResult of endResult.ballotEndResults; track ballotEndResult) {
+      <div>
+        <app-ballot-end-result [endResult]="ballotEndResult"
+          [eVoting]="endResult.contest.eVoting"
+          [eCounting]="endResult.contest.eCountingResultsImported"
+          [voteResultAlgorithm]="endResult.vote.resultAlgorithm">
+        </app-ballot-end-result>
+      </div>
+    }
+  }
 </app-end-result-page>

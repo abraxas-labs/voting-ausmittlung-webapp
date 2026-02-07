@@ -1,34 +1,44 @@
-<div class="step-action-bar" *ngIf="step !== undefined">
-  <div class="step-action-bar-item">
-    <p class="label">{{'END_RESULT.STEP_ACTIONS.CURRENT_STEP' | translate}}</p>
-    <div class="content">
-      <bc-status-label backgroundColor="#eae8ea"
-                       [label]="'END_RESULT.STEPS.' + step | translate"></bc-status-label>
-
-      <bc-button *ngIf="showMandateDistributionTrigger || showFinalize"
-                 color="warn"
-                 class="ml-4"
-                 [label]="'APP.REVERT' | translate"
-                 variant="tertiary"
-                 (buttonClick)="revert()"
-                 [disabled]="step < steps.MandateDistributionTriggered || disabled || loading"></bc-button>
+@if (step !== undefined) {
+  <div class="step-action-bar">
+    <div class="step-action-bar-item">
+      <p class="label">{{'END_RESULT.STEP_ACTIONS.CURRENT_STEP' | translate}}</p>
+      <div class="content">
+        <bc-status-label backgroundColor="#eae8ea"
+        [label]="'END_RESULT.STEPS.' + step | translate"></bc-status-label>
+        @if (showMandateDistributionTrigger || showFinalize) {
+          <bc-button
+            color="warn"
+            class="ml-4"
+            [label]="'APP.REVERT' | translate"
+            variant="tertiary"
+            (buttonClick)="revert()"
+          [disabled]="step < steps.MandateDistributionTriggered || disabled || loading"></bc-button>
+        }
+      </div>
     </div>
+    @if (showMandateDistributionTrigger || showFinalize) {
+      <div class="step-action-bar-item">
+        <p class="label">{{'END_RESULT.STEP_ACTIONS.NEXT_STEP' | translate}}</p>
+        <div class="content">
+          @if (showMandateDistributionTrigger) {
+            <bc-button
+              [label]="'END_RESULT.STEP_ACTIONS.START_MANDATE_DISTRIBUTION' | translate"
+              variant="tertiary"
+              (buttonClick)="startMandateDistribution()"
+              [disabled]="step !== steps.AllCountingCirclesDone || disabled || loading"></bc-button>
+          }
+          @if (showFinalize) {
+            <bc-button
+              [label]="'END_RESULT.STEP_ACTIONS.FINALIZE' | translate"
+              variant="tertiary"
+              (buttonClick)="finalize()"
+              [disabled]="(step !== steps.AllCountingCirclesDone && !showMandateDistributionTrigger) || (step !== steps.MandateDistributionTriggered && showMandateDistributionTrigger) || disabled || loading"></bc-button>
+          }
+        </div>
+      </div>
+    }
+    @if (loading) {
+      <bc-spinner class="mt-4"></bc-spinner>
+    }
   </div>
-  <div class="step-action-bar-item" *ngIf="showMandateDistributionTrigger || showFinalize">
-    <p class="label">{{'END_RESULT.STEP_ACTIONS.NEXT_STEP' | translate}}</p>
-    <div class="content">
-      <bc-button *ngIf="showMandateDistributionTrigger"
-                 [label]="'END_RESULT.STEP_ACTIONS.START_MANDATE_DISTRIBUTION' | translate"
-                 variant="tertiary"
-                 (buttonClick)="startMandateDistribution()"
-                 [disabled]="step !== steps.AllCountingCirclesDone || disabled || loading"></bc-button>
-
-      <bc-button *ngIf="showFinalize"
-                 [label]="'END_RESULT.STEP_ACTIONS.FINALIZE' | translate"
-                 variant="tertiary"
-                 (buttonClick)="finalize()"
-                 [disabled]="(step !== steps.AllCountingCirclesDone && !showMandateDistributionTrigger) || (step !== steps.MandateDistributionTriggered && showMandateDistributionTrigger) || disabled || loading"></bc-button>
-    </div>
-  </div>
-  <bc-spinner *ngIf="loading" class="mt-4"></bc-spinner>
-</div>
+}

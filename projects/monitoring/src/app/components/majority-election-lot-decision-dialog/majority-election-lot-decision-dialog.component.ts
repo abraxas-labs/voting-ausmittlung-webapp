@@ -5,7 +5,7 @@
  */
 
 import { DialogService, SnackbarService } from '@abraxas/voting-lib';
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
   flatten,
@@ -23,6 +23,11 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   standalone: false,
 })
 export class MajorityElectionLotDecisionDialogComponent extends ElectionLotDecisionDialogComponent {
+  private readonly i18n = inject(TranslateService);
+  private readonly toast = inject(SnackbarService);
+  private readonly dialogRef = inject<MatDialogRef<MajorityElectionLotDecisionDialogData>>(MatDialogRef);
+  private readonly resultService = inject(MajorityElectionResultService);
+
   public loading: boolean = false;
   public availableLotDecisions?: MajorityElectionEndResultAvailableLotDecisions;
   public majorityElectionId: string = '';
@@ -34,14 +39,10 @@ export class MajorityElectionLotDecisionDialogComponent extends ElectionLotDecis
 
   public originalAvailableLotDecisions?: MajorityElectionEndResultAvailableLotDecisions;
 
-  constructor(
-    private readonly i18n: TranslateService,
-    private readonly toast: SnackbarService,
-    private readonly dialogRef: MatDialogRef<MajorityElectionLotDecisionDialogData>,
-    private readonly resultService: MajorityElectionResultService,
-    @Inject(MAT_DIALOG_DATA) dialogData: MajorityElectionLotDecisionDialogData,
-    dialog: DialogService,
-  ) {
+  constructor() {
+    const dialogData = inject<MajorityElectionLotDecisionDialogData>(MAT_DIALOG_DATA);
+    const dialog = inject(DialogService);
+
     super(dialog);
     this.majorityElectionId = dialogData.majorityElectionId;
     this.loadData();

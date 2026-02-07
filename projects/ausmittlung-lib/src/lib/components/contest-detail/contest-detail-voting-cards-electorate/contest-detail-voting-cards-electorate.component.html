@@ -1,7 +1,7 @@
 <vo-ausm-contest-detail-voting-cards-expansion-panel
   [header]="expansionPanelHeaderTitle">
   <div class="voting-cards">
-    <ng-container *ngFor="let votingCardDetail of votingCardDetailsValue; let i = index">
+    @for (votingCardDetail of votingCardDetailsValue; track votingCardDetail; let i = $index) {
       <bc-number
         [readonly]="readonly || votingCardDetail.channel === votingChannels.VOTING_CHANNEL_E_VOTING"
         [optionalText]="''"
@@ -10,22 +10,30 @@
         (valueChange)="update(votingCardDetail, $event)"
         [label]="'CONTEST.DETAIL.VOTING_CARDS.' + votingCardDetail.channel + (votingCardDetail.channel === votingChannels.VOTING_CHANNEL_BY_MAIL ? '_' + (votingCardDetail.valid ? 'VALID' : 'INVALID') + (canton === domainOfInfluenceCantons.DOMAIN_OF_INFLUENCE_CANTON_TG ? '_TG' : '') : '') | translate"
         [subscriptSizing]="'dynamic'"></bc-number>
-      <div *ngIf="i === 1 && votingCardDetailsValue.length === 4 && !hasInvalidVotingCardChannel"></div>
-    </ng-container>
-    <div *ngIf="votingCardDetailsValue.length % 2 !== 0 && hasInvalidVotingCardChannel"></div>
-    <bc-number *ngIf="hasInvalidVotingCardChannel && votingCardDetailsValue.length > 1"
-               [readonly]="true"
-               [tabIndex]="-1"
-               [optionalText]="''"
-               [value]="totalValid"
-               [label]="'CONTEST.DETAIL.VOTING_CARDS.TOTAL_VALID' | translate"
-               [subscriptSizing]="'dynamic'"></bc-number>
-    <bc-number *ngIf="votingCardDetailsValue.length > 1"
-               [readonly]="true"
-               [tabIndex]="-1"
-               [optionalText]="''"
-               [value]="total"
-               [label]="'CONTEST.DETAIL.VOTING_CARDS.TOTAL' | translate"
-               [subscriptSizing]="'dynamic'"></bc-number>
+      @if (i === 1 && votingCardDetailsValue.length === 4 && !hasInvalidVotingCardChannel) {
+        <div></div>
+      }
+    }
+    @if (votingCardDetailsValue.length % 2 !== 0 && hasInvalidVotingCardChannel) {
+      <div></div>
+    }
+    @if (hasInvalidVotingCardChannel && votingCardDetailsValue.length > 1) {
+      <bc-number
+        [readonly]="true"
+        [tabIndex]="-1"
+        [optionalText]="''"
+        [value]="totalValid"
+        [label]="'CONTEST.DETAIL.VOTING_CARDS.TOTAL_VALID' | translate"
+        [subscriptSizing]="'dynamic'"></bc-number>
+    }
+    @if (votingCardDetailsValue.length > 1) {
+      <bc-number
+        [readonly]="true"
+        [tabIndex]="-1"
+        [optionalText]="''"
+        [value]="total"
+        [label]="'CONTEST.DETAIL.VOTING_CARDS.TOTAL' | translate"
+        [subscriptSizing]="'dynamic'"></bc-number>
+    }
   </div>
 </vo-ausm-contest-detail-voting-cards-expansion-panel>

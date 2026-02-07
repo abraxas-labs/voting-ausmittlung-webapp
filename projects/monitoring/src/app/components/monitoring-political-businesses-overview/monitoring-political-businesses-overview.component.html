@@ -17,18 +17,17 @@
     ></app-political-business-table>
   </div>
   <div class="right">
-    <ng-container *ngIf="countingCircles.length !== 0; else countingCircleResults">
+    @if (countingCircles.length !== 0) {
       <h2>{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.COUNTING_CIRCLE_RESULT.TITLE' | translate: { count: countingCircles.length } }}</h2>
       <app-counting-circle-table
         [countingCircles]="countingCircles"
         [countingCirclesById]="countingCirclesById"
       ></app-counting-circle-table>
-    </ng-container>
+    } @else {
+      <h2 translate>MONITORING_POLITICAL_BUSINESSES_OVERVIEW.COUNTING_CIRCLE_RESULT.TITLE_NO_DATA</h2>
+      <span translate>MONITORING_POLITICAL_BUSINESSES_OVERVIEW.COUNTING_CIRCLE_RESULT.NO_DATA</span>
+    }
   </div>
 </div>
 
-<ng-template #countingCircleResults>
-  <h2 translate>MONITORING_POLITICAL_BUSINESSES_OVERVIEW.COUNTING_CIRCLE_RESULT.TITLE_NO_DATA</h2>
-  <span translate>MONITORING_POLITICAL_BUSINESSES_OVERVIEW.COUNTING_CIRCLE_RESULT.NO_DATA</span>
-</ng-template>
 

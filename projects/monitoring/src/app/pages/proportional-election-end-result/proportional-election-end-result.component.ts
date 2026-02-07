@@ -5,7 +5,7 @@
  */
 
 import { DialogService, SnackbarService } from '@abraxas/voting-lib';
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -13,6 +13,8 @@ import {
   DoubleProportionalResultApportionmentState,
   EventLogService,
   groupBySingle,
+  PoliticalBusiness,
+  PoliticalBusinessType,
   ProportionalElectionCandidateEndResult,
   ProportionalElectionCandidateEndResultState,
   ProportionalElectionEndResult,
@@ -47,12 +49,23 @@ import { EndResultStep } from '../../models/end-result-step.model';
   standalone: false,
 })
 export class ProportionalElectionEndResultComponent implements OnDestroy {
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly resultService = inject(ProportionalElectionResultService);
+  private readonly unionResultService = inject(ProportionalElectionUnionResultService);
+  private readonly dialogService = inject(DialogService);
+  private readonly i18n = inject(TranslateService);
+  private readonly toast = inject(SnackbarService);
+  private readonly secondFactorTransactionService = inject(SecondFactorTransactionService);
+  private readonly eventLogService = inject(EventLogService);
+
   public dataPrefix?: string;
 
   public loading: boolean = true;
   public stepActionLoading: boolean = false;
   public dpResultIncomplete?: boolean;
   public endResult?: ProportionalElectionEndResult;
+  public accessiblePoliticalBusinesses: PoliticalBusiness[] = [];
   public hasLotDecisions: boolean = false;
   public hasOpenRequiredLotDecisions: boolean = false;
   public selectedListEndResult?: ProportionalElectionListEndResult;
@@ -63,25 +76,17 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
   private proportionalElectionId: string = '';
   private politicalBusinessUnionId?: string;
   public isNonUnionDoubleProportional = false;
+  public isDoubleProportional = false;
   public hasOpenNonUnionDoubleProportionLotDecision = false;
   public endResultStep?: EndResultStep;
   public finalizeEnabled = false;
   public showMandateDistributionTrigger = false;
+  public showExport = false;
 
   private readonly routeSubscription: Subscription;
   private watchSubscription?: Subscription;
 
-  constructor(
-    private readonly route: ActivatedRoute,
-    private readonly router: Router,
-    private readonly resultService: ProportionalElectionResultService,
-    private readonly unionResultService: ProportionalElectionUnionResultService,
-    private readonly dialogService: DialogService,
-    private readonly i18n: TranslateService,
-    private readonly toast: SnackbarService,
-    private readonly secondFactorTransactionService: SecondFactorTransactionService,
-    private readonly eventLogService: EventLogService,
-  ) {
+  constructor() {
     this.routeSubscription = combineLatest([this.route.params, this.route.queryParams])
       .pipe(
         debounceTime(10), // could fire twice if both params change at the same time
@@ -89,9 +94,10 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
           politicalBusinessId: params.politicalBusinessId,
           politicalBusinessUnionId: params.politicalBusinessUnionId,
           isPartialResult: queryParams.partialResult,
+          submissionFinishedAndAuditedTentatively: queryParams.submissionFinishedAndAuditedTentatively,
         })),
       )
-      .subscribe(async ({ politicalBusinessId, politicalBusinessUnionId, isPartialResult }) => {
+      .subscribe(async ({ politicalBusinessId, politicalBusinessUnionId, isPartialResult, submissionFinishedAndAuditedTentatively }) => {
         this.isPartialResult = isPartialResult;
         this.politicalBusinessUnionId = politicalBusinessUnionId;
         this.proportionalElectionId = politicalBusinessId;
@@ -100,6 +106,10 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
         delete this.watchSubscription;
 
         await this.loadData();
+
+        if (!!submissionFinishedAndAuditedTentatively && this.showExport) {
+          this.router.navigate(['../../', 'contests', this.endResult!.contest.id, 'exports'], { relativeTo: this.route });
+        }
 
         this.watchSubscription = this.eventLogService
           .watch([...ProportionalElectionEndResultEventTypes], {
@@ -148,6 +158,8 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
       if (success && !waitForWatcher) {
         this.endResultStep = newStep;
       }
+
+      this.updateShowExport();
     } finally {
       if (!waitForWatcher) {
         this.stepActionLoading = false;
@@ -283,6 +295,18 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
         ? await this.resultService.getPartialEndResult(this.proportionalElectionId)
         : await this.resultService.getEndResult(this.proportionalElectionId);
       this.isNonUnionDoubleProportional = ProportionalElectionService.isNonUnionDoubleProportional(endResult.election.mandateAlgorithm);
+      this.isDoubleProportional = ProportionalElectionService.isDoubleProportional(endResult.election.mandateAlgorithm);
+
+      if (!!this.politicalBusinessUnionId) {
+        const politicalBusinessUnionEndResult = !this.isPartialResult
+          ? await this.unionResultService.getEndResult(this.politicalBusinessUnionId)
+          : await this.unionResultService.getPartialEndResult(this.politicalBusinessUnionId);
+
+        this.accessiblePoliticalBusinesses = politicalBusinessUnionEndResult.proportionalElectionEndResults.map(e => ({
+          ...e.election,
+          politicalBusinessType: PoliticalBusinessType.POLITICAL_BUSINESS_TYPE_PROPORTIONAL_ELECTION,
+        }));
+      }
 
       if (this.isNonUnionDoubleProportional && !this.isPartialResult && endResult.mandateDistributionTriggered) {
         const dpResult = await this.resultService.getDoubleProportionalResult(this.proportionalElectionId);
@@ -326,6 +350,7 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
       this.hasLotDecisions = this.endResult.listEndResults.some(le => le.candidateEndResults.some(x => x.lotDecisionEnabled));
       this.hasOpenRequiredLotDecisions = this.endResult.listEndResults.some(l => l.hasOpenRequiredLotDecisions);
       this.selectedListEndResult = undefined;
+      this.updateShowExport();
       this.refreshTableColumns();
       this.endResultStep = !endResult.allCountingCirclesDone
         ? EndResultStep.CountingCirclesCounting
@@ -388,6 +413,7 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
     }
 
     this.hasOpenRequiredLotDecisions = this.endResult.listEndResults.some(l => l.hasOpenRequiredLotDecisions);
+    this.updateShowExport();
   }
 
   private updateCandidateEndResultByLotDecision(
@@ -421,6 +447,10 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
 
     if (showCalculationDetails) {
       this.listColumns.push('nrOfMandates');
+
+      if (!this.isDoubleProportional) {
+        this.listColumns.push('lotDecisionState');
+      }
     }
 
     if (
@@ -440,5 +470,9 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
     if (showCalculationDetails && this.hasLotDecisions && !this.hasOpenRequiredLotDecisions) {
       this.candidateColumns.push('lotDecision');
     }
+  }
+
+  private updateShowExport(): void {
+    this.showExport = this.endResult!.finalized && !this.hasOpenRequiredLotDecisions;
   }
 }

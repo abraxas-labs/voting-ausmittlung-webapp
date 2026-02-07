@@ -6,16 +6,16 @@
 
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { ContestCantonDefaults } from '../../models';
-import { Directive } from '@angular/core';
+import { Directive, inject } from '@angular/core';
 import { ContestService } from '../contest.service';
 import { GetCantonDefaultsRequest } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/contest_requests_pb';
 
 @Directive()
 export abstract class CantonDefaultsBaseResolver {
+  private readonly contestService = inject(ContestService);
+
   private cachedId?: string;
   private cachedCantonDefaults!: ContestCantonDefaults;
-
-  constructor(private readonly contestService: ContestService) {}
 
   public async resolve(route: ActivatedRouteSnapshot): Promise<ContestCantonDefaults> {
     const id = route.paramMap.get(this.idParam);

@@ -3,19 +3,19 @@
 
   <div content>
     <bc-dropdown class="mb-2"
-                 [label]="'EXPORT_COCKPIT.DESCRIPTION' | translate"
-                 [required]="true"
-                 [items]="configs"
-                 displayExpr="description"
-                 [value]="selectedConfig"
-                 [clearable]="false"
-                 (valueChange)="setSelectedConfig($event)"
-                 [subscriptSizing]="'dynamic'"></bc-dropdown>
-    <ng-container *ngIf="selectedConfig; else noData">
+      [label]="'EXPORT_COCKPIT.DESCRIPTION' | translate"
+      [required]="true"
+      [items]="configs"
+      displayExpr="description"
+      [value]="selectedConfig"
+      [clearable]="false"
+      (valueChange)="setSelectedConfig($event)"
+      [subscriptSizing]="'dynamic'"></bc-dropdown>
+    @if (selectedConfig) {
       <app-export-cockpit-political-businesses [politicalBusinesses]="dialogData.politicalBusinesses"
-                                               [exportConfig]="selectedConfig"
-                                               (exportConfigChange)="hasEdits = true"
-                                               (isValidChange)="isValid = $event">
+        [exportConfig]="selectedConfig"
+        (exportConfigChange)="hasEdits = true"
+        (isValidChange)="isValid = $event">
       </app-export-cockpit-political-businesses>
       <bc-radio-button-group
         class="mt-2"
@@ -25,37 +25,42 @@
         [value]="triggerModeAuto"
         (valueChange)="setTriggerMode($event)"
         [subscriptSizing]="'dynamic'"></bc-radio-button-group>
-      <bc-number *ngIf="triggerModeAuto"
-                 [label]="'EXPORT_COCKPIT.INTERVAL' | translate"
-                 [required]="true"
-                 [min]="0"
-                 [(ngModel)]="selectedConfig.intervalMinutes"
-                 (ngModelChange)="hasEdits = true"
-                 [subscriptSizing]="'dynamic'"></bc-number>
+      @if (triggerModeAuto) {
+        <bc-number
+          [label]="'EXPORT_COCKPIT.INTERVAL' | translate"
+          [required]="true"
+          [min]="0"
+          [(ngModel)]="selectedConfig.intervalMinutes"
+          (ngModelChange)="hasEdits = true"
+          [subscriptSizing]="'dynamic'"></bc-number>
+      }
       <div class="trigger-container mt-2">
         <div class="trigger">
           <bc-button (buttonClick)="saveAndTriggerManualExport()"
-                     [disabled]="saving || triggeringExport"
-                     [label]="'EXPORT_COCKPIT.TRIGGER_MANUAL' | translate"></bc-button>
-          <bc-spinner *ngIf="triggeringExport" class="ml-1"></bc-spinner>
+            [disabled]="saving || triggeringExport"
+            [label]="'EXPORT_COCKPIT.TRIGGER_MANUAL' | translate"></bc-button>
+          @if (triggeringExport) {
+            <bc-spinner class="ml-1"></bc-spinner>
+          }
         </div>
-        <div class="latest-execution" *ngIf="selectedConfig.latestExecution" >
-          <span translate>EXPORT_COCKPIT.LATEST_EXECUTION</span>
-          <span>{{ selectedConfig.latestExecution | date: 'short' }}</span>
-        </div>
+        @if (selectedConfig.latestExecution) {
+          <div class="latest-execution" >
+            <span translate>EXPORT_COCKPIT.LATEST_EXECUTION</span>
+            <span>{{ selectedConfig.latestExecution | date: 'short' }}</span>
+          </div>
+        }
       </div>
-    </ng-container>
-    <ng-template #noData>
+    } @else {
       <p class="no-data">{{'EXPORT_COCKPIT.NO_CONFIGS' | translate}}</p>
-    </ng-template>
+    }
   </div>
 
   <div footer>
     <vo-lib-button-bar (save)="save()"
-                       [saving]="saving"
-                       [canSave]="!triggeringExport && hasEdits && isValid"
-                       [sticky]="false"
-                       [cancelLabel]="'APP.CLOSE' | translate"
-                       (cancel)="close()"></vo-lib-button-bar>
+      [saving]="saving"
+      [canSave]="!triggeringExport && hasEdits && isValid"
+      [sticky]="false"
+      [cancelLabel]="'APP.CLOSE' | translate"
+      (cancel)="close()"></vo-lib-button-bar>
   </div>
 </vo-lib-dialog>

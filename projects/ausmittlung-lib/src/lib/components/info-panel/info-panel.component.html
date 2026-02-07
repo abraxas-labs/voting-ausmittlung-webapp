@@ -1,5 +1,7 @@
 <div class="info-panel">
-  <h4 *ngIf="mainEntry"
-      class="mr-4">{{mainEntry}}</h4>
+  @if (mainEntry) {
+    <h4
+    class="mr-4">{{mainEntry}}</h4>
+  }
   <ng-content></ng-content>
 </div>

@@ -1,0 +1,13 @@
+<h5>{{ header | translate }}</h5>
+
+@if (logs && logs.length) {
+  <ul>
+    @for (log of logs; track log) {
+      <li>
+        {{ log.timestamp | date:'short'}}, {{ log.user.fullName }}
+      </li>
+    }
+  </ul>
+} @else {
+  <p translate>POLITICAL_BUSINESS.BALLOT_HISTORY.NONE</p>
+}

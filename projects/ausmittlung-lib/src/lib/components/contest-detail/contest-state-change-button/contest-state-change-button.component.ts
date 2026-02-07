@@ -7,7 +7,7 @@
 import { AuthorizationService, Tenant } from '@abraxas/base-components';
 import { CountingCircleResultState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/counting_circle_pb';
 import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/political_business_pb';
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { ContestCountingCircleDetails, ResultList, ResultListResult, VotingChannel } from '../../../models';
 import { MajorityElectionResultService } from '../../../services/majority-election-result.service';
@@ -28,6 +28,17 @@ import { TranslateService } from '@ngx-translate/core';
   standalone: false,
 })
 export class ContestStateChangeButtonComponent implements OnDestroy, OnChanges, OnInit {
+  private readonly voteResultService = inject(VoteResultService);
+  private readonly proportionalElectionResultService = inject(ProportionalElectionResultService);
+  private readonly majorityElectionResultService = inject(MajorityElectionResultService);
+  private readonly politicalBusinessResultService = inject(PoliticalBusinessResultService);
+  private readonly resultService = inject(ResultService);
+  private readonly auth = inject(AuthorizationService);
+  private readonly permissionService = inject(PermissionService);
+  private readonly i18n = inject(TranslateService);
+  private readonly dialogService = inject(DialogService);
+  private readonly toast = inject(SnackbarService);
+
   @Input()
   public contentReadonly: boolean = false;
 
@@ -61,18 +72,9 @@ export class ContestStateChangeButtonComponent implements OnDestroy, OnChanges, 
   private readonly resultStateChangedSubscription: Subscription;
   private tenant?: Tenant;
 
-  constructor(
-    private readonly voteResultService: VoteResultService,
-    private readonly proportionalElectionResultService: ProportionalElectionResultService,
-    private readonly majorityElectionResultService: MajorityElectionResultService,
-    private readonly politicalBusinessResultService: PoliticalBusinessResultService,
-    private readonly resultService: ResultService,
-    private readonly auth: AuthorizationService,
-    private readonly permissionService: PermissionService,
-    private readonly i18n: TranslateService,
-    private readonly dialogService: DialogService,
-    private readonly toast: SnackbarService,
-  ) {
+  constructor() {
+    const politicalBusinessResultService = this.politicalBusinessResultService;
+
     this.resultStateChangedSubscription = politicalBusinessResultService.resultStateChanged$.subscribe(() => this.updateCanSetState());
   }
 

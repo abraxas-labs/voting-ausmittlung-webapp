@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild, inject } from '@angular/core';
 import {
   ContestCountingCircleDetails,
   CountingMachine,
@@ -38,9 +38,13 @@ const infosWrappedClassName = 'infos-wrapped';
   standalone: false,
 })
 export class ContestDetailInfoComponent implements AfterViewInit {
+  private readonly dialogService = inject(DialogService);
+  private readonly contestCountingCircleDetailsService = inject(ContestCountingCircleDetailsService);
+  private readonly toast = inject(SnackbarService);
+  private readonly i18n = inject(TranslateService);
+
   public readonly votingChannels: typeof VotingChannel = VotingChannel;
   public readonly domainOfInfluenceCantons: typeof DomainOfInfluenceCanton = DomainOfInfluenceCanton;
-  public readonly voterTypes: typeof VoterType = VoterType;
 
   public votingCardsByDoiType: { -readonly [key in keyof typeof DomainOfInfluenceType]?: VotingCardResultDetail[] } = {};
   public subTotalsByDoiType: { -readonly [key in keyof typeof DomainOfInfluenceType]?: SimpleSubTotalResultSummary[] } = {};
@@ -146,13 +150,6 @@ export class ContestDetailInfoComponent implements AfterViewInit {
 
   @Output()
   public saved: EventEmitter<ContestCountingCircleDetails> = new EventEmitter<ContestCountingCircleDetails>();
-
-  constructor(
-    private readonly dialogService: DialogService,
-    private readonly contestCountingCircleDetailsService: ContestCountingCircleDetailsService,
-    private readonly toast: SnackbarService,
-    private readonly i18n: TranslateService,
-  ) {}
   public ngAfterViewInit(): void {
     // this is needed to ensure that the entire DOM is rendered already.
     setTimeout(() => this.updateInfosWrapped());
@@ -392,20 +389,25 @@ export class ContestDetailInfoComponent implements AfterViewInit {
           continue;
         }
 
+        const doiTypeLabel = this.i18n.instant(`DOMAIN_OF_INFLUENCE_TYPES.${doiType}`);
         this.countOfVotersSummaries.push({
-          label: this.i18n.instant('DOMAIN_OF_INFLUENCE.TYPE', { type: this.i18n.instant(`DOMAIN_OF_INFLUENCE_TYPES.${doiType}`) }),
+          label: this.i18n.instant('DOMAIN_OF_INFLUENCE.TYPE', { type: doiTypeLabel }),
           subTotalSummaries: this.subTotalsByDoiType[doiType],
+          total: sum(this.subTotalsByDoiType[doiType], x => x.total),
+          totalLabel: this.i18n.instant('CONTEST.DETAIL.TOTAL_FOR_TYPE', { type: doiTypeLabel }),
         });
       }
     } else {
       for (const electorate of this.electorateSummaryValue.effectiveElectoratesList) {
         const doiTypes = electorate.domainOfInfluenceTypesList;
         const subTotals = this.subTotalsByDoiType[doiTypes[0]] ?? [];
+        const doiTypeLabel = doiTypes.map(d => this.i18n.instant(`DOMAIN_OF_INFLUENCE_TYPES.${d}`)).join(', ');
+        const doiTypeTotalLabel = this.i18n.instant('CONTEST.DETAIL.COUNT_OF_VOTERS');
         this.countOfVotersSummaries.push({
-          label: this.i18n.instant('DOMAIN_OF_INFLUENCE.TYPE', {
-            type: doiTypes.map(d => this.i18n.instant(`DOMAIN_OF_INFLUENCE_TYPES.${d}`)).join(', '),
-          }),
+          label: this.i18n.instant('DOMAIN_OF_INFLUENCE.TYPE', { type: doiTypeLabel }),
           subTotalSummaries: subTotals,
+          total: sum(subTotals, x => x.total),
+          totalLabel: this.i18n.instant('CONTEST.DETAIL.TOTAL_FOR_TYPE', { type: doiTypeTotalLabel }),
         });
       }
     }
@@ -461,6 +463,8 @@ interface SimpleVotingCardResultSummary {
 interface SimpleCountOfVotersInformationSummary {
   label: string;
   subTotalSummaries: SimpleSubTotalResultSummary[];
+  total: number;
+  totalLabel: string;
 }
 
 interface SimpleSubTotalResultSummary {

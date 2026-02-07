@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform, inject } from '@angular/core';
 import { ValidationResult } from '../models';
 import { KeyValue } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
@@ -14,7 +14,7 @@ import { TranslateService } from '@ngx-translate/core';
   standalone: false,
 })
 export class ValidationGroupPipe implements PipeTransform {
-  constructor(private readonly i18n: TranslateService) {}
+  private readonly i18n = inject(TranslateService);
 
   public transform(value: Record<string, ValidationResult[]>): KeyValue<string, ValidationResult[]>[] {
     return Object.entries(value)

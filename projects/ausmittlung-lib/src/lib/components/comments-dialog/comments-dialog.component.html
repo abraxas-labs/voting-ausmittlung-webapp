@@ -2,23 +2,26 @@
   <h3 header>{{'COMMENTS.TITLE' | translate}}</h3>
 
   <div content>
-    <bc-spinner *ngIf="loading; else commentsContent"></bc-spinner>
-    <ng-template #commentsContent>
-      <vo-ausm-admonition *ngFor="let comment of comments"
-                class="m-2"
-                [type]="comment.createdByMonitoringAuthority ? 'warning' : 'success'">
-        <div class="message-content">
-          <span class="wrap m-0">{{comment.content}}</span>
-          <span class="mt-3 author">{{comment.createdBy.fullName}} - {{comment.createdAt | date: 'short'}}</span>
-        </div>
-      </vo-ausm-admonition>
-    </ng-template>
+    @if (loading) {
+      <bc-spinner></bc-spinner>
+    } @else {
+      @for (comment of comments; track comment) {
+        <vo-ausm-admonition
+          class="m-2"
+          [type]="comment.createdByMonitoringAuthority ? 'warning' : 'success'">
+          <div class="message-content">
+            <span class="wrap m-0">{{comment.content}}</span>
+            <span class="mt-3 author">{{comment.createdBy.fullName}} - {{comment.createdAt | date: 'short'}}</span>
+          </div>
+        </vo-ausm-admonition>
+      }
+    }
   </div>
 
   <div footer>
     <vo-lib-button-bar [hasSaveButton]="false"
-                       [sticky]="false"
-                       [cancelLabel]="'APP.CLOSE' | translate"
-                       (cancel)="done()"></vo-lib-button-bar>
+      [sticky]="false"
+      [cancelLabel]="'APP.CLOSE' | translate"
+    (cancel)="done()"></vo-lib-button-bar>
   </div>
 </vo-lib-dialog>

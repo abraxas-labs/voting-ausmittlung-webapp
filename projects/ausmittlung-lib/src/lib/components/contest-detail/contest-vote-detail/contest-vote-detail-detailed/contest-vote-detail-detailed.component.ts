@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { VoteResult } from '../../../../models';
 import { BallotCountInputComponent } from '../../../ballot-count-input/ballot-count-input.component';
@@ -18,6 +18,9 @@ import { BallotType } from '@abraxas/voting-ausmittlung-service-proto/grpc/model
   standalone: false,
 })
 export class ContestVoteDetailDetailedComponent {
+  private readonly router = inject(Router);
+  private readonly themeService = inject(ThemeService);
+
   public readonly ballotTypes: typeof BallotType = BallotType;
 
   @Input()
@@ -40,11 +43,6 @@ export class ContestVoteDetailDetailedComponent {
 
   @ViewChild(BallotCountInputComponent)
   private ballotCountInputComponent!: BallotCountInputComponent;
-
-  constructor(
-    private readonly router: Router,
-    private readonly themeService: ThemeService,
-  ) {}
 
   public async openBundles(voteResultId: string, ballotResultId: string): Promise<void> {
     if (!this.resultDetail) {

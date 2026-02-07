@@ -15,7 +15,7 @@ import {
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/result_requests_pb';
 import { ResultServiceClient, ResultServicePromiseClient } from '@abraxas/voting-ausmittlung-service-proto/grpc/result_service_grpc_web_pb';
 import { GrpcBackendService, GrpcEnvironment, GrpcStreamingService } from '@abraxas/voting-lib';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   Comment,
@@ -53,11 +53,12 @@ import { BallotSubType } from '@abraxas/voting-ausmittlung-service-proto/grpc/mo
   providedIn: 'root',
 })
 export class ResultService extends GrpcStreamingService<ResultServicePromiseClient, ResultServiceClient> {
-  constructor(
-    grpcBackend: GrpcBackendService,
-    @Inject(GRPC_ENV_INJECTION_TOKEN) env: GrpcEnvironment,
-    private readonly validationMapping: ValidationMappingService,
-  ) {
+  private readonly validationMapping = inject(ValidationMappingService);
+
+  constructor() {
+    const grpcBackend = inject(GrpcBackendService);
+    const env = inject<GrpcEnvironment>(GRPC_ENV_INJECTION_TOKEN);
+
     super(ResultServicePromiseClient, ResultServiceClient, env, grpcBackend);
   }
 

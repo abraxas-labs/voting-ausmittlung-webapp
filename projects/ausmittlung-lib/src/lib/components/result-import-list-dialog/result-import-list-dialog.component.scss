@@ -12,3 +12,7 @@ div[header] {
     color: $color-error;
   }
 }
+
+bc-data-cell {
+  vertical-align: baseline !important;
+}

@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -33,6 +33,15 @@ import { AuthorizationService, TableDataSource, Tenant } from '@abraxas/base-com
   standalone: false,
 })
 export class ErfassungFinishSubmissionComponent implements OnInit, OnDestroy {
+  private readonly route = inject(ActivatedRoute);
+  private readonly resultService = inject(ResultService);
+  private readonly breadcrumbsService = inject(BreadcrumbsService);
+  private readonly dialogService = inject(DialogService);
+  private readonly secondFactorTransactionService = inject(SecondFactorTransactionService);
+  private readonly toast = inject(SnackbarService);
+  private readonly i18n = inject(TranslateService);
+  private readonly auth = inject(AuthorizationService);
+
   public readonly columns = [
     'select',
     'politicalBusinessTitle',
@@ -63,16 +72,7 @@ export class ErfassungFinishSubmissionComponent implements OnInit, OnDestroy {
 
   private static readonly emptySecondFactorId: string = '';
 
-  constructor(
-    private readonly route: ActivatedRoute,
-    private readonly resultService: ResultService,
-    private readonly breadcrumbsService: BreadcrumbsService,
-    private readonly dialogService: DialogService,
-    private readonly secondFactorTransactionService: SecondFactorTransactionService,
-    private readonly toast: SnackbarService,
-    private readonly i18n: TranslateService,
-    private readonly auth: AuthorizationService,
-  ) {
+  constructor() {
     this.breadcrumbs = this.breadcrumbsService.forFinishSubmission();
   }
 

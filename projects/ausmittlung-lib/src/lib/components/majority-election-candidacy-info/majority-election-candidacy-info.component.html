@@ -1,4 +1,8 @@
-<div *ngIf="candidate" class="candidacy">
-  <span>{{candidate.politicalLastName}} {{candidate.politicalFirstName}}</span>
-  <bc-icon *ngIf="candidate.countToIndividual" icon="info-circle-o" [tooltip]="'MAJORITY_ELECTION.COUNT_TO_INDIVIDUAL_HINT' | translate"></bc-icon>
-</div>
+@if (candidate) {
+  <div class="candidacy">
+    <span>{{candidate.politicalLastName}} {{candidate.politicalFirstName}}</span>
+    @if (candidate.countToIndividual) {
+      <bc-icon icon="info-circle-o" [tooltip]="'MAJORITY_ELECTION.COUNT_TO_INDIVIDUAL_HINT' | translate"></bc-icon>
+    }
+  </div>
+}

@@ -5,7 +5,7 @@
  */
 
 import { DialogService } from '@abraxas/voting-lib';
-import { Component, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output, ViewChild, inject } from '@angular/core';
 import { Permissions } from '../../models/permissions.model';
 import { BallotNavigationComponent } from '../ballot-navigation/ballot-navigation.component';
 
@@ -16,19 +16,30 @@ import { BallotNavigationComponent } from '../ballot-navigation/ballot-navigatio
   standalone: false,
 })
 export class BallotHeaderComponent {
+  private readonly dialog = inject(DialogService);
+
   public readonly deleteBallotPermission = Permissions.PoliticalBusinessResultBallot.Delete;
 
   @Input()
   public readonly: boolean = true;
 
   @Input()
+  public automaticBallotNumberGeneration: boolean = true;
+
+  @Input()
   public ballotNumber?: number;
 
   @Input()
-  public maxBallotNumber: number = 0;
+  public maxBallotNumber: number = 1;
 
   @Input()
-  public minBallotNumber: number = 0;
+  public minBallotNumber: number = 1;
+
+  @Input({ required: true })
+  public canGoPrevious: boolean = false;
+
+  @Input({ required: true })
+  public canGoNext: boolean = false;
 
   @Input()
   public labelBallotNumber: string = 'ELECTION.BALLOT_DETAIL.BALLOT_NR';
@@ -40,9 +51,6 @@ export class BallotHeaderComponent {
   public disabled: boolean = true;
 
   @Input()
-  public canNavigate: boolean = false;
-
-  @Input()
   public canDeleteBallot: boolean = false;
 
   @Input()
@@ -52,15 +60,19 @@ export class BallotHeaderComponent {
   public labelConfirmDelete: string = 'ELECTION.BALLOT_DETAIL.CONFIRM_DELETE';
 
   @Output()
-  public ballotNumberChange: EventEmitter<number> = new EventEmitter<number>();
+  public ballotNumberEntered: EventEmitter<number> = new EventEmitter<number>();
+
+  @Output()
+  public previousBallotRequest: EventEmitter<void> = new EventEmitter<void>();
+
+  @Output()
+  public nextBallotRequest: EventEmitter<void> = new EventEmitter<void>();
 
   @Output()
   public deleteBallot: EventEmitter<void> = new EventEmitter<void>();
 
   @ViewChild(BallotNavigationComponent)
   public navigationComponent!: BallotNavigationComponent;
-
-  constructor(private readonly dialog: DialogService) {}
 
   @HostListener('document:keydown.control.alt.q', ['$event'])
   public emitDeleteBallot(event?: KeyboardEvent): void {

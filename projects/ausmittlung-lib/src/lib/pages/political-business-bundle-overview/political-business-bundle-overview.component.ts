@@ -7,7 +7,7 @@
 import { BallotBundleState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/ballot_bundle_pb';
 import { CountingCircleResultState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/counting_circle_pb';
 import { DialogService, SnackbarService, ThemeService } from '@abraxas/voting-lib';
-import { Directive, OnDestroy, OnInit } from '@angular/core';
+import { Directive, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -40,6 +40,18 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
   >
   implements OnInit, OnDestroy
 {
+  protected readonly permissionService = inject(PermissionService);
+  protected readonly i18n = inject(TranslateService);
+  protected readonly toast = inject(SnackbarService);
+  protected readonly dialog = inject(DialogService);
+  protected readonly route = inject(ActivatedRoute);
+  protected readonly router = inject(Router);
+  protected readonly themeService = inject(ThemeService);
+  protected readonly resultExportService = inject(ResultExportService);
+  protected readonly exportService = inject(ExportService);
+  private readonly eventLogService = inject(EventLogService);
+  private readonly datePipe = inject(DatePipe);
+
   public result?: T;
   public resultReadOnly: boolean = true;
   public loading: boolean = true;
@@ -49,20 +61,6 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
 
   private routeParamsSubscription?: Subscription;
   private watchSubscription?: Subscription;
-
-  protected constructor(
-    protected readonly permissionService: PermissionService,
-    protected readonly i18n: TranslateService,
-    protected readonly toast: SnackbarService,
-    protected readonly dialog: DialogService,
-    protected readonly route: ActivatedRoute,
-    protected readonly router: Router,
-    protected readonly themeService: ThemeService,
-    protected readonly resultExportService: ResultExportService,
-    protected readonly exportService: ExportService,
-    private readonly eventLogService: EventLogService,
-    private readonly datePipe: DatePipe,
-  ) {}
 
   public async ngOnInit(): Promise<void> {
     this.routeParamsSubscription = this.route.params.subscribe(params => this.loadData(params));
@@ -176,13 +174,6 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
     return bundles.map(x => x.number);
   }
 
-  protected getDeletedUnusedBundleNumbers(bundles: PoliticalBusinessResultBundle[]): number[] {
-    const notDeletedBundleNumbers = bundles.filter(x => x.state !== BallotBundleState.BALLOT_BUNDLE_STATE_DELETED).map(x => x.number);
-    return bundles
-      .filter(x => x.state === BallotBundleState.BALLOT_BUNDLE_STATE_DELETED && !notDeletedBundleNumbers.includes(x.number))
-      .map(x => x.number);
-  }
-
   protected async handleBundleCreated(id: string): Promise<void> {
     if (this.bundlesById[id]) {
       return;
@@ -197,8 +188,18 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
       return;
     }
 
+    if (state === BallotBundleState.BALLOT_BUNDLE_STATE_REVIEWED || state === BallotBundleState.BALLOT_BUNDLE_STATE_IN_CORRECTION) {
+      bundle.reviewedBy = log.user;
+    } else if (
+      state === BallotBundleState.BALLOT_BUNDLE_STATE_READY_FOR_REVIEW &&
+      bundle.state === BallotBundleState.BALLOT_BUNDLE_STATE_IN_CORRECTION
+    ) {
+      bundle.createdBy = log.user;
+    }
+
     bundle.state = state;
     bundle.logs = [...bundle.logs, log];
+
     this.updateBundles();
   }
 
@@ -252,30 +253,39 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
     try {
       this.watchSubscription?.unsubscribe();
       delete this.watchSubscription;
-      this.result = await this.loadBundles(params.resultId, params);
-
-      this.bundlesById = groupBySingle(
-        this.result.bundles,
-        x => x.id,
-        x => x,
-      );
+      await this.loadBundlesAndPrepareData(params);
 
       this.resultReadOnly =
-        this.result.politicalBusinessResult.politicalBusiness.contest!.locked ||
-        (this.result.politicalBusinessResult.state !== CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING &&
-          this.result.politicalBusinessResult.state !== CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION);
+        this.result!.politicalBusinessResult.politicalBusiness.contest!.locked ||
+        (this.result!.politicalBusinessResult.state !== CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING &&
+          this.result!.politicalBusinessResult.state !== CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION);
 
       if (!this.resultReadOnly) {
         this.watchSubscription = this.eventLogService
           .watch([...ProtocolEventTypes, ...this.watcherEventTypes], {
-            contestId: this.result.politicalBusinessResult.politicalBusiness.contestId,
-            politicalBusinessResultId: this.result.politicalBusinessResult.id,
+            contestId: this.result!.politicalBusinessResult.politicalBusiness.contestId,
+            politicalBusinessResultId: this.result!.politicalBusinessResult.id,
           })
           .subscribe(e => this.handleEvent(e, params));
+
+        // In the time between loading the data and starting the watching call we could have missed some data.
+        // This is pretty noticeable for users as they often navigate to this component after having modified some data.
+        // The loading call fetches stale data, but the event is processed before our live update subscription is established.
+        // So we simply reload the data here.
+        await this.loadBundlesAndPrepareData(params);
       }
     } finally {
       this.loading = false;
     }
+  }
+
+  private async loadBundlesAndPrepareData(params: Params): Promise<void> {
+    this.result = await this.loadBundles(params.resultId, params);
+    this.bundlesById = groupBySingle(
+      this.result.bundles,
+      x => x.id,
+      x => x,
+    );
   }
 
   private bundleCreatedOrUpdated(b: TBundle): void {

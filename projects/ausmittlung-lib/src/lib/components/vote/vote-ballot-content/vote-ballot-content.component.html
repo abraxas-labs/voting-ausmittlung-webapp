@@ -1,25 +1,27 @@
 <div class="my-3">
   <div class="content">
-    <vo-ausm-vote-ballot-question-answer
-      *ngFor="let questionAnswer of ballot.questionAnswers"
-      [question]="questionAnswer.question"
-      [answer]="questionAnswer.answer"
-      (answerChange)="questionAnswer.answer = $event; contentChanged.emit()"
-      [ballotNumberOfQuestions]="ballot.questionAnswers.length"
-      [readonly]="readonly"
-      [disabled]="disabled"
-      [active]="questionAnswer === activeAnswer"
-    ></vo-ausm-vote-ballot-question-answer>
-    <vo-ausm-vote-ballot-question-answer
-      *ngFor="let tieBreakQuestionAnswer of ballot.tieBreakQuestionAnswers"
-      [question]="tieBreakQuestionAnswer.question"
-      [answer]="tieBreakQuestionAnswer.answer"
-      (answerChange)="tieBreakQuestionAnswer.answer = $event; contentChanged.emit()"
-      [ballotNumberOfQuestions]="ballot.questionAnswers.length"
-      [isTieBreakQuestion]="true"
-      [readonly]="readonly"
-      [disabled]="disabled"
-      [active]="tieBreakQuestionAnswer === activeAnswer"
-    ></vo-ausm-vote-ballot-question-answer>
+    @for (questionAnswer of ballot.questionAnswers; track questionAnswer) {
+      <vo-ausm-vote-ballot-question-answer
+        [question]="questionAnswer.question"
+        [answer]="questionAnswer.answer"
+        (answerChange)="questionAnswer.answer = $event; contentChanged.emit()"
+        [ballotNumberOfQuestions]="ballot.questionAnswers.length"
+        [readonly]="readonly"
+        [disabled]="disabled"
+        [active]="questionAnswer === activeAnswer"
+      ></vo-ausm-vote-ballot-question-answer>
+    }
+    @for (tieBreakQuestionAnswer of ballot.tieBreakQuestionAnswers; track tieBreakQuestionAnswer) {
+      <vo-ausm-vote-ballot-question-answer
+        [question]="tieBreakQuestionAnswer.question"
+        [answer]="tieBreakQuestionAnswer.answer"
+        (answerChange)="tieBreakQuestionAnswer.answer = $event; contentChanged.emit()"
+        [ballotNumberOfQuestions]="ballot.questionAnswers.length"
+        [isTieBreakQuestion]="true"
+        [readonly]="readonly"
+        [disabled]="disabled"
+        [active]="tieBreakQuestionAnswer === activeAnswer"
+      ></vo-ausm-vote-ballot-question-answer>
+    }
   </div>
 </div>

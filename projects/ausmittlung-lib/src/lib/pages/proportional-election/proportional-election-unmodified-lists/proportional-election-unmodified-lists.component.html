@@ -1,39 +1,39 @@
-<vo-lib-page [contentLoading]="loading"
-             header="PROPORTIONAL_ELECTION.UNMODIFIED_LISTS">
-  <ng-container *ngIf="result">
+<vo-lib-page [contentLoading]="loading" header="PROPORTIONAL_ELECTION.UNMODIFIED_LISTS">
+  @if (result) {
     <vo-ausm-proportional-election-info [electionResult]="result.electionResult"></vo-ausm-proportional-election-info>
-
-    <div class="content content-box">
+    <div class="content">
       <bc-label [label]="'APP.NR' | translate"></bc-label>
-      <bc-label [label]="'PROPORTIONAL_ELECTION.LIST.SHORT_DESCRIPTION' | translate"></bc-label>
       <bc-label [label]="'PROPORTIONAL_ELECTION.LIST.DESCRIPTION' | translate"></bc-label>
+      <bc-label [label]="'PROPORTIONAL_ELECTION.LIST.SHORT_DESCRIPTION' | translate"></bc-label>
       <bc-label [label]="'APP.COUNT' | translate"></bc-label>
-
-      <ng-container *ngFor="let listResult of result.unmodifiedListResults">
-        <span>{{listResult.list.orderNumber}}</span>
-        <span>{{listResult.list.shortDescription}}</span>
-        <span>{{listResult.list.description}}</span>
-        <bc-number [readonly]="!canEdit || resultReadOnly"
-                   [ngModel]="listResult.conventionalVoteCount"
-                   [allowUndefined]="false"
-                   (ngModelChange)="listResult.conventionalVoteCount = +$event; updateTotalAndSetChanges()"
-                   [min]="0"
-                   [subscriptSizing]="'dynamic'"></bc-number>
-      </ng-container>
-
-      <span class="total total-label">{{'APP.TOTAL' | translate}}</span>
-      <span class="total">{{total | number}}</span>
+      @for (listResult of result.unmodifiedListResults; track listResult) {
+        <span>{{ listResult.list.orderNumber }}</span>
+        <span>{{ listResult.list.description }}</span>
+        <span>{{ listResult.list.shortDescription }}</span>
+        <bc-number
+          [readonly]="!canEdit || resultReadOnly"
+          [(value)]="listResult.conventionalVoteCount"
+          (valueChange)="updateTotalAndSetChanges()"
+          [min]="0"
+          [required]="true"
+          [subscriptSizing]="'dynamic'"
+        ></bc-number>
+      }
+      <span class="total total-label">{{ 'APP.TOTAL' | translate }}</span>
+      <span class="total">{{ total | number }}</span>
     </div>
-  </ng-container>
+  }
 
   <ng-container page-footer>
-    <vo-lib-button-bar class="content-box"
-                       [cancelLabel]="'APP.BACK' | translate"
-                       [saveLabel]="'APP.SAVE_AND_NEXT' | translate"
-                       (cancel)="back()"
-                       (save)="save()"
-                       [hasSaveButton]="canEdit && !resultReadOnly"
-                       [canSave]="canSave && hasChanges"
-                       [saving]="saving"></vo-lib-button-bar>
+    <vo-lib-button-bar
+      class="content-box"
+      [cancelLabel]="'APP.BACK' | translate"
+      [saveLabel]="'APP.SAVE_AND_NEXT' | translate"
+      (cancel)="back()"
+      (save)="save()"
+      [hasSaveButton]="canEdit && !resultReadOnly"
+      [canSave]="canSave && hasChanges"
+      [saving]="saving"
+    ></vo-lib-button-bar>
   </ng-container>
 </vo-lib-page>

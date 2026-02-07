@@ -1,9 +1,11 @@
 <h4 class="mt-4" translate>CONTEST.DETAIL.VOTING_CARDS.TITLE</h4>
 
-<vo-ausm-contest-detail-voting-cards-electorate *ngFor="let electorateVotingCards of electorateVotingCardsList"
-                                                [readonly]="readonly"
-                                                [domainOfInfluenceTypes]="electorateVotingCards.domainOfInfluenceTypes"
-                                                [votingCardDetails]="electorateVotingCards.votingCards"
-                                                (votingCardDetailsChange)="handleElectorateVotingCardsChange($event)"
-                                                [canton]="canton">
-</vo-ausm-contest-detail-voting-cards-electorate>
+@for (electorateVotingCards of electorateVotingCardsList; track electorateVotingCards) {
+  <vo-ausm-contest-detail-voting-cards-electorate
+    [readonly]="readonly"
+    [domainOfInfluenceTypes]="electorateVotingCards.domainOfInfluenceTypes"
+    [votingCardDetails]="electorateVotingCards.votingCards"
+    (votingCardDetailsChange)="handleElectorateVotingCardsChange($event)"
+    [canton]="canton">
+  </vo-ausm-contest-detail-voting-cards-electorate>
+}

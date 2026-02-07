@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ElectionEndResultAvailableLotDecisionSelectableRank } from '../models';
 
@@ -12,7 +12,7 @@ import { ElectionEndResultAvailableLotDecisionSelectableRank } from '../models';
   providedIn: 'root',
 })
 export class ElectionLotDecisionService {
-  constructor(private readonly i18n: TranslateService) {}
+  private readonly i18n = inject(TranslateService);
 
   public buildSelectableRank(selectableRanks: number[]): ElectionEndResultAvailableLotDecisionSelectableRank[] {
     // Bc dropdown does not work with null/undefined value. Workaround where rank 0 is "Pending".

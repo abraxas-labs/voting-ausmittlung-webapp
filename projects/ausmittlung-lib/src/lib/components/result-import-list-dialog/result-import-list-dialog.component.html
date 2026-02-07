@@ -1,9 +1,11 @@
 <vo-lib-dialog [contentLoading]="loading">
   <div header>
     <h3 translate>RESULT_IMPORT.LIST_TITLE</h3>
-    <div *ngIf="resultsImported && canDeleteImport">
-      <bc-button [label]="'RESULT_IMPORT.DELETE' | translate" color="warn" (buttonClick)="deleteResults()"></bc-button>
-    </div>
+    @if (resultsImported && canDeleteImport) {
+      <div>
+        <bc-button [label]="'RESULT_IMPORT.DELETE' | translate" color="warn" (buttonClick)="deleteResults()"></bc-button>
+      </div>
+    }
   </div>
 
   <div content>
@@ -34,8 +36,21 @@
         <bc-header-cell *headerCellDef>{{ 'RESULT_IMPORT.IMPORTED_COUNTING_CIRCLES' | translate }}</bc-header-cell>
         <bc-data-cell *dataCellDef="let element">
           <ul class="imported-counting-circle-list">
-            <li *ngFor="let importedCountingCircle of element.importedCountingCirclesList">
-              <span>{{ importedCountingCircle.name }}</span>
+            @for (importedCountingCircle of element.importedCountingCirclesList; track importedCountingCircle) {
+              <li>
+                <span>{{ importedCountingCircle.name }}</span>
+              </li>
+            }
+          </ul>
+        </bc-data-cell>
+      </ng-container>
+
+      <ng-container columnDef="emptyCountingCircles">
+        <bc-header-cell *headerCellDef>{{ 'RESULT_IMPORT.EMPTY_COUNTING_CIRCLES' | translate }}</bc-header-cell>
+        <bc-data-cell *dataCellDef="let element">
+          <ul>
+            <li *ngFor="let emptyCountingCircle of element.emptyCountingCirclesList">
+              <span>{{ emptyCountingCircle.name }}</span>
             </li>
           </ul>
         </bc-data-cell>
@@ -45,15 +60,23 @@
         <bc-header-cell *headerCellDef>{{ 'RESULT_IMPORT.IGNORED_COUNTING_CIRCLES' | translate }}</bc-header-cell>
         <bc-data-cell *dataCellDef="let element">
           <ul class="ignored-counting-circle-list">
-            <li *ngFor="let ignoredCountingCircle of element.ignoredCountingCirclesList">
-              <span class="mr-2">{{ ignoredCountingCircle.countingCircleId }}</span>
-              <span *ngIf="ignoredCountingCircle.countingCircleDescription" class="mr-2">{{
-                ignoredCountingCircle.countingCircleDescription }}</span>
-              <span *ngIf="ignoredCountingCircle.isTestCountingCircle">{{
-                'RESULT_IMPORT.IGNORED_COUNTING_CIRCLE.TEST_COUNTING_CIRCLE' | translate }}</span>
-              <span class="non-test-counting-circle" *ngIf="!ignoredCountingCircle.isTestCountingCircle">{{
-                'RESULT_IMPORT.IGNORED_COUNTING_CIRCLE.NON_TEST_COUNTING_CIRCLE' | translate }}</span>
-            </li>
+            @for (ignoredCountingCircle of element.ignoredCountingCirclesList; track ignoredCountingCircle) {
+              <li>
+                <span class="mr-2">{{ ignoredCountingCircle.countingCircleId }}</span>
+                @if (ignoredCountingCircle.countingCircleDescription) {
+                  <span class="mr-2">{{
+                  ignoredCountingCircle.countingCircleDescription }}</span>
+                }
+                @if (ignoredCountingCircle.isTestCountingCircle) {
+                  <span>{{
+                  'RESULT_IMPORT.IGNORED_COUNTING_CIRCLE.TEST_COUNTING_CIRCLE' | translate }}</span>
+                }
+                @if (!ignoredCountingCircle.isTestCountingCircle) {
+                  <span class="non-test-counting-circle">{{
+                  'RESULT_IMPORT.IGNORED_COUNTING_CIRCLE.NON_TEST_COUNTING_CIRCLE' | translate }}</span>
+                }
+              </li>
+            }
           </ul>
         </bc-data-cell>
       </ng-container>

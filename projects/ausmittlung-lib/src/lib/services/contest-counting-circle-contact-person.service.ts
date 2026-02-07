@@ -11,7 +11,7 @@ import {
   UpdateContestCountingCircleContactPersonRequest,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/contest_counting_circle_contact_person_requests_pb';
 import { GrpcBackendService, GrpcEnvironment, GrpcService } from '@abraxas/voting-lib';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ContactPerson } from '../models';
 import { GRPC_ENV_INJECTION_TOKEN } from './tokens';
 
@@ -19,7 +19,10 @@ import { GRPC_ENV_INJECTION_TOKEN } from './tokens';
   providedIn: 'root',
 })
 export class ContestCountingCircleContactPersonService extends GrpcService<ContestCountingCircleContactPersonServicePromiseClient> {
-  constructor(grpcBackend: GrpcBackendService, @Inject(GRPC_ENV_INJECTION_TOKEN) env: GrpcEnvironment) {
+  constructor() {
+    const grpcBackend = inject(GrpcBackendService);
+    const env = inject<GrpcEnvironment>(GRPC_ENV_INJECTION_TOKEN);
+
     super(ContestCountingCircleContactPersonServicePromiseClient, env, grpcBackend);
   }
 

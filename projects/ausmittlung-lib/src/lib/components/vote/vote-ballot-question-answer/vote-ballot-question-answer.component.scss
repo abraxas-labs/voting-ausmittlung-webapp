@@ -6,7 +6,7 @@
 
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 16rem));
-  grid-gap: 1rem;
+  gap: 1rem;
   border-left: 2px solid transparent;
 }
 

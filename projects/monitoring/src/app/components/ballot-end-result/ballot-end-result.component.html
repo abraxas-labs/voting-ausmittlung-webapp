@@ -1,56 +1,66 @@
 <div class="wrapper">
   <app-ballot-end-result-count-of-voters [countOfVoters]="endResult.countOfVoters"
-                                         [eVoting]="eVoting"
-                                         [eCounting]="eCounting">
+    [eVoting]="eVoting"
+    [eCounting]="eCounting">
   </app-ballot-end-result-count-of-voters>
 
   <div class="ballot-results">
-    <div *ngFor="let questionEndResult of endResult.questionEndResults">
-      <p class="whitespace-pre-wrap mb-2">
-        {{ questionEndResult.question | translateVoteQuestion: false:'question':endResult.questionEndResults.length:endResult.ballot.ballotSubType }}
-      </p>
-      <div class="question-results">
-        <app-question-popular-majority-algorithm-end-result *ngIf="isPopularMajorityAlgorithm"
-                                                            [eVoting]="eVoting"
-                                                            [eCounting]="eCounting"
-                                                            [isTieBreakQuestion]="false"
-                                                            [ballotNumberOfQuestions]="endResult.questionEndResults.length"
-                                                            [ballotSubType]="endResult.ballot.ballotSubType"
-                                                            [endResult]="questionEndResult">
-        </app-question-popular-majority-algorithm-end-result>
-
-        <app-question-counting-circle-algorithm-end-result *ngIf="isCountingCircleAlgorithmAlgorithm"
-                                                           [isTieBreakQuestion]="false"
-                                                           [ballotNumberOfQuestions]="endResult.questionEndResults.length"
-                                                           [endResult]="questionEndResult"
-                                                           [ballotSubType]="endResult.ballot.ballotSubType"
-                                                           [voteResultAlgorithm]="voteResultAlgorithm"
-                                                           [showAcceptedLabel]="!isPopularMajorityAlgorithm || !isCountingCircleAlgorithmAlgorithm">
-        </app-question-counting-circle-algorithm-end-result>
+    @for (questionEndResult of endResult.questionEndResults; track questionEndResult) {
+      <div>
+        <p class="whitespace-pre-wrap mb-2">
+          {{ questionEndResult.question | translateVoteQuestion: false:'question':endResult.questionEndResults.length:endResult.ballot.ballotSubType }}
+        </p>
+        <div class="question-results">
+          @if (isPopularMajorityAlgorithm) {
+            <app-question-popular-majority-algorithm-end-result
+              [eVoting]="eVoting"
+              [eCounting]="eCounting"
+              [isTieBreakQuestion]="false"
+              [ballotNumberOfQuestions]="endResult.questionEndResults.length"
+              [ballotSubType]="endResult.ballot.ballotSubType"
+              [endResult]="questionEndResult">
+            </app-question-popular-majority-algorithm-end-result>
+          }
+          @if (isCountingCircleAlgorithmAlgorithm) {
+            <app-question-counting-circle-algorithm-end-result
+              [isTieBreakQuestion]="false"
+              [ballotNumberOfQuestions]="endResult.questionEndResults.length"
+              [endResult]="questionEndResult"
+              [ballotSubType]="endResult.ballot.ballotSubType"
+              [voteResultAlgorithm]="voteResultAlgorithm"
+              [showAcceptedLabel]="!isPopularMajorityAlgorithm || !isCountingCircleAlgorithmAlgorithm">
+            </app-question-counting-circle-algorithm-end-result>
+          }
+        </div>
       </div>
-    </div>
+    }
 
-    <div *ngFor="let tieBreakQuestionEndResult of endResult.tieBreakQuestionEndResults">
-      <p class="whitespace-pre-wrap mb-2">
-        {{ tieBreakQuestionEndResult.question | translateVoteQuestion: true:'question':endResult.questionEndResults.length }}
-      </p>
-      <div class="question-results">
-        <app-question-popular-majority-algorithm-end-result *ngIf="isPopularMajorityAlgorithm"
-                                                            [eVoting]="eVoting"
-                                                            [eCounting]="eCounting"
-                                                            [isTieBreakQuestion]="true"
-                                                            [ballotNumberOfQuestions]="endResult.questionEndResults.length"
-                                                            [endResult]="tieBreakQuestionEndResult">
-        </app-question-popular-majority-algorithm-end-result>
-
-        <app-question-counting-circle-algorithm-end-result *ngIf="isCountingCircleAlgorithmAlgorithm"
-                                                           [isTieBreakQuestion]="true"
-                                                           [ballotNumberOfQuestions]="endResult.questionEndResults.length"
-                                                           [endResult]="tieBreakQuestionEndResult"
-                                                           [voteResultAlgorithm]="voteResultAlgorithm"
-                                                           [showAcceptedLabel]="!isPopularMajorityAlgorithm || !isCountingCircleAlgorithmAlgorithm">
-        </app-question-counting-circle-algorithm-end-result>
+    @for (tieBreakQuestionEndResult of endResult.tieBreakQuestionEndResults; track tieBreakQuestionEndResult) {
+      <div>
+        <p class="whitespace-pre-wrap mb-2">
+          {{ tieBreakQuestionEndResult.question | translateVoteQuestion: true:'question':endResult.questionEndResults.length }}
+        </p>
+        <div class="question-results">
+          @if (isPopularMajorityAlgorithm) {
+            <app-question-popular-majority-algorithm-end-result
+              [eVoting]="eVoting"
+              [eCounting]="eCounting"
+              [isTieBreakQuestion]="true"
+              [ballotNumberOfQuestions]="endResult.questionEndResults.length"
+              [endResult]="tieBreakQuestionEndResult">
+            </app-question-popular-majority-algorithm-end-result>
+          }
+          @if (isCountingCircleAlgorithmAlgorithm) {
+            <app-question-counting-circle-algorithm-end-result
+              [isTieBreakQuestion]="true"
+              [ballotNumberOfQuestions]="endResult.questionEndResults.length"
+              [endResult]="tieBreakQuestionEndResult"
+              [voteResultAlgorithm]="voteResultAlgorithm"
+              [showAcceptedLabel]="!isPopularMajorityAlgorithm || !isCountingCircleAlgorithmAlgorithm">
+            </app-question-counting-circle-algorithm-end-result>
+          }
+        </div>
       </div>
-    </div>
+    }
   </div>
 </div>

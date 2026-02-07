@@ -15,6 +15,7 @@ import {
   GetMajorityElectionResultBundleRequest,
   GetMajorityElectionResultBundlesRequest,
   MajorityElectionResultBundleCorrectionFinishedRequest,
+  MajorityElectionResultBundleResetToSubmissionFinishedRequest,
   MajorityElectionResultBundleSubmissionFinishedRequest,
   RejectMajorityElectionBundleReviewRequest,
   SucceedMajorityElectionBundleReviewRequest,
@@ -25,7 +26,7 @@ import {
   GetMajorityElectionResultBundleResponse,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/responses/majority_election_result_bundle_responses_pb';
 import { GrpcBackendService, GrpcEnvironment, GrpcService } from '@abraxas/voting-lib';
-import { Inject, Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Int32Value } from 'google-protobuf/google/protobuf/wrappers_pb';
 import {
   MajorityElectionBase,
@@ -48,7 +49,10 @@ import { PoliticalBusinessResultBundleService } from './political-business-resul
   providedIn: 'root',
 })
 export class MajorityElectionResultBundleService extends GrpcService<MajorityElectionResultBundleServicePromiseClient> {
-  constructor(grpcBackend: GrpcBackendService, @Inject(GRPC_ENV_INJECTION_TOKEN) env: GrpcEnvironment) {
+  constructor() {
+    const grpcBackend = inject(GrpcBackendService);
+    const env = inject<GrpcEnvironment>(GRPC_ENV_INJECTION_TOKEN);
+
     super(MajorityElectionResultBundleServicePromiseClient, env, grpcBackend);
   }
 
@@ -116,9 +120,21 @@ export class MajorityElectionResultBundleService extends GrpcService<MajorityEle
     return this.requestEmptyResp(c => c.deleteBundle, req);
   }
 
-  public async createBallot(bundleId: string, ballot: MajorityElectionResultBallot, autoEmptyVoteCount: boolean): Promise<number> {
+  public async createBallot(
+    bundleId: string,
+    ballot: MajorityElectionResultBallot,
+    autoEmptyVoteCount: boolean,
+    autoBallotNumberGeneration: boolean,
+  ): Promise<number> {
     const req = new CreateMajorityElectionResultBallotRequest();
     this.mapToBallotsRequest(req, bundleId, ballot, autoEmptyVoteCount);
+
+    if (!autoBallotNumberGeneration) {
+      const ballotNumberValue = new Int32Value();
+      ballotNumberValue.setValue(ballot.number);
+      req.setBallotNumber(ballotNumberValue);
+    }
+
     return await this.request(
       c => c.createBallot,
       req,
@@ -168,6 +184,12 @@ export class MajorityElectionResultBundleService extends GrpcService<MajorityEle
     await this.requestEmptyResp(c => c.rejectBundleReview, req);
   }
 
+  public async resetBundleToSubmissionFinished(bundleId: string): Promise<void> {
+    const req = new MajorityElectionResultBundleResetToSubmissionFinishedRequest();
+    req.setBundleId(bundleId);
+    await this.requestEmptyResp(c => c.bundleResetToSubmissionFinished, req);
+  }
+
   private mapToBundles(proto: MajorityElectionResultBundlesProto): MajorityElectionResultBundles {
     return {
       politicalBusinessResult: MajorityElectionResultService.mapToMajorityElectionResult(proto.getElectionResult()!),
@@ -187,6 +209,7 @@ export class MajorityElectionResultBundleService extends GrpcService<MajorityEle
     return {
       ...obj,
       createdBy: obj.createdBy!,
+      ballotNumbers: obj.ballotNumbersList,
       ballotNumbersToReview: obj.ballotNumbersToReviewList,
       protocolExport: this.mapToProtocolExport(proto.getProtocolExport()),
       logs: proto.getLogsList().map(x => PoliticalBusinessResultBundleService.mapToPoliticalBusinessResultBundleLog(x)),
@@ -247,6 +270,7 @@ export class MajorityElectionResultBundleService extends GrpcService<MajorityEle
         election: electionByIds[seb.electionId],
         candidates: seb.candidatesList,
       })),
+      logs: response.getLogsList().map(x => PoliticalBusinessResultBundleService.mapToPoliticalBusinessResultBallotLog(x)),
     };
   }
 

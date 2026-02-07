@@ -3,10 +3,10 @@
 
   <div content>
     <div class="shortcuts">
-      <ng-container *ngFor="let shortcut of shortcuts">
+      @for (shortcut of shortcuts; track shortcut) {
         <div>{{shortcut.text | translate}}</div>
         <div>{{shortcut.combination | translate}}</div>
-      </ng-container>
+      }
     </div>
   </div>
 

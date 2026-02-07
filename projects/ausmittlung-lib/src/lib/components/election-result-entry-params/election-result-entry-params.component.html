@@ -25,17 +25,27 @@
   [subscriptSizing]="'dynamic'"
 ></bc-number>
 <div>
-  <bc-label [label]="'ELECTION.RESULT_ENTRY.BALLOT_BUNDLE_NUMBER_GENERATION.TITLE' | translate"> </bc-label>
-  <bc-checkbox
-    [checked]="resultEntryParams.automaticBallotBundleNumberGeneration"
-    [label]="'ELECTION.RESULT_ENTRY.BALLOT_BUNDLE_NUMBER_GENERATION.AUTOMATIC' | translate"
-    (checkedChange)="updateAutomaticBallotBundleNumberGeneration($event)"
+  <bc-radio-button-group
+    [label]="'ELECTION.RESULT_ENTRY.BALLOT_BUNDLE_NUMBER_GENERATION.TITLE' | translate"
+    orientation="vertical"
+    [items]="automaticBallotBundleNumberGenerationChoices"
+    [(value)]="resultEntryParams.automaticBallotBundleNumberGeneration"
     [subscriptSizing]="'dynamic'"
   >
-  </bc-checkbox>
+  </bc-radio-button-group>
+</div>
+<div>
+  <bc-radio-button-group
+    [label]="'ELECTION.RESULT_ENTRY.BALLOT_NUMBER_GENERATION.TITLE' | translate"
+    orientation="vertical"
+    [items]="automaticBallotNumberGenerationChoices"
+    [(value)]="resultEntryParams.automaticBallotNumberGeneration"
+    [subscriptSizing]="'dynamic'"
+  >
+  </bc-radio-button-group>
 </div>
 <vo-ausm-ballot-number-generation-selector
-  [disabled]="!resultEntryParams.automaticBallotBundleNumberGeneration"
+  [disabled]="!resultEntryParams.automaticBallotNumberGeneration"
   [(ballotNumberGeneration)]="resultEntryParams.ballotNumberGeneration"
 ></vo-ausm-ballot-number-generation-selector>
 <div>
@@ -46,19 +56,21 @@
     [(value)]="resultEntryParams.automaticEmptyVoteCounting"
     [disabled]="enforceEmptyVoteCounting"
     [subscriptSizing]="'dynamic'"
-  >
+    >
   </bc-radio-button-group>
 </div>
 <div>
   <ng-content></ng-content>
 </div>
-<div *ngIf="useCandidateCheckDigit">
-  <bc-label [label]="'ELECTION.RESULT_ENTRY.CANDIDATE_CHECK_DIGIT.TITLE' | translate" [disabled]="enforceCandidateCheckDigit"></bc-label>
-  <bc-checkbox
-    [(checked)]="resultEntryParams.candidateCheckDigit"
-    [label]="'ELECTION.RESULT_ENTRY.CANDIDATE_CHECK_DIGIT.USE' | translate"
-    [disabled]="enforceCandidateCheckDigit"
-    [subscriptSizing]="'dynamic'"
-  >
-  </bc-checkbox>
-</div>
+@if (useCandidateCheckDigit) {
+  <div>
+    <bc-label [label]="'ELECTION.RESULT_ENTRY.CANDIDATE_CHECK_DIGIT.TITLE' | translate" [disabled]="enforceCandidateCheckDigit"></bc-label>
+    <bc-checkbox
+      [(checked)]="resultEntryParams.candidateCheckDigit"
+      [label]="'ELECTION.RESULT_ENTRY.CANDIDATE_CHECK_DIGIT.USE' | translate"
+      [disabled]="enforceCandidateCheckDigit"
+      [subscriptSizing]="'dynamic'"
+      >
+    </bc-checkbox>
+  </div>
+}

@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, debounceTime, map, Subscription } from 'rxjs';
 import {
@@ -13,6 +13,8 @@ import {
   SecondFactorTransactionService,
   ProportionalElectionService,
   ProportionalElectionEndResult,
+  EventLogService,
+  ProportionalElectionUnionEndResultEventTypes,
 } from 'ausmittlung-lib';
 import { DialogService, SnackbarService } from '@abraxas/voting-lib';
 import { TranslateService } from '@ngx-translate/core';
@@ -24,14 +26,18 @@ import { TranslateService } from '@ngx-translate/core';
   standalone: false,
 })
 export class ProportionalElectionUnionEndResultComponent implements OnDestroy {
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly secondFactorTransactionService = inject(SecondFactorTransactionService);
+  private readonly toast = inject(SnackbarService);
+  private readonly dialogService = inject(DialogService);
+  private readonly i18n = inject(TranslateService);
+  private readonly resultService = inject(ProportionalElectionUnionResultService);
+  private readonly eventLogService = inject(EventLogService);
+
   private readonly routeSubscription: Subscription;
 
-  public loading: boolean = false;
-  public finalizing: boolean = false;
-  public endResult?: ProportionalElectionUnionEndResult;
-  public isPartialResult = false;
-  public isUnionDoubleProportional = false;
-  public readonly columns: string[] = [
+  private readonly defaultColumns: string[] = [
     'domainOfInfluence',
     'numberOfMandates',
     'countOfVoters',
@@ -42,28 +48,44 @@ export class ProportionalElectionUnionEndResultComponent implements OnDestroy {
     'invalidBallots',
   ];
 
-  constructor(
-    private readonly route: ActivatedRoute,
-    private readonly router: Router,
-    private readonly secondFactorTransactionService: SecondFactorTransactionService,
-    private readonly toast: SnackbarService,
-    private readonly dialogService: DialogService,
-    private readonly i18n: TranslateService,
-    private readonly resultService: ProportionalElectionUnionResultService,
-  ) {
+  public loading: boolean = false;
+  public finalizing: boolean = false;
+  public endResult?: ProportionalElectionUnionEndResult;
+  public isPartialResult = false;
+  public isUnionDoubleProportional = false;
+  public isDoubleProportional = false;
+  public columns: string[] = [];
+
+  private watchSubscription?: Subscription;
+
+  constructor() {
     this.routeSubscription = combineLatest([this.route.params, this.route.queryParams])
       .pipe(
         debounceTime(10), // could fire twice if both params change at the same time
         map(results => ({ politicalBusinessUnionId: results[0].politicalBusinessUnionId, isPartialResult: results[1].partialResult })),
       )
-      .subscribe(({ politicalBusinessUnionId, isPartialResult }) => {
+      .subscribe(async ({ politicalBusinessUnionId, isPartialResult }) => {
         this.isPartialResult = isPartialResult;
-        this.loadData(politicalBusinessUnionId);
+        this.watchSubscription?.unsubscribe();
+
+        await this.loadData(politicalBusinessUnionId);
+
+        this.watchSubscription = this.eventLogService
+          .watch([...ProportionalElectionUnionEndResultEventTypes], {
+            contestId: this.endResult!.contest.id,
+            politicalBusinessUnionId,
+          })
+          .pipe(debounceTime(1000)) // refresh once a second at max
+          .subscribe(() => {
+            this.loadData(politicalBusinessUnionId);
+            this.finalizing = false;
+          });
       });
   }
 
   public ngOnDestroy(): void {
     this.routeSubscription.unsubscribe();
+    this.watchSubscription?.unsubscribe();
   }
 
   public async loadData(politicalBusinessUnionId: string): Promise<void> {
@@ -75,6 +97,10 @@ export class ProportionalElectionUnionEndResultComponent implements OnDestroy {
       this.isUnionDoubleProportional = this.endResult.proportionalElectionEndResults.some(e =>
         ProportionalElectionService.isUnionDoubleProportional(e.election.mandateAlgorithm),
       );
+      this.isDoubleProportional = this.endResult.proportionalElectionEndResults.some(e =>
+        ProportionalElectionService.isDoubleProportional(e.election.mandateAlgorithm),
+      );
+      this.refreshTableColumns();
     } finally {
       this.loading = false;
     }
@@ -109,6 +135,7 @@ export class ProportionalElectionUnionEndResultComponent implements OnDestroy {
         );
 
         if (!confirmed) {
+          this.finalizing = false;
           return;
         }
 
@@ -130,11 +157,24 @@ export class ProportionalElectionUnionEndResultComponent implements OnDestroy {
         await this.resultService.revertEndResultFinalization(this.endResult.proportionalElectionUnion.id);
         this.endResult.finalized = false;
       }
-    } finally {
+    } catch (err) {
       this.finalizing = false;
+      throw err;
     }
 
     this.toast.success(this.i18n.instant('APP.SAVED'));
     this.endResult.finalized = finalize;
+  }
+
+  private refreshTableColumns(): void {
+    if (!this.endResult) {
+      return;
+    }
+
+    this.columns = [...this.defaultColumns];
+
+    if (!this.isDoubleProportional) {
+      this.columns.push('lotDecisionState');
+    }
   }
 }

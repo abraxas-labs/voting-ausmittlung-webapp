@@ -1,13 +1,13 @@
 <div class="flex">
-  <ng-container *ngFor="let state of allStates">
+  @for (state of allStates; track state) {
     <div
       [matTooltip]="stateDescriptionsByState[state] ?? 'COUNTING_CIRCLE_RESULT_STATE.' + state | translate"
       matTooltipPosition="above"
       matTooltipShowDelay="600"
       [ngClass]="'result-state-' + state"
       class="item"
-    >
+      >
       <span>{{ resultsByState[state]?.length ?? 0 }}</span>
     </div>
-  </ng-container>
+  }
 </div>

@@ -11,6 +11,7 @@ import {
   CheckboxModule,
   DividerModule,
   DropdownModule,
+  ErrorModule,
   ExpansionPanelModule,
   FormfieldModule,
   IconModule,
@@ -18,6 +19,7 @@ import {
   LoadingBarModule,
   NumberModule,
   RadioButtonModule,
+  ReadonlyModule,
   SpinnerModule,
   StatusLabelModule,
   TableModule,
@@ -25,7 +27,7 @@ import {
   TextareaModule,
   TextModule,
   TooltipModule,
-  ErrorModule,
+  TruncateWithTooltipModule,
 } from '@abraxas/base-components';
 import { VotingLibModule } from '@abraxas/voting-lib';
 import { CommonModule } from '@angular/common';
@@ -152,6 +154,11 @@ import { ImportFileSelectComponent } from './components/result-import-dialog/imp
 import { ContestDetailCountOfVotersElectorateComponent } from './components/contest-detail/contest-detail-count-of-voters-electorate/contest-detail-count-of-voters-electorate.component';
 import { RouterLink } from '@angular/router';
 import { MajorityElectionCandidacyInfoComponent } from './components/majority-election-candidacy-info/majority-election-candidacy-info.component';
+import { BallotHistoryComponent } from './components/ballot-history/ballot-history.component';
+import { InfoIconComponent } from './components/info-icon/info-icon.component';
+import { ProportionalElectionBundleInfoComponent } from './components/proportional-election/proportional-election-bundle-info/proportional-election-bundle-info.component';
+import { MajorityElectionBundleInfoComponent } from './components/majority-election/majority-election-bundle-info/majority-election-bundle-info.component';
+import { VoteBundleInfoComponent } from './components/vote/vote-bundle-info/vote-bundle-info.component';
 
 @NgModule({
   declarations: [
@@ -182,6 +189,7 @@ import { MajorityElectionCandidacyInfoComponent } from './components/majority-el
     ProportionalElectionInfoComponent,
     ProportionalElectionBundleOverviewComponent,
     ProportionalElectionBundleTableComponent,
+    ProportionalElectionBundleInfoComponent,
     ProportionalElectionNewBundleComponent,
     BallotNavigationComponent,
     ProportionalElectionBallotComponent,
@@ -209,6 +217,7 @@ import { MajorityElectionCandidacyInfoComponent } from './components/majority-el
     MajorityElectionSecondaryInfoComponent,
     ContestMajorityElectionResultInputComponent,
     MajorityElectionBundleTableComponent,
+    MajorityElectionBundleInfoComponent,
     ContestMajorityElectionDetailDetailedComponent,
     ContestMajorityElectionDetailFinalResultsComponent,
     ContestHeaderComponent,
@@ -227,6 +236,7 @@ import { MajorityElectionCandidacyInfoComponent } from './components/majority-el
     VoteBundleOverviewComponent,
     VoteInfoComponent,
     VoteBundleTableComponent,
+    VoteBundleInfoComponent,
     VoteBallotComponent,
     VoteBallotContentComponent,
     VoteBallotQuestionAnswerComponent,
@@ -239,6 +249,7 @@ import { MajorityElectionCandidacyInfoComponent } from './components/majority-el
     ValidationResultComponent,
     ValidationSummaryComponent,
     BallotHeaderComponent,
+    BallotHistoryComponent,
     MajorityElectionWriteInMappingComponent,
     MajorityElectionWriteInMappingDialogComponent,
     ContestDetailVotingCardsElectorateComponent,
@@ -265,6 +276,7 @@ import { MajorityElectionCandidacyInfoComponent } from './components/majority-el
     ResultImportDialogComponent,
     ImportFileSelectComponent,
     MajorityElectionCandidacyInfoComponent,
+    InfoIconComponent,
   ],
   imports: [
     CommonModule,
@@ -300,6 +312,8 @@ import { MajorityElectionCandidacyInfoComponent } from './components/majority-el
     TooltipModule,
     ErrorModule,
     RouterLink,
+    ReadonlyModule,
+    TruncateWithTooltipModule,
   ],
   exports: [
     ContestDetailComponent,
@@ -329,6 +343,7 @@ import { MajorityElectionCandidacyInfoComponent } from './components/majority-el
     AdmonitionComponent,
     ResultImportListDialogComponent,
     MajorityElectionCandidacyInfoComponent,
+    InfoIconComponent,
   ],
 })
 export class AusmittlungLibModule {

@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { MajorityElectionCandidateEndResult, MajorityElectionEndResult, SecondaryMajorityElectionEndResult } from 'ausmittlung-lib';
 
@@ -14,6 +14,8 @@ import { MajorityElectionCandidateEndResult, MajorityElectionEndResult, Secondar
   standalone: false,
 })
 export class MajorityElectionEndResultCandidatesListComponent {
+  private readonly i18n = inject(TranslateService);
+
   public endResultValue?: MajorityElectionEndResult | SecondaryMajorityElectionEndResult;
   public candidateResults: MajorityElectionCandidateEndResult[] = [];
   public columns: string[] = [];
@@ -43,7 +45,7 @@ export class MajorityElectionEndResultCandidatesListComponent {
   private showEVotingColumn: boolean = false;
   private showECountingColumn: boolean = false;
 
-  constructor(private readonly i18n: TranslateService) {
+  constructor() {
     this.refreshTableColumns();
   }
 

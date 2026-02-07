@@ -5,7 +5,9 @@
   <bc-label [label]="'BALLOT_COUNT.INVALID' | translate"></bc-label>
   <bc-label [label]="'BALLOT_COUNT.VALID' | translate"></bc-label>
   <bc-label class="col-6" [label]="participationLabel | translate"></bc-label>
-  <bc-label *ngIf="hasMultipleRows" class="col-1" [label]="'VOTING_DATA_SOURCE.CONVENTIONAL' | translate"></bc-label>
+  @if (hasMultipleRows) {
+    <bc-label class="col-1" [label]="'VOTING_DATA_SOURCE.CONVENTIONAL' | translate"></bc-label>
+  }
   <bc-number
     #receivedFormfield
     [class.col-1]="!hasMultipleRows"
@@ -40,19 +42,19 @@
     (valueChange)="changed()"
     [subscriptSizing]="'dynamic'"
   ></bc-number>
-  <ng-container *ngIf="eVoting">
+  @if (eVoting) {
     <ng-container *ngTemplateOutlet="subTotal; context: {label: 'E_VOTING', subTotal: countOfVoters.eVotingSubTotal}"></ng-container>
-  </ng-container>
-  <ng-container *ngIf="eCounting">
+  }
+  @if (eCounting) {
     <ng-container *ngTemplateOutlet="subTotal; context: {label: 'E_COUNTING', subTotal: countOfVoters.eCountingSubTotal}"></ng-container>
-  </ng-container>
-  <ng-container *ngIf="hasMultipleRows">
+  }
+  @if (hasMultipleRows) {
     <bc-label class="col-1" [label]="'VOTING_DATA_SOURCE.TOTAL' | translate"></bc-label>
     <bc-number [readonly]="true" [tabIndex]="-1" [value]="countOfVoters.totalReceivedBallots" [subscriptSizing]="'dynamic'"></bc-number>
     <bc-number [readonly]="true" [tabIndex]="-1" [(value)]="countOfVoters.totalBlankBallots" [subscriptSizing]="'dynamic'"></bc-number>
     <bc-number [readonly]="true" [tabIndex]="-1" [(value)]="countOfVoters.totalInvalidBallots" [subscriptSizing]="'dynamic'"></bc-number>
     <bc-number [readonly]="true" [tabIndex]="-1" [value]="countOfVoters.totalAccountedBallots" [subscriptSizing]="'dynamic'"></bc-number>
-  </ng-container>
+  }
   <bc-text
     class="col-6"
     [readonly]="true"

@@ -6,7 +6,7 @@
 
 import { REST_API_URL } from '@abraxas/voting-lib';
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { LanguageService } from '../language.service';
 
@@ -16,10 +16,8 @@ const languageHeader = 'x-language';
   providedIn: 'root',
 })
 export class HttpLanguageInterceptor implements HttpInterceptor {
-  constructor(
-    private readonly languageService: LanguageService,
-    @Inject(REST_API_URL) private readonly restApiUrl: string | undefined,
-  ) {}
+  private readonly languageService = inject(LanguageService);
+  private readonly restApiUrl = inject(REST_API_URL);
 
   public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (!this.restApiUrl || !req.url.includes(this.restApiUrl)) {

@@ -5,10 +5,7 @@
  */
 
 import { BallotBundleState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/ballot_bundle_pb';
-import { DialogService, SnackbarService } from '@abraxas/voting-lib';
-import { Component, HostListener, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, HostListener, inject, ViewChild } from '@angular/core';
 import { ShortcutDialogComponent, ShortcutDialogData } from '../../../components/ballot-shortcut-dialog/shortcut-dialog.component';
 import { ProportionalElectionBallotContentComponent } from '../../../components/proportional-election/proportional-election-ballot-content/proportional-election-ballot-content.component';
 import {
@@ -25,9 +22,8 @@ import {
 import { ProportionalElectionResultBundleService } from '../../../services/proportional-election-result-bundle.service';
 import { ProportionalElectionResultService } from '../../../services/proportional-election-result.service';
 import { ProportionalElectionService } from '../../../services/proportional-election.service';
-import { PermissionService } from '../../../services/permission.service';
-import { UserService } from '../../../services/user.service';
 import { ElectionBallotComponent } from '../../election-ballot/election-ballot.component';
+import { BallotHeaderComponent } from '../../../components/ballot-header/ballot-header.component';
 
 @Component({
   selector: 'vo-ausm-proportional-election-ballot',
@@ -40,28 +36,24 @@ export class ProportionalElectionBallotComponent extends ElectionBallotComponent
   ProportionalElectionResultBundle,
   ProportionalElectionResultBallot
 > {
+  private readonly resultBundleService = inject(ProportionalElectionResultBundleService);
+  private readonly resultService = inject(ProportionalElectionResultService);
+  private readonly electionService = inject(ProportionalElectionService);
+  private readonly ballotUiService = inject(ProportionalElectionBallotUiService);
+
   public ballotUiData: ProportionalElectionBallotUiData = ProportionalElectionBallotUiService.newEmptyUiData();
 
   @ViewChild(ProportionalElectionBallotContentComponent)
   private proportionalElectionBallotContentComponent?: ProportionalElectionBallotContentComponent;
 
+  @ViewChild(BallotHeaderComponent)
+  private ballotHeaderComponent?: BallotHeaderComponent;
+
   private electionCandidates: ProportionalElectionCandidate[] = [];
   private listCandidates: ProportionalElectionCandidate[] = [];
 
-  constructor(
-    route: ActivatedRoute,
-    router: Router,
-    dialog: DialogService,
-    toast: SnackbarService,
-    i18n: TranslateService,
-    userService: UserService,
-    permissionService: PermissionService,
-    private readonly resultBundleService: ProportionalElectionResultBundleService,
-    private readonly resultService: ProportionalElectionResultService,
-    private readonly electionService: ProportionalElectionService,
-    private readonly ballotUiService: ProportionalElectionBallotUiService,
-  ) {
-    super(userService, route, dialog, i18n, router, toast, permissionService);
+  constructor() {
+    super();
   }
 
   public get ballotBundleSize(): number | undefined {
@@ -84,9 +76,10 @@ export class ProportionalElectionBallotComponent extends ElectionBallotComponent
       : await this.resultBundleService.getBallot(this.bundle!.id, this.ballot.number);
     this.ballotUiData = this.ballotUiService.buildUiData(
       this.electionCandidates,
+      this.politicalBusinessResult!.entryParams.automaticBallotNumberGeneration,
       this.politicalBusinessResult!.entryParams.automaticEmptyVoteCounting,
       this.politicalBusinessResult!.election.numberOfMandates,
-      this.politicalBusinessResult!.election.candidateCheckDigit,
+      this.politicalBusinessResult!.entryParams.candidateCheckDigit,
       this.ballot,
     );
     this.contentChanged();
@@ -151,13 +144,15 @@ export class ProportionalElectionBallotComponent extends ElectionBallotComponent
     this.dialog.open(ShortcutDialogComponent, data);
   }
 
-  protected async createNewBallot(): Promise<ProportionalElectionResultBallot> {
-    this.ballot = this.ballotUiService.newBallot(this.currentMaxBallotNumber, this.listCandidates);
+  protected newBallot(): ProportionalElectionResultBallot {
+    const ballotNumber = this.politicalBusinessResult!.entryParams.automaticBallotNumberGeneration ? this.currentMaxBallotNumber : 0;
+    this.ballot = this.ballotUiService.newBallot(ballotNumber, this.listCandidates);
     this.ballotUiData = this.ballotUiService.buildUiData(
       this.electionCandidates,
+      this.politicalBusinessResult!.entryParams.automaticBallotNumberGeneration,
       this.politicalBusinessResult!.entryParams.automaticEmptyVoteCounting,
       this.politicalBusinessResult!.election.numberOfMandates,
-      this.politicalBusinessResult!.election.candidateCheckDigit,
+      this.politicalBusinessResult!.entryParams.candidateCheckDigit,
       this.ballot,
     );
     return this.ballot;
@@ -182,9 +177,10 @@ export class ProportionalElectionBallotComponent extends ElectionBallotComponent
     this.ballot = await this.resultBundleService.getBallot(bundleId, ballotNumber);
     this.ballotUiData = this.ballotUiService.buildUiData(
       this.electionCandidates,
+      this.politicalBusinessResult!.entryParams.automaticBallotNumberGeneration,
       this.politicalBusinessResult!.entryParams.automaticEmptyVoteCounting,
       this.politicalBusinessResult!.election.numberOfMandates,
-      this.politicalBusinessResult!.election.candidateCheckDigit,
+      this.politicalBusinessResult!.entryParams.candidateCheckDigit,
       this.ballot,
     );
   }
@@ -193,10 +189,12 @@ export class ProportionalElectionBallotComponent extends ElectionBallotComponent
     this.politicalBusinessResult = await this.resultService.getByResultId(resultId);
     this.bundle = {
       countOfBallots: 0,
+      countOfModifiedBallots: 0,
       id: bundleId,
       state: BallotBundleState.BALLOT_BUNDLE_STATE_IN_PROCESS,
       number: this.route.snapshot.queryParams.bundleNumber,
       createdBy: await this.userService.getUser(),
+      ballotNumbers: [],
       ballotNumbersToReview: [],
       logs: [],
     };
@@ -209,7 +207,7 @@ export class ProportionalElectionBallotComponent extends ElectionBallotComponent
   }
 
   protected saveNewBallot(bundle: ProportionalElectionResultBundle, ballot: ProportionalElectionResultBallot): Promise<number> {
-    return this.resultBundleService.createBallot(bundle.id, this.ballotUiData);
+    return this.resultBundleService.createBallot(bundle.id, ballot.number, this.ballotUiData);
   }
 
   protected updateBallot(bundle: ProportionalElectionResultBundle, ballot: ProportionalElectionResultBallot): Promise<void> {
@@ -231,7 +229,11 @@ export class ProportionalElectionBallotComponent extends ElectionBallotComponent
   }
 
   protected setFocus(): void {
-    this.proportionalElectionBallotContentComponent?.setFocus();
+    if (this.ballotUiData.automaticBallotNumberGeneration) {
+      this.proportionalElectionBallotContentComponent?.setFocus();
+    } else {
+      this.ballotHeaderComponent?.setFocus();
+    }
   }
 
   protected async validateBallot(): Promise<boolean> {

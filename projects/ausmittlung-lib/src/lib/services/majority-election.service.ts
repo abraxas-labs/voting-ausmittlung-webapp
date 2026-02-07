@@ -10,7 +10,7 @@ import {
   ListSecondaryMajorityElectionCandidatesRequest,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/majority_election_requests_pb';
 import { GrpcBackendService, GrpcEnvironment, GrpcService } from '@abraxas/voting-lib';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   MajorityElection,
   MajorityElectionCandidate,
@@ -30,7 +30,10 @@ export class MajorityElectionService extends GrpcService<MajorityElectionService
   private candidatesCache: { [id: string]: MajorityElectionCandidates } = {};
   private secondaryCandidatesCache: { [id: string]: MajorityElectionCandidate[] } = {};
 
-  constructor(grpcBackend: GrpcBackendService, @Inject(GRPC_ENV_INJECTION_TOKEN) env: GrpcEnvironment) {
+  constructor() {
+    const grpcBackend = inject(GrpcBackendService);
+    const env = inject<GrpcEnvironment>(GRPC_ENV_INJECTION_TOKEN);
+
     super(MajorityElectionServicePromiseClient, env, grpcBackend);
   }
 

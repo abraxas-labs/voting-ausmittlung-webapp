@@ -5,7 +5,7 @@
  */
 
 import { DialogService, SnackbarService } from '@abraxas/voting-lib';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ResultImportDialogComponent, ResultImportDialogData } from '../result-import-dialog/result-import-dialog.component';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -22,6 +22,12 @@ export type ResultImportListDialogResult = 'imported' | 'deleted' | undefined;
   standalone: false,
 })
 export class ResultImportListDialogComponent implements OnInit {
+  private readonly resultImportService = inject(ResultImportService);
+  private readonly dialogService = inject(DialogService);
+  private readonly toast = inject(SnackbarService);
+  private readonly i18n = inject(TranslateService);
+  private readonly dialogRef = inject<MatDialogRef<ResultImportListDialogData>>(MatDialogRef);
+
   public readonly columns = ['fileName', 'importType', 'startedBy', 'started'];
   public loading: boolean = true;
   public resultImports: ResultImport[] = [];
@@ -33,14 +39,9 @@ export class ResultImportListDialogComponent implements OnInit {
   private readonly canImport: boolean;
   public readonly canDeleteImport: boolean;
 
-  constructor(
-    private readonly resultImportService: ResultImportService,
-    private readonly dialogService: DialogService,
-    private readonly toast: SnackbarService,
-    private readonly i18n: TranslateService,
-    private readonly dialogRef: MatDialogRef<ResultImportListDialogData>,
-    @Inject(MAT_DIALOG_DATA) dialogData: ResultImportListDialogData,
-  ) {
+  constructor() {
+    const dialogData = inject<ResultImportListDialogData>(MAT_DIALOG_DATA);
+
     this.importType = dialogData.importType;
     this.contestId = dialogData.contestId;
     this.countingCircleId = dialogData.countingCircleId;
@@ -48,7 +49,7 @@ export class ResultImportListDialogComponent implements OnInit {
     this.canImport = dialogData.canImport;
 
     if (this.importType == ResultImportType.RESULT_IMPORT_TYPE_EVOTING) {
-      this.columns.push('importedCountingCircles', 'ignoredCountingCircles');
+      this.columns.push('importedCountingCircles', 'emptyCountingCircles', 'ignoredCountingCircles');
     }
   }
 

@@ -6,7 +6,7 @@
 
 import { CountingCircleResultState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/counting_circle_pb';
 import { SnackbarService, ThemeService } from '@abraxas/voting-lib';
-import { Component, HostListener, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, QueryList, ViewChildren, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -25,6 +25,13 @@ import { HasUnsavedChanges } from '../../../services/guards/has-unsaved-changes.
   standalone: false,
 })
 export class MajorityElectionBallotGroupsComponent implements OnInit, OnDestroy, HasUnsavedChanges {
+  private readonly permissionService = inject(PermissionService);
+  private readonly i18n = inject(TranslateService);
+  private readonly toast = inject(SnackbarService);
+  private readonly router = inject(Router);
+  private readonly resultService = inject(MajorityElectionResultService);
+  private readonly themeService = inject(ThemeService);
+
   @HostListener('window:beforeunload')
   public beforeUnload(): boolean {
     return !this.hasChanges;
@@ -45,15 +52,9 @@ export class MajorityElectionBallotGroupsComponent implements OnInit, OnDestroy,
 
   private readonly routeParamsSubscription: Subscription;
 
-  constructor(
-    private readonly permissionService: PermissionService,
-    private readonly i18n: TranslateService,
-    private readonly toast: SnackbarService,
-    private readonly router: Router,
-    private readonly resultService: MajorityElectionResultService,
-    private readonly themeService: ThemeService,
-    route: ActivatedRoute,
-  ) {
+  constructor() {
+    const route = inject(ActivatedRoute);
+
     this.routeParamsSubscription = route.params.subscribe(({ resultId }) => this.loadData(resultId));
   }
 

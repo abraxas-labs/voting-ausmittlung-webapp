@@ -53,6 +53,7 @@ export const VoteResultBundleEventTypes = [
   'VoteResultBundleReviewRejected',
   'VoteResultBundleSubmissionFinished',
   'VoteResultBundleCorrectionFinished',
+  'VoteResultBundleResetToSubmissionFinished',
   'VoteResultBallotCreated',
   'VoteResultBallotUpdated',
   'VoteResultBallotDeleted',
@@ -103,6 +104,7 @@ export const ProportionalElectionResultBundleEventTypes = [
   'ProportionalElectionResultBundleReviewRejected',
   'ProportionalElectionResultBundleSubmissionFinished',
   'ProportionalElectionResultBundleCorrectionFinished',
+  'ProportionalElectionResultBundleResetToSubmissionFinished',
   'ProportionalElectionResultBallotCreated',
   'ProportionalElectionResultBallotUpdated',
   'ProportionalElectionResultBallotDeleted',
@@ -158,6 +160,7 @@ export const MajorityElectionResultBundleEventTypes = [
   'MajorityElectionResultBundleReviewRejected',
   'MajorityElectionResultBundleSubmissionFinished',
   'MajorityElectionResultBundleCorrectionFinished',
+  'MajorityElectionResultBundleResetToSubmissionFinished',
   'MajorityElectionResultBallotCreated',
   'MajorityElectionResultBallotUpdated',
   'MajorityElectionResultBallotDeleted',
@@ -217,6 +220,15 @@ export type MajorityElectionEventType =
   | MajorityElectionWriteInEventType
   | MajorityElectionEndResultEventType;
 
+export const ProportionalElectionUnionEndResultEventTypes = [
+  'ProportionalElectionUnionEndResultFinalized',
+  'ProportionalElectionUnionEndResultFinalizationReverted',
+  'ProportionalElectionUnionDoubleProportionalSuperApportionmentLotDecisionUpdated',
+  'ProportionalElectionUnionDoubleProportionalSubApportionmentLotDecisionUpdated',
+] as const;
+
+export type ProportionalElectionUnionEndResultEventType = (typeof ProportionalElectionUnionEndResultEventTypes)[number];
+
 export const ResultStateEventTypes = [
   ...VoteResultStateEventTypes,
   ...ProportionalElectionResultStateEventTypes,
@@ -224,15 +236,18 @@ export const ResultStateEventTypes = [
 ] as const;
 export type ResultStateEventType = (typeof ResultStateEventTypes)[number];
 
+export const ResultImportCompletedEvent = 'ResultImportCompleted';
 type ImportEventType = 'ResultImportCountingCircleCompleted';
+export type ResultImportEventType = typeof ResultImportCompletedEvent | ImportEventType;
 
 type MiscEventType = '_reconnectAttempt';
 
 export const EventTypePrefix: string = 'abraxas.voting.ausmittlung.events.v1.';
 export type EventType =
   | MiscEventType
-  | ImportEventType
   | ProtocolEventType
+  | ResultImportEventType
   | VoteEventType
   | ProportionalElectionEventType
-  | MajorityElectionEventType;
+  | MajorityElectionEventType
+  | ProportionalElectionUnionEndResultEventType;

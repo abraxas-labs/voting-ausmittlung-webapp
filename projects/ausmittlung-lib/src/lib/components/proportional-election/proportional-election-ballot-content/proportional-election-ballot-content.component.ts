@@ -5,7 +5,7 @@
  */
 
 import { DialogService } from '@abraxas/voting-lib';
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
 import { ProportionalElectionBallotCandidate, ProportionalElectionResult, ProportionalElectionResultBallot } from '../../../models';
 import {
   ProportionalElectionBallotUiData,
@@ -29,6 +29,9 @@ import {
   standalone: false,
 })
 export class ProportionalElectionBallotContentComponent {
+  private readonly ballotUiService = inject(ProportionalElectionBallotUiService);
+  private readonly dialogService = inject(DialogService);
+
   @Input()
   public ballot!: ProportionalElectionResultBallot;
 
@@ -50,19 +53,11 @@ export class ProportionalElectionBallotContentComponent {
   @Output()
   public contentChanged: EventEmitter<void> = new EventEmitter<void>();
 
-  @Output()
-  public contentCompleted: EventEmitter<KeyboardEvent> = new EventEmitter<KeyboardEvent>();
-
   @ViewChild(ProportionalElectionBallotCandidateModifyComponent)
   private proportionalElectionBallotCandidateModifyComponent?: ProportionalElectionBallotCandidateModifyComponent;
 
   @ViewChild(ProportionalElectionBallotCandidatesComponent)
   private proportionalElectionBallotCandidatesComponent?: ProportionalElectionBallotCandidatesComponent;
-
-  constructor(
-    private readonly ballotUiService: ProportionalElectionBallotUiService,
-    private readonly dialogService: DialogService,
-  ) {}
 
   public async removeCandidateAtPosition({ position, listCandidate }: CandidatePositionEvent): Promise<void> {
     this.ballotUiService.removeCandidateAtPosition(position, listCandidate, this.ballotUiData);

@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { DialogService, SnackbarService } from '@abraxas/voting-lib';
 import { TranslateService } from '@ngx-translate/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -27,6 +27,12 @@ import {
   standalone: false,
 })
 export class ProportionalElectionListLotDecisionsDialogComponent {
+  private readonly dialogRef = inject<MatDialogRef<ProportionalElectionManualEndResultDialogData>>(MatDialogRef);
+  private readonly resultService = inject(ProportionalElectionResultService);
+  private readonly toast = inject(SnackbarService);
+  private readonly i18n = inject(TranslateService);
+  private readonly dialogService = inject(DialogService);
+
   public readonly columns = ['lists', 'winners', 'actions'];
 
   public loading: boolean = false;
@@ -35,14 +41,9 @@ export class ProportionalElectionListLotDecisionsDialogComponent {
   public listLotDecisions: ProportionalElectionEndResultListLotDecision[];
   public dataSource = new TableDataSource<ListLotDecisionType>();
 
-  constructor(
-    private readonly dialogRef: MatDialogRef<ProportionalElectionManualEndResultDialogData>,
-    private readonly resultService: ProportionalElectionResultService,
-    private readonly toast: SnackbarService,
-    private readonly i18n: TranslateService,
-    private readonly dialogService: DialogService,
-    @Inject(MAT_DIALOG_DATA) dialogData: ProportionalElectionListLotDecisionsDialogData,
-  ) {
+  constructor() {
+    const dialogData = inject<ProportionalElectionListLotDecisionsDialogData>(MAT_DIALOG_DATA);
+
     this.proportionalElectionId = dialogData.proportionalElectionId;
     this.lists = dialogData.lists;
     this.listLotDecisions = dialogData.listLotDecisions;

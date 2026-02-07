@@ -9,67 +9,80 @@
       <bc-status-label class="center" [label]="'DOMAIN_OF_INFLUENCE_TYPES.' + result.politicalBusiness.domainOfInfluence?.type | translate"></bc-status-label>
     </div>
     <div class="spacer"></div>
-    <ng-container [ngSwitch]="result.politicalBusiness.businessType">
-      <vo-ausm-contest-proportional-election-detail-header
-        *ngSwitchCase="politicalBusinessType.POLITICAL_BUSINESS_TYPE_PROPORTIONAL_ELECTION"
+    @switch (result.politicalBusiness.businessType) {
+      @case (politicalBusinessType.POLITICAL_BUSINESS_TYPE_PROPORTIONAL_ELECTION) {
+        <vo-ausm-contest-proportional-election-detail-header
         [election]="result.politicalBusiness"></vo-ausm-contest-proportional-election-detail-header>
-      <vo-ausm-contest-majority-election-detail-header
-        *ngSwitchCase="politicalBusinessType.POLITICAL_BUSINESS_TYPE_MAJORITY_ELECTION"
+      }
+      @case (politicalBusinessType.POLITICAL_BUSINESS_TYPE_MAJORITY_ELECTION) {
+        <vo-ausm-contest-majority-election-detail-header
         [election]="result.politicalBusiness"></vo-ausm-contest-majority-election-detail-header>
-    </ng-container>
+      }
+    }
     <div class="header-icon mr-2">
-      <bc-icon *ngIf="result.hasComments"
-               (click)="openComments(); $event.stopPropagation()"
-               icon="comment"></bc-icon>
+      @if (result.hasComments) {
+        <bc-icon
+          (click)="openComments(); $event.stopPropagation()"
+          icon="comment"></bc-icon>
+      }
     </div>
     <vo-ausm-result-state-box [state]="result.state"
-                              [timestamp]="(result.state === states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY ? result.auditedTentativelyTimestamp : (result.state === states.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED ? result.plausibilisedTimestamp : (result.state === states.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION ? result.readyForCorrectionTimestamp : result.submissionDoneTimestamp)))"
-                              [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"></vo-ausm-result-state-box>
+      [timestamp]="(result.state === states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY ? result.auditedTentativelyTimestamp : (result.state === states.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED ? result.plausibilisedTimestamp : (result.state === states.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION ? result.readyForCorrectionTimestamp : result.submissionDoneTimestamp)))"
+      [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"></vo-ausm-result-state-box>
   </div>
 
-  <div *ngIf="!contentReadonly || (result.state !== states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING && result.state !== states.COUNTING_CIRCLE_RESULT_STATE_INITIAL); else resultNotSubmitted">
-    <div *ngIf="result.politicalBusiness.active; else businessNotActive"
-         [ngSwitch]="result.politicalBusiness.businessType">
-      <vo-ausm-contest-vote-detail *ngSwitchCase="politicalBusinessType.POLITICAL_BUSINESS_TYPE_VOTE"
-                                   [contentReadonly]="contentReadonly"
-                                   [contestLocked]="contestLocked"
-                                   [isResponsibleMonitorAuthority]="isResponsibleMonitorAuthority"
-                                   [contestCountingCircleDetails]="contestCountingCircleDetails"
-                                   [eVoting]="contestCountingCircleDetails.eVoting"
-                                   [eCounting]="contestCountingCircleDetails.eCounting"
-                                   [countingCircleId]="contestCountingCircleDetails.countingCircleId"
-                                   [result]="result"
-                                   [contestCantonDefaults]="contestCantonDefaults"></vo-ausm-contest-vote-detail>
-      <vo-ausm-contest-proportional-election-detail *ngSwitchCase="politicalBusinessType.POLITICAL_BUSINESS_TYPE_PROPORTIONAL_ELECTION"
-                                                    [contentReadonly]="contentReadonly"
-                                                    [contestLocked]="contestLocked"
-                                                    [isResponsibleMonitorAuthority]="isResponsibleMonitorAuthority"
-                                                    [contestCountingCircleDetails]="contestCountingCircleDetails"
-                                                    [eVoting]="contestCountingCircleDetails.eVoting"
-                                                    [eCounting]="contestCountingCircleDetails.eCounting"
-                                                    [countingCircleId]="contestCountingCircleDetails.countingCircleId"
-                                                    [result]="result"
-                                                    [contestCantonDefaults]="contestCantonDefaults"></vo-ausm-contest-proportional-election-detail>
-      <vo-ausm-contest-majority-election-detail *ngSwitchCase="politicalBusinessType.POLITICAL_BUSINESS_TYPE_MAJORITY_ELECTION"
-                                                [contentReadonly]="contentReadonly"
-                                                [contestLocked]="contestLocked"
-                                                [isResponsibleMonitorAuthority]="isResponsibleMonitorAuthority"
-                                                [contestCountingCircleDetails]="contestCountingCircleDetails"
-                                                [eVoting]="contestCountingCircleDetails.eVoting"
-                                                [eCounting]="contestCountingCircleDetails.eCounting"
-                                                [countingCircleId]="contestCountingCircleDetails.countingCircleId"
-                                                [result]="result"
-                                                [contestCantonDefaults]="contestCantonDefaults"></vo-ausm-contest-majority-election-detail>
+  @if (!contentReadonly || (result.state !== states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING && result.state !== states.COUNTING_CIRCLE_RESULT_STATE_INITIAL)) {
+    <div>
+      @if (result.politicalBusiness.active) {
+        <div
+          >
+          @switch (result.politicalBusiness.businessType) {
+            @case (politicalBusinessType.POLITICAL_BUSINESS_TYPE_VOTE) {
+              <vo-ausm-contest-vote-detail
+                [contentReadonly]="contentReadonly"
+                [contestLocked]="contestLocked"
+                [isResponsibleMonitorAuthority]="isResponsibleMonitorAuthority"
+                [contestCountingCircleDetails]="contestCountingCircleDetails"
+                [eVoting]="contestCountingCircleDetails.eVoting"
+                [eCounting]="contestCountingCircleDetails.eCounting"
+                [countingCircleId]="contestCountingCircleDetails.countingCircleId"
+                [result]="result"
+                [contestCantonDefaults]="contestCantonDefaults"></vo-ausm-contest-vote-detail>
+            }
+            @case (politicalBusinessType.POLITICAL_BUSINESS_TYPE_PROPORTIONAL_ELECTION) {
+              <vo-ausm-contest-proportional-election-detail
+                [contentReadonly]="contentReadonly"
+                [contestLocked]="contestLocked"
+                [isResponsibleMonitorAuthority]="isResponsibleMonitorAuthority"
+                [contestCountingCircleDetails]="contestCountingCircleDetails"
+                [eVoting]="contestCountingCircleDetails.eVoting"
+                [eCounting]="contestCountingCircleDetails.eCounting"
+                [countingCircleId]="contestCountingCircleDetails.countingCircleId"
+                [result]="result"
+                [contestCantonDefaults]="contestCantonDefaults"></vo-ausm-contest-proportional-election-detail>
+            }
+            @case (politicalBusinessType.POLITICAL_BUSINESS_TYPE_MAJORITY_ELECTION) {
+              <vo-ausm-contest-majority-election-detail
+                [contentReadonly]="contentReadonly"
+                [contestLocked]="contestLocked"
+                [isResponsibleMonitorAuthority]="isResponsibleMonitorAuthority"
+                [contestCountingCircleDetails]="contestCountingCircleDetails"
+                [eVoting]="contestCountingCircleDetails.eVoting"
+                [eCounting]="contestCountingCircleDetails.eCounting"
+                [countingCircleId]="contestCountingCircleDetails.countingCircleId"
+                [result]="result"
+                [contestCantonDefaults]="contestCantonDefaults"></vo-ausm-contest-majority-election-detail>
+            }
+          }
+        </div>
+      } @else {
+        <div class="mb-2">
+          {{'CONTEST.DETAIL.NOT_ACTIVE' | translate}}
+        </div>
+      }
     </div>
-
-    <ng-template #businessNotActive>
-      <div class="mb-2">
-        {{'CONTEST.DETAIL.NOT_ACTIVE' | translate}}
-      </div>
-    </ng-template>
-  </div>
-
-  <ng-template #resultNotSubmitted>
+  } @else {
     <p>{{'POLITICAL_BUSINESS.NOT_SUBMITTED' | translate}}</p>
-  </ng-template>
+  }
+
 </bc-expansion-panel>

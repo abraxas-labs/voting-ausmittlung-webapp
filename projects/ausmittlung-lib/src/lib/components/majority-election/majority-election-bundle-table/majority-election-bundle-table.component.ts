@@ -6,10 +6,7 @@
 
 import { MajorityElectionReviewProcedure } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/majority_election_pb';
 import { AfterViewInit, Component, Input } from '@angular/core';
-import { PermissionService } from '../../../services/permission.service';
-import { UserService } from '../../../services/user.service';
 import { ResultBundleTableComponent } from '../../result-bundle-table/result-bundle-table-component.directive';
-import { EnumUtil } from '@abraxas/voting-lib';
 import { ProtocolExportState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/export_pb';
 
 @Component({
@@ -25,6 +22,7 @@ export class MajorityElectionBundleTableComponent extends ResultBundleTableCompo
     this.bundleSizeColumn,
     this.createdByColumn,
     this.countOfBallotsColumn,
+    this.countOfModifiedBallotsColumn,
     this.stateColumn,
     this.reviewedByColumn,
     this.reviewColumn,
@@ -36,16 +34,12 @@ export class MajorityElectionBundleTableComponent extends ResultBundleTableCompo
   @Input()
   public reviewProcedure?: MajorityElectionReviewProcedure;
 
-  constructor(userService: UserService, roleService: PermissionService, enumUtil: EnumUtil) {
-    super(userService, roleService, enumUtil);
+  constructor() {
+    super();
   }
 
   public override ngAfterViewInit(): void {
     super.ngAfterViewInit();
-
-    if (!this.enableReviewColumn) {
-      this.columns.splice(this.columns.length - 2, 1);
-    }
 
     if (!this.enableActions) {
       this.columns.splice(this.columns.length - 1, 1);

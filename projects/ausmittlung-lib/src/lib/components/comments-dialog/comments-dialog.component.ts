@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Comment } from '../../models';
 import { ResultService } from '../../services/result.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -16,16 +16,17 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   standalone: false,
 })
 export class CommentsDialogComponent implements OnInit {
+  private readonly resultService = inject(ResultService);
+  private readonly dialogRef = inject<MatDialogRef<CommentsDialogComponentData>>(MatDialogRef);
+
   public loading: boolean = true;
   public comments: Comment[] = [];
 
   private readonly resultId: string;
 
-  constructor(
-    private readonly resultService: ResultService,
-    private readonly dialogRef: MatDialogRef<CommentsDialogComponentData>,
-    @Inject(MAT_DIALOG_DATA) dialogData: CommentsDialogComponentData,
-  ) {
+  constructor() {
+    const dialogData = inject<CommentsDialogComponentData>(MAT_DIALOG_DATA);
+
     this.resultId = dialogData.resultId;
   }
 

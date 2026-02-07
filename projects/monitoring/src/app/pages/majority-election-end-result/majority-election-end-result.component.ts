@@ -5,20 +5,17 @@
  */
 
 import { DialogService, SnackbarService } from '@abraxas/voting-lib';
-import { Component, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnDestroy, inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import {
-  groupBySingle,
-  MajorityElectionCandidateEndResult,
   MajorityElectionEndResult,
-  MajorityElectionEndResultLotDecision,
   MajorityElectionResultService,
   SecondFactorTransactionService,
   MajorityElectionEndResultEventTypes,
   EventLogService,
 } from 'ausmittlung-lib';
-import { combineLatest, debounce, debounceTime, map, Subscription } from 'rxjs';
+import { combineLatest, debounceTime, map, Subscription } from 'rxjs';
 import {
   MajorityElectionLotDecisionDialogComponent,
   MajorityElectionLotDecisionDialogData,
@@ -33,6 +30,15 @@ import { EndResultStep } from '../../models/end-result-step.model';
   standalone: false,
 })
 export class MajorityElectionEndResultComponent implements OnDestroy {
+  private readonly route = inject(ActivatedRoute);
+  private readonly resultService = inject(MajorityElectionResultService);
+  private readonly dialogService = inject(DialogService);
+  private readonly i18n = inject(TranslateService);
+  private readonly toast = inject(SnackbarService);
+  private readonly secondFactorTransactionService = inject(SecondFactorTransactionService);
+  private readonly eventLogService = inject(EventLogService);
+  private readonly router = inject(Router);
+
   public loading: boolean = true;
   public stepActionLoading: boolean = false;
   public endResult?: MajorityElectionEndResult;
@@ -43,25 +49,22 @@ export class MajorityElectionEndResultComponent implements OnDestroy {
   public endResultStep?: EndResultStep;
   public finalizeEnabled = false;
   public lotDecisionProcessing = false;
+  public showExport = false;
 
   private readonly routeSubscription: Subscription;
   private watchSubscription?: Subscription;
 
-  constructor(
-    private readonly route: ActivatedRoute,
-    private readonly resultService: MajorityElectionResultService,
-    private readonly dialogService: DialogService,
-    private readonly i18n: TranslateService,
-    private readonly toast: SnackbarService,
-    private readonly secondFactorTransactionService: SecondFactorTransactionService,
-    private readonly eventLogService: EventLogService,
-  ) {
+  constructor() {
     this.routeSubscription = combineLatest([this.route.params, this.route.queryParams])
       .pipe(
         debounceTime(10), // could fire twice if both params change at the same time
-        map(([params, queryParams]) => ({ politicalBusinessId: params.politicalBusinessId, isPartialResult: queryParams.partialResult })),
+        map(([params, queryParams]) => ({
+          politicalBusinessId: params.politicalBusinessId,
+          isPartialResult: queryParams.partialResult,
+          submissionFinishedAndAuditedTentatively: queryParams.submissionFinishedAndAuditedTentatively,
+        })),
       )
-      .subscribe(async ({ politicalBusinessId, isPartialResult }) => {
+      .subscribe(async ({ politicalBusinessId, isPartialResult, submissionFinishedAndAuditedTentatively }) => {
         this.isPartialResult = isPartialResult;
         this.majorityElectionId = politicalBusinessId;
 
@@ -69,6 +72,10 @@ export class MajorityElectionEndResultComponent implements OnDestroy {
         delete this.watchSubscription;
 
         await this.loadData();
+
+        if (!!submissionFinishedAndAuditedTentatively && this.showExport) {
+          this.router.navigate(['../../', 'contests', this.endResult!.contest.id, 'exports'], { relativeTo: this.route });
+        }
 
         this.watchSubscription = this.eventLogService
           .watch([...MajorityElectionEndResultEventTypes], {
@@ -115,6 +122,8 @@ export class MajorityElectionEndResultComponent implements OnDestroy {
       if (success) {
         this.endResultStep = newStep;
       }
+
+      this.updateShowExport();
     } finally {
       this.stepActionLoading = false;
     }
@@ -205,8 +214,17 @@ export class MajorityElectionEndResultComponent implements OnDestroy {
         : !this.endResult.finalized || !this.finalizeEnabled
           ? EndResultStep.AllCountingCirclesDone
           : EndResultStep.Finalized;
+      this.updateShowExport();
     } finally {
       this.loading = false;
     }
+
+    if (this.hasOpenRequiredLotDecisions && !this.endResult.contest.locked) {
+      await this.openUpdateLotDecisions();
+    }
+  }
+
+  private updateShowExport(): void {
+    this.showExport = !this.hasOpenRequiredLotDecisions && this.endResult!.finalized;
   }
 }

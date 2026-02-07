@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ContestSummary } from 'ausmittlung-lib';
 
@@ -15,10 +15,8 @@ import { ContestSummary } from 'ausmittlung-lib';
   standalone: false,
 })
 export class MonitoringContestOverviewComponent {
-  constructor(
-    private readonly router: Router,
-    private readonly route: ActivatedRoute,
-  ) {}
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   public async openDetail(contest: ContestSummary): Promise<void> {
     await this.router.navigate([contest.id], { relativeTo: this.route });

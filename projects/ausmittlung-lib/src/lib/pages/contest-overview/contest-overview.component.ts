@@ -5,7 +5,7 @@
  */
 
 import { ContestState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/contest_pb';
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
 import { ContestSummary } from '../../models';
 import { ContestService } from '../../services/contest.service';
 
@@ -16,6 +16,8 @@ import { ContestService } from '../../services/contest.service';
   standalone: false,
 })
 export class ContestOverviewComponent implements OnInit {
+  private readonly contestService = inject(ContestService);
+
   @Output()
   public openDetail: EventEmitter<ContestSummary> = new EventEmitter<ContestSummary>();
 
@@ -23,8 +25,6 @@ export class ContestOverviewComponent implements OnInit {
   public contests: ContestSummary[] = [];
   public pastContests: ContestSummary[] = [];
   public archivedContests: ContestSummary[] = [];
-
-  constructor(private readonly contestService: ContestService) {}
 
   public async ngOnInit(): Promise<void> {
     try {

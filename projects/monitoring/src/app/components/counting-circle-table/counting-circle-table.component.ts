@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { AfterViewInit, Component, Input, OnChanges, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnChanges, OnInit, ViewChild, inject } from '@angular/core';
 import { Column, ColumnsComponent, FilterDirective, SortDirective, TableDataSource } from '@abraxas/base-components';
 import { EnumItemDescription, EnumUtil } from '@abraxas/voting-lib';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -27,6 +27,12 @@ import { StorageService } from '../../services/storage.service';
   standalone: false,
 })
 export class CountingCircleTableComponent implements OnInit, AfterViewInit, OnChanges {
+  private readonly enumUtil = inject(EnumUtil);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly i18n = inject(TranslateService);
+  private readonly storageService = inject(StorageService);
+
   public readonly countingCircleResultState: typeof CountingCircleResultState = CountingCircleResultState;
   public readonly votingChannel: typeof VotingChannel = VotingChannel;
 
@@ -175,14 +181,6 @@ export class CountingCircleTableComponent implements OnInit, AfterViewInit, OnCh
   public stateList: EnumItemDescription<CountingCircleResultState>[] = [];
 
   private initializingColumns: boolean = true;
-
-  constructor(
-    private readonly enumUtil: EnumUtil,
-    private readonly router: Router,
-    private readonly route: ActivatedRoute,
-    private readonly i18n: TranslateService,
-    private readonly storageService: StorageService,
-  ) {}
 
   public ngOnInit(): void {
     this.stateList = this.enumUtil.getArrayWithDescriptions<CountingCircleResultState>(

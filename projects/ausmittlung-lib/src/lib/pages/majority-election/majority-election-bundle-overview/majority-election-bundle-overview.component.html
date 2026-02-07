@@ -1,40 +1,39 @@
 <vo-lib-page [contentLoading]="loading"
-             header="ELECTION.BUNDLE_OVERVIEW">
-  <ng-container *ngIf="result">
+  header="ELECTION.BUNDLE_OVERVIEW">
+  @if (result) {
     <vo-ausm-majority-election-info [electionResult]="result.politicalBusinessResult"></vo-ausm-majority-election-info>
     <div class="my-4">
       <div class="shortcut-container">
         <bc-icon class="clickable-icon" size="2rem" icon="question-circle-o" (click)="showShortcutDialog()"></bc-icon>
       </div>
-
       <vo-ausm-majority-election-bundle-table [bundles]="result.bundles"
-                                              [bundleSize]="result.politicalBusinessResult.entryParams!.ballotBundleSize"
-                                              [rowSelectable]="true"
-                                              [enablePagination]="true"
-                                              [enableActions]="true"
-                                              [enableFiltering]="true"
-                                              [enableSorting]="true"
-                                              [readOnly]="resultReadOnly"
-                                              (openDetail)="openBundle($event)"
-                                              (reviewBundle)="reviewBundle($event)"
-                                              (succeedBundleReview)="succeedBundleReview($event)"
-                                              (rejectBundleReview)="rejectBundleReview($event)"
-                                              (deleteBundle)="deleteBundle($event)"
-                                              (generateBundleReviewExport)="generateBundleReviewExport($event)"
-                                              (downloadBundleReviewExport)="downloadBundleReviewExport($event)"
-                                              [reviewProcedure]="result.politicalBusinessResult.entryParams?.reviewProcedure"
-                                              [enableReviewMultiple]="result.politicalBusinessResult.entryParams?.reviewProcedure === reviewProcedures.MAJORITY_ELECTION_REVIEW_PROCEDURE_PHYSICALLY"
-                                              [enableReviewColumn]="result.politicalBusinessResult.entryParams?.reviewProcedure === reviewProcedures.MAJORITY_ELECTION_REVIEW_PROCEDURE_PHYSICALLY">
+        [bundleSize]="result.politicalBusinessResult.entryParams!.ballotBundleSize"
+        [rowSelectable]="true"
+        [enablePagination]="true"
+        [enableActions]="true"
+        [enableFiltering]="true"
+        [enableSorting]="true"
+        [readOnly]="resultReadOnly"
+        (openDetail)="openBundle($event)"
+        (reviewBundle)="reviewBundle($event)"
+        (succeedBundleReview)="succeedBundleReview($event)"
+        (rejectBundleReview)="rejectBundleReview($event)"
+        (deleteBundle)="deleteBundle($event)"
+        (resetBundle)="resetBundle($event)"
+        (generateBundleReviewExport)="generateBundleReviewExport($event)"
+        (downloadBundleReviewExport)="downloadBundleReviewExport($event)"
+        [reviewProcedure]="result.politicalBusinessResult.entryParams?.reviewProcedure"
+        [enableReviewMultiple]="result.politicalBusinessResult.entryParams?.reviewProcedure === reviewProcedures.MAJORITY_ELECTION_REVIEW_PROCEDURE_PHYSICALLY">
       </vo-ausm-majority-election-bundle-table>
     </div>
     <div class="sticky-buttons">
       <vo-lib-button-bar [cancelLabel]="'APP.BACK' | translate"
-                         [hasSaveButton]="canCreateBundle && !resultReadOnly"
-                         [saveLabel]="'ELECTION.NEW_BUNDLE' | translate"
-                         [canSave]="true"
-                         [saving]="isCreatingBundle"
-                         (cancel)="back()"
-                         (save)="createNewBundle()"></vo-lib-button-bar>
+        [hasSaveButton]="canCreateBundle && !resultReadOnly"
+        [saveLabel]="'ELECTION.NEW_BUNDLE' | translate"
+        [canSave]="true"
+        [saving]="isCreatingBundle"
+        (cancel)="back()"
+        (save)="createNewBundle()"></vo-lib-button-bar>
     </div>
-  </ng-container>
+  }
 </vo-lib-page>

@@ -1,59 +1,60 @@
-<ng-container *ngIf="!loading && resultDetail; else spinner">
-  <div *ngIf="!resultDetail.entry || selectResultEntry; else content">
-    <vo-ausm-contest-majority-election-detail-result-entry [electionResultId]="resultDetail.id"
-                                                           [election]="resultDetail.election"
-                                                           [(resultEntry)]="resultDetail.entry"
-                                                           [(resultEntryParams)]="resultDetail.entryParams"
-                                                           (done)="selectResultEntry = false; setFocus()"
-                                                           (resetResults)="resetResults()"
-                                                           [readonly]="contestLocked || contentReadonly || !canEnterResults">
-    </vo-ausm-contest-majority-election-detail-result-entry>
-  </div>
-
-  <ng-template #content>
-    <vo-ausm-contest-majority-election-detail-detailed *ngIf="resultDetail.entry === entryVariants.MAJORITY_ELECTION_RESULT_ENTRY_DETAILED || resultReadonly; else finalResultsContent"
-                                                       [resultDetail]="resultDetail"
-                                                       [readonly]="resultReadonly"
-                                                       [eVoting]="eVoting"
-                                                       [eCounting]="eCounting"
-                                                       [showDetailsLink]="resultDetail.entry === entryVariants.MAJORITY_ELECTION_RESULT_ENTRY_DETAILED"
-                                                       (countOfVotersChange)="updateCountOfVotersValid(); updateUnsavedChanges()"
-    ></vo-ausm-contest-majority-election-detail-detailed>
-
-    <ng-template #finalResultsContent>
+@if (!loading && resultDetail) {
+  @if (!resultDetail.entry || selectResultEntry) {
+    <div>
+      <vo-ausm-contest-majority-election-detail-result-entry [electionResultId]="resultDetail.id"
+        [election]="resultDetail.election"
+        [(resultEntry)]="resultDetail.entry"
+        [(resultEntryParams)]="resultDetail.entryParams"
+        (done)="selectResultEntry = false; setFocus()"
+        (resetResults)="resetResults()"
+        [readonly]="contestLocked || contentReadonly || !canDefineEntry || !canResetResults">
+      </vo-ausm-contest-majority-election-detail-result-entry>
+    </div>
+  } @else {
+    @if (resultDetail.entry === entryVariants.MAJORITY_ELECTION_RESULT_ENTRY_DETAILED || resultReadonly) {
+      <vo-ausm-contest-majority-election-detail-detailed
+        [resultDetail]="resultDetail"
+        [readonly]="resultReadonly"
+        [eVoting]="eVoting"
+        [eCounting]="eCounting"
+        [showDetailsLink]="resultDetail.entry === entryVariants.MAJORITY_ELECTION_RESULT_ENTRY_DETAILED"
+        (countOfVotersChange)="updateCountOfVotersValid(); updateUnsavedChanges()"
+      ></vo-ausm-contest-majority-election-detail-detailed>
+    } @else {
       <vo-ausm-contest-majority-election-detail-final-results [readonly]="resultReadonly || !canEnterResults"
-                                                              [eVoting]="eVoting"
-                                                              [eCounting]="eCounting"
-                                                              [election]="resultDetail.election"
-                                                              (countOfVotersChange)="updateCountOfVotersValid(); updateUnsavedChanges()"
-                                                              (candidateResultChange)="updateCandidateResultsValid(); updateUnsavedChanges()"
-                                                              [resultDetail]="resultDetail"></vo-ausm-contest-majority-election-detail-final-results>
-    </ng-template>
-
-    <vo-ausm-contest-political-business-detail-footer *ngIf="!contestLocked
-                                                        && (!contentReadonly || isResponsibleMonitorAuthority)
-                                                        && (canAudit || canFinishSubmissionAndAudit || (canFinishSubmission && (result.state === states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING || result.state === states.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION)))"
-                                                      [entryDescriptionDetail]="{name: ('MAJORITY_ELECTION.RESULT_ENTRY.SHORT.' + resultDetail.entry | translate)}"
-                                                      [canSelectResultEntry]="!resultDetail.election.enforceResultEntryForCountingCircles || resultDetail.election.resultEntry === entryVariants.MAJORITY_ELECTION_RESULT_ENTRY_DETAILED"
-                                                      (selectResultEntry)="selectResultEntry = true"
-                                                      (validateAndSave)="validateAndSave()"
-                                                      (validate)="validateAndSave()"
-                                                      (save)="save()"
-                                                      (stateUpdate)="stateUpdate($event)"
-                                                      [isResponsibleMonitorAuthority]="isResponsibleMonitorAuthority"
-                                                      [isActionExecuting]="isActionExecuting"
-                                                      [state]="result.state"
-                                                      [canValidateAndSave]="!contentReadonly && hasUnsavedChanges && candidateResultsValid && countOfVotersValid"
-                                                      [canValidate]="!contentReadonly && candidateResultsValid && countOfVotersValid"
-                                                      [canSave]="!contentReadonly && candidateResultsValid && countOfVotersValid"
-                                                      [canSubmit]="!contentReadonly && !hasUnsavedChanges"
-                                                      [contestId]="resultDetail.election.contestId"
-                                                      [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
-                                                      [statePlausibilisedDisabled]="contestCantonDefaults?.statePlausibilisedDisabled"
-                                                      [domainOfInfluenceType]="resultDetail.election.domainOfInfluence!.type">
-    </vo-ausm-contest-political-business-detail-footer>
-  </ng-template>
-</ng-container>
-<ng-template #spinner>
+        [eVoting]="eVoting"
+        [eCounting]="eCounting"
+        [election]="resultDetail.election"
+        (countOfVotersChange)="updateCountOfVotersValid(); updateUnsavedChanges()"
+        (candidateResultChange)="updateCandidateResultsValid(); updateUnsavedChanges()"
+      [resultDetail]="resultDetail"></vo-ausm-contest-majority-election-detail-final-results>
+    }
+    @if (!contestLocked
+      && (!contentReadonly || isResponsibleMonitorAuthority)
+      && (canAudit || canFinishSubmissionAndAudit || ((canFinishSubmission || canEnterResults) && (result.state === states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING || result.state === states.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION)))) {
+      <vo-ausm-contest-political-business-detail-footer
+        [entryDescriptionDetail]="{name: ('MAJORITY_ELECTION.RESULT_ENTRY.SHORT.' + resultDetail.entry | translate)}"
+        [canSelectResultEntry]="!resultDetail.election.enforceResultEntryForCountingCircles || resultDetail.election.resultEntry === entryVariants.MAJORITY_ELECTION_RESULT_ENTRY_DETAILED"
+        (selectResultEntry)="selectResultEntry = true"
+        (validateAndSave)="validateAndSave()"
+        (validate)="validateAndSave()"
+        (save)="save()"
+        (stateUpdate)="stateUpdate($event)"
+        [isResponsibleMonitorAuthority]="isResponsibleMonitorAuthority"
+        [isActionExecuting]="isActionExecuting"
+        [state]="result.state"
+        [canValidateAndSave]="!contentReadonly && hasUnsavedChanges && candidateResultsValid && countOfVotersValid"
+        [canValidate]="!contentReadonly && candidateResultsValid && countOfVotersValid"
+        [canSave]="!contentReadonly && candidateResultsValid && countOfVotersValid"
+        [canSubmit]="!contentReadonly && !hasUnsavedChanges"
+        [contestId]="resultDetail.election.contestId"
+        [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
+        [statePlausibilisedDisabled]="contestCantonDefaults?.statePlausibilisedDisabled"
+        [domainOfInfluenceType]="resultDetail.election.domainOfInfluence!.type"
+        [countingCircleResult]="resultDetail">
+      </vo-ausm-contest-political-business-detail-footer>
+    }
+  }
+} @else {
   <bc-spinner></bc-spinner>
-</ng-template>
+}

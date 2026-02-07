@@ -1,27 +1,27 @@
 <bc-number
   #navigationComponent
   [label]="labelBallotNumber | translate"
-  [required]="true"
-  [allowUndefined]="false"
-  [min]="minBallotNumber"
-  [max]="maxBallotNumber"
-  [error]="ballotNumberValue < minBallotNumber || ballotNumberValue > maxBallotNumber"
+  optionalText=""
+  [min]="allowUndefined ? undefined : minBallotNumber"
+  [max]="allowUndefined ? undefined : maxBallotNumber"
+  [error]="!allowUndefined && (!ballotNumberValue || ballotNumberValue < minBallotNumber || (!!maxBallotNumber && ballotNumberValue > maxBallotNumber))"
   [readonly]="readonly"
   [value]="ballotNumberValue"
-  (valueChange)="ballotNumberValue = +$event"
-  (blur)="emitNewBallotNumber()"
-  (keydown.enter)="emitNewBallotNumber()"
+  (valueChange)="changeBallotNumber($event)"
+  (blur)="enterBallotNumber()"
+  (keydown.enter)="enterBallotNumber()"
+  [clearable]="false"
   [subscriptSizing]="'dynamic'"
 ></bc-number>
 <div class="nav-buttons">
   <bc-button
     icon="angle-left"
-    (buttonClick)="emitNewBallotNumber(-1)"
-    [disabled]="readonly || ballotNumberValue <= minBallotNumber"
+    (buttonClick)="previousBallotRequest.emit()"
+    [disabled]="readonly || !canGoPrevious"
   ></bc-button>
   <bc-button
     icon="angle-right"
-    (buttonClick)="emitNewBallotNumber(1)"
-    [disabled]="readonly || ballotNumberValue >= maxBallotNumber"
+    (buttonClick)="nextBallotRequest.emit()"
+    [disabled]="readonly || !canGoNext"
   ></bc-button>
 </div>

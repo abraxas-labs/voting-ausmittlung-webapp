@@ -6,7 +6,7 @@
 
 import { RadioButton } from '@abraxas/base-components';
 import { EnumUtil } from '@abraxas/voting-lib';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { BallotNumberGeneration } from '../../models';
 
 @Component({
@@ -26,7 +26,9 @@ export class BallotNumberGenerationSelectorComponent {
   @Output()
   public ballotNumberGenerationChange: EventEmitter<BallotNumberGeneration> = new EventEmitter<BallotNumberGeneration>();
 
-  constructor(enumUtil: EnumUtil) {
+  constructor() {
+    const enumUtil = inject(EnumUtil);
+
     this.ballotNumberGenerationChoices = enumUtil
       .getArrayWithDescriptions<BallotNumberGeneration>(BallotNumberGeneration, 'ELECTION.RESULT_ENTRY.BALLOT_NUMBER_GENERATION.TYPES.')
       .map(item => ({

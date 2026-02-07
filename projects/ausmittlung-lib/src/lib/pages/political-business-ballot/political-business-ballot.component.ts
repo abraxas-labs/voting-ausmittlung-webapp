@@ -6,7 +6,7 @@
 
 import { BallotBundleState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/ballot_bundle_pb';
 import { DialogService, SnackbarService } from '@abraxas/voting-lib';
-import { Directive, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Directive, HostListener, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -30,6 +30,14 @@ export abstract class PoliticalBusinessBallotComponent<
   >
   implements OnInit, OnDestroy, HasUnsavedChanges
 {
+  protected readonly userService = inject(UserService);
+  protected readonly route = inject(ActivatedRoute);
+  protected readonly dialog = inject(DialogService);
+  protected readonly i18n = inject(TranslateService);
+  private readonly router = inject(Router);
+  private readonly toast = inject(SnackbarService);
+  private readonly permissionService = inject(PermissionService);
+
   @HostListener('window:beforeunload')
   public beforeUnload(): boolean {
     return !this.hasChanges;
@@ -49,21 +57,13 @@ export abstract class PoliticalBusinessBallotComponent<
   public minBallotNumber: number = 0;
   public currentMaxBallotNumber: number = 0;
   public bundleInProcessOrCorrection: boolean = false;
+  public isFirstBallot: boolean = true;
+  public isLastBallot: boolean = true;
 
   public canSubmitBundle: boolean = false;
   public canUpdateBallot: boolean = false;
 
   private routeParamsSubscription: Subscription = Subscription.EMPTY;
-
-  protected constructor(
-    protected readonly userService: UserService,
-    protected readonly route: ActivatedRoute,
-    protected readonly dialog: DialogService,
-    protected readonly i18n: TranslateService,
-    private readonly router: Router,
-    private readonly toast: SnackbarService,
-    private readonly permissionService: PermissionService,
-  ) {}
 
   protected abstract get deletedBallotLabel(): string;
 
@@ -79,6 +79,20 @@ export abstract class PoliticalBusinessBallotComponent<
 
   public get hasUnsavedChanges(): boolean {
     return this.hasChanges;
+  }
+
+  public async changeBallotNumber(ballotNr: number): Promise<void> {
+    if (!this.bundle || !this.ballot || ballotNr === this.ballot?.number) {
+      return;
+    }
+
+    if (this.ballot.isNew && !this.politicalBusinessResult?.entryParams?.automaticBallotNumberGeneration) {
+      this.ballot.number = ballotNr;
+      this.bundle.ballotNumbers[this.bundle.ballotNumbers.length - 1] = ballotNr;
+      return;
+    }
+
+    await this.navigateToBallot(ballotNr);
   }
 
   public async navigateToBallot(ballotNr: number): Promise<void> {
@@ -98,13 +112,29 @@ export abstract class PoliticalBusinessBallotComponent<
     }
   }
 
-  public async nextBallot(): Promise<void> {
-    if (!this.ballot || this.ballot.isNew || this.ballot.number === this.currentMaxBallotNumber) {
+  public nextBallot(): Promise<void> {
+    return this.navigateWithIndex(1);
+  }
+
+  public previousBallot(): Promise<void> {
+    return this.navigateWithIndex(-1);
+  }
+
+  public async navigateWithIndex(delta: number): Promise<void> {
+    if (!this.ballot) {
       await this.createBallot();
       return;
     }
 
-    await this.navigateToBallot(this.ballot.number + 1);
+    const ballotIndex = this.bundle!.ballotNumbers.indexOf(this.ballot.number);
+    if (delta > 0 && ballotIndex >= this.bundle!.ballotNumbers.length - 1) {
+      await this.createBallot();
+      return;
+    } else if (delta < 0 && ballotIndex <= 0) {
+      return;
+    }
+
+    await this.navigateToBallot(this.bundle!.ballotNumbers[ballotIndex + delta]);
   }
 
   public async saveAndBack(): Promise<void> {
@@ -139,7 +169,10 @@ export abstract class PoliticalBusinessBallotComponent<
 
       this.bundle.countOfBallots++;
       this.currentMaxBallotNumber++;
-      this.ballot = await this.createNewBallot();
+      this.ballot = this.newBallot();
+      this.bundle.ballotNumbers.push(this.ballot.number);
+      this.isLastBallot = true;
+      this.isFirstBallot = this.bundle.countOfBallots === 1;
       await this.router.navigate(['..', this.ballot.number], { relativeTo: this.route });
       this.hasChanges = true;
     } finally {
@@ -162,17 +195,21 @@ export abstract class PoliticalBusinessBallotComponent<
         await this.deleteBallot(this.bundle.id, this.ballot.number);
       }
 
+      this.bundle.ballotNumbers.splice(this.bundle.ballotNumbers.length - 1, 1);
       this.bundle.countOfBallots--;
       this.currentMaxBallotNumber--;
       this.toast.success(this.i18n.instant(this.deletedBallotLabel));
       this.hasChanges = false;
+      this.isLastBallot = true;
+      this.isFirstBallot = this.bundle.countOfBallots === 1;
+
       if (this.bundle.countOfBallots === 0) {
         delete this.ballot;
         await this.navigateToBallot(0);
         return;
       }
 
-      const prevNumber = this.ballot.number - 1;
+      const prevNumber = this.bundle.ballotNumbers[this.bundle.ballotNumbers.length - 1];
       delete this.ballot;
       await this.navigateToBallot(prevNumber);
     } finally {
@@ -194,7 +231,7 @@ export abstract class PoliticalBusinessBallotComponent<
     }
   }
 
-  protected abstract createNewBallot(): Promise<TBallot>;
+  protected abstract newBallot(): TBallot;
 
   protected abstract saveNewBallot(bundle: TBundle, ballot: TBallot): Promise<number>;
 
@@ -279,11 +316,14 @@ export abstract class PoliticalBusinessBallotComponent<
 
     if (ballotNumber) {
       await this.loadBallot(bundleId, ballotNumber);
+      this.isFirstBallot = this.bundle!.countOfBallots <= 1 || this.bundle!.ballotNumbers.indexOf(ballotNumber) === 0;
+      this.isLastBallot =
+        this.bundle!.countOfBallots <= 1 || this.bundle!.ballotNumbers.indexOf(ballotNumber) === this.bundle!.ballotNumbers.length - 1;
       return;
     }
 
     if (this.bundle!.countOfBallots > 0) {
-      await this.navigateToBallot(this.minBallotNumber);
+      await this.navigateToBallot(this.bundle!.ballotNumbers[0]);
     }
   }
 

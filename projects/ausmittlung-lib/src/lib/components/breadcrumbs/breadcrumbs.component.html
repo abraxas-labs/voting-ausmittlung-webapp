@@ -1,4 +1,6 @@
 <bc-breadcrumbs>
   <bc-breadcrumb-item [link]="['/', $theme | async]">{{'CONTEST.DETAIL.CONTESTS_TITLE' | translate}}</bc-breadcrumb-item>
-  <bc-breadcrumb-item *ngFor="let item of items" [link]="item.link">{{item.name | translate}}</bc-breadcrumb-item>
+  @for (item of items; track item) {
+    <bc-breadcrumb-item [link]="item.link">{{item.name | translate}}</bc-breadcrumb-item>
+  }
 </bc-breadcrumbs>

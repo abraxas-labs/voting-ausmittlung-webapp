@@ -5,7 +5,7 @@
  */
 
 import { BallotBundleState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/ballot_bundle_pb';
-import { AfterViewInit, Directive, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Directive, EventEmitter, Input, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { PoliticalBusinessResultBundle, User } from '../../models';
 import { PermissionService } from '../../services/permission.service';
 import { UserService } from '../../services/user.service';
@@ -18,6 +18,10 @@ import { EnumItemDescription, EnumUtil } from '@abraxas/voting-lib';
 export abstract class ResultBundleTableComponent<T extends PoliticalBusinessResultBundle = PoliticalBusinessResultBundle>
   implements OnInit, AfterViewInit
 {
+  private readonly userService = inject(UserService);
+  private readonly permissionService = inject(PermissionService);
+  private readonly enumUtil = inject(EnumUtil);
+
   public readonly bundleStates: typeof BallotBundleState = BallotBundleState;
   public readonly dataSource = new TableDataSource<T>();
 
@@ -27,6 +31,7 @@ export abstract class ResultBundleTableComponent<T extends PoliticalBusinessResu
   public readonly numberColumn = 'number';
   public readonly selectColumn = 'select';
   public readonly countOfBallotsColumn = 'countOfBallots';
+  public readonly countOfModifiedBallotsColumn = 'countOfModifiedBallotsColumn';
   public readonly stateColumn = 'state';
   public readonly reviewColumn = 'review';
   public readonly actionsColumn = 'actions';
@@ -61,9 +66,6 @@ export abstract class ResultBundleTableComponent<T extends PoliticalBusinessResu
   @Input()
   public enableReviewMultiple: boolean = false;
 
-  @Input()
-  public enableReviewColumn: boolean = false;
-
   @Output()
   public openDetail: EventEmitter<T> = new EventEmitter<T>();
 
@@ -72,6 +74,9 @@ export abstract class ResultBundleTableComponent<T extends PoliticalBusinessResu
 
   @Output()
   public deleteBundle: EventEmitter<T> = new EventEmitter<T>();
+
+  @Output()
+  public resetBundle: EventEmitter<T> = new EventEmitter<T>();
 
   @Output()
   public succeedBundleReview: EventEmitter<T[]> = new EventEmitter<T[]>();
@@ -101,18 +106,13 @@ export abstract class ResultBundleTableComponent<T extends PoliticalBusinessResu
   public canUpdateAll: boolean = false;
   public canRead: boolean = false;
   public canReadAll: boolean = false;
+  public canReset: boolean = false;
 
   public selection = new SelectionModel<T>(true, []);
   public isAllSelected: boolean = false;
   public canReviewMultiple: boolean = false;
 
   public stateList: EnumItemDescription<BallotBundleState>[] = [];
-
-  protected constructor(
-    private readonly userService: UserService,
-    private readonly permissionService: PermissionService,
-    private readonly enumUtil: EnumUtil,
-  ) {}
 
   public async ngOnInit(): Promise<void> {
     this.currentUser = await this.userService.getUser();
@@ -122,6 +122,7 @@ export abstract class ResultBundleTableComponent<T extends PoliticalBusinessResu
     this.canUpdateAll = await this.permissionService.hasPermission(Permissions.PoliticalBusinessResultBundle.UpdateAll);
     this.canRead = await this.permissionService.hasPermission(Permissions.PoliticalBusinessResultBallot.Read);
     this.canReadAll = await this.permissionService.hasPermission(Permissions.PoliticalBusinessResultBallot.ReadAll);
+    this.canReset = await this.permissionService.hasPermission(Permissions.PoliticalBusinessResultBundle.ResetToSubmissionFinished);
     const allStates = this.enumUtil.getArrayWithDescriptions<BallotBundleState>(BallotBundleState, 'ELECTION.BUNDLE_STATES.');
     this.stateList = allStates.map(x => ({ ...x, value: this.getBundleOrderNumber(x.value) }));
   }
@@ -151,7 +152,7 @@ export abstract class ResultBundleTableComponent<T extends PoliticalBusinessResu
       return;
     }
 
-    if (!this.canReadAll && !(this.canRead && isCreator)) {
+    if (!this.canReadAll && !this.canUpdateAll && !(this.canRead && isCreator)) {
       return;
     }
 

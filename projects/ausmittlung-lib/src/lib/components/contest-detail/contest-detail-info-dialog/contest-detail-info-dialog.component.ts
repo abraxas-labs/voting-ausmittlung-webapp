@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, HostListener, Inject, OnDestroy } from '@angular/core';
+import { Component, HostListener, OnDestroy, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
   CountOfVotersInformationSubTotal,
@@ -28,6 +28,10 @@ import { Subscription } from 'rxjs';
   standalone: false,
 })
 export class ContestDetailInfoDialogComponent implements OnDestroy {
+  private readonly dialogRef = inject<MatDialogRef<ContestDetailInfoDialogData, ContestDetailInfoDialogResult>>(MatDialogRef);
+  private readonly dialogService = inject(DialogService);
+  private readonly i18n = inject(TranslateService);
+
   public readonly countingMachines: EnumItemDescription<CountingMachine>[] = [];
 
   @HostListener('window:beforeunload')
@@ -61,13 +65,10 @@ export class ContestDetailInfoDialogComponent implements OnDestroy {
 
   public readonly backdropClickSubscription: Subscription;
 
-  constructor(
-    private readonly dialogRef: MatDialogRef<ContestDetailInfoDialogData, ContestDetailInfoDialogResult>,
-    private readonly dialogService: DialogService,
-    private readonly i18n: TranslateService,
-    @Inject(MAT_DIALOG_DATA) dialogData: ContestDetailInfoDialogData,
-    enumUtil: EnumUtil,
-  ) {
+  constructor() {
+    const dialogData = inject<ContestDetailInfoDialogData>(MAT_DIALOG_DATA);
+    const enumUtil = inject(EnumUtil);
+
     this.readonly = dialogData.readonly;
     this.domainOfInfluenceTypes = dialogData.domainOfInfluenceTypes;
     this.countingMachineEnabled = dialogData.countingMachineEnabled;

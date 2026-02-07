@@ -1,76 +1,92 @@
 <vo-lib-page [contentLoading]="loading"
-             header="ELECTION.BALLOT_DETAIL.TITLE">
-  <ng-container *ngIf="politicalBusinessResult && bundle">
+  header="ELECTION.BALLOT_DETAIL.TITLE">
+  @if (politicalBusinessResult && bundle) {
     <div class="content">
       <vo-ausm-proportional-election-info [electionResult]="politicalBusinessResult"></vo-ausm-proportional-election-info>
-
-      <div>
-        <vo-ausm-proportional-election-bundle-table [bundleSize]="politicalBusinessResult.entryParams.ballotBundleSize"
-                                                    [bundles]="[bundle]"></vo-ausm-proportional-election-bundle-table>
-      </div>
-
       <div class="content-box">
-        <h4 *ngIf="!bundle.list" translate>ELECTION.BALLOT_DETAIL.WITHOUT_LIST</h4>
-        <vo-ausm-ballot-header
-          #header
-          [canNavigate]="emptyVoteCountValid && ballotUiData.candidateCountValid"
-          [ballotNumber]="ballot?.number"
-          [minBallotNumber]="minBallotNumber"
-          [maxBallotNumber]="currentMaxBallotNumber"
-          [disabled]="loadingBallot"
-          [actionExecuting]="actionExecuting"
-          [readonly]="!bundleInProcessOrCorrection || politicalBusinessResult.election.contest!.locked"
-          [canDeleteBallot]="!!ballot && ballot.number === currentMaxBallotNumber"
-          (deleteBallot)="deleteBallotAndNavigate()"
-          (ballotNumberChange)="navigateToBallot($event)">
-          <ng-container center>
-            <bc-button
-              *ngIf="!loadingBallot
+        <div class="ballot-content">
+          @if (!bundle.list) {
+            <h4 translate>ELECTION.BALLOT_DETAIL.WITHOUT_LIST</h4>
+          }
+          <vo-ausm-ballot-header
+            #header
+            [automaticBallotNumberGeneration]="ballotUiData.automaticBallotNumberGeneration"
+            [ballotNumber]="ballot?.number"
+            [minBallotNumber]="minBallotNumber"
+            [maxBallotNumber]="currentMaxBallotNumber"
+            [canGoPrevious]="!isFirstBallot"
+            [canGoNext]="!isLastBallot"
+            [disabled]="loadingBallot"
+            [actionExecuting]="actionExecuting"
+            [readonly]="!bundleInProcessOrCorrection || politicalBusinessResult.election.contest!.locked"
+            [canDeleteBallot]="!!ballot && isLastBallot"
+            (deleteBallot)="deleteBallotAndNavigate()"
+            (nextBallotRequest)="nextBallot()"
+            (previousBallotRequest)="previousBallot()"
+            (ballotNumberEntered)="changeBallotNumber($event)">
+            <ng-container center>
+              @if (!loadingBallot
                 && !!ballot
                 && bundleInProcessOrCorrection
                 && canUpdateBallot
-                && !politicalBusinessResult.election.contest!.locked"
-              class="mx-2 mb-2"
-              variant="tertiary"
-              [label]="'ELECTION.BALLOT_DETAIL.REMOVE_ALL_CANDIDATES' | translate"
+                && !politicalBusinessResult.election.contest!.locked) {
+                <bc-button
+                  class="mx-2 mb-2"
+                  variant="tertiary"
+                  [label]="'ELECTION.BALLOT_DETAIL.REMOVE_ALL_CANDIDATES' | translate"
+                  [disabled]="actionExecuting"
+                  (buttonClick)="removeAllCandidates()">
+                </bc-button>
+              }
+              @if (!loadingBallot
+                && !!ballot
+                && bundleInProcessOrCorrection
+                && canUpdateBallot
+                && !politicalBusinessResult.election.contest!.locked) {
+                <bc-button
+                  class="mx-2 mb-2"
+                  variant="tertiary"
+                  [disabled]="actionExecuting || !hasChanges"
+                  [label]="'ELECTION.BALLOT_DETAIL.RESET' | translate"
+                  (buttonClick)="resetBallot()">
+                </bc-button>
+              }
+            </ng-container>
+            @if (!header.readonly) {
+              <bc-icon right class="clickable-icon" icon="question-circle-o" (click)="showShortcutDialog()"></bc-icon>
+            }
+          </vo-ausm-ballot-header>
+          @if (!loadingBallot && !!ballot) {
+            <vo-ausm-proportional-election-ballot-content
+              class="my-3"
+              [electionResult]="politicalBusinessResult"
+              [ballot]="ballot"
+              [ballotUiData]="ballotUiData"
               [disabled]="actionExecuting"
-              (buttonClick)="removeAllCandidates()">
-            </bc-button>
-            <bc-button
-              *ngIf="!loadingBallot
-                && !!ballot
-                && bundleInProcessOrCorrection
-                && canUpdateBallot
-                && !politicalBusinessResult.election.contest!.locked"
-              class="mx-2 mb-2"
-              variant="tertiary"
-              [disabled]="actionExecuting || !hasChanges"
-              [label]="'ELECTION.BALLOT_DETAIL.RESET' | translate"
-              (buttonClick)="resetBallot()">
-            </bc-button>
-          </ng-container>
-          <bc-icon right *ngIf="!header.readonly" class="clickable-icon" icon="question-circle-o" (click)="showShortcutDialog()"></bc-icon>
-        </vo-ausm-ballot-header>
-        <ng-container *ngIf="!loadingBallot && !!ballot; else noBallot">
-          <vo-ausm-proportional-election-ballot-content
-            class="my-3"
-            [electionResult]="politicalBusinessResult"
-            [ballot]="ballot"
-            [ballotUiData]="ballotUiData"
-            [disabled]="actionExecuting"
-            (contentChanged)="contentChanged()"
-            [readonly]="!bundleInProcessOrCorrection
-              || !canUpdateBallot
-              || politicalBusinessResult.election.contest!.locked"
-            [candidateCheckDigit]="politicalBusinessResult.entryParams.candidateCheckDigit"
-            (contentCompleted)="ballotBundleSize && bundle.countOfBallots !== ballotBundleSize
-              ? footer.emitCreateBallot($event)
-              : submitBundleAndNavigate()">
-          </vo-ausm-proportional-election-ballot-content>
-        </ng-container>
+              (contentChanged)="contentChanged()"
+              [readonly]="!bundleInProcessOrCorrection
+                || !canUpdateBallot
+                || politicalBusinessResult.election.contest!.locked"
+              [candidateCheckDigit]="politicalBusinessResult.entryParams.candidateCheckDigit">
+            </vo-ausm-proportional-election-ballot-content>
+          } @else {
+            @if (!loadingBallot) {
+              <div
+                class="no-data ml-1 my-3"
+                translate>ELECTION.BALLOT_DETAIL.NO_BALLOTS
+              </div>
+            } @else {
+              <bc-spinner></bc-spinner>
+            }
+          }
+        </div>
+        <div class="p-3 pl-5">
+          <vo-ausm-ballot-history [logs]="ballot?.logs" header="ELECTION.BALLOT_HISTORY.TITLE"></vo-ausm-ballot-history>
+          <vo-ausm-proportional-election-bundle-info [bundleSize]="politicalBusinessResult.entryParams.ballotBundleSize"
+                                                     [bundle]="bundle"></vo-ausm-proportional-election-bundle-info>
+        </div>
       </div>
     </div>
-
     <ng-container page-footer>
       <vo-ausm-political-business-ballot-button-bar
         #footer
@@ -79,21 +95,12 @@
         [actionExecuting]="actionExecuting"
         [readonly]="!canSubmitBundle || !bundleInProcessOrCorrection || politicalBusinessResult.election.contest!.locked"
         [canSubmitBundle]="bundle.countOfBallots > 0"
-        [nextBallotEnabled]="!ballot || ballot.number % politicalBusinessResult.entryParams.ballotBundleSize !== 0"
+        [nextBallotEnabled]="!ballot || bundle.countOfBallots < politicalBusinessResult.entryParams.ballotBundleSize || !isLastBallot"
         (nextBallot)="nextBallot()"
         (back)="saveAndBack()"
         (submitBundle)="submitBundleAndNavigate()"></vo-ausm-political-business-ballot-button-bar>
     </ng-container>
-  </ng-container>
+  }
 </vo-lib-page>
 
-<ng-template #noBallot>
-  <div *ngIf="!loadingBallot; else spinner"
-       class="no-data ml-1 my-3"
-       translate>ELECTION.BALLOT_DETAIL.NO_BALLOTS
-  </div>
-</ng-template>
 
-<ng-template #spinner>
-  <bc-spinner></bc-spinner>
-</ng-template>

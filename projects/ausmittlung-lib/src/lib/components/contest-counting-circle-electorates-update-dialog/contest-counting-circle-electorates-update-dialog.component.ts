@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CountingCircleElectorate } from '../../models';
 import { TranslateService } from '@ngx-translate/core';
 import { flatten } from '../../../public-api';
@@ -24,6 +24,12 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   standalone: false,
 })
 export class ContestCountingCircleElectoratesUpdateDialogComponent {
+  private readonly i18n = inject(TranslateService);
+  private readonly dialogService = inject(DialogService);
+  private readonly toast = inject(SnackbarService);
+  private readonly contestCountingCircleElectorateService = inject(ContestCountingCircleElectorateService);
+  private readonly dialogRef = inject<MatDialogRef<ContestCountingCircleElectoratesUpdateDialogComponent>>(MatDialogRef);
+
   private readonly contestId: string;
   private readonly countingCircleId: string;
 
@@ -32,14 +38,9 @@ export class ContestCountingCircleElectoratesUpdateDialogComponent {
   public readonly = false;
   public saving = false;
 
-  constructor(
-    private readonly i18n: TranslateService,
-    private readonly dialogService: DialogService,
-    private readonly toast: SnackbarService,
-    private readonly contestCountingCircleElectorateService: ContestCountingCircleElectorateService,
-    private readonly dialogRef: MatDialogRef<ContestCountingCircleElectoratesUpdateDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) dialogData: ContestCountingCircleElectoratesUpdateDialogData,
-  ) {
+  constructor() {
+    const dialogData = inject<ContestCountingCircleElectoratesUpdateDialogData>(MAT_DIALOG_DATA);
+
     this.contestId = dialogData.contestId;
     this.countingCircleId = dialogData.countingCircleId;
 

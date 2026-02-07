@@ -1,5 +1,5 @@
 <vo-lib-page [contentLoading]="loading"
-             [header]="'END_RESULT.OVERVIEW' + (isPartialResult ? '_PARTIAL_RESULT' : '')">
+  [header]="'END_RESULT.OVERVIEW' + (isPartialResult ? '_PARTIAL_RESULT' : '')">
 
   <vo-lib-page-header header>
     <div left>
@@ -14,79 +14,81 @@
     <vo-ausm-contest-header center [contest]="endResult?.contest"></vo-ausm-contest-header>
   </vo-lib-page-header>
 
-  <ng-container *ngIf="endResult && !isPartialResult && isUnionDoubleProportional">
+  @if (endResult && !isPartialResult && isUnionDoubleProportional) {
     <div class="additional-infos">
       <vo-lib-inline-spinner [loading]="finalizing"
-                             position="right">
-
+        position="right">
         <bc-button variant="tertiary"
-                   [disabled]="!endResult.finalized || endResult.contest.locked || isPartialResult"
-                   (buttonClick)="setFinalized(false)"
-                   [label]="'UNION_END_RESULT.REVERT_FINALIZE' | translate"></bc-button>
-
+          [disabled]="!endResult.finalized || endResult.contest.locked || isPartialResult || finalizing"
+          (buttonClick)="setFinalized(false)"
+          [label]="'UNION_END_RESULT.REVERT_FINALIZE' | translate"></bc-button>
         <bc-button variant="primary"
-                   [disabled]="endResult.finalized || endResult.contest.locked || !endResult.allElectionsDone || isPartialResult"
-                   (buttonClick)="setFinalized(true)"
-                   [label]="'UNION_END_RESULT.FINALIZE' | translate"></bc-button>
-
+          [disabled]="endResult.finalized || endResult.contest.locked || !endResult.allElectionsDone || isPartialResult || finalizing"
+          (buttonClick)="setFinalized(true)"
+          [label]="'UNION_END_RESULT.FINALIZE' | translate"></bc-button>
       </vo-lib-inline-spinner>
     </div>
-
-    <div class="additional-infos mb-3" *ngIf="endResult.finalized && !finalizing && !isPartialResult">
+    @if (endResult.finalized && !finalizing && !isPartialResult) {
+      <div class="additional-infos mb-3">
         <bc-button variant="tertiary"
-                   (buttonClick)="viewDpResult()"
-                   [label]="'UNION_END_RESULT.DOUBLE_PROPORTIONAL_RESULT.REDIRECT' | translate"></bc-button>
-    </div>
-  </ng-container>
+          (buttonClick)="viewDpResult()"
+          [label]="'UNION_END_RESULT.DOUBLE_PROPORTIONAL_RESULT.REDIRECT' | translate"></bc-button>
+      </div>
+    }
+  }
 
-  <bc-table
-    *ngIf="endResult"
-    selection
-    class="pr-4"
-    [dataSource]="endResult.proportionalElectionEndResults">
-    <ng-container columnDef="domainOfInfluence">
-      <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.DOMAIN_OF_INFLUENCE' | translate }}</bc-header-cell>
-      <bc-data-cell *dataCellDef="let element">{{ element.election.domainOfInfluence.name }}</bc-data-cell>
-    </ng-container>
-
-    <ng-container columnDef="numberOfMandates">
-      <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.NUMBER_OF_MANDATES' | translate }}</bc-header-cell>
-      <bc-data-cell *dataCellDef="let element">{{ element.election.numberOfMandates }}</bc-data-cell>
-    </ng-container>
-
-    <ng-container columnDef="countOfVoters">
-      <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.COUNT_OF_VOTERS' | translate }}</bc-header-cell>
-      <bc-data-cell *dataCellDef="let element">{{ element.countOfVotersInformation.totalCountOfVoters }}</bc-data-cell>
-    </ng-container>
-
-    <ng-container columnDef="countingCircleCountingDoneOf">
-      <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.COUNTING_DONE' | translate }}</bc-header-cell>
-      <bc-data-cell *dataCellDef="let element">{{ 'UNION_END_RESULT.COUNTING_CIRCLE_COUNTING_DONE_OF' | translate: element }}</bc-data-cell>
-    </ng-container>
-
-    <ng-container columnDef="receivedBallots">
-      <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.BALLOT_COUNT.RECEIVED' | translate }}</bc-header-cell>
-      <bc-data-cell *dataCellDef="let element">{{ element.countOfVoters.totalReceivedBallots }}</bc-data-cell>
-    </ng-container>
-
-    <ng-container columnDef="validBallots">
-      <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.BALLOT_COUNT.VALID' | translate }}</bc-header-cell>
-      <bc-data-cell *dataCellDef="let element">{{ element.countOfVoters.totalAccountedBallots }}</bc-data-cell>
-    </ng-container>
-
-    <ng-container columnDef="blankBallots">
-      <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.BALLOT_COUNT.BLANK' | translate }}</bc-header-cell>
-      <bc-data-cell *dataCellDef="let element">{{ element.countOfVoters.totalBlankBallots }}</bc-data-cell>
-    </ng-container>
-
-    <ng-container columnDef="invalidBallots">
-      <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.BALLOT_COUNT.INVALID' | translate }}</bc-header-cell>
-      <bc-data-cell *dataCellDef="let element">{{ element.countOfVoters.totalInvalidBallots }}</bc-data-cell>
-    </ng-container>
-
-    <bc-header-row *headerRowDef="let row; columns: columns"></bc-header-row>
-    <bc-data-row *dataRowDef="let row; columns: columns; let i = index" selectionToggle
-                 [selectionToggleValue]="row" selectionRow [selectionRowValue]="row"
-                 (click)="selectElectionEndResult(row)"></bc-data-row>
-  </bc-table>
+  @if (endResult) {
+    <bc-table
+      selection
+      class="pr-4"
+      [dataSource]="endResult.proportionalElectionEndResults">
+      <ng-container columnDef="domainOfInfluence">
+        <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.DOMAIN_OF_INFLUENCE' | translate }}</bc-header-cell>
+        <bc-data-cell *dataCellDef="let element">
+          @if(element.hasOpenRequiredLotDecisions) {
+            <vo-ausm-info-icon [label]="element.election.domainOfInfluence.name" [iconTooltip]="'END_RESULT.ELECTION.OPEN_REQUIRED_LOT_DECISION_INFO'"></vo-ausm-info-icon>
+          }
+          @else {
+            <ng-container>{{ element.election.domainOfInfluence.name }}</ng-container>
+          }
+        </bc-data-cell>
+      </ng-container>
+      <ng-container columnDef="numberOfMandates">
+        <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.NUMBER_OF_MANDATES' | translate }}</bc-header-cell>
+        <bc-data-cell *dataCellDef="let element">{{ element.election.numberOfMandates }}</bc-data-cell>
+      </ng-container>
+      <ng-container columnDef="countOfVoters">
+        <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.COUNT_OF_VOTERS' | translate }}</bc-header-cell>
+        <bc-data-cell *dataCellDef="let element">{{ element.countOfVotersInformation.totalCountOfVoters }}</bc-data-cell>
+      </ng-container>
+      <ng-container columnDef="countingCircleCountingDoneOf">
+        <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.COUNTING_DONE' | translate }}</bc-header-cell>
+        <bc-data-cell *dataCellDef="let element">{{ 'UNION_END_RESULT.COUNTING_CIRCLE_COUNTING_DONE_OF' | translate: element }}</bc-data-cell>
+      </ng-container>
+      <ng-container columnDef="receivedBallots">
+        <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.BALLOT_COUNT.RECEIVED' | translate }}</bc-header-cell>
+        <bc-data-cell *dataCellDef="let element">{{ element.countOfVoters.totalReceivedBallots }}</bc-data-cell>
+      </ng-container>
+      <ng-container columnDef="validBallots">
+        <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.BALLOT_COUNT.VALID' | translate }}</bc-header-cell>
+        <bc-data-cell *dataCellDef="let element">{{ element.countOfVoters.totalAccountedBallots }}</bc-data-cell>
+      </ng-container>
+      <ng-container columnDef="blankBallots">
+        <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.BALLOT_COUNT.BLANK' | translate }}</bc-header-cell>
+        <bc-data-cell *dataCellDef="let element">{{ element.countOfVoters.totalBlankBallots }}</bc-data-cell>
+      </ng-container>
+      <ng-container columnDef="invalidBallots">
+        <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.BALLOT_COUNT.INVALID' | translate }}</bc-header-cell>
+        <bc-data-cell *dataCellDef="let element">{{ element.countOfVoters.totalInvalidBallots }}</bc-data-cell>
+      </ng-container>
+      <ng-container columnDef="lotDecisionState">
+        <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.LOT_DECISION_STATE' | translate }}</bc-header-cell>
+        <bc-data-cell *dataCellDef="let element">{{ ('END_RESULT.ELECTION.LOT_DECISION_STATES.' + element.lotDecisionState) | translate }}</bc-data-cell>
+      </ng-container>
+      <bc-header-row *headerRowDef="let row; columns: columns"></bc-header-row>
+      <bc-data-row *dataRowDef="let row; columns: columns; let i = index" selectionToggle
+        [selectionToggleValue]="row" selectionRow [selectionRowValue]="row"
+        (click)="selectElectionEndResult(row)"></bc-data-row>
+    </bc-table>
+  }
 </vo-lib-page>

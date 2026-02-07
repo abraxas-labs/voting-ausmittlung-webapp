@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, HostListener, Inject, OnDestroy } from '@angular/core';
+import { Component, HostListener, OnDestroy, inject } from '@angular/core';
 import { ContactPerson, CountingCircle, DomainOfInfluence, ResultList } from '../../models';
 import { cloneDeep, isEqual } from 'lodash';
 import { ContestCountingCircleContactPersonService } from '../../services/contest-counting-circle-contact-person.service';
@@ -21,6 +21,11 @@ import { distinct } from '../../services/utils/array.utils';
   standalone: false,
 })
 export class ContactDialogComponent implements OnDestroy {
+  private readonly dialogRef = inject<MatDialogRef<ContactDialogResult>>(MatDialogRef);
+  private readonly contactPersonService = inject(ContestCountingCircleContactPersonService);
+  private readonly dialogService = inject(DialogService);
+  private readonly i18n = inject(TranslateService);
+
   @HostListener('window:beforeunload')
   public beforeUnload(): boolean {
     return !this.hasChanges;
@@ -45,13 +50,9 @@ export class ContactDialogComponent implements OnDestroy {
 
   public readonly backdropClickSubscription: Subscription;
 
-  constructor(
-    private readonly dialogRef: MatDialogRef<ContactDialogResult>,
-    private readonly contactPersonService: ContestCountingCircleContactPersonService,
-    private readonly dialogService: DialogService,
-    private readonly i18n: TranslateService,
-    @Inject(MAT_DIALOG_DATA) dialogData: ContactDialogComponentData,
-  ) {
+  constructor() {
+    const dialogData = inject<ContactDialogComponentData>(MAT_DIALOG_DATA);
+
     this.domainOfInfluences = dialogData.domainOfInfluences;
     this.resultList = cloneDeep(dialogData.resultList);
     this.countingCircle = this.resultList.countingCircle;

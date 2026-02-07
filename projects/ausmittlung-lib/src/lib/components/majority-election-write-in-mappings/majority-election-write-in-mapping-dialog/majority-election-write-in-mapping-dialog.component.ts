@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MajorityElectionWriteInMapping, MajorityElectionWriteInMappings } from '../../../models';
 import { ResultImportService } from '../../../services/result-import.service';
@@ -20,6 +20,11 @@ import { SnackbarService } from '@abraxas/voting-lib';
   standalone: false,
 })
 export class MajorityElectionWriteInMappingDialogComponent implements OnInit {
+  private readonly dialogRef = inject<MatDialogRef<void>>(MatDialogRef);
+  private readonly resultImportService = inject(ResultImportService);
+  private readonly i18n = inject(TranslateService);
+  private readonly toast = inject(SnackbarService);
+
   public saving: boolean = false;
   public loading: boolean = true;
 
@@ -36,13 +41,9 @@ export class MajorityElectionWriteInMappingDialogComponent implements OnInit {
   private readonly countingCircleId: string;
   public importType?: ResultImportType;
 
-  constructor(
-    private readonly dialogRef: MatDialogRef<void>,
-    private readonly resultImportService: ResultImportService,
-    private readonly i18n: TranslateService,
-    private readonly toast: SnackbarService,
-    @Inject(MAT_DIALOG_DATA) dialogData: ResultImportWriteInMappingDialogData,
-  ) {
+  constructor() {
+    const dialogData = inject<ResultImportWriteInMappingDialogData>(MAT_DIALOG_DATA);
+
     this.contestId = dialogData.contestId;
     this.countingCircleId = dialogData.countingCircleId;
     this.electionId = dialogData.electionId;

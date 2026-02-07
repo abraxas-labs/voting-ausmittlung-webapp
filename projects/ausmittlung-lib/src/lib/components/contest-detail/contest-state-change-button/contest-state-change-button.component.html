@@ -1,33 +1,37 @@
 <vo-lib-inline-spinner [loading]="isActionExecuting" position="right">
   <!-- only show this button when at least one menu item is shown (via ngIf) -->
-  <bc-button
-    *ngIf="(showSetAllAuditedTentatively && canSetAllToAuditedTentatively)
-      || (showResetResultsInTestingPhase && !resultList.contest.testingPhaseEnded && canResetResultsInTestingPhase)
-      || (!contentReadonly && !resultList?.contest.locked && resultList.currentTenantIsResponsible && (canResetResults || canFinishSubmission))"
-    variant="tertiary"
-    [label]="buttonText | translate"
-    [matMenuTriggerFor]="menu">
-  </bc-button>
+  @if ((showSetAllAuditedTentatively && canSetAllToAuditedTentatively)
+    || (showResetResultsInTestingPhase && !resultList.contest.testingPhaseEnded && canResetResultsInTestingPhase)
+    || (!contentReadonly && !resultList?.contest.locked && resultList.currentTenantIsResponsible && (canResetResults || canFinishSubmission))) {
+    <bc-button
+      variant="tertiary"
+      [label]="buttonText | translate"
+      [matMenuTriggerFor]="menu">
+    </bc-button>
+  }
   <mat-menu #menu class="no-max-width">
-    <button
-      mat-menu-item
-      *ngIf="showSetAllAuditedTentatively"
-      [disabled]="!canSetAllToAuditedTentatively || isActionExecuting"
-      (click)="setAllResponsibleAuditedTentatively()">
-      {{ 'CONTEST.DETAIL.STATE_ACTION.ALL_TO_AUDIT_TENTATIVELY' | translate: { state: stateDescriptionsByState[states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY] ?? 'COUNTING_CIRCLE_RESULT_STATE.' + states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY | translate } }}
-    </button>
-    <button
-      mat-menu-item
-      *ngIf="showResetResultsInTestingPhase && !resultList.contest.testingPhaseEnded"
-      [disabled]="!canResetResultsInTestingPhase || isActionExecuting"
-      (click)="resetResults()">
-      {{ 'CONTEST.DETAIL.STATE_ACTION.RESET_RESULTS' | translate }}
-    </button>
-    <button
-      mat-menu-item
-      *ngIf="!contentReadonly && !resultList?.contest.locked && resultList.currentTenantIsResponsible  && canFinishSubmission"
-      (click)="finishSubmission.emit()">
-      {{ 'CONTEST.DETAIL.STATE_ACTION.SUBMIT_RESULTS' | translate }}
-    </button>
+    @if (showSetAllAuditedTentatively) {
+      <button
+        mat-menu-item
+        [disabled]="!canSetAllToAuditedTentatively || isActionExecuting"
+        (click)="setAllResponsibleAuditedTentatively()">
+        {{ 'CONTEST.DETAIL.STATE_ACTION.ALL_TO_AUDIT_TENTATIVELY' | translate: { state: stateDescriptionsByState[states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY] ?? 'COUNTING_CIRCLE_RESULT_STATE.' + states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY | translate } }}
+      </button>
+    }
+    @if (showResetResultsInTestingPhase && !resultList.contest.testingPhaseEnded) {
+      <button
+        mat-menu-item
+        [disabled]="!canResetResultsInTestingPhase || isActionExecuting"
+        (click)="resetResults()">
+        {{ 'CONTEST.DETAIL.STATE_ACTION.RESET_RESULTS' | translate }}
+      </button>
+    }
+    @if (!contentReadonly && !resultList?.contest.locked && resultList.currentTenantIsResponsible  && canFinishSubmission) {
+      <button
+        mat-menu-item
+        (click)="finishSubmission.emit()">
+        {{ 'CONTEST.DETAIL.STATE_ACTION.SUBMIT_RESULTS' | translate }}
+      </button>
+    }
   </mat-menu>
 </vo-lib-inline-spinner>

@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { SelectionModel } from '@angular/cdk/collections';
 import { EnumUtil } from '@abraxas/voting-lib';
 import { DomainOfInfluenceType } from '../../models';
@@ -18,6 +18,8 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   standalone: false,
 })
 export class ContestCountingCircleElectorateAssignDialogComponent {
+  private readonly dialogRef = inject<MatDialogRef<ContestCountingCircleElectorateAssignDialogData>>(MatDialogRef);
+
   public readonly columns = ['select', 'domainOfInfluenceType'];
   public readonly columnsSelected = ['domainOfInfluenceType'];
 
@@ -25,10 +27,9 @@ export class ContestCountingCircleElectorateAssignDialogComponent {
   public selection = new SelectionModel<DomainOfInfluenceType>(true, []);
   public isAllSelected: boolean = false;
 
-  constructor(
-    private readonly dialogRef: MatDialogRef<ContestCountingCircleElectorateAssignDialogData>,
-    @Inject(MAT_DIALOG_DATA) dialogData: ContestCountingCircleElectorateAssignDialogData,
-  ) {
+  constructor() {
+    const dialogData = inject<ContestCountingCircleElectorateAssignDialogData>(MAT_DIALOG_DATA);
+
     this.dataSource.data = EnumUtil.getArray<DomainOfInfluenceType>(DomainOfInfluenceType)
       .map(i => i.value)
       .filter(t => !dialogData.disabledDomainOfInfluenceTypes.includes(t));

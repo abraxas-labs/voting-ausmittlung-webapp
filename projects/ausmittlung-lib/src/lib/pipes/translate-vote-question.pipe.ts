@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { BallotQuestion, TieBreakQuestion } from '../models';
 import { BallotSubType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/vote_pb';
@@ -32,7 +32,7 @@ const attributeKeyMap: Record<QuestionAttribute, string> = {
   standalone: false,
 })
 export class TranslateVoteQuestionPipe implements PipeTransform {
-  constructor(private readonly i18n: TranslateService) {}
+  private readonly i18n = inject(TranslateService);
 
   public transform(
     question: TieBreakQuestion | BallotQuestion,

@@ -4,6 +4,8 @@
     <p class="px-2 m-0">{{ header }}</p>
   </div>
 </div>
-<div *ngIf="expanded">
-  <ng-content></ng-content>
-</div>
+@if (expanded) {
+  <div>
+    <ng-content></ng-content>
+  </div>
+}

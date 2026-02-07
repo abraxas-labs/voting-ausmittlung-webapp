@@ -33,6 +33,7 @@ export class Permissions {
     Read: Permissions.PoliticalBusinessResultPrefix + ReadSuffix,
     ReadComments: Permissions.PoliticalBusinessResultPrefix + ':read-comments',
     ReadOverview: Permissions.PoliticalBusinessResultPrefix + ':read-overview',
+    DefineEntry: Permissions.PoliticalBusinessResultPrefix + ':define-entry',
     EnterResults: Permissions.PoliticalBusinessResultPrefix + ':enter-results',
     ResetResults: Permissions.PoliticalBusinessResultPrefix + ':reset-results',
     StartSubmission: Permissions.PoliticalBusinessResultPrefix + ':start-submission',
@@ -48,7 +49,9 @@ export class Permissions {
     UpdateAll: Permissions.PoliticalBusinessResultBundlePrefix + UpdateAllSuffix,
     Delete: Permissions.PoliticalBusinessResultBundlePrefix + DeleteSuffix,
     FinishSubmission: Permissions.PoliticalBusinessResultBundlePrefix + ':finish-submission',
+    ResetToSubmissionFinished: Permissions.PoliticalBusinessResultBundlePrefix + ':reset-to-submission-finished',
     Review: Permissions.PoliticalBusinessResultBundlePrefix + ':review',
+    ReviewSelfModifiedBundle: Permissions.PoliticalBusinessResultBundlePrefix + ':review-self-modified-bundle',
   };
 
   private static readonly PoliticalBusinessResultBallotPrefix = 'PoliticalBusinessResultBallot';

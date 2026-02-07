@@ -5,7 +5,7 @@
  */
 
 import { PermissionServicePromiseClient } from '@abraxas/voting-ausmittlung-service-proto/grpc/permission_service_grpc_web_pb';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { GrpcBackendService, GrpcEnvironment, GrpcService } from '@abraxas/voting-lib';
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb';
 import { GRPC_ENV_INJECTION_TOKEN } from './tokens';
@@ -16,7 +16,10 @@ import { GRPC_ENV_INJECTION_TOKEN } from './tokens';
 export class PermissionService extends GrpcService<PermissionServicePromiseClient> {
   private permissionCache?: string[];
 
-  constructor(grpcBackend: GrpcBackendService, @Inject(GRPC_ENV_INJECTION_TOKEN) env: GrpcEnvironment) {
+  constructor() {
+    const grpcBackend = inject(GrpcBackendService);
+    const env = inject<GrpcEnvironment>(GRPC_ENV_INJECTION_TOKEN);
+
     super(PermissionServicePromiseClient, env, grpcBackend);
   }
 

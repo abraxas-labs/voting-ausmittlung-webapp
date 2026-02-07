@@ -6,7 +6,7 @@
 
 import { ContestCountingCircleElectorateServicePromiseClient } from '@abraxas/voting-ausmittlung-service-proto/grpc/contest_counting_circle_electorate_service_grpc_web_pb';
 import { GrpcBackendService, GrpcEnvironment, GrpcService } from '@abraxas/voting-lib';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { CountingCircleElectorate } from '../models';
 import { GRPC_ENV_INJECTION_TOKEN } from './tokens';
 import {
@@ -18,7 +18,10 @@ import {
   providedIn: 'root',
 })
 export class ContestCountingCircleElectorateService extends GrpcService<ContestCountingCircleElectorateServicePromiseClient> {
-  constructor(grpcBackend: GrpcBackendService, @Inject(GRPC_ENV_INJECTION_TOKEN) env: GrpcEnvironment) {
+  constructor() {
+    const grpcBackend = inject(GrpcBackendService);
+    const env = inject<GrpcEnvironment>(GRPC_ENV_INJECTION_TOKEN);
+
     super(ContestCountingCircleElectorateServicePromiseClient, env, grpcBackend);
   }
 

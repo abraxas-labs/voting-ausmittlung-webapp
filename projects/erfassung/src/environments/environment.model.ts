@@ -4,8 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { AuthenticationConfig, AuthorizationConfig, UserConfig } from '@abraxas/base-components';
-import { TenantConfig } from '@abraxas/base-components/lib/services/models/tenant-config.model';
+import { AuthenticationConfig, AuthorizationConfig, TenantConfig, UserConfig } from '@abraxas/base-components';
 import { Environments, GrpcEnvironment } from '@abraxas/voting-lib';
 
 export interface Environment extends TenantConfig, UserConfig, AuthorizationConfig, GrpcEnvironment {

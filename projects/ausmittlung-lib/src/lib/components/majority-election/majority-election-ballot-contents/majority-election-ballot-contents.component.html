@@ -1,38 +1,38 @@
-<ng-container *ngIf="!loadingBallot && !!ballot; else noBallot">
+@if (!loadingBallot && !!ballot) {
   <vo-ausm-majority-election-ballot-content #primaryElectionBallot
-                                            class="my-2"
-                                            (contentChanged)="contentChanged.emit()"
-                                            [ballot]="ballot"
-                                            [disabled]="disabled"
-                                            [showInvalidVotes]="showInvalidVotes"
-                                            [showIndividualVotes]="!ballot.election.individualCandidatesDisabled"
-                                            [showEmptyVotes]="showEmptyVotes"
-                                            [automaticEmptyVoteCounting]="automaticEmptyVoteCounting"
-                                            (contentCompleted)="contentCompleted.emit($event)"
-                                            [readonly]="readonly"
-                                            [candidateCheckDigit]="candidateCheckDigit"></vo-ausm-majority-election-ballot-content>
-  <vo-ausm-majority-election-ballot-content *ngFor="let secondaryElectionBallot of ballot.secondaryMajorityElectionBallots"
-                                            class="my-2"
-                                            (contentChanged)="contentChanged.emit()"
-                                            [ballot]="secondaryElectionBallot"
-                                            [isSecondaryElection]="true"
-                                            [disabled]="disabled"
-                                            [showInvalidVotes]="showInvalidVotes"
-                                            [showIndividualVotes]="!secondaryElectionBallot.election.individualCandidatesDisabled"
-                                            [automaticEmptyVoteCounting]="automaticEmptyVoteCounting"
-                                            [readonly]="readonly"
-                                            [candidateCheckDigit]="candidateCheckDigit"
-                                            (contentCompleted)="contentCompleted.emit($event)">
-  </vo-ausm-majority-election-ballot-content>
-</ng-container>
+    class="my-2"
+    (contentChanged)="contentChanged.emit()"
+    [ballot]="ballot"
+    [disabled]="disabled"
+    [showInvalidVotes]="showInvalidVotes"
+    [showIndividualVotes]="!ballot.election.individualCandidatesDisabled"
+    [showEmptyVotes]="showEmptyVotes"
+    [automaticEmptyVoteCounting]="automaticEmptyVoteCounting"
+    [readonly]="readonly"
+    [candidateCheckDigit]="candidateCheckDigit"></vo-ausm-majority-election-ballot-content>
+  @for (secondaryElectionBallot of ballot.secondaryMajorityElectionBallots; track secondaryElectionBallot) {
+    <vo-ausm-majority-election-ballot-content
+      class="my-2"
+      (contentChanged)="contentChanged.emit()"
+      [ballot]="secondaryElectionBallot"
+      [isSecondaryElection]="true"
+      [disabled]="disabled"
+      [showInvalidVotes]="showInvalidVotes"
+      [showIndividualVotes]="!secondaryElectionBallot.election.individualCandidatesDisabled"
+      [automaticEmptyVoteCounting]="automaticEmptyVoteCounting"
+      [readonly]="readonly"
+      [candidateCheckDigit]="candidateCheckDigit">
+    </vo-ausm-majority-election-ballot-content>
+  }
+} @else {
+  @if (!loadingBallot) {
+    <div
+      class="no-data ml-1 my-3"
+      translate>ELECTION.BALLOT_DETAIL.NO_BALLOTS
+    </div>
+  } @else {
+    <bc-spinner></bc-spinner>
+  }
+}
 
-<ng-template #noBallot>
-  <div *ngIf="!loadingBallot; else spinner"
-       class="no-data ml-1 my-3"
-       translate>ELECTION.BALLOT_DETAIL.NO_BALLOTS
-  </div>
-</ng-template>
 
-<ng-template #spinner>
-  <bc-spinner></bc-spinner>
-</ng-template>

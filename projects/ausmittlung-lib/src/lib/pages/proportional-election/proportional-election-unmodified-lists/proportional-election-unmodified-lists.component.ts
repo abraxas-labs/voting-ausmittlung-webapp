@@ -6,7 +6,7 @@
 
 import { CountingCircleResultState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/counting_circle_pb';
 import { SnackbarService, ThemeService } from '@abraxas/voting-lib';
-import { Component, HostListener, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, QueryList, ViewChildren, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
@@ -25,6 +25,13 @@ import { HasUnsavedChanges } from '../../../services/guards/has-unsaved-changes.
   standalone: false,
 })
 export class ProportionalElectionUnmodifiedListsComponent implements OnInit, OnDestroy, HasUnsavedChanges {
+  private readonly i18n = inject(TranslateService);
+  private readonly toast = inject(SnackbarService);
+  private readonly router = inject(Router);
+  private readonly resultService = inject(ProportionalElectionResultService);
+  private readonly themeService = inject(ThemeService);
+  private readonly permissionService = inject(PermissionService);
+
   @HostListener('window:beforeunload')
   public beforeUnload(): boolean {
     return !this.hasChanges;
@@ -44,15 +51,9 @@ export class ProportionalElectionUnmodifiedListsComponent implements OnInit, OnD
 
   private readonly routeParamsSubscription: Subscription;
 
-  constructor(
-    private readonly i18n: TranslateService,
-    private readonly toast: SnackbarService,
-    private readonly router: Router,
-    private readonly resultService: ProportionalElectionResultService,
-    private readonly themeService: ThemeService,
-    private readonly permissionService: PermissionService,
-    route: ActivatedRoute,
-  ) {
+  constructor() {
+    const route = inject(ActivatedRoute);
+
     this.routeParamsSubscription = route.params.subscribe(({ resultId }) => this.loadData(resultId));
   }
 

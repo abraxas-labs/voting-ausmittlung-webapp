@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import {
@@ -28,6 +28,10 @@ import { DomainOfInfluenceCanton } from '@abraxas/voting-ausmittlung-service-pro
   standalone: false,
 })
 export class ProportionalElectionResultsComponent implements OnDestroy {
+  private readonly breadcrumbsService = inject(BreadcrumbsService);
+  private readonly resultService = inject(ResultService);
+  private readonly proportionalElectionResultService = inject(ProportionalElectionResultService);
+
   public readonly listResultColumns = [
     'orderNumber',
     'shortDescription',
@@ -63,12 +67,10 @@ export class ProportionalElectionResultsComponent implements OnDestroy {
 
   private readonly routeParamsSubscription: Subscription;
 
-  constructor(
-    route: ActivatedRoute,
-    private readonly breadcrumbsService: BreadcrumbsService,
-    private readonly resultService: ResultService,
-    private readonly proportionalElectionResultService: ProportionalElectionResultService,
-  ) {
+  constructor() {
+    const route = inject(ActivatedRoute);
+    const breadcrumbsService = this.breadcrumbsService;
+
     this.breadcrumbs = breadcrumbsService.forProportionalElectionResults();
     this.routeParamsSubscription = route.params.subscribe(({ resultId }) => this.loadData(resultId));
   }

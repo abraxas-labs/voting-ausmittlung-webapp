@@ -6,7 +6,7 @@
 
 import { SelectionDirective } from '@abraxas/base-components';
 import { SnackbarService } from '@abraxas/voting-lib';
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import {
   DoubleProportionalResult,
@@ -24,6 +24,12 @@ import {
   standalone: false,
 })
 export class DoubleProportionalResultSuperApportionmentLotDecisionComponent implements OnInit {
+  private readonly proportionalElectionResultService = inject(ProportionalElectionResultService);
+  private readonly proportionalElectionUnionResultService = inject(ProportionalElectionUnionResultService);
+  private readonly cd = inject(ChangeDetectorRef);
+  private readonly toast = inject(SnackbarService);
+  private readonly i18n = inject(TranslateService);
+
   private readonly defaultColumns = ['selection', 'lot'];
 
   public columns: string[] = [];
@@ -32,19 +38,13 @@ export class DoubleProportionalResultSuperApportionmentLotDecisionComponent impl
 
   public initialLoading = true;
   public saving = false;
-  public readonly = false;
   public newLotDecisionSelected = false;
-
-  constructor(
-    private readonly proportionalElectionResultService: ProportionalElectionResultService,
-    private readonly proportionalElectionUnionResultService: ProportionalElectionUnionResultService,
-    private readonly cd: ChangeDetectorRef,
-    private readonly toast: SnackbarService,
-    private readonly i18n: TranslateService,
-  ) {}
 
   @Input()
   public doubleProportionalResult!: DoubleProportionalResult;
+
+  @Input()
+  public readonly: boolean = false;
 
   @ViewChild(SelectionDirective, { static: false })
   public selection!: SelectionDirective<DoubleProportionalResultSuperApportionmentLotDecision>;
@@ -55,8 +55,6 @@ export class DoubleProportionalResultSuperApportionmentLotDecisionComponent impl
   public lotDecisions: DoubleProportionalResultSuperApportionmentLotDecision[] = [];
 
   public async ngOnInit(): Promise<void> {
-    this.readonly = this.doubleProportionalResult.contest.locked;
-
     try {
       this.lotDecisions =
         this.doubleProportionalResult.proportionalElectionUnion != null
@@ -107,8 +105,12 @@ export class DoubleProportionalResultSuperApportionmentLotDecisionComponent impl
 
       this.toast.success(this.i18n.instant('APP.SAVED'));
 
-      this.doubleProportionalResult.superApportionmentState =
-        DoubleProportionalResultApportionmentState.DOUBLE_PROPORTIONAL_RESULT_APPORTIONMENT_STATE_COMPLETED;
+      if (this.doubleProportionalResult.proportionalElectionUnion === null) {
+        // Only return immediate feedback on non-union elections. Further calculations must be performed for unions.
+        this.doubleProportionalResult.superApportionmentState =
+          DoubleProportionalResultApportionmentState.DOUBLE_PROPORTIONAL_RESULT_APPORTIONMENT_STATE_COMPLETED;
+      }
+
       this.update.emit();
       this.newLotDecisionSelected = false;
     } finally {

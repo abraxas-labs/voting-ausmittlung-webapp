@@ -4,8 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { ConfirmDialogComponent } from '@abraxas/voting-lib';
-import { ConfirmDialogData, ConfirmDialogResult } from '@abraxas/voting-lib/lib/components/dialog/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogComponent, ConfirmDialogData, ConfirmDialogResult } from '@abraxas/voting-lib';
 import { BallotNumberGeneration, MajorityElectionResult, PoliticalBusinessResultBundle, ProportionalElectionResult } from '../../models';
 import { ElectionResultBallot } from '../../models/election-result-ballot.model';
 import { PoliticalBusinessBallotComponent } from '../political-business-ballot/political-business-ballot.component';

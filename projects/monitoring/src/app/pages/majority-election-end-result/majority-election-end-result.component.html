@@ -1,12 +1,12 @@
 <app-end-result-page [loading]="loading"
-                     [contest]="endResult?.contest"
-                     [isPartialResult]="isPartialResult"
-                     [countOfVotersInformation]="endResult?.countOfVotersInformation"
-                     [votingCards]="endResult?.votingCards"
-                     [domainOfInfluenceType]="endResult?.election?.domainOfInfluence?.type"
-                     [enabledVoterTypes]="endResult?.election.enabledVoterTypesList"
-                     [canton]="endResult?.election?.domainOfInfluence?.canton">
-  <ng-container *ngIf="endResult">
+  [contest]="endResult?.contest"
+  [isPartialResult]="isPartialResult"
+  [showExport]="showExport"
+  [countOfVotersInformation]="endResult?.countOfVotersInformation"
+  [votingCards]="endResult?.votingCards"
+  [politicalBusiness]="endResult?.election"
+  [enabledVoterTypes]="endResult?.election.enabledVoterTypesList">
+  @if (endResult) {
     <vo-ausm-info-panel>
       <vo-ausm-info-panel-entry label="END_RESULT.POLITICAL_BUSINESS">
         {{endResult.election.title}}
@@ -36,31 +36,32 @@
         <span>{{endResult.countOfVoters.voterParticipation | percent: '1.2-2'}}</span>
       </vo-ausm-info-panel-entry>
     </vo-ausm-info-panel>
-
     <app-end-result-step-action-bar [step]="endResultStep"
-                                    (stepChange)="handleEndResultStepChange($event)"
-                                    [showFinalize]="finalizeEnabled"
-                                    [disabled]="stepActionLoading || isPartialResult"></app-end-result-step-action-bar>
-
+      (stepChange)="handleEndResultStepChange($event)"
+      [showFinalize]="finalizeEnabled"
+      [disabled]="stepActionLoading || isPartialResult"></app-end-result-step-action-bar>
     <div class="additional-infos">
-      <bc-button *ngIf="hasLotDecisions && endResult.allCountingCirclesDone && !endResult.contest.locked && !isPartialResult"
-                 [label]="'END_RESULT.ELECTION.LOT_DECISION.OPEN' | translate"
-                 (buttonClick)="openUpdateLotDecisions()"
-                 [disabled]="lotDecisionProcessing">
-      </bc-button>
-      <bc-spinner class="ml-3" *ngIf="lotDecisionProcessing"></bc-spinner>
+      @if (hasLotDecisions && endResult.allCountingCirclesDone && !endResult.contest.locked && !isPartialResult) {
+        <bc-button
+          [label]="'END_RESULT.ELECTION.LOT_DECISION.OPEN' | translate"
+          (buttonClick)="openUpdateLotDecisions()"
+          [disabled]="lotDecisionProcessing">
+        </bc-button>
+      }
+      @if (lotDecisionProcessing) {
+        <bc-spinner class="ml-3"></bc-spinner>
+      }
     </div>
-
     <app-majority-election-end-result-candidates-list [endResult]="endResult"
-                                                      [eVoting]="endResult.contest.eVoting"
-                                                      [eCounting]="endResult.contest.eCountingResultsImported"
-                                                      [showLotDecision]="!hasOpenRequiredLotDecisions && hasLotDecisions"></app-majority-election-end-result-candidates-list>
-    <ng-container *ngFor="let secondaryMajorityElectionEndResult of endResult.secondaryMajorityElectionEndResults">
+      [eVoting]="endResult.contest.eVoting"
+      [eCounting]="endResult.contest.eCountingResultsImported"
+      [showLotDecision]="!hasOpenRequiredLotDecisions && hasLotDecisions"></app-majority-election-end-result-candidates-list>
+    @for (secondaryMajorityElectionEndResult of endResult.secondaryMajorityElectionEndResults; track secondaryMajorityElectionEndResult) {
       <app-majority-election-end-result-candidates-list [endResult]="secondaryMajorityElectionEndResult"
-                                                        [eVoting]="endResult.contest.eVoting"
-                                                        [eCounting]="endResult.contest.eCountingResultsImported"
-                                                        [showLotDecision]="!hasOpenRequiredLotDecisions && hasLotDecisions"
-                                                        [showTitle]="true"></app-majority-election-end-result-candidates-list>
-    </ng-container>
-  </ng-container>
+        [eVoting]="endResult.contest.eVoting"
+        [eCounting]="endResult.contest.eCountingResultsImported"
+        [showLotDecision]="!hasOpenRequiredLotDecisions && hasLotDecisions"
+        [showTitle]="true"></app-majority-election-end-result-candidates-list>
+    }
+  }
 </app-end-result-page>

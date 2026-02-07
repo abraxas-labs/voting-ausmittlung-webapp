@@ -5,10 +5,11 @@
  */
 
 import { DialogService, SnackbarService } from '@abraxas/voting-lib';
-import { Component, Inject, ViewChild } from '@angular/core';
+import { Component, ViewChild, inject } from '@angular/core';
 import { MatStepper } from '@angular/material/stepper';
 import { TranslateService } from '@ngx-translate/core';
 import {
+  ElectionLotDecisionState,
   ProportionalElectionEndResultAvailableLotDecision,
   ProportionalElectionEndResultLotDecision,
   ProportionalElectionListEndResult,
@@ -25,6 +26,11 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   standalone: false,
 })
 export class ProportionalElectionLotDecisionDialogComponent extends ElectionLotDecisionDialogComponent {
+  private readonly i18n = inject(TranslateService);
+  private readonly toast = inject(SnackbarService);
+  private readonly dialogRef = inject<MatDialogRef<ProportionalElectionLotDecisionDialogData>>(MatDialogRef);
+  private readonly resultService = inject(ProportionalElectionResultService);
+
   @ViewChild(MatStepper, { static: true })
   public stepper!: MatStepper;
 
@@ -37,14 +43,10 @@ export class ProportionalElectionLotDecisionDialogComponent extends ElectionLotD
 
   private selectedList?: ProportionalElectionListEndResult;
 
-  constructor(
-    private readonly i18n: TranslateService,
-    private readonly toast: SnackbarService,
-    private readonly dialogRef: MatDialogRef<ProportionalElectionLotDecisionDialogData>,
-    private readonly resultService: ProportionalElectionResultService,
-    @Inject(MAT_DIALOG_DATA) dialogData: ProportionalElectionLotDecisionDialogData,
-    dialog: DialogService,
-  ) {
+  constructor() {
+    const dialogData = inject<ProportionalElectionLotDecisionDialogData>(MAT_DIALOG_DATA);
+    const dialog = inject(DialogService);
+
     super(dialog);
     this.lists = this.sortLists(dialogData.lists);
     this.selectionChanged(0);
@@ -76,6 +78,16 @@ export class ProportionalElectionLotDecisionDialogComponent extends ElectionLotD
     try {
       await this.resultService.updateListEndResultLotDecisions(this.selectedList.list.id, lotDecisions);
       this.selectedList.hasOpenRequiredLotDecisions = this.hasOpenRequiredLotDecisions(availableLotDecisions);
+
+      if (this.selectedList.hasOpenRequiredLotDecisions) {
+        this.selectedList.lotDecisionState = ElectionLotDecisionState.ELECTION_LOT_DECISION_STATE_OPEN_AND_REQUIRED;
+      } else {
+        const hasOpenLotDecisions = availableLotDecisions.some(l => !l.selectedRank);
+        this.selectedList.lotDecisionState = hasOpenLotDecisions
+          ? ElectionLotDecisionState.ELECTION_LOT_DECISION_STATE_OPEN_AND_OPTIONAL
+          : ElectionLotDecisionState.ELECTION_LOT_DECISION_STATE_DONE;
+      }
+
       this.lotDecisionsByListId[this.selectedList.list.id] = lotDecisions;
       this.toast.success(this.i18n.instant('APP.SAVED'));
     } finally {

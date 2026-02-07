@@ -5,7 +5,7 @@
  */
 
 import { ActiveDescendantKeyManager } from '@angular/cdk/a11y';
-import { AfterViewInit, ChangeDetectorRef, Component, HostListener, Inject, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, HostListener, QueryList, ViewChildren, inject } from '@angular/core';
 import { ProportionalElectionCandidate } from '../../../models';
 import { ProportionalElectionBallotCandidatesChooseEntryComponent } from './proportional-election-ballot-candidates-choose-entry/proportional-election-ballot-candidates-choose-entry.component';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -21,6 +21,9 @@ interface SearchableCandidate extends ProportionalElectionCandidate {
   standalone: false,
 })
 export class ProportionalElectionBallotCandidatesChooseDialogComponent implements AfterViewInit {
+  private readonly dialogRef = inject<MatDialogRef<ProportionalElectionBallotCandidatesChooseDialogData>>(MatDialogRef);
+  private readonly cd = inject(ChangeDetectorRef);
+
   public readonly allCandidates: SearchableCandidate[];
   public candidates: ProportionalElectionCandidate[];
   public candidateCheckDigit: boolean;
@@ -30,11 +33,9 @@ export class ProportionalElectionBallotCandidatesChooseDialogComponent implement
 
   private keyManager?: ActiveDescendantKeyManager<ProportionalElectionBallotCandidatesChooseEntryComponent>;
 
-  constructor(
-    private readonly dialogRef: MatDialogRef<ProportionalElectionBallotCandidatesChooseDialogData>,
-    @Inject(MAT_DIALOG_DATA) dialogData: ProportionalElectionBallotCandidatesChooseDialogData,
-    private readonly cd: ChangeDetectorRef,
-  ) {
+  constructor() {
+    const dialogData = inject<ProportionalElectionBallotCandidatesChooseDialogData>(MAT_DIALOG_DATA);
+
     this.allCandidates = dialogData.candidates.map(c => ({
       ...c,
       queryable: `${c.description} ${c.listDescription} ${c.listNumber + c.number}`.toUpperCase(),

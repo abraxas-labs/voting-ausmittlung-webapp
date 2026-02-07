@@ -1,42 +1,72 @@
 <ng-container>
-  <div class="info-container" *ngIf="!!contest">
+  @if (!!contest) {
+    <div class="info-container">
       <bc-label [label]="'CONTEST.DETAIL.INFO.CONTEST' | translate"
-                [class.col-span-2]="!!countingCircle"
-                [class.col-span-3]="!countingCircle && !!state"
-                [class.col-span-4]="!countingCircle && !state"></bc-label>
-    <bc-label *ngIf="!!state" [label]="'APP.STATE' | translate"></bc-label>
-    <bc-label *ngIf="!!countingCircle" [label]="'CONTEST.DETAIL.INFO.COUNTING_CIRCLE' | translate" [class.col-span-2]="!state"></bc-label>
+        [class.col-span-2]="!!countingCircle || !!politicalBusiness"
+        [class.col-span-3]="!countingCircle && !!state"
+        [class.col-span-4]="!countingCircle && !state && !politicalBusiness"></bc-label>
+      @if (!!state) {
+        <bc-label [label]="'APP.STATE' | translate"></bc-label>
+      }
+      @if (!!countingCircle) {
+        <bc-label [label]="'CONTEST.DETAIL.INFO.COUNTING_CIRCLE' | translate" [class.col-span-2]="!state"></bc-label>
+      }
+      @if (!!politicalBusiness) {
+        <bc-label [label]="'CONTEST.DETAIL.INFO.DOMAIN_OF_INFLUENCE' | translate" [class.col-span-2]="!state"></bc-label>
+      }
       <span class="info-text">{{ contest.date | date:'dd.MM.yyyy' }}</span>
-      <ng-container [ngSwitch]="contest.state">
-        <bc-status-label *ngSwitchCase="states.CONTEST_STATE_TESTING_PHASE"
-                         foregroundColor="dark"
-                         backgroundColor="#c4e6c3"
-                         [label]="('CONTEST.END_OF_TESTING_PHASE' | translate) + ' ' + (contest.endOfTestingPhase | date: 'short')">
-        </bc-status-label>
-        <div *ngSwitchCase="states.CONTEST_STATE_PAST_LOCKED">
-          <bc-status-label foregroundColor="dark"
-                           backgroundColor="#fec6c3"
-                           [label]="'CONTEST.PAST_LOCKED' | translate"></bc-status-label>
-          <bc-button variant="tertiary"
-                     [label]="'CONTEST.PAST_UNLOCK.OPEN' | translate"
-                     (buttonClick)="openPastUnlockDialog()"></bc-button>
-        </div>
-        <bc-status-label *ngSwitchCase="states.CONTEST_STATE_PAST_UNLOCKED"
-                         foregroundColor="dark"
-                         backgroundColor="#95d2a4"
-                         [label]="'CONTEST.PAST_UNLOCKED' | translate"></bc-status-label>
-        <div *ngSwitchDefault></div>
-      </ng-container>
-    <vo-ausm-result-state-box *ngIf="!!state" [state]="state" [stateDescriptionsByState]="contest.cantonDefaults.countingCircleResultStateDescriptionsByState"></vo-ausm-result-state-box>
-    <ng-container *ngIf="!!countingCircle">
-        <span *ngIf="accessibleCountingCircles.length <= 1; else selectCountingCircle" class="info-text">{{ countingCircle.name }}</span>
-      </ng-container>
-  </div>
+      @switch (contest.state) {
+        @case (states.CONTEST_STATE_TESTING_PHASE) {
+          <bc-status-label
+            foregroundColor="dark"
+            backgroundColor="#c4e6c3"
+            [label]="('CONTEST.END_OF_TESTING_PHASE' | translate) + ' ' + (contest.endOfTestingPhase | date: 'short')">
+          </bc-status-label>
+        }
+        @case (states.CONTEST_STATE_PAST_LOCKED) {
+          <div>
+            <bc-status-label foregroundColor="dark"
+              backgroundColor="#fec6c3"
+            [label]="'CONTEST.PAST_LOCKED' | translate"></bc-status-label>
+            <bc-button variant="tertiary"
+              [label]="'CONTEST.PAST_UNLOCK.OPEN' | translate"
+            (buttonClick)="openPastUnlockDialog()"></bc-button>
+          </div>
+        }
+        @case (states.CONTEST_STATE_PAST_UNLOCKED) {
+          <bc-status-label
+            foregroundColor="dark"
+            backgroundColor="#95d2a4"
+          [label]="'CONTEST.PAST_UNLOCKED' | translate"></bc-status-label>
+        }
+        @default {
+          <div></div>
+        }
+      }
+      @if (!!state) {
+        <vo-ausm-result-state-box [state]="state" [stateDescriptionsByState]="contest.cantonDefaults.countingCircleResultStateDescriptionsByState"></vo-ausm-result-state-box>
+      }
+      @if (!!countingCircle) {
+        @if (accessibleCountingCircles.length <= 1) {
+          <span class="info-text">{{ countingCircle.name }}</span>
+        } @else {
+          <bc-dropdown [items]="accessibleCountingCircles" [value]="selectedCountingCircle" (valueChange)="countingCircleChanged($event)"
+            [clearable]="false" [required]="true" displayExpr="name"
+            [subscriptSizing]="'dynamic'">
+          </bc-dropdown>
+        }
+      }
+      @if (!!politicalBusiness) {
+        @if (accessiblePoliticalBusinesses.length <= 1) {
+          <span class="info-text">{{ politicalBusiness.domainOfInfluence!.name }}</span>
+        } @else {
+          <bc-dropdown [items]="accessiblePoliticalBusinesses" [value]="selectedPoliticalBusiness" (valueChange)="politicalBusinessChanged($event)"
+            [clearable]="false" [required]="true" [displayExpr]="politicalBusinessDisplayExpr"
+            [subscriptSizing]="'dynamic'">
+          </bc-dropdown>
+        }
+      }
+    </div>
+  }
 </ng-container>
 
-<ng-template #selectCountingCircle>
-  <bc-dropdown [items]="accessibleCountingCircles" [value]="selectedCountingCircle" (valueChange)="countingCircleChanged($event)"
-               [clearable]="false" [required]="true" displayExpr="name"
-               [subscriptSizing]="'dynamic'">
-  </bc-dropdown>
-</ng-template>

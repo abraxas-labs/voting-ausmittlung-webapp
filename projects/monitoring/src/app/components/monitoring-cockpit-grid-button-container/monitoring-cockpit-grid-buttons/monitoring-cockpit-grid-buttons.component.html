@@ -5,21 +5,25 @@
   [label]="'MONITORING_COCKPIT.VIEW_RESULTS' | translate"
   truncateWithTooltip tooltip>
 </bc-button>
-<ng-container *ngIf="!readOnly">
-  <bc-button *ngIf="!canResetAllToAuditedTentatively && !statePlausibilisedDisabled"
-             class="full-width full-height mb-2"
-             variant="tertiary-tonal"
-             (buttonClick)="updateAllStates.emit(states.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED)"
-             [label]="'MONITORING_COCKPIT.ALL_TO_STATE' | translate : { state: stateDescriptionsByState[states.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED] ?? 'COUNTING_CIRCLE_RESULT_STATE.' + states.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED | translate }"
-             [disabled]="disabled || !canPlausibiliseAll"
-             truncateWithTooltip tooltip>
-  </bc-button>
-  <bc-button *ngIf="canResetAllToAuditedTentatively"
-             class="full-width full-height mb-2"
-             variant="tertiary-tonal"
-             (buttonClick)="updateAllStates.emit(states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY)"
-             [label]="'MONITORING_COCKPIT.ALL_TO_STATE' | translate: { state: stateDescriptionsByState[states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY] ?? 'COUNTING_CIRCLE_RESULT_STATE.' + states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY | translate }"
-             [disabled]="disabled"
-             truncateWithTooltip tooltip>
-  </bc-button>
-</ng-container>
+@if (!readOnly) {
+  @if (!canResetAllToAuditedTentatively && !statePlausibilisedDisabled) {
+    <bc-button
+      class="full-width full-height mb-2"
+      variant="tertiary-tonal"
+      (buttonClick)="updateAllStates.emit(states.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED)"
+      [label]="'MONITORING_COCKPIT.ALL_TO_STATE' | translate : { state: stateDescriptionsByState[states.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED] ?? 'COUNTING_CIRCLE_RESULT_STATE.' + states.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED | translate }"
+      [disabled]="disabled || !canPlausibiliseAll"
+      truncateWithTooltip tooltip>
+    </bc-button>
+  }
+  @if (canResetAllToAuditedTentatively) {
+    <bc-button
+      class="full-width full-height mb-2"
+      variant="tertiary-tonal"
+      (buttonClick)="updateAllStates.emit(states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY)"
+      [label]="'MONITORING_COCKPIT.ALL_TO_STATE' | translate: { state: stateDescriptionsByState[states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY] ?? 'COUNTING_CIRCLE_RESULT_STATE.' + states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY | translate }"
+      [disabled]="disabled"
+      truncateWithTooltip tooltip>
+    </bc-button>
+  }
+}

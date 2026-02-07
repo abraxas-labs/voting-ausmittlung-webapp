@@ -7,5 +7,10 @@
 }
 
 .content-box {
-  max-width: 75rem;
+  display: flex;
+  border-top: 1px solid $color-grey-4;
+
+  .ballot-content {
+    max-width: 100rem;
+  }
 }

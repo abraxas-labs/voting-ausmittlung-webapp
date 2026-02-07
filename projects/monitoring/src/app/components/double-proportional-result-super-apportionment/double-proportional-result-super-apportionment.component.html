@@ -1,35 +1,44 @@
-<div *ngIf="doubleProportionalResult">
-  <div class="super-apportionment-header">
-    <vo-ausm-admonition *ngIf="doubleProportionalResult.superApportionmentState > 1"
-                        [titleText]="'DOUBLE_PROPORTIONAL_RESULT.SUPER_APPORTIONMENT.STATES.' + doubleProportionalResult.superApportionmentState | translate"
-                        [type]="doubleProportionalResult.superApportionmentState === dpResultApportionmentState.DOUBLE_PROPORTIONAL_RESULT_APPORTIONMENT_STATE_COMPLETED ? 'info' : 'warning'"
-    ></vo-ausm-admonition>
+@if (doubleProportionalResult) {
+  <div>
+    <div class="super-apportionment-header">
+      @if (doubleProportionalResult.superApportionmentState > 1) {
+        <vo-ausm-admonition
+          [titleText]="'DOUBLE_PROPORTIONAL_RESULT.SUPER_APPORTIONMENT.STATES.' + doubleProportionalResult.superApportionmentState | translate"
+          [type]="doubleProportionalResult.superApportionmentState === dpResultApportionmentState.DOUBLE_PROPORTIONAL_RESULT_APPORTIONMENT_STATE_COMPLETED ? 'info' : 'warning'"
+        ></vo-ausm-admonition>
+      }
+    </div>
+    @if (doubleProportionalResult.hasSuperApportionmentRequiredLotDecision) {
+      <app-double-proportional-result-super-apportionment-lot-decision [doubleProportionalResult]="doubleProportionalResult"
+        (update)="handleLotDecisionUpdate()"
+        [readonly]="readonly"
+      ></app-double-proportional-result-super-apportionment-lot-decision>
+      <div class="my-6 divider-bold"></div>
+    }
+    <div class="super-apportionment-table" [style.gridTemplateRows]="gridTemplateRowsStyle">
+      <bc-label class="super-apportionment-table-entry bold header"><!-- empty --></bc-label>
+      @if (showCantonalQuorum) {
+        <bc-label class="super-apportionment-table-entry" [label]="'DOUBLE_PROPORTIONAL_RESULT.SUPER_APPORTIONMENT.CANTONAL_QUORUM' | translate"></bc-label>
+      }
+      @if (showElectionQuorum) {
+        <bc-label class="super-apportionment-table-entry" [label]="'DOUBLE_PROPORTIONAL_RESULT.SUPER_APPORTIONMENT.PROPORTIONAL_ELECTION_QUORUM' | translate"></bc-label>
+      }
+      <bc-label class="super-apportionment-table-entry" [label]="'DOUBLE_PROPORTIONAL_RESULT.SUPER_APPORTIONMENT.VOTER_NUMBER' | translate"></bc-label>
+      <bc-label class="super-apportionment-table-entry" [label]="'DOUBLE_PROPORTIONAL_RESULT.SUPER_APPORTIONMENT.QUOTIENT' | translate: doubleProportionalResult"></bc-label>
+      <bc-label class="super-apportionment-table-entry bold" [label]="'DOUBLE_PROPORTIONAL_RESULT.SUPER_APPORTIONMENT.EXPECTED_NUMBER_OF_MANDATES' | translate: doubleProportionalResult"></bc-label>
+      @for (column of doubleProportionalResult.columns; track column) {
+        <span class="super-apportionment-table-entry bold header">{{ column.unionList?.orderNumber ?? column.list?.orderNumber ?? '' }} - {{ column.unionList?.shortDescription ?? column.list?.shortDescription ?? '' }}</span>
+        @if (showCantonalQuorum) {
+          <vo-ausm-boolean-status-label class="super-apportionment-table-entry" [value]="column.cantonalQuorumReached"></vo-ausm-boolean-status-label>
+        }
+        @if (showElectionQuorum) {
+          <vo-ausm-boolean-status-label class="super-apportionment-table-entry" [value]="column.proportionalElectionQuorumReached"></vo-ausm-boolean-status-label>
+        }
+        <span class="super-apportionment-table-entry">{{ column.voterNumber }}</span>
+        <span class="super-apportionment-table-entry">{{ column.superApportionmentQuotient | number: '1.2-2' }}</span>
+        <span class="super-apportionment-table-entry bold"><strong>{{ column.superApportionmentNumberOfMandates }}</strong></span>
+      }
+    </div>
   </div>
-
-  <ng-container *ngIf="doubleProportionalResult.hasSuperApportionmentRequiredLotDecision">
-    <app-double-proportional-result-super-apportionment-lot-decision [doubleProportionalResult]="doubleProportionalResult"
-                                                                     (update)="handleLotDecisionUpdate()"
-    ></app-double-proportional-result-super-apportionment-lot-decision>
-
-    <div class="my-6 divider-bold"></div>
-  </ng-container>
-
-  <div class="super-apportionment-table" [style.gridTemplateRows]="gridTemplateRowsStyle">
-    <bc-label class="super-apportionment-table-entry bold header"><!-- empty --></bc-label>
-    <bc-label *ngIf="showCantonalQuorum" class="super-apportionment-table-entry" [label]="'DOUBLE_PROPORTIONAL_RESULT.SUPER_APPORTIONMENT.CANTONAL_QUORUM' | translate"></bc-label>
-    <bc-label *ngIf="showElectionQuorum" class="super-apportionment-table-entry" [label]="'DOUBLE_PROPORTIONAL_RESULT.SUPER_APPORTIONMENT.PROPORTIONAL_ELECTION_QUORUM' | translate"></bc-label>
-    <bc-label class="super-apportionment-table-entry" [label]="'DOUBLE_PROPORTIONAL_RESULT.SUPER_APPORTIONMENT.VOTER_NUMBER' | translate"></bc-label>
-    <bc-label class="super-apportionment-table-entry" [label]="'DOUBLE_PROPORTIONAL_RESULT.SUPER_APPORTIONMENT.QUOTIENT' | translate: doubleProportionalResult"></bc-label>
-    <bc-label class="super-apportionment-table-entry bold" [label]="'DOUBLE_PROPORTIONAL_RESULT.SUPER_APPORTIONMENT.EXPECTED_NUMBER_OF_MANDATES' | translate: doubleProportionalResult"></bc-label>
-
-    <ng-container *ngFor="let column of doubleProportionalResult.columns">
-      <span class="super-apportionment-table-entry bold header">{{ column.unionList?.orderNumber ?? column.list.orderNumber }} - {{ column.unionList?.shortDescription ?? column.list.shortDescription }}</span>
-      <vo-ausm-boolean-status-label *ngIf="showCantonalQuorum" class="super-apportionment-table-entry" [value]="column.cantonalQuorumReached"></vo-ausm-boolean-status-label>
-      <vo-ausm-boolean-status-label *ngIf="showElectionQuorum" class="super-apportionment-table-entry" [value]="column.proportionalElectionQuorumReached"></vo-ausm-boolean-status-label>
-      <span class="super-apportionment-table-entry">{{ column.voterNumber }}</span>
-      <span class="super-apportionment-table-entry">{{ column.superApportionmentQuotient | number: '1.2-2' }}</span>
-      <span class="super-apportionment-table-entry bold"><strong>{{ column.superApportionmentNumberOfMandates }}</strong></span>
-    </ng-container>
-  </div>
-</div>
+}
 

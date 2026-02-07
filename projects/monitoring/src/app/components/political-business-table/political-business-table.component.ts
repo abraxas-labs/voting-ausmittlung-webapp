@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { FilterDirective, SelectionDirective, SortDirective, TableDataSource } from '@abraxas/base-components';
 import { SimplePoliticalBusinessOverview } from '../monitoring-political-businesses-overview/monitoring-political-businesses-overview.component';
 import { DomainOfInfluenceType } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/domain_of_influence_pb';
@@ -21,6 +21,10 @@ import { StorageService } from '../../services/storage.service';
   standalone: false,
 })
 export class PoliticalBusinessTableComponent implements OnInit, AfterViewInit {
+  private readonly enumUtil = inject(EnumUtil);
+  private readonly i18n = inject(TranslateService);
+  private readonly storageService = inject(StorageService);
+
   public readonly minStateColumn = 'minState';
   public readonly domainOfInfluenceTypeColumn = 'domainOfInfluenceType';
   public readonly businessTypeColumn = 'businessType';
@@ -66,12 +70,6 @@ export class PoliticalBusinessTableComponent implements OnInit, AfterViewInit {
   public stateList: EnumItemDescription<CountingCircleResultState>[] = [];
   public domainOfInfluenceTypeList: EnumItemDescription<DomainOfInfluenceType>[] = [];
   public politicalBusinessTypeList: EnumItemDescription<PoliticalBusinessType>[] = [];
-
-  constructor(
-    private readonly enumUtil: EnumUtil,
-    private readonly i18n: TranslateService,
-    private readonly storageService: StorageService,
-  ) {}
 
   public ngOnInit(): void {
     this.stateList = this.enumUtil.getArrayWithDescriptions<CountingCircleResultState>(

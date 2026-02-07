@@ -1,40 +1,39 @@
 <vo-lib-page [contentLoading]="loading"
-             header="VOTE.BUNDLE_OVERVIEW">
-  <ng-container *ngIf="result">
+  header="VOTE.BUNDLE_OVERVIEW">
+  @if (result) {
     <vo-ausm-vote-info [voteResult]="result.politicalBusinessResult"></vo-ausm-vote-info>
     <div class="my-4">
       <div class="shortcut-container">
         <bc-icon class="clickable-icon" icon="question-circle-o" (click)="showShortcutDialog()"></bc-icon>
       </div>
-
       <vo-ausm-vote-bundle-table [bundles]="result.bundles"
-                                 [rowSelectable]="true"
-                                 [enablePagination]="true"
-                                 [enableActions]="true"
-                                 [enableSorting]="true"
-                                 [enableFiltering]="true"
-                                 [enableBundleSizeColumn]="false"
-                                 [readOnly]="resultReadOnly"
-                                 (openDetail)="openBundle($event)"
-                                 (reviewBundle)="reviewBundle($event)"
-                                 (succeedBundleReview)="succeedBundleReview($event)"
-                                 (rejectBundleReview)="rejectBundleReview($event)"
-                                 (deleteBundle)="deleteBundle($event)"
-                                 (generateBundleReviewExport)="generateBundleReviewExport($event)"
-                                 (downloadBundleReviewExport)="downloadBundleReviewExport($event)"
-                                 [reviewProcedure]="result.politicalBusinessResult.entryParams?.reviewProcedure"
-                                 [enableReviewMultiple]="result.politicalBusinessResult.entryParams?.reviewProcedure === reviewProcedures.VOTE_REVIEW_PROCEDURE_PHYSICALLY"
-                                 [enableReviewColumn]="result.politicalBusinessResult.entryParams?.reviewProcedure === reviewProcedures.VOTE_REVIEW_PROCEDURE_PHYSICALLY">
+        [rowSelectable]="true"
+        [enablePagination]="true"
+        [enableActions]="true"
+        [enableSorting]="true"
+        [enableFiltering]="true"
+        [enableBundleSizeColumn]="false"
+        [readOnly]="resultReadOnly"
+        (openDetail)="openBundle($event)"
+        (reviewBundle)="reviewBundle($event)"
+        (succeedBundleReview)="succeedBundleReview($event)"
+        (rejectBundleReview)="rejectBundleReview($event)"
+        (deleteBundle)="deleteBundle($event)"
+        (resetBundle)="resetBundle($event)"
+        (generateBundleReviewExport)="generateBundleReviewExport($event)"
+        (downloadBundleReviewExport)="downloadBundleReviewExport($event)"
+        [reviewProcedure]="result.politicalBusinessResult.entryParams?.reviewProcedure"
+        [enableReviewMultiple]="result.politicalBusinessResult.entryParams?.reviewProcedure === reviewProcedures.VOTE_REVIEW_PROCEDURE_PHYSICALLY">
       </vo-ausm-vote-bundle-table>
     </div>
     <div class="sticky-buttons">
       <vo-lib-button-bar [cancelLabel]="'APP.BACK' | translate"
-                         [hasSaveButton]="canCreateBundle && !resultReadOnly"
-                         [saveLabel]="'VOTE.NEW_BUNDLE' | translate"
-                         [canSave]="true"
-                         [saving]="isCreatingBundle"
-                         (cancel)="back()"
-                         (save)="createNewBundle()"></vo-lib-button-bar>
+        [hasSaveButton]="canCreateBundle && !resultReadOnly"
+        [saveLabel]="'VOTE.NEW_BUNDLE' | translate"
+        [canSave]="true"
+        [saving]="isCreatingBundle"
+        (cancel)="back()"
+        (save)="createNewBundle()"></vo-lib-button-bar>
     </div>
-  </ng-container>
+  }
 </vo-lib-page>

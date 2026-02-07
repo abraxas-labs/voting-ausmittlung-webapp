@@ -5,7 +5,7 @@
  */
 
 import { SnackbarService } from '@abraxas/voting-lib';
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TranslateService } from '@ngx-translate/core';
 import { ExportService, ResultExportConfiguration, SimplePoliticalBusiness } from 'ausmittlung-lib';
@@ -17,6 +17,12 @@ import { ExportService, ResultExportConfiguration, SimplePoliticalBusiness } fro
   standalone: false,
 })
 export class ExportCockpitDialogComponent {
+  private readonly dialogRef = inject<MatDialogRef<ExportCockpitDialogData>>(MatDialogRef);
+  private readonly exportService = inject(ExportService);
+  private readonly i18n = inject(TranslateService);
+  private readonly toast = inject(SnackbarService);
+  readonly dialogData = inject<ExportCockpitDialogData>(MAT_DIALOG_DATA);
+
   public saving: boolean = false;
   public triggeringExport: boolean = false;
   public triggerModeAuto: boolean = false;
@@ -26,13 +32,9 @@ export class ExportCockpitDialogComponent {
   public hasEdits: boolean = false;
   public isValid: boolean = false;
 
-  constructor(
-    private readonly dialogRef: MatDialogRef<ExportCockpitDialogData>,
-    private readonly exportService: ExportService,
-    private readonly i18n: TranslateService,
-    private readonly toast: SnackbarService,
-    @Inject(MAT_DIALOG_DATA) public readonly dialogData: ExportCockpitDialogData,
-  ) {
+  constructor() {
+    const dialogData = this.dialogData;
+
     this.configs = dialogData.exportConfigs;
 
     if (this.configs.length > 0) {

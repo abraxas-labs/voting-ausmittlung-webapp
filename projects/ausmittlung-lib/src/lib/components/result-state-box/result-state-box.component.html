@@ -1,6 +1,8 @@
 <div [ngClass]="'result-state-' + state" class="colorbox">
   <span>{{ stateDescriptionsByState[state] ?? 'COUNTING_CIRCLE_RESULT_STATE.' + state | translate }}</span>
-  <span *ngIf="timestamp">
-    {{ timestamp | date: 'shortTime' }}
-  </span>
+  @if (timestamp) {
+    <span>
+      {{ timestamp | date: 'shortTime' }}
+    </span>
+  }
 </div>

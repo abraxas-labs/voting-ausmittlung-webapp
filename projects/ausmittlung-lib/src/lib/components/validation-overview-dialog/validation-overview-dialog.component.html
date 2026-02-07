@@ -2,17 +2,19 @@
   <h3 header>{{ header | translate }}</h3>
 
   <div content>
-    <vo-ausm-validation-summary *ngFor="let summary of validationSummaries" [summary]="summary"></vo-ausm-validation-summary>
+    @for (summary of validationSummaries; track summary) {
+      <vo-ausm-validation-summary [summary]="summary"></vo-ausm-validation-summary>
+    }
   </div>
 
   <div footer>
     <vo-lib-button-bar [sticky]="false"
-                        [cancelLabel]="'APP.CLOSE' | translate"
-                        [saveLabel]="saveLabel | translate"
-                        [saveIcon]="saveIcon"
-                        [hintLabel]="(hintLabel ?? '') | translate"
-                        [hasSaveButton]="hasSaveButton"
-                        (save)="save()"
-                        (cancel)="close()"></vo-lib-button-bar>
+      [cancelLabel]="'APP.CLOSE' | translate"
+      [saveLabel]="saveLabel | translate"
+      [saveIcon]="saveIcon"
+      [hintLabel]="(hintLabel ?? '') | translate"
+      [hasSaveButton]="hasSaveButton"
+      (save)="save()"
+      (cancel)="close()"></vo-lib-button-bar>
   </div>
 </vo-lib-dialog>

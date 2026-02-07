@@ -4,15 +4,17 @@
  * For license information see LICENSE file.
  */
 
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ViewChild, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   ProportionalElectionUnionResultService,
   DoubleProportionalResult,
   DoubleProportionalResultApportionmentState,
   HasDeactivate,
+  EventLogService,
+  ProportionalElectionUnionEndResultEventTypes,
 } from 'ausmittlung-lib';
-import { Subscription } from 'rxjs';
+import { debounceTime, Subscription } from 'rxjs';
 import { DoubleProportionalResultSuperApportionmentComponent } from '../../components/double-proportional-result-super-apportionment/double-proportional-result-super-apportionment.component';
 import { DoubleProportionalResultSubApportionmentComponent } from '../../components/double-proportional-result-sub-apportionment/double-proportional-result-sub-apportionment.component';
 
@@ -23,11 +25,17 @@ import { DoubleProportionalResultSubApportionmentComponent } from '../../compone
   standalone: false,
 })
 export class ProportionalElectionUnionDoubleProportionalResultComponent implements OnDestroy, HasDeactivate {
+  private readonly route = inject(ActivatedRoute);
+  private readonly resultService = inject(ProportionalElectionUnionResultService);
+  private readonly eventLogService = inject(EventLogService);
+
   private readonly routeSubscription: Subscription;
+  private watchSubscription?: Subscription;
   public readonly columns: string[] = [];
 
   public loading: boolean = false;
   public finalizing: boolean = false;
+  public lotDecisionUpdating: boolean = false;
   public selectedStepIndex: number = 0;
   public doubleProportionalResult?: DoubleProportionalResult;
   public steps?: DoubleProportionalResultStep[];
@@ -35,11 +43,29 @@ export class ProportionalElectionUnionDoubleProportionalResultComponent implemen
   public deactivateTitle: string = 'DOUBLE_PROPORTIONAL_RESULT.CLOSE_WITH_OPEN_REQUIRED_LOT_DECISIONS_CONFIRM.TITLE';
   public deactivateMessage: string = 'DOUBLE_PROPORTIONAL_RESULT.CLOSE_WITH_OPEN_REQUIRED_LOT_DECISIONS_CONFIRM.DESCRIPTION';
 
-  constructor(
-    private readonly route: ActivatedRoute,
-    private readonly resultService: ProportionalElectionUnionResultService,
-  ) {
-    this.routeSubscription = this.route.params.subscribe(({ politicalBusinessUnionId }) => this.loadData(politicalBusinessUnionId));
+  constructor() {
+    this.routeSubscription = this.route.params.subscribe(async ({ politicalBusinessUnionId }) => {
+      this.watchSubscription?.unsubscribe();
+      delete this.watchSubscription;
+
+      await this.loadData(politicalBusinessUnionId);
+
+      if (!this.doubleProportionalResult) {
+        return;
+      }
+
+      this.watchSubscription = this.eventLogService
+        .watch([...ProportionalElectionUnionEndResultEventTypes], {
+          contestId: this.doubleProportionalResult.contest.id,
+          politicalBusinessUnionId,
+        })
+        .pipe(debounceTime(1000)) // refresh once a second at max
+        .subscribe(() => {
+          this.loadData(politicalBusinessUnionId);
+          this.finalizing = false;
+          this.lotDecisionUpdating = false;
+        });
+    });
   }
 
   public get showDeactivateMessage(): boolean {
@@ -73,6 +99,12 @@ export class ProportionalElectionUnionDoubleProportionalResultComponent implemen
   }
 
   public handleApportionmentUpdate() {
+    // We only set UI lot decision updating to true for super apportionments lot decisions,
+    // because the sub apportionment depends on calculations of the event processor.
+    if (this.selectedStepIndex === 0) {
+      this.lotDecisionUpdating = true;
+    }
+
     this.updateSteps();
   }
 

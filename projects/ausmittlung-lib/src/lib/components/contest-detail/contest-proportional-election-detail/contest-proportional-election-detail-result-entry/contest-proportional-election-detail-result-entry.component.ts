@@ -7,12 +7,12 @@
 import { RadioButton } from '@abraxas/base-components';
 import { ProportionalElectionReviewProcedure } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/proportional_election_pb';
 import { EnumUtil } from '@abraxas/voting-lib';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { isEqual } from 'lodash';
 import { ProportionalElection, ProportionalElectionResultEntryParams } from '../../../../models';
 import { ProportionalElectionResultService } from '../../../../services/proportional-election-result.service';
-import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'vo-ausm-contest-proportional-election-detail-result-entry',
@@ -20,6 +20,8 @@ import { ActivatedRoute } from '@angular/router';
   standalone: false,
 })
 export class ContestProportionalElectionDetailResultEntryComponent implements OnInit, OnDestroy {
+  private readonly resultService = inject(ProportionalElectionResultService);
+
   @Input()
   public readonly: boolean = true;
 
@@ -51,11 +53,10 @@ export class ContestProportionalElectionDetailResultEntryComponent implements On
   public useCandidateCheckDigit: boolean = false;
   private readonly routeSubscription: Subscription;
 
-  constructor(
-    private readonly resultService: ProportionalElectionResultService,
-    enumUtil: EnumUtil,
-    route: ActivatedRoute,
-  ) {
+  constructor() {
+    const enumUtil = inject(EnumUtil);
+    const route = inject(ActivatedRoute);
+
     this.reviewProcedureChoices = enumUtil
       .getArrayWithDescriptions<ProportionalElectionReviewProcedure>(
         ProportionalElectionReviewProcedure,
@@ -79,6 +80,7 @@ export class ContestProportionalElectionDetailResultEntryComponent implements On
         ballotBundleSampleSize,
         automaticEmptyVoteCounting,
         automaticBallotBundleNumberGeneration,
+        automaticBallotNumberGeneration,
         ballotNumberGeneration,
         reviewProcedure,
         candidateCheckDigit,
@@ -88,6 +90,7 @@ export class ContestProportionalElectionDetailResultEntryComponent implements On
         ballotBundleSampleSize,
         automaticEmptyVoteCounting,
         automaticBallotBundleNumberGeneration,
+        automaticBallotNumberGeneration,
         ballotNumberGeneration,
         reviewProcedure,
         candidateCheckDigit,

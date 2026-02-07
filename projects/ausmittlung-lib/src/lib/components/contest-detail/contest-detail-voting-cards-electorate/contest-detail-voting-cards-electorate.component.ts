@@ -5,7 +5,7 @@
  */
 
 import { DomainOfInfluenceType } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/domain_of_influence_pb';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { ElectorateVotingCardResultDetail, VotingCardResultDetail, VotingChannel } from '../../../models';
 import { sum } from '../../../services/utils/array.utils';
 import { TranslateService } from '@ngx-translate/core';
@@ -18,6 +18,8 @@ import { DomainOfInfluenceCanton } from '@abraxas/voting-ausmittlung-service-pro
   standalone: false,
 })
 export class ContestDetailVotingCardsElectorateComponent {
+  private readonly i18n = inject(TranslateService);
+
   public readonly votingChannels: typeof VotingChannel = VotingChannel;
   public readonly domainOfInfluenceCantons: typeof DomainOfInfluenceCanton = DomainOfInfluenceCanton;
   public expansionPanelHeaderTitle: string = '';
@@ -31,8 +33,6 @@ export class ContestDetailVotingCardsElectorateComponent {
       type: v.map(d => this.i18n.instant(`DOMAIN_OF_INFLUENCE_TYPES.${d}`)).join(', '),
     });
   }
-
-  constructor(private readonly i18n: TranslateService) {}
 
   @Input()
   public canton: DomainOfInfluenceCanton = DomainOfInfluenceCanton.DOMAIN_OF_INFLUENCE_CANTON_UNSPECIFIED;
@@ -52,7 +52,7 @@ export class ContestDetailVotingCardsElectorateComponent {
   @Output()
   public votingCardDetailsChange: EventEmitter<ElectorateVotingCardResultDetail[]> = new EventEmitter<ElectorateVotingCardResultDetail[]>();
 
-  public update(detail: VotingCardResultDetail, value?: number): void {
+  public update(detail: ElectorateVotingCardResultDetail, value?: number): void {
     detail.countOfReceivedVotingCards = value;
     this.updateTotals();
     this.votingCardDetailsChange.emit(this.votingCardDetailsValue);

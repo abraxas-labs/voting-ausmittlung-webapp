@@ -24,6 +24,7 @@ export class ProportionalElectionBallotUiService {
       removableCandidatesByNumber: {},
       removableCandidatesInRangeByNumber: {},
       emptyVoteCountValid: true,
+      automaticBallotNumberGeneration: true,
       automaticEmptyVoteCounting: true,
       userEnteredEmptyVoteCount: 0,
       emptyVoteCount: 0,
@@ -35,6 +36,7 @@ export class ProportionalElectionBallotUiService {
 
   public buildUiData(
     electionCandidates: ProportionalElectionCandidate[],
+    automaticBallotNumberGeneration: boolean,
     automaticEmptyVoteCounting: boolean,
     numberOfMandates: number,
     candidateCheckDigit: boolean,
@@ -76,6 +78,7 @@ export class ProportionalElectionBallotUiService {
       listPositions,
       numberOfMandates,
       emptyVoteCount,
+      automaticBallotNumberGeneration,
       automaticEmptyVoteCounting,
       emptyVoteCountValid: true,
       userEnteredEmptyVoteCount: emptyVoteCount,
@@ -240,6 +243,7 @@ export class ProportionalElectionBallotUiService {
           })),
       ],
       emptyVoteCount: 0,
+      logs: [],
     };
   }
 
@@ -399,6 +403,7 @@ export interface ProportionalElectionBallotUiData {
   // indexed by the candidates number converted to a number
   removableCandidatesInRangeByNumber: Record<number, ProportionalElectionBallotCandidate>;
 
+  automaticBallotNumberGeneration: boolean;
   automaticEmptyVoteCounting: boolean;
   emptyVoteCountValid: boolean;
   userEnteredEmptyVoteCount: number;

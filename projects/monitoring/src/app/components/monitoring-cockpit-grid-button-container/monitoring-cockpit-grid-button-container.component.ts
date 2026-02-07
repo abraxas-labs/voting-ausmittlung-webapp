@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { FilteredCountingCircleResults } from '../monitoring-cockpit-grid/monitoring-cockpit-grid.component';
 import {
   ContestCantonDefaults,
@@ -26,6 +26,12 @@ import { SnackbarService } from '@abraxas/voting-lib';
   standalone: false,
 })
 export class MonitoringCockpitGridButtonContainerComponent {
+  private readonly i18n = inject(TranslateService);
+  private readonly voteResultService = inject(VoteResultService);
+  private readonly proportionalElectionResultService = inject(ProportionalElectionResultService);
+  private readonly majorityElectionResultService = inject(MajorityElectionResultService);
+  private readonly toast = inject(SnackbarService);
+
   @Input()
   public filteredCountingCircleResults: FilteredCountingCircleResults[] = [];
 
@@ -45,14 +51,6 @@ export class MonitoringCockpitGridButtonContainerComponent {
   public politicalBusinessUnion?: PoliticalBusinessUnion;
 
   private loadingValue: boolean = false;
-
-  constructor(
-    private readonly i18n: TranslateService,
-    private readonly voteResultService: VoteResultService,
-    private readonly proportionalElectionResultService: ProportionalElectionResultService,
-    private readonly majorityElectionResultService: MajorityElectionResultService,
-    private readonly toast: SnackbarService,
-  ) {}
 
   public get loading(): boolean {
     return this.loadingValue;

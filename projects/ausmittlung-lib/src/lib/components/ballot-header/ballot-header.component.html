@@ -1,26 +1,33 @@
 <div class="ballot-header-content">
   <vo-ausm-ballot-navigation
     class="ml-1"
-    [readonly]="disabled || !canNavigate || actionExecuting"
-    [ballotNumber]="ballotNumber || 1"
-    [minBallotNumber]="minBallotNumber"
-    [maxBallotNumber]="maxBallotNumber"
+    [readonly]="disabled || actionExecuting"
+    [ballotNumber]="ballotNumber"
+    [minBallotNumber]="automaticBallotNumberGeneration ? minBallotNumber : 1"
+    [maxBallotNumber]="automaticBallotNumberGeneration ? maxBallotNumber : undefined"
+    [canGoNext]="canGoNext"
+    [canGoPrevious]="canGoPrevious"
     [labelBallotNumber]="labelBallotNumber"
-    (ballotNumberChange)="ballotNumberChange.emit($event)"
+    (ballotNumberEntered)="ballotNumberEntered.emit($event)"
+    (previousBallotRequest)="previousBallotRequest.emit($event)"
+    (nextBallotRequest)="nextBallotRequest.emit($event)"
   ></vo-ausm-ballot-navigation>
   <div class="ballot-header-body">
     <ng-content select="[center]"></ng-content>
     <ng-container *voAusmPermission="deleteBallotPermission">
-      <bc-button
-        *ngIf="!readonly"
-        color="warn"
-        variant="tertiary"
-        [disabled]="disabled || actionExecuting || !canDeleteBallot"
-        [label]="labelDelete | translate"
-        (buttonClick)="confirmDeleteBallot()"
-      ></bc-button>
+      @if (!readonly) {
+        <bc-button
+          color="warn"
+          variant="tertiary"
+          [disabled]="disabled || actionExecuting || !canDeleteBallot"
+          [label]="labelDelete | translate"
+          (buttonClick)="confirmDeleteBallot()"
+        ></bc-button>
+      }
     </ng-container>
   </div>
   <ng-content select="[right]"></ng-content>
-  <bc-spinner *ngIf="actionExecuting"></bc-spinner>
+  @if (actionExecuting) {
+    <bc-spinner></bc-spinner>
+  }
 </div>

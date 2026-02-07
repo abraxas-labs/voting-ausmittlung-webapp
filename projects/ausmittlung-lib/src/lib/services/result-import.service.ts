@@ -17,7 +17,7 @@ import {
 import { ResultImportServicePromiseClient } from '@abraxas/voting-ausmittlung-service-proto/grpc/result_import_service_grpc_web_pb';
 import { GrpcBackendService, GrpcEnvironment, GrpcService } from '@abraxas/voting-lib';
 import { HttpClient } from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MajorityElectionWriteInMappings, PoliticalBusinessType, ResultImport } from '../models';
 import { MajorityElectionWriteInMappingsProto, MajorityElectionWriteInMappingTarget } from '../models/result-import.model';
 import { PoliticalBusinessService } from './political-business.service';
@@ -29,14 +29,15 @@ import { ResultImportType } from '@abraxas/voting-ausmittlung-service-proto/grpc
   providedIn: 'root',
 })
 export class ResultImportService extends GrpcService<ResultImportServicePromiseClient> {
+  private readonly http = inject(HttpClient);
+
   private readonly apiUrl: string = '';
 
-  constructor(
-    private readonly http: HttpClient,
-    @Inject(REST_API_URL_INJECTION_TOKEN) restApiUrl: string,
-    grpcBackend: GrpcBackendService,
-    @Inject(GRPC_ENV_INJECTION_TOKEN) env: GrpcEnvironment,
-  ) {
+  constructor() {
+    const restApiUrl = inject(REST_API_URL_INJECTION_TOKEN);
+    const grpcBackend = inject(GrpcBackendService);
+    const env = inject<GrpcEnvironment>(GRPC_ENV_INJECTION_TOKEN);
+
     super(ResultImportServicePromiseClient, env ?? { production: false, grpcApiEndpoint: 'http://localhost:5100' }, grpcBackend);
     this.apiUrl = `${restApiUrl ?? 'http://localhost:5100/api'}/result_import/`;
   }

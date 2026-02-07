@@ -5,10 +5,7 @@
  */
 
 import { BallotBundleState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/ballot_bundle_pb';
-import { DialogService, SnackbarService } from '@abraxas/voting-lib';
-import { Component, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { ShortcutDialogComponent, ShortcutDialogData } from '../../../components/ballot-shortcut-dialog/shortcut-dialog.component';
 import { MajorityElectionBallotContentsComponent } from '../../../components/majority-election/majority-election-ballot-contents/majority-election-ballot-contents.component';
 import {
@@ -22,9 +19,8 @@ import {
 import { MajorityElectionResultBundleService } from '../../../services/majority-election-result-bundle.service';
 import { MajorityElectionResultService } from '../../../services/majority-election-result.service';
 import { MajorityElectionService } from '../../../services/majority-election.service';
-import { PermissionService } from '../../../services/permission.service';
-import { UserService } from '../../../services/user.service';
 import { ElectionBallotComponent } from '../../election-ballot/election-ballot.component';
+import { BallotHeaderComponent } from '../../../components/ballot-header/ballot-header.component';
 
 @Component({
   selector: 'vo-ausm-majority-election-ballot',
@@ -37,6 +33,10 @@ export class MajorityElectionBallotComponent extends ElectionBallotComponent<
   PoliticalBusinessResultBundle,
   MajorityElectionResultBallot
 > {
+  private readonly resultBundleService = inject(MajorityElectionResultBundleService);
+  private readonly resultService = inject(MajorityElectionResultService);
+  private readonly electionService = inject(MajorityElectionService);
+
   private electionCandidates: MajorityElectionCandidates = {
     secondaryElectionCandidates: [],
     candidates: [],
@@ -49,19 +49,11 @@ export class MajorityElectionBallotComponent extends ElectionBallotComponent<
   @ViewChild(MajorityElectionBallotContentsComponent)
   private majorityElectionBallotContentsComponent?: MajorityElectionBallotContentsComponent;
 
-  constructor(
-    route: ActivatedRoute,
-    router: Router,
-    dialog: DialogService,
-    toast: SnackbarService,
-    i18n: TranslateService,
-    userService: UserService,
-    permissionService: PermissionService,
-    private readonly resultBundleService: MajorityElectionResultBundleService,
-    private readonly resultService: MajorityElectionResultService,
-    private readonly electionService: MajorityElectionService,
-  ) {
-    super(userService, route, dialog, i18n, router, toast, permissionService);
+  @ViewChild(BallotHeaderComponent)
+  private ballotHeaderComponent?: BallotHeaderComponent;
+
+  constructor() {
+    super();
   }
 
   public get ballotBundleSize(): number | undefined {
@@ -101,16 +93,19 @@ export class MajorityElectionBallotComponent extends ElectionBallotComponent<
     this.dialog.open(ShortcutDialogComponent, data);
   }
 
-  protected async createNewBallot(): Promise<MajorityElectionResultBallot> {
+  protected newBallot(): MajorityElectionResultBallot {
     const showEmptyVoteCount =
       this.politicalBusinessResult!.election.numberOfMandates !== 1 ||
       this.politicalBusinessResult!.secondaryMajorityElectionResults.length > 0;
 
+    const isManualEmptyVoteCounting = !this.politicalBusinessResult!.entryParams?.automaticEmptyVoteCounting;
+    this.emptyVoteCountValid = !showEmptyVoteCount || !isManualEmptyVoteCounting;
+
     this.ballot = {
       isNew: true,
-      number: this.currentMaxBallotNumber,
+      number: this.politicalBusinessResult!.entryParams?.automaticBallotNumberGeneration ? this.currentMaxBallotNumber : 0,
       computedEmptyVoteCount: !showEmptyVoteCount ? 0 : this.politicalBusinessResult!.election.numberOfMandates,
-      emptyVoteCount: !showEmptyVoteCount ? 0 : this.politicalBusinessResult!.election.numberOfMandates,
+      emptyVoteCount: !showEmptyVoteCount || isManualEmptyVoteCounting ? 0 : this.politicalBusinessResult!.election.numberOfMandates,
       individualVoteCount: 0,
       invalidVoteCount: 0,
       election: this.politicalBusinessResult!.election,
@@ -124,11 +119,12 @@ export class MajorityElectionBallotComponent extends ElectionBallotComponent<
           selected: false,
         })),
         election: this.electionByIds![sme.secondaryMajorityElectionId],
-        emptyVoteCount: this.electionByIds![sme.secondaryMajorityElectionId].numberOfMandates,
+        emptyVoteCount: isManualEmptyVoteCounting ? 0 : this.electionByIds![sme.secondaryMajorityElectionId].numberOfMandates,
         individualVoteCount: 0,
         invalidVoteCount: 0,
         computedEmptyVoteCount: this.electionByIds![sme.secondaryMajorityElectionId].numberOfMandates,
       })),
+      logs: [],
     };
     return this.ballot;
   }
@@ -158,10 +154,12 @@ export class MajorityElectionBallotComponent extends ElectionBallotComponent<
     this.buildElectionData(this.politicalBusinessResult);
     this.bundle = {
       countOfBallots: 0,
+      countOfModifiedBallots: 0,
       id: bundleId,
       state: BallotBundleState.BALLOT_BUNDLE_STATE_IN_PROCESS,
       number: this.route.snapshot.queryParams.bundleNumber,
       createdBy: await this.userService.getUser(),
+      ballotNumbers: [],
       ballotNumbersToReview: [],
       logs: [],
     };
@@ -170,7 +168,12 @@ export class MajorityElectionBallotComponent extends ElectionBallotComponent<
   }
 
   protected saveNewBallot(bundle: PoliticalBusinessResultBundle, ballot: MajorityElectionResultBallot): Promise<number> {
-    return this.resultBundleService.createBallot(bundle.id, ballot, this.politicalBusinessResult!.entryParams!.automaticEmptyVoteCounting);
+    return this.resultBundleService.createBallot(
+      bundle.id,
+      ballot,
+      this.politicalBusinessResult!.entryParams!.automaticEmptyVoteCounting,
+      this.politicalBusinessResult!.entryParams!.automaticBallotNumberGeneration,
+    );
   }
 
   protected updateBallot(bundle: PoliticalBusinessResultBundle, ballot: MajorityElectionResultBallot): Promise<void> {
@@ -200,7 +203,11 @@ export class MajorityElectionBallotComponent extends ElectionBallotComponent<
   }
 
   protected setFocus(): void {
-    this.majorityElectionBallotContentsComponent?.setFocus();
+    if (this.politicalBusinessResult!.entryParams?.automaticBallotNumberGeneration) {
+      this.majorityElectionBallotContentsComponent?.setFocus();
+    } else {
+      this.ballotHeaderComponent?.setFocus();
+    }
   }
 
   private async loadCandidates(electionId: string): Promise<void> {

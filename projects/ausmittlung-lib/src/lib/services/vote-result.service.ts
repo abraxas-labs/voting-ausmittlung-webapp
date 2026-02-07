@@ -47,7 +47,7 @@ import {
   VoteResultServicePromiseClient,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/vote_result_service_grpc_web_pb';
 import { GrpcBackendService, GrpcEnvironment } from '@abraxas/voting-lib';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   BallotEndResult,
@@ -95,11 +95,12 @@ export class VoteResultService extends PoliticalBusinessResultBaseService<
   VoteResultServicePromiseClient,
   VoteResultServiceClient
 > {
-  constructor(
-    grpcBackend: GrpcBackendService,
-    @Inject(GRPC_ENV_INJECTION_TOKEN) env: GrpcEnvironment,
-    private readonly validationMapping: ValidationMappingService,
-  ) {
+  private readonly validationMapping = inject(ValidationMappingService);
+
+  constructor() {
+    const grpcBackend = inject(GrpcBackendService);
+    const env = inject<GrpcEnvironment>(GRPC_ENV_INJECTION_TOKEN);
+
     super(VoteResultServicePromiseClient, VoteResultServiceClient, env, grpcBackend);
   }
 
@@ -231,6 +232,7 @@ export class VoteResultService extends PoliticalBusinessResultBaseService<
     if (resultEntry === VoteResultEntry.VOTE_RESULT_ENTRY_DETAILED) {
       const resultEntryParamsReq = new DefineVoteResultEntryParamsRequest();
       resultEntryParamsReq.setAutomaticBallotBundleNumberGeneration(resultEntryParams.automaticBallotBundleNumberGeneration);
+      resultEntryParamsReq.setAutomaticBallotNumberGeneration(resultEntryParams.automaticBallotNumberGeneration);
       resultEntryParamsReq.setBallotBundleSampleSizePercent(resultEntryParams.ballotBundleSampleSizePercent);
       resultEntryParamsReq.setReviewProcedure(resultEntryParams.reviewProcedure);
       req.setResultEntryParams(resultEntryParamsReq);

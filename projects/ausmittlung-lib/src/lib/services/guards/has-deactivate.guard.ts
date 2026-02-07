@@ -7,16 +7,14 @@
 import { CanDeactivate } from '@angular/router';
 import { DialogService } from '@abraxas/voting-lib';
 import { TranslateService } from '@ngx-translate/core';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HasDeactivateGuard<T extends HasDeactivate> implements CanDeactivate<T> {
-  constructor(
-    private readonly dialog: DialogService,
-    private readonly i18n: TranslateService,
-  ) {}
+  private readonly dialog = inject(DialogService);
+  private readonly i18n = inject(TranslateService);
 
   public async canDeactivate(component: T): Promise<boolean> {
     if (!component.showDeactivateMessage) {

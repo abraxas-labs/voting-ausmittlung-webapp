@@ -4,9 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { DialogService, SnackbarService, ThemeService } from '@abraxas/voting-lib';
-import { ChangeDetectorRef, Component, Inject, ViewChild } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import {
   ContestCountingCircleDetails,
   MajorityElectionResult,
@@ -16,16 +14,10 @@ import {
   ValidationSummary,
 } from '../../../models';
 import { MajorityElectionResultService } from '../../../services/majority-election-result.service';
-import { PoliticalBusinessResultService } from '../../../services/political-business-result.service';
-import { PermissionService } from '../../../services/permission.service';
-import { SecondFactorTransactionService } from '../../../services/second-factor-transaction.service';
 import { AbstractContestPoliticalBusinessDetailComponent } from '../contest-political-business-detail/contest-political-business-detail-base.component';
-import { ContestPoliticalBusinessDetailComponent } from '../contest-political-business-detail/contest-political-business-detail.component';
 import { ContestMajorityElectionDetailDetailedComponent } from './contest-majority-election-detail-detailed/contest-majority-election-detail-detailed.component';
 import { ContestMajorityElectionDetailFinalResultsComponent } from './contest-majority-election-detail-final-results/contest-majority-election-detail-final-results.component';
-import { UnsavedChangesService } from '../../../services/unsaved-changes.service';
 import { cloneDeep } from 'lodash';
-import { VOTING_AUSMITTLUNG_MONITORING_WEBAPP_URL } from '../../../tokens';
 
 @Component({
   selector: 'vo-ausm-contest-majority-election-detail',
@@ -47,34 +39,9 @@ export class ContestMajorityElectionDetailComponent extends AbstractContestPolit
   @ViewChild(ContestMajorityElectionDetailFinalResultsComponent)
   private contestMajorityElectionDetailFinalResultsComponent?: ContestMajorityElectionDetailFinalResultsComponent;
 
-  constructor(
-    @Inject(VOTING_AUSMITTLUNG_MONITORING_WEBAPP_URL) votingAusmittlungMonitoringWebAppUrl: string,
-    parent: ContestPoliticalBusinessDetailComponent,
-    i18n: TranslateService,
-    toast: SnackbarService,
-    permissionService: PermissionService,
-    resultService: MajorityElectionResultService,
-    dialog: DialogService,
-    secondFactorTransactionService: SecondFactorTransactionService,
-    politicalBusinessResultService: PoliticalBusinessResultService,
-    cd: ChangeDetectorRef,
-    themeService: ThemeService,
-    unsavedChangesService: UnsavedChangesService,
-  ) {
-    super(
-      votingAusmittlungMonitoringWebAppUrl,
-      i18n,
-      toast,
-      resultService,
-      dialog,
-      secondFactorTransactionService,
-      politicalBusinessResultService,
-      cd,
-      permissionService,
-      themeService,
-      unsavedChangesService,
-      parent,
-    );
+  constructor() {
+    const resultService = inject(MajorityElectionResultService);
+    super(resultService);
   }
 
   public updateCandidateResultsValid(): void {

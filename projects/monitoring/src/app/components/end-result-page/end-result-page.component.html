@@ -6,26 +6,37 @@
         <bc-breadcrumb-item [link]="(!hasPoliticalBusinessUnionContext ? '../../' : '../../../../') + 'contests/' + contest?.id">
           {{'MONITORING_COCKPIT.TITLE' | translate}}
         </bc-breadcrumb-item>
-        <bc-breadcrumb-item *ngIf="hasPoliticalBusinessUnionContext" link="../../">{{'END_RESULT.OVERVIEW' | translate}}</bc-breadcrumb-item>
+        @if (hasPoliticalBusinessUnionContext) {
+          <bc-breadcrumb-item [link]="!isPartialResult ? ['../../'] : partialUnionResultRoute">{{'END_RESULT.OVERVIEW' | translate}}</bc-breadcrumb-item>
+        }
         <bc-breadcrumb-item>{{'END_RESULT.OVERVIEW' | translate}}</bc-breadcrumb-item>
       </bc-breadcrumbs>
     </div>
-    <vo-ausm-contest-header center [contest]="contest"></vo-ausm-contest-header>
+    <vo-ausm-contest-header center [contest]="contest" [politicalBusiness]="politicalBusiness" [accessiblePoliticalBusinesses]="accessiblePoliticalBusinesses"></vo-ausm-contest-header>
+    <div right>
+        @if (showExport) {
+          <bc-button
+            class="ml-2"
+            variant="tertiary"
+            [label]="'CONTEST.DETAIL.EXPORT' | translate"
+            (buttonClick)="export()"></bc-button>
+        }
+    </div>
   </vo-lib-page-header>
 
-  <ng-container *ngIf="countOfVotersInformation && votingCards && contest">
+  @if (countOfVotersInformation && votingCards && contest && politicalBusiness) {
     <h2 class="mt-3" translate>CONTEST.DETAIL.COUNT_OF_VOTERS_AND_VOTING_CARDS</h2>
     <div class="mb-3">
       <vo-ausm-contest-detail-info [eVoting]="contest.eVoting"
-                                   [eCounting]="contest.eCountingResultsImported"
-                                   [enabledVoterTypes]="enabledVoterTypes"
-                                   [countOfVotersInformationSubTotals]="countOfVotersInformation.subTotalInfoList"
-                                   [votingCards]="votingCards"
-                                   [domainOfInfluenceTypes]="[domainOfInfluenceType]"
-                                   [readonly]="true"
-                                   [canton]="canton">
+        [eCounting]="contest.eCountingResultsImported"
+        [enabledVoterTypes]="enabledVoterTypes"
+        [countOfVotersInformationSubTotals]="countOfVotersInformation.subTotalInfoList"
+        [votingCards]="votingCards"
+        [domainOfInfluenceTypes]="[politicalBusiness.domainOfInfluence!.type]"
+        [readonly]="true"
+        [canton]="politicalBusiness.domainOfInfluence!.canton">
       </vo-ausm-contest-detail-info>
     </div>
-  </ng-container>
+  }
   <ng-content></ng-content>
 </vo-lib-page>

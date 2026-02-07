@@ -1,84 +1,80 @@
-<vo-lib-page #page
-             [contentLoading]="loading"
-             [sidebarTemplate]="sidebar"
-             [enableSidebar]="true"
-             [sidebarOpen]="true"
-             header="MAJORITY_ELECTION.BALLOT_GROUP.TITLE">
-  <ng-container *ngIf="result">
+<vo-lib-page
+  #page
+  [contentLoading]="loading"
+  [sidebarTemplate]="sidebar"
+  [enableSidebar]="true"
+  [sidebarOpen]="true"
+  header="MAJORITY_ELECTION.BALLOT_GROUP.TITLE"
+>
+  @if (result) {
     <vo-ausm-majority-election-info [electionResult]="result.electionResult"></vo-ausm-majority-election-info>
-
     <div class="content content-box">
       <bc-label [label]="'APP.NR' | translate"></bc-label>
       <bc-label [label]="'MAJORITY_ELECTION.BALLOT_GROUP.SHORT_DESCRIPTION' | translate"></bc-label>
       <bc-label [label]="'APP.COUNT' | translate"></bc-label>
-
-      <ng-container *ngFor="let ballotGroup of result.ballotGroupResults">
-        <span>{{ballotGroup.ballotGroup.position}}</span>
+      @for (ballotGroup of result.ballotGroupResults; track ballotGroup) {
+        <span>{{ ballotGroup.ballotGroup.position }}</span>
         <span class="clickable" (click)="page.sidebarOpen = true; focusedBallotGroup = ballotGroup">
-          {{ballotGroup.ballotGroup.description}}
+          {{ ballotGroup.ballotGroup.description }}
         </span>
-        <bc-number [readonly]="!canEdit || resultReadOnly"
-                   [ngModel]="ballotGroup.voteCount"
-                   [allowUndefined]="false"
-                   (ngModelChange)="ballotGroup.voteCount = +$event; updateTotalAndSetChanges()"
-                   [min]="0"
-                   [error]="ballotGroup.voteCount < 0"
-                   (focusin)="page.sidebarOpen = true; focusedBallotGroup = ballotGroup"
-                   [subscriptSizing]="'dynamic'"></bc-number>
-      </ng-container>
-
-      <span class="total total-label">{{'APP.TOTAL' | translate}}</span>
-      <span class="total">{{total | number}}</span>
+        <bc-number
+          [readonly]="!canEdit || resultReadOnly"
+          [(value)]="ballotGroup.voteCount"
+          (valueChange)="updateTotalAndSetChanges()"
+          [min]="0"
+          [required]="true"
+          (focusin)="page.sidebarOpen = true; focusedBallotGroup = ballotGroup"
+          [subscriptSizing]="'dynamic'"
+        ></bc-number>
+      }
+      <span class="total total-label">{{ 'APP.TOTAL' | translate }}</span>
+      <span class="total">{{ total | number }}</span>
     </div>
-  </ng-container>
+  }
 
   <ng-container page-footer>
-    <vo-lib-button-bar class="content-box"
-                       [cancelLabel]="'APP.BACK' | translate"
-                       [saveLabel]="'APP.SAVE_AND_NEXT' | translate"
-                       (cancel)="back()"
-                       (save)="save()"
-                       [hasSaveButton]="canEdit && !resultReadOnly"
-                       [canSave]="canSave && hasChanges"
-                       [saving]="saving"></vo-lib-button-bar>
+    <vo-lib-button-bar
+      class="content-box"
+      [cancelLabel]="'APP.BACK' | translate"
+      [saveLabel]="'APP.SAVE_AND_NEXT' | translate"
+      (cancel)="back()"
+      (save)="save()"
+      [hasSaveButton]="canEdit && !resultReadOnly"
+      [canSave]="canSave && hasChanges"
+      [saving]="saving"
+    ></vo-lib-button-bar>
   </ng-container>
 </vo-lib-page>
 
 <ng-template #sidebar>
   <h4 translate>MAJORITY_ELECTION.BALLOT_GROUP.SIDEBAR_TITLE</h4>
-  <ng-container *ngIf="focusedBallotGroup; else noContent">
-    <div *ngFor="let entry of focusedBallotGroup.ballotGroup.entries"
-         class="my-4">
-      <p class="sidebar-title mb-2">{{entry.election.title}}</p>
-      <bc-table
-        *ngIf="entry.candidates.length > 0; else noCandidates"
-        [dataSource]="entry | majorityElectionBallotGroupCandidates">
-
-        <ng-container columnDef="number">
-          <bc-header-cell *headerCellDef>{{ 'CANDIDATE.NR' | translate }}</bc-header-cell>
-          <bc-data-cell *dataCellDef="let element">{{ element.number }}</bc-data-cell>
-        </ng-container>
-
-        <ng-container columnDef="lastName">
-          <bc-header-cell *headerCellDef>{{ 'CANDIDATE.LAST_NAME' | translate }}</bc-header-cell>
-          <bc-data-cell *dataCellDef="let element">{{ element.politicalLastName }}</bc-data-cell>
-        </ng-container>
-
-        <ng-container columnDef="firstName">
-          <bc-header-cell *headerCellDef>{{ 'CANDIDATE.FIRST_NAME' | translate }}</bc-header-cell>
-          <bc-data-cell *dataCellDef="let element">{{ element.politicalFirstName }}</bc-data-cell>
-        </ng-container>
-
-        <bc-header-row *headerRowDef="let row; columns: ['number', 'lastName', 'firstName']"></bc-header-row>
-        <bc-data-row *dataRowDef="let row; columns: ['number', 'lastName', 'firstName']; let i = index"></bc-data-row>
-      </bc-table>
-      <ng-template #noCandidates>
-        <p class="no-data mb-0" translate>MAJORITY_ELECTION.BALLOT_GROUP.NO_CANDIDATES</p>
-      </ng-template>
-    </div>
-  </ng-container>
-
-  <ng-template #noContent>
+  @if (focusedBallotGroup) {
+    @for (entry of focusedBallotGroup.ballotGroup.entries; track entry) {
+      <div class="my-4">
+        <p class="sidebar-title mb-2">{{ entry.election.title }}</p>
+        @if (entry.candidates.length > 0) {
+          <bc-table [dataSource]="entry | majorityElectionBallotGroupCandidates">
+            <ng-container columnDef="number">
+              <bc-header-cell *headerCellDef>{{ 'CANDIDATE.NR' | translate }}</bc-header-cell>
+              <bc-data-cell *dataCellDef="let element">{{ element.number }}</bc-data-cell>
+            </ng-container>
+            <ng-container columnDef="lastName">
+              <bc-header-cell *headerCellDef>{{ 'CANDIDATE.LAST_NAME' | translate }}</bc-header-cell>
+              <bc-data-cell *dataCellDef="let element">{{ element.politicalLastName }}</bc-data-cell>
+            </ng-container>
+            <ng-container columnDef="firstName">
+              <bc-header-cell *headerCellDef>{{ 'CANDIDATE.FIRST_NAME' | translate }}</bc-header-cell>
+              <bc-data-cell *dataCellDef="let element">{{ element.politicalFirstName }}</bc-data-cell>
+            </ng-container>
+            <bc-header-row *headerRowDef="let row; columns: ['number', 'lastName', 'firstName']"></bc-header-row>
+            <bc-data-row *dataRowDef="let row; columns: ['number', 'lastName', 'firstName']; let i = index"></bc-data-row>
+          </bc-table>
+        } @else {
+          <p class="no-data mb-0" translate>MAJORITY_ELECTION.BALLOT_GROUP.NO_CANDIDATES</p>
+        }
+      </div>
+    }
+  } @else {
     <span class="no-data" translate>MAJORITY_ELECTION.BALLOT_GROUP.NO_ENTRIES</span>
-  </ng-template>
+  }
 </ng-template>

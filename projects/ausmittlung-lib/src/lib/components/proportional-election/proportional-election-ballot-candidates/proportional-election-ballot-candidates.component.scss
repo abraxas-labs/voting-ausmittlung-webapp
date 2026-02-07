@@ -2,7 +2,7 @@
 
 .candidate-list {
   display: grid;
-  grid-gap: 0.4rem 0.8rem;
+  gap: 0.4rem 0.8rem;
   grid-template-columns: repeat(3, auto) minmax(6.5rem, auto) repeat(3, auto) minmax(6.5rem, auto);
   align-items: center;
   overflow-y: auto;
@@ -43,10 +43,14 @@
   }
 
   bc-checkbox {
-    height: 33px; // workaround to hide the scrollbar when there aren't many candidates
+    --mat-checkbox-state-layer-size: 30px;
+    --mat-checkbox-touch-target-size: 30px;
 
-    ::ng-deep .mdc-checkbox .mat-mdc-checkbox-touch-target {
-      height: 30px;
+    // workaround to set checkbox height to 30px
+    // stylelint-disable-next-line selector-class-pattern
+    ::ng-deep .mat-mdc-checkbox .mdc-checkbox__background {
+      left: 5px;
+      top: 5px;
     }
 
     &:not(.clickable) {

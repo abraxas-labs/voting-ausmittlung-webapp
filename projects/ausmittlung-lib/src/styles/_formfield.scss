@@ -1,20 +1,10 @@
-// workaround since the bc-dropdown has a fix height of 36px
-.mat-mdc-button-touch-target {
-  height: 36px !important;
-}
-
 .mat-mdc-form-field-infix {
   // workaround since the bc form fields has a fix height of 44px
   // without this, some paddings would overlap
   --mat-form-field-container-height: 44px;
 }
 
-// workaround since the bc-dropdown has a fix height of 20px
-.mat-mdc-select-arrow-wrapper {
-  height: 20px !important;
-}
-
-// workaround since the bc-number always show the clear and shifts other elements, related to jira BC-765.
+// workaround since the bc-number always show the clear and shifts other elements, related to ticket BC-765.
 bc-number {
   .clear,
   .mat-mdc-form-field-icon-suffix {

@@ -1,22 +1,27 @@
 <vo-lib-page [contentLoading]="loading"
-             header="DOUBLE_PROPORTIONAL_RESULT.TITLE">
+  header="DOUBLE_PROPORTIONAL_RESULT.TITLE">
 
   <vo-lib-page-header header>
     <div left>
       <bc-breadcrumbs>
-        <bc-breadcrumb-item link="../../../contests">{{'CONTEST.DETAIL.CONTESTS_TITLE' | translate}}</bc-breadcrumb-item>
-        <bc-breadcrumb-item [link]="'../../../contests/' + doubleProportionalResult?.contest?.id">
+        <bc-breadcrumb-item [link]="politicalBusinessUnionContextDependentPathPrefix +  '../../../contests'">{{'CONTEST.DETAIL.CONTESTS_TITLE' | translate}}</bc-breadcrumb-item>
+        <bc-breadcrumb-item [link]="politicalBusinessUnionContextDependentPathPrefix + '../../../contests/' + doubleProportionalResult?.contest?.id">
           {{'MONITORING_COCKPIT.TITLE' | translate}}
         </bc-breadcrumb-item>
-        <bc-breadcrumb-item link="../">{{'END_RESULT.OVERVIEW' | translate}}</bc-breadcrumb-item>
+        <bc-breadcrumb-item [link]="politicalBusinessUnionContextDependentPathPrefix + '../'">{{'END_RESULT.OVERVIEW' | translate}}</bc-breadcrumb-item>
+        @if (hasPoliticalBusinessUnionContext) {
+          <bc-breadcrumb-item link="../">{{'END_RESULT.OVERVIEW' | translate}}</bc-breadcrumb-item>
+        }
         <bc-breadcrumb-item>{{'DOUBLE_PROPORTIONAL_RESULT.DISTRIBUTION_OF_MANDATES' | translate}}</bc-breadcrumb-item>
       </bc-breadcrumbs>
     </div>
     <vo-ausm-contest-header center [contest]="doubleProportionalResult?.contest"></vo-ausm-contest-header>
   </vo-lib-page-header>
 
-  <div class="mb-3" *ngIf="doubleProportionalResult">
-    <app-double-proportional-result-super-apportionment [doubleProportionalResult]="doubleProportionalResult"></app-double-proportional-result-super-apportionment>
-  </div>
+  @if (doubleProportionalResult) {
+    <div class="mb-3">
+      <app-double-proportional-result-super-apportionment [doubleProportionalResult]="doubleProportionalResult"></app-double-proportional-result-super-apportionment>
+    </div>
+  }
 
 </vo-lib-page>

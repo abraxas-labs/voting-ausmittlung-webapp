@@ -1,69 +1,77 @@
 <div class="content">
   <vo-ausm-ballot-count-input header="ELECTION.BALLOT_CARD"
-                              [eVoting]="eVoting"
-                              [eCounting]="eCounting"
-                              [readonly]="readonly || !canEnterResults"
-                              [totalCountOfVoters]="resultDetail.totalCountOfVoters"
-                              [participationLabel]="'ELECTION.VOTER_PARTICIPATION'"
-                              [countOfVoters]="resultDetail.countOfVoters"
-                              (countOfVotersChange)="countOfVotersChange.emit()"></vo-ausm-ballot-count-input>
+    [eVoting]="eVoting"
+    [eCounting]="eCounting"
+    [readonly]="readonly || !canEnterResults"
+    [totalCountOfVoters]="resultDetail.totalCountOfVoters"
+    [participationLabel]="'ELECTION.VOTER_PARTICIPATION'"
+    [countOfVoters]="resultDetail.countOfVoters"
+  (countOfVotersChange)="countOfVotersChange.emit()"></vo-ausm-ballot-count-input>
 
-  <div *ngIf="showDetailsLink">
-    <ng-container>
-      <h4 translate>POLITICAL_BUSINESS.SUBMISSION</h4>
-      <vo-ausm-contest-detail-submission-tile
-        *ngIf="resultDetail.hasBallotGroups"
-        [titleText]="'MAJORITY_ELECTION.BY_BALLOT_GROUPS' | translate"
-        [text]="(!resultDetail?.conventionalCountOfBallotGroupVotes ? 'MAJORITY_ELECTION.NO_BALLOT_GROUPS' : 'MAJORITY_ELECTION.BALLOT_GROUPS_COUNT') | translate: { count: resultDetail?.conventionalCountOfBallotGroupVotes }"
-        [disabled]="!canReadBallotGroups"
-        (buttonClick)="openBallotGroups()">
-      </vo-ausm-contest-detail-submission-tile>
-      <vo-ausm-contest-detail-submission-tile
-        [titleText]="'MAJORITY_ELECTION.BY_BUNDLE' | translate"
-        [text]="(!resultDetail?.conventionalCountOfDetailedEnteredBallots ? 'ELECTION.NO_BUNDLES' : 'ELECTION.BALLOT_COUNT') | translate: { count: resultDetail?.conventionalCountOfDetailedEnteredBallots }"
-        (buttonClick)="openBundles()">
-      </vo-ausm-contest-detail-submission-tile>
-      <vo-ausm-contest-detail-submission-tile
-        *ngIf="!readonly && (eVoting || eCounting)"
-        [titleText]="'MAJORITY_ELECTION.MAP_WRITE_INS' | translate"
-        [buttonText]="'MAJORITY_ELECTION.MAP'"
-        (buttonClick)="openWriteIns(resultDetail.election.id)">
-      </vo-ausm-contest-detail-submission-tile>
-    </ng-container>
-  </div>
+  @if (showDetailsLink) {
+    <div>
+      <ng-container>
+        <h4 translate>POLITICAL_BUSINESS.SUBMISSION</h4>
+        @if (resultDetail.hasBallotGroups) {
+          <vo-ausm-contest-detail-submission-tile
+            [titleText]="'MAJORITY_ELECTION.BY_BALLOT_GROUPS' | translate"
+            [text]="(!resultDetail?.conventionalCountOfBallotGroupVotes ? 'MAJORITY_ELECTION.NO_BALLOT_GROUPS' : 'MAJORITY_ELECTION.BALLOT_GROUPS_COUNT') | translate: { count: resultDetail?.conventionalCountOfBallotGroupVotes }"
+            [disabled]="!canReadBallotGroups"
+            (buttonClick)="openBallotGroups()">
+          </vo-ausm-contest-detail-submission-tile>
+        }
+        <vo-ausm-contest-detail-submission-tile
+          [titleText]="'MAJORITY_ELECTION.BY_BUNDLE' | translate"
+          [text]="(!resultDetail?.conventionalCountOfDetailedEnteredBallots ? 'ELECTION.NO_BUNDLES' : 'ELECTION.BALLOT_COUNT') | translate: { count: resultDetail?.conventionalCountOfDetailedEnteredBallots }"
+          (buttonClick)="openBundles()">
+        </vo-ausm-contest-detail-submission-tile>
+        @if (!readonly && (eVoting || eCounting)) {
+          <vo-ausm-contest-detail-submission-tile
+            [titleText]="'MAJORITY_ELECTION.MAP_WRITE_INS' | translate"
+            [buttonText]="'MAJORITY_ELECTION.MAP'"
+            (buttonClick)="openWriteIns(resultDetail.election.id)">
+          </vo-ausm-contest-detail-submission-tile>
+        }
+      </ng-container>
+    </div>
+  }
 
 
 
   <vo-ausm-contest-majority-election-result class="mb-4"
-                                            [eVoting]="eVoting"
-                                            [eCounting]="eCounting"
-                                            [result]="resultDetail"
-                                            [candidateCheckDigit]="resultDetail.entryParams?.candidateCheckDigit"
-                                            [showInvalidVotes]="resultDetail.election.contest!.cantonDefaults!.majorityElectionInvalidVotes"
-                                            [showIndividualVotes]="!resultDetail.election.individualCandidatesDisabled"
-                                            [showEmptyVotes]="resultDetail.election.numberOfMandates !== 1 || resultDetail.secondaryMajorityElectionResults.length > 0"></vo-ausm-contest-majority-election-result>
+    [eVoting]="eVoting"
+    [eCounting]="eCounting"
+    [result]="resultDetail"
+    [candidateCheckDigit]="resultDetail.entryParams?.candidateCheckDigit"
+    [showInvalidVotes]="resultDetail.election.contest!.cantonDefaults!.majorityElectionInvalidVotes"
+    [showIndividualVotes]="!resultDetail.election.individualCandidatesDisabled"
+    [showEmptyVotes]="resultDetail.election.numberOfMandates !== 1 || resultDetail.secondaryMajorityElectionResults.length > 0"></vo-ausm-contest-majority-election-result>
 </div>
 
 <div class="content results">
-  <vo-ausm-contest-majority-election-result *ngFor="let result of resultDetail.secondaryMajorityElectionResults"
-                                            class="mt-3"
-                                            [showElectionHeader]="true"
-                                            [eVoting]="eVoting"
-                                            [eCounting]="eCounting"
-                                            [buttonsTemplate]="tileTemplate"
-                                            [result]="result"
-                                            [candidateCheckDigit]="resultDetail.entryParams?.candidateCheckDigit"
-                                            [showInvalidVotes]="resultDetail.election.contest!.cantonDefaults!.majorityElectionInvalidVotes"
-                                            [showIndividualVotes]="!result.election.individualCandidatesDisabled"></vo-ausm-contest-majority-election-result>
+  @for (result of resultDetail.secondaryMajorityElectionResults; track result) {
+    <vo-ausm-contest-majority-election-result
+      class="mt-3"
+      [showElectionHeader]="true"
+      [eVoting]="eVoting"
+      [eCounting]="eCounting"
+      [buttonsTemplate]="tileTemplate"
+      [result]="result"
+      [candidateCheckDigit]="resultDetail.entryParams?.candidateCheckDigit"
+      [showInvalidVotes]="resultDetail.election.contest!.cantonDefaults!.majorityElectionInvalidVotes"
+      [showIndividualVotes]="!result.election.individualCandidatesDisabled"></vo-ausm-contest-majority-election-result>
+  }
 </div>
 
 <ng-template #tileTemplate let-electionId='electionId'>
-  <div *ngIf="!readonly && (eVoting || eCounting)">
-    <h4 translate>POLITICAL_BUSINESS.SUBMISSION</h4>
-    <vo-ausm-contest-detail-submission-tile
-      [titleText]="'MAJORITY_ELECTION.MAP_WRITE_INS' | translate"
-      [buttonText]="'MAJORITY_ELECTION.MAP'"
-      (buttonClick)="openWriteIns(electionId)">
-    </vo-ausm-contest-detail-submission-tile>
-  </div>
+  @if (!readonly && (eVoting || eCounting)) {
+    <div>
+      <h4 translate>POLITICAL_BUSINESS.SUBMISSION</h4>
+      <vo-ausm-contest-detail-submission-tile
+        [titleText]="'MAJORITY_ELECTION.MAP_WRITE_INS' | translate"
+        [buttonText]="'MAJORITY_ELECTION.MAP'"
+        (buttonClick)="openWriteIns(electionId)">
+      </vo-ausm-contest-detail-submission-tile>
+    </div>
+  }
 </ng-template>

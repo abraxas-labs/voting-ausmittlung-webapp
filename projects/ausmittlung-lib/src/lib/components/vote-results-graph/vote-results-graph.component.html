@@ -1,5 +1,5 @@
 <div class="results-graph">
-  <ng-container *ngIf="countLeft > 0 || countRight > 0">
+  @if (countLeft > 0 || countRight > 0) {
     <div class="results-graph-container left" [class.looses]="!leftWins">
       <div class="results-graph-numbers">
         <span>{{countLeft | number: '1.0-0'}}</span>
@@ -24,5 +24,5 @@
         <span>{{ratioRight | percent: '1.2-2'}}</span>
       </div>
     </div>
-  </ng-container>
+  }
 </div>

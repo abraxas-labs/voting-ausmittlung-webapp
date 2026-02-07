@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
@@ -14,15 +14,16 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   standalone: false,
 })
 export class SecondFactorTransactionDialogComponent {
+  private readonly dialogRef = inject<MatDialogRef<SecondFactorTransactionDialogData>>(MatDialogRef);
+
   public hasError: boolean = false;
   public code: string;
   public showQrCode: boolean = false;
   public qrCode: string;
 
-  constructor(
-    private readonly dialogRef: MatDialogRef<SecondFactorTransactionDialogData>,
-    @Inject(MAT_DIALOG_DATA) dialogData: SecondFactorTransactionDialogData,
-  ) {
+  constructor() {
+    const dialogData = inject<SecondFactorTransactionDialogData>(MAT_DIALOG_DATA);
+
     this.code = dialogData.code;
     this.qrCode = dialogData.qrCode;
   }

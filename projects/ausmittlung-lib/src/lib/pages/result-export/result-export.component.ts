@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import {
   Contest,
   CountingCircle,
@@ -42,6 +42,19 @@ enum Tabs {
   standalone: false,
 })
 export class ResultExportComponent implements OnInit, OnDestroy {
+  private readonly exportService = inject(ExportService);
+  private readonly resultExportService = inject(ResultExportService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly breadcrumbsService = inject(BreadcrumbsService);
+  private readonly dialog = inject(DialogService);
+  private readonly i18n = inject(TranslateService);
+  private readonly datePipe = inject(DatePipe);
+  private readonly toast = inject(SnackbarService);
+  private readonly eventLogService = inject(EventLogService);
+  private readonly resultService = inject(ResultService);
+  private readonly themeService = inject(ThemeService);
+  private readonly auth = inject(AuthorizationService);
+
   private readonly defaultColumns = ['select', 'description', 'political-business'];
   private readonly dataExportColumns = [...this.defaultColumns, 'export'];
   private readonly protocolExportColumns = [...this.defaultColumns, 'generate', 'state', 'data-date', 'file-name', 'download-button'];
@@ -71,21 +84,6 @@ export class ResultExportComponent implements OnInit, OnDestroy {
   private contestId: string = '';
   private countingCircleId?: string;
   private watchSubscription?: Subscription;
-
-  constructor(
-    private readonly exportService: ExportService,
-    private readonly resultExportService: ResultExportService,
-    private readonly route: ActivatedRoute,
-    private readonly breadcrumbsService: BreadcrumbsService,
-    private readonly dialog: DialogService,
-    private readonly i18n: TranslateService,
-    private readonly datePipe: DatePipe,
-    private readonly toast: SnackbarService,
-    private readonly eventLogService: EventLogService,
-    private readonly resultService: ResultService,
-    private readonly themeService: ThemeService,
-    private readonly auth: AuthorizationService,
-  ) {}
 
   public async ngOnInit(): Promise<void> {
     this.routeParamsSubscription = this.route.params.subscribe(({ contestId, countingCircleId }) => {

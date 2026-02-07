@@ -49,7 +49,7 @@ import {
   ValidateEnterMajorityElectionCountOfVotersRequest,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/majority_election_result_requests_pb';
 import { GrpcBackendService, GrpcEnvironment } from '@abraxas/voting-lib';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   MajorityElectionBallotGroupResult,
@@ -102,12 +102,13 @@ export class MajorityElectionResultService extends PoliticalBusinessResultBaseSe
   MajorityElectionResultServicePromiseClient,
   MajorityElectionResultServiceClient
 > {
-  constructor(
-    grpcBackend: GrpcBackendService,
-    @Inject(GRPC_ENV_INJECTION_TOKEN) env: GrpcEnvironment,
-    private readonly validationMapping: ValidationMappingService,
-    private readonly electionLotDecisionService: ElectionLotDecisionService,
-  ) {
+  private readonly validationMapping = inject(ValidationMappingService);
+  private readonly electionLotDecisionService = inject(ElectionLotDecisionService);
+
+  constructor() {
+    const grpcBackend = inject(GrpcBackendService);
+    const env = inject<GrpcEnvironment>(GRPC_ENV_INJECTION_TOKEN);
+
     super(MajorityElectionResultServicePromiseClient, MajorityElectionResultServiceClient, env, grpcBackend);
   }
 
@@ -197,6 +198,7 @@ export class MajorityElectionResultService extends PoliticalBusinessResultBaseSe
     if (resultEntry === MajorityElectionResultEntry.MAJORITY_ELECTION_RESULT_ENTRY_DETAILED) {
       const resultEntryParamsReq = new DefineMajorityElectionResultEntryParamsRequest();
       resultEntryParamsReq.setAutomaticBallotBundleNumberGeneration(resultEntryParams.automaticBallotBundleNumberGeneration);
+      resultEntryParamsReq.setAutomaticBallotNumberGeneration(resultEntryParams.automaticBallotNumberGeneration);
       resultEntryParamsReq.setAutomaticEmptyVoteCounting(resultEntryParams.automaticEmptyVoteCounting);
       resultEntryParamsReq.setBallotBundleSampleSize(resultEntryParams.ballotBundleSampleSize);
       resultEntryParamsReq.setBallotBundleSize(resultEntryParams.ballotBundleSize);

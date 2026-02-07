@@ -5,7 +5,7 @@
  */
 
 import { DialogService, SnackbarService, ThemeService } from '@abraxas/voting-lib';
-import { ChangeDetectorRef, Directive, Inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Directive, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -31,11 +31,11 @@ import {
 } from '../../validation-overview-dialog/validation-overview-dialog.component';
 import { ContestPoliticalBusinessDetailComponent } from './contest-political-business-detail.component';
 import { Permissions } from '../../../models/permissions.model';
-import { VOTING_AUSMITTLUNG_MONITORING_WEBAPP_URL } from '../../../tokens';
 import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/political_business_pb';
 import { UnsavedChangesService } from '../../../services/unsaved-changes.service';
 import { cloneDeep, isEqual } from 'lodash';
 import { ResultService } from '../../../services/result.service';
+import { VotingUrlService } from '../../../services/voting-url.service';
 
 @Directive()
 export abstract class AbstractContestPoliticalBusinessDetailComponent<
@@ -44,6 +44,18 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
   >
   implements OnInit, OnDestroy
 {
+  protected readonly i18n = inject(TranslateService);
+  protected readonly toast = inject(SnackbarService);
+  protected readonly dialog = inject(DialogService);
+  protected readonly secondFactorTransactionService = inject(SecondFactorTransactionService);
+  protected readonly politicalBusinessResultService = inject(PoliticalBusinessResultService);
+  protected readonly cd = inject(ChangeDetectorRef);
+  protected readonly permissionService = inject(PermissionService);
+  protected readonly themeService = inject(ThemeService);
+  protected readonly unsavedChangesService = inject(UnsavedChangesService);
+  private readonly parent = inject(ContestPoliticalBusinessDetailComponent);
+  private readonly votingUrlService = inject(VotingUrlService);
+
   private static readonly emptySecondFactorId: string = '';
 
   @Input()
@@ -79,6 +91,8 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
   public canFinishSubmission: boolean = false;
   public canAudit: boolean = false;
   public canFinishSubmissionAndAudit: boolean = false;
+  public canDefineEntry: boolean = false;
+  public canResetResults: boolean = false;
 
   public readonly states: typeof CountingCircleResultState = CountingCircleResultState;
 
@@ -92,20 +106,10 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
   private readonly parentCountingCircleDetailsUpdatedSubscription?: Subscription;
   private readonly stateChangeSubscription?: Subscription;
 
-  protected constructor(
-    @Inject(VOTING_AUSMITTLUNG_MONITORING_WEBAPP_URL) public readonly votingAusmittlungMonitoringWebAppUrl: string,
-    protected readonly i18n: TranslateService,
-    protected readonly toast: SnackbarService,
-    protected readonly resultService: TService,
-    protected readonly dialog: DialogService,
-    protected readonly secondFactorTransactionService: SecondFactorTransactionService,
-    protected readonly politicalBusinessResultService: PoliticalBusinessResultService,
-    protected readonly cd: ChangeDetectorRef,
-    protected readonly permissionService: PermissionService,
-    protected readonly themeService: ThemeService,
-    protected readonly unsavedChangesService: UnsavedChangesService,
-    private readonly parent: ContestPoliticalBusinessDetailComponent,
-  ) {
+  // eslint-disable-next-line @angular-eslint/prefer-inject
+  protected constructor(protected readonly resultService: TService) {
+    const parent = this.parent;
+
     this.parentExpandedSubscription = parent.expanded$.pipe(filter(x => x)).subscribe(() => this.expanded());
 
     this.parentCountingCircleDetailsUpdatedSubscription = parent.countingCircleDetailsUpdated$.subscribe(details =>
@@ -125,6 +129,8 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
     this.canFinishSubmissionAndAudit = await this.permissionService.hasPermission(
       Permissions.PoliticalBusinessResult.FinishSubmissionAndAudit,
     );
+    this.canDefineEntry = await this.permissionService.hasPermission(Permissions.PoliticalBusinessResult.DefineEntry);
+    this.canResetResults = await this.permissionService.hasPermission(Permissions.PoliticalBusinessResult.ResetResults);
   }
 
   public ngOnDestroy(): void {
@@ -378,26 +384,17 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
     }
   }
 
-  private getPoliticalBusinessTypeUrl(politicalBusinessType?: PoliticalBusinessType): string {
-    switch (politicalBusinessType) {
-      case PoliticalBusinessType.POLITICAL_BUSINESS_TYPE_VOTE:
-        return 'vote-end-results';
-      case PoliticalBusinessType.POLITICAL_BUSINESS_TYPE_MAJORITY_ELECTION:
-        return 'majority-election-end-results';
-      case PoliticalBusinessType.POLITICAL_BUSINESS_TYPE_PROPORTIONAL_ELECTION:
-        return 'proportional-election-end-results';
-      default:
-        throw new Error('invalid political business type');
-    }
-  }
-
   private openMonitoring(): void {
-    const politicalBusinessTypeUrl = this.getPoliticalBusinessTypeUrl(this.resultDetail?.politicalBusiness.politicalBusinessType);
-    const url =
-      `${this.votingAusmittlungMonitoringWebAppUrl}/${this.themeService.theme$.value}/` +
-      (this.contestCantonDefaults?.endResultFinalizeDisabled
-        ? `contests/${this.resultDetail?.politicalBusiness.contestId}/exports`
-        : `${politicalBusinessTypeUrl}/${this.resultDetail?.politicalBusinessId}`);
-    window.open(url, '_blank');
+    if (!this.resultDetail) {
+      return;
+    }
+
+    window.open(
+      this.votingUrlService.getMonitoringProxyUrl(
+        this.resultDetail.politicalBusiness.politicalBusinessType,
+        this.resultDetail.politicalBusinessId,
+      ),
+      '_blank',
+    );
   }
 }

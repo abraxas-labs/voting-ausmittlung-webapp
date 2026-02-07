@@ -3,16 +3,22 @@
 
   <div content>
     <p>{{message | translate}}</p>
-    <bc-label *ngIf="hasComment"
-              [label]="'APP.COMMENT' | translate"
-              [optional]="true"></bc-label>
-    <bc-textarea *ngIf="hasComment"
-                 [(value)]="comment"></bc-textarea>
+    @if (hasComment) {
+      <bc-label
+        [label]="'APP.COMMENT' | translate"
+      [optional]="true"></bc-label>
+    }
+    @if (hasComment) {
+      <bc-textarea
+      [(value)]="comment"></bc-textarea>
+    }
   </div>
 
   <div footer class="buttons"
-       [class.align-right]="!showCancel">
-    <bc-button *ngIf="showCancel" [label]="cancelText | translate" (buttonClick)="cancel()"></bc-button>
+    [class.align-right]="!showCancel">
+    @if (showCancel) {
+      <bc-button [label]="cancelText | translate" (buttonClick)="cancel()"></bc-button>
+    }
     <bc-button variant="primary" [label]="confirmText | translate" (buttonClick)="confirm()"></bc-button>
   </div>
 </vo-lib-dialog>

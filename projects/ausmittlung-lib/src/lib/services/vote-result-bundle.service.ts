@@ -18,6 +18,7 @@ import {
   SucceedVoteBundleReviewRequest,
   UpdateVoteResultBallotRequest,
   VoteResultBundleCorrectionFinishedRequest,
+  VoteResultBundleResetToSubmissionFinishedRequest,
   VoteResultBundleSubmissionFinishedRequest,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/vote_result_bundle_requests_pb';
 import {
@@ -26,7 +27,7 @@ import {
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/responses/vote_result_bundle_responses_pb';
 import { VoteResultBundleServicePromiseClient } from '@abraxas/voting-ausmittlung-service-proto/grpc/vote_result_bundle_service_grpc_web_pb';
 import { GrpcBackendService, GrpcEnvironment, GrpcService } from '@abraxas/voting-lib';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Int32Value } from 'google-protobuf/google/protobuf/wrappers_pb';
 import {
   BallotQuestionAnswer,
@@ -51,7 +52,10 @@ import { PoliticalBusinessResultBundleService } from './political-business-resul
   providedIn: 'root',
 })
 export class VoteResultBundleService extends GrpcService<VoteResultBundleServicePromiseClient> {
-  constructor(grpcBackend: GrpcBackendService, @Inject(GRPC_ENV_INJECTION_TOKEN) env: GrpcEnvironment) {
+  constructor() {
+    const grpcBackend = inject(GrpcBackendService);
+    const env = inject<GrpcEnvironment>(GRPC_ENV_INJECTION_TOKEN);
+
     super(VoteResultBundleServicePromiseClient, env, grpcBackend);
   }
 
@@ -113,9 +117,16 @@ export class VoteResultBundleService extends GrpcService<VoteResultBundleService
     return this.requestEmptyResp(c => c.deleteBundle, req);
   }
 
-  public async createBallot(bundleId: string, ballot: VoteResultBallot): Promise<number> {
+  public async createBallot(bundleId: string, ballot: VoteResultBallot, autoBallotNumberGeneration: boolean): Promise<number> {
     const req = new CreateVoteResultBallotRequest();
     this.mapToBallotsRequest(req, bundleId, ballot);
+
+    if (!autoBallotNumberGeneration) {
+      const ballotNumberValue = new Int32Value();
+      ballotNumberValue.setValue(ballot.number);
+      req.setBallotNumber(ballotNumberValue);
+    }
+
     return await this.request(
       c => c.createBallot,
       req,
@@ -165,6 +176,12 @@ export class VoteResultBundleService extends GrpcService<VoteResultBundleService
     await this.requestEmptyResp(c => c.rejectBundleReview, req);
   }
 
+  public async resetBundleToSubmissionFinished(bundleId: string): Promise<void> {
+    const req = new VoteResultBundleResetToSubmissionFinishedRequest();
+    req.setBundleId(bundleId);
+    await this.requestEmptyResp(c => c.bundleResetToSubmissionFinished, req);
+  }
+
   private mapToBundles(proto: VoteResultBundlesProto): VoteResultBundles {
     return {
       politicalBusinessResult: VoteResultService.mapToVoteResult(proto.getVoteResult()!),
@@ -186,6 +203,7 @@ export class VoteResultBundleService extends GrpcService<VoteResultBundleService
     return {
       ...obj,
       createdBy: obj.createdBy!,
+      ballotNumbers: obj.ballotNumbersList,
       ballotNumbersToReview: obj.ballotNumbersToReviewList,
       protocolExport: this.mapToProtocolExport(proto.getProtocolExport()),
       logs: proto.getLogsList().map(x => PoliticalBusinessResultBundleService.mapToPoliticalBusinessResultBundleLog(x)),
@@ -211,6 +229,7 @@ export class VoteResultBundleService extends GrpcService<VoteResultBundleService
       isNew: false,
       questionAnswers: obj.questionAnswersList.map(x => ({ question: x.question!, answer: x.answer })),
       tieBreakQuestionAnswers: obj.tieBreakQuestionAnswersList.map(x => ({ question: x.question!, answer: x.answer })),
+      logs: response.getLogsList().map(x => PoliticalBusinessResultBundleService.mapToPoliticalBusinessResultBallotLog(x)),
     };
   }
 

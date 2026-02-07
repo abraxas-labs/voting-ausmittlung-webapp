@@ -16,7 +16,7 @@ import {
   UpdateResultExportConfigurationRequest,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/export_requests_pb';
 import { GrpcBackendService, GrpcEnvironment, GrpcService } from '@abraxas/voting-lib';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Int32Value } from 'google-protobuf/google/protobuf/wrappers_pb';
 import { PoliticalBusinessExportMetadata, ResultExportConfiguration, ResultExportTemplate, ResultExportTemplateContainer } from '../models';
 import { GRPC_ENV_INJECTION_TOKEN } from './tokens';
@@ -28,7 +28,10 @@ import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto
   providedIn: 'root',
 })
 export class ExportService extends GrpcService<ExportServicePromiseClient> {
-  constructor(grpcBackend: GrpcBackendService, @Inject(GRPC_ENV_INJECTION_TOKEN) env: GrpcEnvironment) {
+  constructor() {
+    const grpcBackend = inject(GrpcBackendService);
+    const env = inject<GrpcEnvironment>(GRPC_ENV_INJECTION_TOKEN);
+
     super(ExportServicePromiseClient, env, grpcBackend);
   }
 

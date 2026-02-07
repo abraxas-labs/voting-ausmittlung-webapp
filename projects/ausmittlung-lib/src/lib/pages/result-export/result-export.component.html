@@ -3,113 +3,119 @@
     <vo-ausm-breadcrumbs left [items]="breadcrumbs"></vo-ausm-breadcrumbs>
     <vo-ausm-contest-header center [contest]="contest" [countingCircle]="countingCircle"></vo-ausm-contest-header>
     <div right>
-      <bc-button *ngIf="selectedTab === tabs.PROTOCOLS" variant="tertiary"
-        [disabled]="selectedTemplates.selected.length === 0 || loadingTemplates"
-        [label]="'EXPORTS.GENERATE_SELECTED_ACTION' | translate" (buttonClick)="generateSelected()"></bc-button>
+      @if (selectedTab === tabs.PROTOCOLS) {
+        <bc-button variant="tertiary"
+          [disabled]="selectedTemplates.selected.length === 0 || loadingTemplates"
+          [label]="'EXPORTS.GENERATE_SELECTED_ACTION' | translate" (buttonClick)="generateSelected()"></bc-button>
+      }
       <bc-button variant="tertiary" [disabled]="selectedTemplates.selected.length === 0 || loadingTemplates"
-        [label]="'EXPORTS.EXPORT_SELECTED_ACTION' | translate" (buttonClick)="exportSelected()"></bc-button>
+      [label]="'EXPORTS.EXPORT_SELECTED_ACTION' | translate" (buttonClick)="exportSelected()"></bc-button>
     </div>
   </vo-lib-page-header>
 
   <div class="mb-4">
-    <p *ngIf="showMoreExportsLink && isMonitoring">
-      <a [routerLink]="linkUrl"><bc-button [label]="'EXPORTS.MORE_PROTOCOLS' | translate"></bc-button></a>
-    </p>
-    <p *ngIf="showMoreExportsLink && !isMonitoring">
-      <a [href]="linkUrl" target="_blank"><bc-button [label]="'EXPORTS.MORE_PROTOCOLS' | translate" icon="external-link"></bc-button></a>
-    </p>
+    @if (showMoreExportsLink && isMonitoring) {
+      <p>
+        <a [routerLink]="linkUrl"><bc-button [label]="'EXPORTS.MORE_PROTOCOLS' | translate"></bc-button></a>
+      </p>
+    }
+    @if (showMoreExportsLink && !isMonitoring) {
+      <p>
+        <a [href]="linkUrl" target="_blank"><bc-button [label]="'EXPORTS.MORE_PROTOCOLS' | translate" icon="external-link"></bc-button></a>
+      </p>
+    }
     <bc-tab-bar [selectedIndex]="selectedTab" (selectedChange)="changeTab($event)">
       <bc-tab [label]="'EXPORTS.TABS.PROTOCOLS' | translate" [disabled]="loadingTemplates"></bc-tab>
       <bc-tab [label]="'EXPORTS.TABS.DATA_FILES' | translate" [disabled]="loadingTemplates"></bc-tab>
     </bc-tab-bar>
   </div>
 
-  <bc-loading-bar *ngIf="generatingExports; else loadingBarSpacer"></bc-loading-bar>
-
-  <ng-template #loadingBarSpacer>
+  @if (generatingExports) {
+    <bc-loading-bar></bc-loading-bar>
+  } @else {
     <div class="loading-bar-spacer"></div>
-  </ng-template>
+  }
 
-  <bc-spinner *ngIf="loadingTemplates; else contentTable" size="large"></bc-spinner>
 
-  <ng-template #contentTable>
-    <bc-table *ngIf="templates.data.length > 0; else noData" [dataSource]="templates" selection responsive="none">
-      <ng-container columnDef="select">
-        <bc-header-cell *headerCellDef>
-          <bc-checkbox class="ml-2 mb-0" (checkedChange)="selectAllTemplates($event)"
-            [checked]="selectedTemplates.hasValue() && allTemplatesSelected"
-            [indeterminate]="selectedTemplates.hasValue() && !allTemplatesSelected">
-          </bc-checkbox>
-        </bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">
-          <bc-checkbox class="ml-2" (checkedChange)="toggleTemplate(element, $event)"
-            [checked]="selectedTemplates.isSelected(element)">
-          </bc-checkbox>
-        </bc-data-cell>
-      </ng-container>
-
-      <ng-container columnDef="description">
-        <bc-header-cell *headerCellDef>{{ 'EXPORTS.DESCRIPTION' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">{{ element.description }}</bc-data-cell>
-      </ng-container>
-
-      <ng-container columnDef="political-business">
-        <bc-header-cell *headerCellDef>{{ 'EXPORTS.POLITICAL_BUSINESS' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">{{ element.entityDescription }}</bc-data-cell>
-      </ng-container>
-
-      <ng-container columnDef="export">
-        <bc-header-cell *headerCellDef>{{ 'EXPORTS.EXPORT_ACTION' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element"><bc-button variant="tertiary" [label]="'EXPORTS.EXPORT_ACTION' | translate"
-          (buttonClick)="downloadDataExports([element])"></bc-button></bc-data-cell>
-      </ng-container>
-
-      <ng-container columnDef="generate">
-        <bc-header-cell *headerCellDef>{{ 'EXPORTS.GENERATE' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element"><bc-button variant="tertiary" [label]="'EXPORTS.GENERATE' | translate"
-          (buttonClick)="generateProtocolExports([element])"></bc-button></bc-data-cell>
-      </ng-container>
-
-      <ng-container columnDef="state">
-        <bc-header-cell *headerCellDef>{{ 'EXPORTS.STATE' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element"><bc-status-label [label]="'EXPORTS.STATES.' + element.state | translate"></bc-status-label></bc-data-cell>
-      </ng-container>
-
-      <ng-container columnDef="data-date">
-        <bc-header-cell *headerCellDef>{{ 'EXPORTS.DATA_DATE' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">{{ element.started | date: 'short' }}</bc-data-cell>
-      </ng-container>
-
-      <ng-container columnDef="file-name">
-        <bc-header-cell *headerCellDef>{{ 'EXPORTS.FILE_NAME' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">
-          <bc-loading-bar
-            *ngIf="element.state === protocolExportStates.PROTOCOL_EXPORT_STATE_GENERATING"></bc-loading-bar>
-          <div *ngIf="element.state === protocolExportStates.PROTOCOL_EXPORT_STATE_COMPLETED">{{ element.fileName }}
-          </div>
-        </bc-data-cell>
-      </ng-container>
-
-      <ng-container columnDef="download-button">
-        <bc-header-cell *headerCellDef>{{ 'EXPORTS.DOWNLOAD' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">
-          <bc-icon *ngIf="element.state === protocolExportStates.PROTOCOL_EXPORT_STATE_COMPLETED"
-            (click)="$event.preventDefault(); downloadProtocolExports([element])" icon="download"
-            class="clickable-icon ml-2"></bc-icon>
-        </bc-data-cell>
-      </ng-container>
-
-      <bc-header-row *headerRowDef="let row; columns: columns"></bc-header-row>
-      <bc-data-row *dataRowDef="let row; columns: columns; let i = index"
-      selectionToggle
-      [selectionToggleValue]="row"
-      selectionRow
-      [selectionRowValue]="row"
-      (click)="toggleTemplate(row)">></bc-data-row>
+  @if (loadingTemplates) {
+    <bc-spinner size="large"></bc-spinner>
+  } @else {
+    @if (templates.data.length > 0) {
+      <bc-table [dataSource]="templates" selection responsive="none">
+        <ng-container columnDef="select">
+          <bc-header-cell *headerCellDef>
+            <bc-checkbox class="ml-2 mb-0" (checkedChange)="selectAllTemplates($event)"
+              [checked]="selectedTemplates.hasValue() && allTemplatesSelected"
+              [indeterminate]="selectedTemplates.hasValue() && !allTemplatesSelected">
+            </bc-checkbox>
+          </bc-header-cell>
+          <bc-data-cell *dataCellDef="let element">
+            <bc-checkbox class="ml-2" (checkedChange)="toggleTemplate(element, $event)"
+              [checked]="selectedTemplates.isSelected(element)">
+            </bc-checkbox>
+          </bc-data-cell>
+        </ng-container>
+        <ng-container columnDef="description">
+          <bc-header-cell *headerCellDef>{{ 'EXPORTS.DESCRIPTION' | translate }}</bc-header-cell>
+          <bc-data-cell *dataCellDef="let element">{{ element.description }}</bc-data-cell>
+        </ng-container>
+        <ng-container columnDef="political-business">
+          <bc-header-cell *headerCellDef>{{ 'EXPORTS.POLITICAL_BUSINESS' | translate }}</bc-header-cell>
+          <bc-data-cell *dataCellDef="let element">{{ element.entityDescription }}</bc-data-cell>
+        </ng-container>
+        <ng-container columnDef="export">
+          <bc-header-cell *headerCellDef>{{ 'EXPORTS.EXPORT_ACTION' | translate }}</bc-header-cell>
+          <bc-data-cell *dataCellDef="let element"><bc-button variant="tertiary" [label]="'EXPORTS.EXPORT_ACTION' | translate"
+            (buttonClick)="downloadDataExports([element])"></bc-button></bc-data-cell>
+        </ng-container>
+        <ng-container columnDef="generate">
+          <bc-header-cell *headerCellDef>{{ 'EXPORTS.GENERATE' | translate }}</bc-header-cell>
+          <bc-data-cell *dataCellDef="let element"><bc-button variant="tertiary" [label]="'EXPORTS.GENERATE' | translate"
+            (buttonClick)="generateProtocolExports([element])"></bc-button></bc-data-cell>
+        </ng-container>
+        <ng-container columnDef="state">
+          <bc-header-cell *headerCellDef>{{ 'EXPORTS.STATE' | translate }}</bc-header-cell>
+          <bc-data-cell *dataCellDef="let element"><bc-status-label [label]="'EXPORTS.STATES.' + element.state | translate"></bc-status-label></bc-data-cell>
+        </ng-container>
+        <ng-container columnDef="data-date">
+          <bc-header-cell *headerCellDef>{{ 'EXPORTS.DATA_DATE' | translate }}</bc-header-cell>
+          <bc-data-cell *dataCellDef="let element">{{ element.started | date: 'short' }}</bc-data-cell>
+        </ng-container>
+        <ng-container columnDef="file-name">
+          <bc-header-cell *headerCellDef>{{ 'EXPORTS.FILE_NAME' | translate }}</bc-header-cell>
+          <bc-data-cell *dataCellDef="let element">
+            @if (element.state === protocolExportStates.PROTOCOL_EXPORT_STATE_GENERATING) {
+              <bc-loading-bar
+              ></bc-loading-bar>
+            }
+            @if (element.state === protocolExportStates.PROTOCOL_EXPORT_STATE_COMPLETED) {
+              <div>{{ element.fileName }}
+              </div>
+            }
+          </bc-data-cell>
+        </ng-container>
+        <ng-container columnDef="download-button">
+          <bc-header-cell *headerCellDef>{{ 'EXPORTS.DOWNLOAD' | translate }}</bc-header-cell>
+          <bc-data-cell *dataCellDef="let element">
+            @if (element.state === protocolExportStates.PROTOCOL_EXPORT_STATE_COMPLETED) {
+              <bc-icon
+                (click)="$event.preventDefault(); downloadProtocolExports([element])" icon="download"
+              class="clickable-icon ml-2"></bc-icon>
+            }
+          </bc-data-cell>
+        </ng-container>
+        <bc-header-row *headerRowDef="let row; columns: columns"></bc-header-row>
+        <bc-data-row *dataRowDef="let row; columns: columns; let i = index"
+          selectionToggle
+          [selectionToggleValue]="row"
+          selectionRow
+          [selectionRowValue]="row"
+          (click)="toggleTemplate(row)"></bc-data-row>
       </bc-table>
-  </ng-template>
+    } @else {
+      <span class="no-data">{{'EXPORTS.NO_TEMPLATES' | translate}}</span>
+    }
+  }
 
-  <ng-template #noData>
-    <span class="no-data">{{'EXPORTS.NO_TEMPLATES' | translate}}</span>
-  </ng-template>
+
 </vo-lib-page>

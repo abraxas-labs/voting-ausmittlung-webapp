@@ -4,15 +4,14 @@
  * For license information see LICENSE file.
  */
 
-import { NumberComponent, TableDataSource } from '@abraxas/base-components';
-import { DialogService, SnackbarService } from '@abraxas/voting-lib';
-import { SelectionModel } from '@angular/cdk/collections';
-import { ChangeDetectorRef, Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { DataRowComponent, NumberComponent, SelectionChange, SelectionDirective, TableDataSource } from '@abraxas/base-components';
+import { SnackbarService } from '@abraxas/voting-lib';
+import { ChangeDetectorRef, Component, ElementRef, inject, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ProportionalElectionList } from '../../../models';
 import { ProportionalElectionResultBundleService } from '../../../services/proportional-election-result-bundle.service';
 import { ProportionalElectionService } from '../../../services/proportional-election.service';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'vo-ausm-proportional-election-new-bundle',
@@ -21,20 +20,23 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   standalone: false,
 })
 export class ProportionalElectionNewBundleComponent implements OnInit {
+  private readonly dialogRef = inject<MatDialogRef<ProportionalElectionNewBundleComponentData>>(MatDialogRef);
+  private readonly electionService = inject(ProportionalElectionService);
+  private readonly resultBundleService = inject(ProportionalElectionResultBundleService);
+  private readonly toast = inject(SnackbarService);
+  private readonly i18n = inject(TranslateService);
+  private readonly cd = inject(ChangeDetectorRef);
+
   public readonly columns = ['select', 'orderNumber', 'shortDescription', 'description'];
   public readonly dataSource = new TableDataSource<ProportionalElectionList>();
-  public readonly selection = new SelectionModel<ProportionalElectionList>(false, []);
   public loading: boolean = true;
   public saving: boolean = false;
 
   public bundleNumber?: number;
   public listNumber?: string;
-  public duplicatedBundleNumber: boolean = false;
+  public selectedList?: ProportionalElectionList;
 
   public readonly enableBundleNumber: boolean;
-
-  public readonly usedBundleNumbers: number[];
-  public readonly deletedUnusedBundleNumbers: number[];
 
   private readonly electionId: string;
   private readonly electionResultId: string;
@@ -45,21 +47,18 @@ export class ProportionalElectionNewBundleComponent implements OnInit {
   @ViewChild('listNumberFormfield')
   private listNumberFormfield?: NumberComponent;
 
-  constructor(
-    private readonly dialogRef: MatDialogRef<ProportionalElectionNewBundleComponentData>,
-    private readonly dialog: DialogService,
-    private readonly electionService: ProportionalElectionService,
-    private readonly resultBundleService: ProportionalElectionResultBundleService,
-    private readonly toast: SnackbarService,
-    private readonly i18n: TranslateService,
-    private readonly cd: ChangeDetectorRef,
-    @Inject(MAT_DIALOG_DATA) dialogData: ProportionalElectionNewBundleComponentData,
-  ) {
+  @ViewChildren(DataRowComponent, { read: ElementRef })
+  public selectedRowComponents!: QueryList<ElementRef>;
+
+  @ViewChild('selection')
+  private selection!: SelectionDirective<ProportionalElectionList>;
+
+  constructor() {
+    const dialogData = inject<ProportionalElectionNewBundleComponentData>(MAT_DIALOG_DATA);
+
     this.electionId = dialogData.electionId;
     this.electionResultId = dialogData.electionResultId;
     this.enableBundleNumber = dialogData.enableBundleNumber;
-    this.usedBundleNumbers = dialogData.usedBundleNumbers;
-    this.deletedUnusedBundleNumbers = dialogData.deletedUnusedBundleNumbers;
   }
 
   public async ngOnInit(): Promise<void> {
@@ -70,14 +69,6 @@ export class ProportionalElectionNewBundleComponent implements OnInit {
       this.cd.detectChanges();
       this.setInitialFocus();
     }
-  }
-
-  public toggleRow(row: ProportionalElectionList, value: boolean): void {
-    if (value === this.selection.isSelected(row)) {
-      return;
-    }
-
-    this.selection.toggle(row);
   }
 
   public async createBundle(list?: ProportionalElectionList): Promise<void> {
@@ -111,8 +102,6 @@ export class ProportionalElectionNewBundleComponent implements OnInit {
     }
 
     this.bundleNumber = +newNumber;
-    this.duplicatedBundleNumber =
-      this.usedBundleNumbers.includes(this.bundleNumber) && !this.deletedUnusedBundleNumbers.includes(this.bundleNumber);
   }
 
   public async selectList(createBundle: boolean): Promise<void> {
@@ -125,23 +114,31 @@ export class ProportionalElectionNewBundleComponent implements OnInit {
       return;
     }
 
-    this.selection.select(filteredLists[0]);
+    this.selection.toggleSelection(filteredLists[0]);
+
+    // detect changes to make sure selected class is set
+    this.cd.detectChanges();
+    const selectedRowComponent = this.selectedRowComponents.find(x => x.nativeElement.classList.contains('bc-row-selected'));
+    if (selectedRowComponent) {
+      selectedRowComponent.nativeElement.scrollIntoView({ block: 'nearest' });
+    }
 
     if (createBundle) {
       await this.createBundle(filteredLists[0]);
     }
   }
 
+  public updateSelectedList(event: SelectionChange<ProportionalElectionList>): void {
+    if (event.after.length === 1) {
+      this.selectedList = event.after[0].value;
+      return;
+    }
+
+    delete this.selectedList;
+  }
+
   private async checkBundleNumber(): Promise<boolean> {
-    if (!this.bundleNumber || this.duplicatedBundleNumber) {
-      return false;
-    }
-
-    if (!this.usedBundleNumbers.includes(this.bundleNumber)) {
-      return true;
-    }
-
-    return await this.dialog.confirm('POLITICAL_BUSINESS.REUSE_BUNDLE_NUMBER.TITLE', 'POLITICAL_BUSINESS.REUSE_BUNDLE_NUMBER.MSG');
+    return !!this.bundleNumber;
   }
 
   private setInitialFocus(): void {
@@ -153,8 +150,6 @@ export interface ProportionalElectionNewBundleComponentData {
   electionId: string;
   electionResultId: string;
   enableBundleNumber: boolean;
-  usedBundleNumbers: number[];
-  deletedUnusedBundleNumbers: number[];
 }
 
 export interface ProportionalElectionNewBundleComponentResult {

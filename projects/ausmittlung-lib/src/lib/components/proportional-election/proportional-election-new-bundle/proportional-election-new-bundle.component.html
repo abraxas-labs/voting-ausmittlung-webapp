@@ -1,58 +1,85 @@
 <vo-lib-dialog [contentLoading]="loading">
-  <h3 header>{{'PROPORTIONAL_ELECTION.SELECT_LIST_FOR_BUNDLE' | translate}}</h3>
+  <h3 header>{{ 'PROPORTIONAL_ELECTION.SELECT_LIST_FOR_BUNDLE' | translate }}</h3>
   <div content>
     <div class="form-container">
-      <bc-number *ngIf="enableBundleNumber" #bundleNumberFormfield class="my-2 field-number" [required]="true"
-        [allowUndefined]="false" [label]="'POLITICAL_BUSINESS.BUNDLE_NUMBER' | translate" [value]="bundleNumber"
-        [error]="duplicatedBundleNumber || !bundleNumber"
-        (valueChange)="updateBundleNumber(+$event)"
-        [subscriptSizing]="'dynamic'">
-        <bc-error *ngIf="duplicatedBundleNumber">
-          {{ ('POLITICAL_BUSINESS.DUPLICATED_BUNDLE_NUMBER' | translate) }}
-        </bc-error>
-      </bc-number>
-      <bc-text #listNumberFormfield class="m-2 field-number" [required]="true"
-        [label]="'PROPORTIONAL_ELECTION.ENTER_LIST_NUMBER' | translate" [(value)]="listNumber"
+      @if (enableBundleNumber) {
+        <bc-number
+          #bundleNumberFormfield
+          class="my-2 field-number"
+          [required]="true"
+          [allowUndefined]="false"
+          [label]="'POLITICAL_BUSINESS.BUNDLE_NUMBER' | translate"
+          [value]="bundleNumber"
+          [error]="!bundleNumber"
+          (valueChange)="updateBundleNumber(+$event)"
+          [subscriptSizing]="'dynamic'"
+        >
+        </bc-number>
+      }
+      <bc-text
+        #listNumberFormfield
+        class="m-2 field-number"
+        [required]="true"
+        [label]="'PROPORTIONAL_ELECTION.ENTER_LIST_NUMBER' | translate"
+        [(value)]="listNumber"
+        (valueChange)="selectList(false)"
         (keydown.enter)="selectList(true)"
-        [subscriptSizing]="'dynamic'"></bc-text>
+        [subscriptSizing]="'dynamic'"
+      ></bc-text>
       <div class="spacer"></div>
-      <bc-button [disabled]="saving || enableBundleNumber && (!bundleNumber || duplicatedBundleNumber)"
-        class="align-bottom" variant="tertiary" [label]="'PROPORTIONAL_ELECTION.BALLOT_WITHOUT_LIST' | translate"
-        (buttonClick)="createBundle()"></bc-button>
+      <bc-button
+        [disabled]="saving || (enableBundleNumber && !bundleNumber)"
+        class="align-bottom"
+        variant="tertiary"
+        [label]="'PROPORTIONAL_ELECTION.BALLOT_WITHOUT_LIST' | translate"
+        (buttonClick)="createBundle()"
+      ></bc-button>
     </div>
 
-    <bc-table [dataSource]="dataSource">
-      <ng-container columnDef="select">
-        <bc-header-cell *headerCellDef>
-        </bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">
-          <bc-checkbox class="ml-2" (checkedChange)="toggleRow(element, $event)"
-            [checked]="selection.isSelected(element)">
-          </bc-checkbox>
-        </bc-data-cell>
-      </ng-container>
+    <div class="overflow">
+      <bc-table [dataSource]="dataSource" selection #selection="selection" (selectionChange)="updateSelectedList($event)">
+        <ng-container columnDef="select">
+          <bc-header-cell *headerCellDef></bc-header-cell>
+          <bc-data-cell *dataCellDef="let element">
+            <bc-radio-button selectionToggle [selectionToggleValue]="element" [checked]="selection.isSelected(element)"></bc-radio-button>
+          </bc-data-cell>
+        </ng-container>
 
-      <ng-container columnDef="orderNumber">
-        <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.ORDER_NUMBER' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">{{ element.orderNumber }}</bc-data-cell>
-      </ng-container>
+        <ng-container columnDef="orderNumber">
+          <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.ORDER_NUMBER' | translate }}</bc-header-cell>
+          <bc-data-cell *dataCellDef="let element">{{ element.orderNumber }}</bc-data-cell>
+        </ng-container>
 
-      <ng-container columnDef="shortDescription">
-        <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.SHORT_DESCRIPTION' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">{{ element.shortDescription }}</bc-data-cell>
-      </ng-container>
+        <ng-container columnDef="shortDescription">
+          <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.SHORT_DESCRIPTION' | translate }}</bc-header-cell>
+          <bc-data-cell *dataCellDef="let element">{{ element.shortDescription }}</bc-data-cell>
+        </ng-container>
 
-      <ng-container columnDef="description">
-        <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.DESCRIPTION' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">{{ element.description }}</bc-data-cell>
-      </ng-container>
+        <ng-container columnDef="description">
+          <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.DESCRIPTION' | translate }}</bc-header-cell>
+          <bc-data-cell *dataCellDef="let element">{{ element.description }}</bc-data-cell>
+        </ng-container>
 
-      <bc-header-row *headerRowDef="let row; columns: columns"></bc-header-row>
-      <bc-data-row *dataRowDef="let row; columns: columns; let i = index"></bc-data-row>
-    </bc-table>
+        <bc-header-row *headerRowDef="let row; columns: columns"></bc-header-row>
+        <bc-data-row
+          *dataRowDef="let row; columns: columns"
+          #rowSelection="selectionToggle"
+          selectionToggle
+          [selectionToggleValue]="row"
+          selectionRow
+          [selectionRowValue]="row"
+          (click)="rowSelection.toggle()"
+        ></bc-data-row>
+      </bc-table>
+    </div>
   </div>
-  <vo-lib-button-bar footer (cancel)="close()" [saveLabel]="'PROPORTIONAL_ELECTION.SELECT_LIST' | translate"
-    (save)="createBundle(selection.selected[0])" [saving]="saving"
-    [canSave]="selection.hasValue() && (!enableBundleNumber || (!!bundleNumber && !duplicatedBundleNumber))">
+  <vo-lib-button-bar
+    footer
+    (cancel)="close()"
+    [saveLabel]="'PROPORTIONAL_ELECTION.SELECT_LIST' | translate"
+    (save)="createBundle(selectedList)"
+    [saving]="saving"
+    [canSave]="!!selectedList && (!enableBundleNumber || !!bundleNumber)"
+  >
   </vo-lib-button-bar>
 </vo-lib-dialog>

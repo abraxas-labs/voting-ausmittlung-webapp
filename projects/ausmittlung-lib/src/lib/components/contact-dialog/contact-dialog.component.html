@@ -4,12 +4,14 @@
   <div content class="container">
     <div class="left">
       <h2>{{ 'CONTEST.DETAIL.CONTACT_DATA.TITLE_AUTHORITY' | translate }}</h2>
-      <ng-container *ngFor="let domainOfInfluence of domainOfInfluences">
+      @for (domainOfInfluence of domainOfInfluences; track domainOfInfluence) {
         <div class="my-2 mb-4">
           <vo-ausm-contact-person-data [contactPerson]="domainOfInfluence.contactPerson"></vo-ausm-contact-person-data>
         </div>
-      </ng-container>
-      <span *ngIf="domainOfInfluences.length === 0" class="no-data" translate>CONTEST.DETAIL.CONTACT_DATA.NO_DATA</span>
+      }
+      @if (domainOfInfluences.length === 0) {
+        <span class="no-data" translate>CONTEST.DETAIL.CONTACT_DATA.NO_DATA</span>
+      }
     </div>
     <div class="line"></div>
     <div class="right">
@@ -34,15 +36,16 @@
         [checked]="countingCircle.contactPersonSameDuringEventAsAfter"
         (checkedChange)="setContactPersonSameDuringEventAsAfter($event)"
         [subscriptSizing]="'dynamic'"
-      >
+        >
       </bc-checkbox>
-      <vo-ausm-contact-person-edit
-        *ngIf="!countingCircle.contactPersonSameDuringEventAsAfter"
-        class="form"
-        [readonly]="readonly"
-        [contactPerson]="countingCircle.contactPersonAfterEvent"
-        (contentChanged)="contentChanged()"
-      ></vo-ausm-contact-person-edit>
+      @if (!countingCircle.contactPersonSameDuringEventAsAfter) {
+        <vo-ausm-contact-person-edit
+          class="form"
+          [readonly]="readonly"
+          [contactPerson]="countingCircle.contactPersonAfterEvent"
+          (contentChanged)="contentChanged()"
+        ></vo-ausm-contact-person-edit>
+      }
     </div>
   </div>
 

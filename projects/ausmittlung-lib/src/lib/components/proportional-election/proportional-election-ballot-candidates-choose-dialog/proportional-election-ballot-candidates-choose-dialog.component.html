@@ -17,13 +17,14 @@
     ></bc-text>
 
     <div class="candidate-list">
-      <vo-ausm-proportional-election-ballot-candidates-choose-entry
-        *ngFor="let candidate of candidates"
-        (click)="done(candidate)"
-        [candidate]="candidate"
-        [candidateCheckDigit]="candidateCheckDigit"
-      >
-      </vo-ausm-proportional-election-ballot-candidates-choose-entry>
+      @for (candidate of candidates; track candidate) {
+        <vo-ausm-proportional-election-ballot-candidates-choose-entry
+          (click)="done(candidate)"
+          [candidate]="candidate"
+          [candidateCheckDigit]="candidateCheckDigit"
+          >
+        </vo-ausm-proportional-election-ballot-candidates-choose-entry>
+      }
     </div>
   </div>
 </vo-lib-dialog>

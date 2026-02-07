@@ -5,8 +5,8 @@
  */
 
 import { DialogService, SnackbarService } from '@abraxas/voting-lib';
-import { Component, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnDestroy, inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import {
   SecondFactorTransactionService,
@@ -25,6 +25,15 @@ import { EndResultStep } from '../../models/end-result-step.model';
   standalone: false,
 })
 export class VoteEndResultComponent implements OnDestroy {
+  private readonly route = inject(ActivatedRoute);
+  private readonly resultService = inject(VoteResultService);
+  private readonly i18n = inject(TranslateService);
+  private readonly toast = inject(SnackbarService);
+  private readonly dialog = inject(DialogService);
+  private readonly eventLogService = inject(EventLogService);
+  private readonly secondFactorTransactionService = inject(SecondFactorTransactionService);
+  private readonly router = inject(Router);
+
   public loading: boolean = true;
   public stepActionLoading: boolean = false;
   public endResult?: VoteEndResult;
@@ -32,25 +41,22 @@ export class VoteEndResultComponent implements OnDestroy {
   public voteId = '';
   public endResultStep?: EndResultStep;
   public finalizeEnabled = false;
+  public showExport = false;
 
   private readonly routeSubscription: Subscription;
   private watchSubscription?: Subscription;
 
-  constructor(
-    private readonly route: ActivatedRoute,
-    private readonly resultService: VoteResultService,
-    private readonly i18n: TranslateService,
-    private readonly toast: SnackbarService,
-    private readonly dialog: DialogService,
-    private readonly eventLogService: EventLogService,
-    private readonly secondFactorTransactionService: SecondFactorTransactionService,
-  ) {
+  constructor() {
     this.routeSubscription = combineLatest([this.route.params, this.route.queryParams])
       .pipe(
         debounceTime(10), // could fire twice if both params change at the same time
-        map(([params, queryParams]) => ({ politicalBusinessId: params.politicalBusinessId, isPartialResult: queryParams.partialResult })),
+        map(([params, queryParams]) => ({
+          politicalBusinessId: params.politicalBusinessId,
+          isPartialResult: queryParams.partialResult,
+          submissionFinishedAndAuditedTentatively: queryParams.submissionFinishedAndAuditedTentatively,
+        })),
       )
-      .subscribe(async ({ politicalBusinessId, isPartialResult }) => {
+      .subscribe(async ({ politicalBusinessId, isPartialResult, submissionFinishedAndAuditedTentatively }) => {
         this.isPartialResult = isPartialResult;
         this.voteId = politicalBusinessId;
 
@@ -58,6 +64,10 @@ export class VoteEndResultComponent implements OnDestroy {
         delete this.watchSubscription;
 
         await this.loadData(politicalBusinessId);
+
+        if (!!submissionFinishedAndAuditedTentatively && this.showExport) {
+          this.router.navigate(['../../', 'contests', this.endResult!.contest.id, 'exports'], { relativeTo: this.route });
+        }
 
         this.watchSubscription = this.eventLogService
           .watch([...VoteEndResultEventTypes], { contestId: this.endResult!.contest.id, politicalBusinessId: this.voteId })
@@ -92,6 +102,8 @@ export class VoteEndResultComponent implements OnDestroy {
       if (success) {
         this.endResultStep = newStep;
       }
+
+      this.updateShowExport();
     } finally {
       this.stepActionLoading = false;
     }
@@ -147,8 +159,13 @@ export class VoteEndResultComponent implements OnDestroy {
         : !this.endResult.finalized
           ? EndResultStep.AllCountingCirclesDone
           : EndResultStep.Finalized;
+      this.updateShowExport();
     } finally {
       this.loading = false;
     }
+  }
+
+  private updateShowExport(): void {
+    this.showExport = this.endResult!.finalized;
   }
 }

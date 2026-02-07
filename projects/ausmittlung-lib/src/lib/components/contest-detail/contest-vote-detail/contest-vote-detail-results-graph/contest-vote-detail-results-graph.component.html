@@ -1,27 +1,30 @@
-<ng-container *ngIf="ballotResult">
+@if (ballotResult) {
   <h4 class="mb-2" translate>POLITICAL_BUSINESS.RESULT</h4>
-  <div *ngFor="let questionResult of ballotResult.questionResults"
-       class="result-graph"
-       [class.result-graph-xl]="eCounting && eVoting"
-       [class.result-graph-l]="eCounting || eVoting">
-    <vo-ausm-vote-results-graph
-      [countLeft]="questionResult.totalCountOfAnswer1"
-      [countRight]="questionResult.totalCountOfAnswer2"
-      [equalityRightWins]="true"
-      [resultLabelLeft]="questionResult.question | translateVoteQuestion: false:'answer1Short':ballotResult.questionResults.length:ballotResult.ballot.ballotSubType"
-      [resultLabelRight]="questionResult.question | translateVoteQuestion: false:'answer2Short':ballotResult.questionResults.length:ballotResult.ballot.ballotSubType">
-    </vo-ausm-vote-results-graph>
-  </div>
-
-  <div *ngFor="let tieBreakQuestionResult of ballotResult.tieBreakQuestionResults"
-       class="result-graph"
-       [class.result-graph-xl]="eCounting && eVoting"
-       [class.result-graph-l]="eCounting || eVoting">
-    <vo-ausm-vote-results-graph
-      [countLeft]="tieBreakQuestionResult.totalCountOfAnswer1"
-      [countRight]="tieBreakQuestionResult.totalCountOfAnswer2"
-      [resultLabelLeft]="tieBreakQuestionResult.question | translateVoteQuestion: true:'answer1Short':ballotResult.questionResults.length"
-      [resultLabelRight]="tieBreakQuestionResult.question | translateVoteQuestion: true:'answer2Short':ballotResult.questionResults.length">
-    </vo-ausm-vote-results-graph>
-  </div>
-</ng-container>
+  @for (questionResult of ballotResult.questionResults; track questionResult) {
+    <div
+      class="result-graph"
+      [class.result-graph-xl]="eCounting && eVoting"
+      [class.result-graph-l]="eCounting || eVoting">
+      <vo-ausm-vote-results-graph
+        [countLeft]="questionResult.totalCountOfAnswer1"
+        [countRight]="questionResult.totalCountOfAnswer2"
+        [equalityRightWins]="true"
+        [resultLabelLeft]="questionResult.question | translateVoteQuestion: false:'answer1Short':ballotResult.questionResults.length:ballotResult.ballot.ballotSubType"
+        [resultLabelRight]="questionResult.question | translateVoteQuestion: false:'answer2Short':ballotResult.questionResults.length:ballotResult.ballot.ballotSubType">
+      </vo-ausm-vote-results-graph>
+    </div>
+  }
+  @for (tieBreakQuestionResult of ballotResult.tieBreakQuestionResults; track tieBreakQuestionResult) {
+    <div
+      class="result-graph"
+      [class.result-graph-xl]="eCounting && eVoting"
+      [class.result-graph-l]="eCounting || eVoting">
+      <vo-ausm-vote-results-graph
+        [countLeft]="tieBreakQuestionResult.totalCountOfAnswer1"
+        [countRight]="tieBreakQuestionResult.totalCountOfAnswer2"
+        [resultLabelLeft]="tieBreakQuestionResult.question | translateVoteQuestion: true:'answer1Short':ballotResult.questionResults.length"
+        [resultLabelRight]="tieBreakQuestionResult.question | translateVoteQuestion: true:'answer2Short':ballotResult.questionResults.length">
+      </vo-ausm-vote-results-graph>
+    </div>
+  }
+}

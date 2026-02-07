@@ -42,9 +42,6 @@ export class ProportionalElectionBallotCandidateModifyComponent {
   @Output()
   public removeCandidate: EventEmitter<ProportionalElectionBallotCandidate> = new EventEmitter<ProportionalElectionBallotCandidate>();
 
-  @Output()
-  public contentCompleted: EventEmitter<KeyboardEvent> = new EventEmitter<KeyboardEvent>();
-
   public removeCandidateValue: string = '';
   public addCandidateValue: string = '';
 

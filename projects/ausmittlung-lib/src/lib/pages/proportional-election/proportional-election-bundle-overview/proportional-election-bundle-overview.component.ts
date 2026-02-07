@@ -5,10 +5,8 @@
  */
 
 import { ProportionalElectionReviewProcedure } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/proportional_election_pb';
-import { DialogService, SnackbarService, ThemeService } from '@abraxas/voting-lib';
-import { Component, HostListener } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, HostListener, inject } from '@angular/core';
+import { Params } from '@angular/router';
 import {
   ProportionalElectionNewBundleComponent,
   ProportionalElectionNewBundleComponentData,
@@ -16,14 +14,9 @@ import {
 } from '../../../components/proportional-election/proportional-election-new-bundle/proportional-election-new-bundle.component';
 import { PoliticalBusinessResultBundle, ProportionalElectionResultBundle, ProportionalElectionResultBundles } from '../../../models';
 import { ProportionalElectionResultBundleService } from '../../../services/proportional-election-result-bundle.service';
-import { ResultExportService } from '../../../services/result-export.service';
-import { PermissionService } from '../../../services/permission.service';
 import { PoliticalBusinessBundleOverviewComponent } from '../../political-business-bundle-overview/political-business-bundle-overview.component';
 import { ProportionalElectionBallotComponent } from '../proportional-election-ballot/proportional-election-ballot.component';
-import { ExportService } from '../../../services/export.service';
-import { DatePipe } from '@angular/common';
 import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/political_business_pb';
-import { EventLogService } from '../../../services/event-log.service';
 import { Event, EventType, ProportionalElectionResultBundleEventTypes } from '../../../models/event-log.model';
 import { BallotBundleState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/ballot_bundle_pb';
 
@@ -34,35 +27,12 @@ import { BallotBundleState } from '@abraxas/voting-ausmittlung-service-proto/grp
   standalone: false,
 })
 export class ProportionalElectionBundleOverviewComponent extends PoliticalBusinessBundleOverviewComponent<ProportionalElectionResultBundles> {
+  private readonly resultBundleService = inject(ProportionalElectionResultBundleService);
+
   public readonly reviewProcedures: typeof ProportionalElectionReviewProcedure = ProportionalElectionReviewProcedure;
 
-  constructor(
-    permissionService: PermissionService,
-    i18n: TranslateService,
-    toast: SnackbarService,
-    dialog: DialogService,
-    route: ActivatedRoute,
-    router: Router,
-    themeService: ThemeService,
-    resultExportService: ResultExportService,
-    exportService: ExportService,
-    eventLogService: EventLogService,
-    datePipe: DatePipe,
-    private readonly resultBundleService: ProportionalElectionResultBundleService,
-  ) {
-    super(
-      permissionService,
-      i18n,
-      toast,
-      dialog,
-      route,
-      router,
-      themeService,
-      resultExportService,
-      exportService,
-      eventLogService,
-      datePipe,
-    );
+  constructor() {
+    super();
   }
 
   public get watcherEventTypes(): EventType[] {
@@ -79,8 +49,6 @@ export class ProportionalElectionBundleOverviewComponent extends PoliticalBusine
       electionId: this.result.politicalBusinessResult.election.id,
       electionResultId: this.result.politicalBusinessResult.id,
       enableBundleNumber: !this.result.politicalBusinessResult.entryParams.automaticBallotBundleNumberGeneration,
-      usedBundleNumbers: this.getUsedBundleNumbers(this.result.bundles),
-      deletedUnusedBundleNumbers: this.getDeletedUnusedBundleNumbers(this.result.bundles),
     };
     const result = await this.dialog.openForResult<ProportionalElectionNewBundleComponent, ProportionalElectionNewBundleComponentResult>(
       ProportionalElectionNewBundleComponent,
@@ -130,26 +98,8 @@ export class ProportionalElectionBundleOverviewComponent extends PoliticalBusine
     return this.resultBundleService.rejectBundleReview(bundle.id);
   }
 
-  public async generateBundleReviewExport(bundle: PoliticalBusinessResultBundle): Promise<void> {
-    if (
-      this.result?.politicalBusinessResult.entryParams?.reviewProcedure !==
-      ProportionalElectionReviewProcedure.PROPORTIONAL_ELECTION_REVIEW_PROCEDURE_PHYSICALLY
-    ) {
-      return;
-    }
-
-    return super.generateBundleReviewExport(bundle);
-  }
-
-  public async downloadBundleReviewExport(bundle: PoliticalBusinessResultBundle): Promise<void> {
-    if (
-      this.result?.politicalBusinessResult.entryParams?.reviewProcedure !==
-      ProportionalElectionReviewProcedure.PROPORTIONAL_ELECTION_REVIEW_PROCEDURE_PHYSICALLY
-    ) {
-      return;
-    }
-
-    return super.downloadBundleReviewExport(bundle);
+  public async resetBundle(bundle: PoliticalBusinessResultBundle): Promise<void> {
+    return this.resultBundleService.resetBundleToSubmissionFinished(bundle.id);
   }
 
   protected deleteBundleById(bundleId: string): Promise<void> {
@@ -190,6 +140,7 @@ export class ProportionalElectionBundleOverviewComponent extends PoliticalBusine
         break;
       case 'ProportionalElectionResultBundleSubmissionFinished':
       case 'ProportionalElectionResultBundleCorrectionFinished':
+      case 'ProportionalElectionResultBundleResetToSubmissionFinished':
         this.setBundleState(e.entityId, BallotBundleState.BALLOT_BUNDLE_STATE_READY_FOR_REVIEW, e.data.bundleLog!);
         break;
       case 'ProportionalElectionResultBallotCreated':

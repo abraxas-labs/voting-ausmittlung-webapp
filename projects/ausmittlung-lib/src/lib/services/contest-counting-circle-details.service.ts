@@ -9,7 +9,7 @@ import { UpdateContestCountingCircleDetailsRequest } from '@abraxas/voting-ausmi
 import { UpdateCountOfVotersInformationSubTotalRequest } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/count_of_voters_requests_pb';
 import { UpdateVotingCardResultDetailRequest } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/voting_cards_requests_pb';
 import { GrpcBackendService, GrpcEnvironment, GrpcService } from '@abraxas/voting-lib';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   ContestCountingCircleDetails,
   CountOfVotersInformation,
@@ -27,11 +27,12 @@ import { ValidationMappingService } from './validation-mapping.service';
   providedIn: 'root',
 })
 export class ContestCountingCircleDetailsService extends GrpcService<ContestCountingCircleDetailsServicePromiseClient> {
-  constructor(
-    grpcBackend: GrpcBackendService,
-    @Inject(GRPC_ENV_INJECTION_TOKEN) env: GrpcEnvironment,
-    private readonly validationMapping: ValidationMappingService,
-  ) {
+  private readonly validationMapping = inject(ValidationMappingService);
+
+  constructor() {
+    const grpcBackend = inject(GrpcBackendService);
+    const env = inject<GrpcEnvironment>(GRPC_ENV_INJECTION_TOKEN);
+
     super(ContestCountingCircleDetailsServicePromiseClient, env, grpcBackend);
   }
 

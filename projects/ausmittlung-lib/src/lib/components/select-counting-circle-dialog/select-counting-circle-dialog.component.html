@@ -1,19 +1,21 @@
 <vo-lib-dialog>
   <h3 header>{{'CONTEST.CHOOSE_COUNTING_CIRCLE.TITLE' | translate}}</h3>
 
-  <div content
-       class="m-2"
-       *ngIf="countingCircles">
-    <bc-dropdown class="full-width"
-                 [items]="countingCircles"
-                 displayExpr="name"
-                 (valueChange)="done($event)"
-                 [subscriptSizing]="'dynamic'"></bc-dropdown>
-  </div>
+  @if (countingCircles) {
+    <div content
+      class="m-2"
+      >
+      <bc-dropdown class="full-width"
+        [items]="countingCircles"
+        displayExpr="name"
+        (valueChange)="done($event)"
+        [subscriptSizing]="'dynamic'"></bc-dropdown>
+    </div>
+  }
 
   <div footer>
     <vo-lib-button-bar [hasSaveButton]="false"
-                       [sticky]="false"
-                       (cancel)="done()"></vo-lib-button-bar>
+      [sticky]="false"
+      (cancel)="done()"></vo-lib-button-bar>
   </div>
 </vo-lib-dialog>

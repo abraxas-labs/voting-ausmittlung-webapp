@@ -1,25 +1,24 @@
-<ng-container *ngIf="!loading && resultDetail; else spinner">
-  <div *ngIf="!resultDetail.entryParams.ballotBundleSize || selectResultEntry; else content">
-    <vo-ausm-contest-proportional-election-detail-result-entry [electionResultId]="resultDetail.id"
-                                                               [election]="resultDetail.election"
-                                                               [(resultEntryParams)]="resultDetail.entryParams"
-                                                               (done)="selectResultEntry = false; setFocus()"
-                                                               (resetResults)="resetResults()"
-                                                               [readonly]="contestLocked || contentReadonly || !canEnterResults">
-    </vo-ausm-contest-proportional-election-detail-result-entry>
-  </div>
-
-  <ng-template #content>
+@if (!loading && resultDetail) {
+  @if (!resultDetail.entryParams.ballotBundleSize || selectResultEntry) {
+    <div>
+      <vo-ausm-contest-proportional-election-detail-result-entry [electionResultId]="resultDetail.id"
+        [election]="resultDetail.election"
+        [(resultEntryParams)]="resultDetail.entryParams"
+        (done)="selectResultEntry = false; setFocus()"
+        (resetResults)="resetResults()"
+        [readonly]="contestLocked || contentReadonly || !canDefineEntry || !canResetResults">
+      </vo-ausm-contest-proportional-election-detail-result-entry>
+    </div>
+  } @else {
     <div class="content">
       <vo-ausm-ballot-count-input header="ELECTION.BALLOT_CARD"
-                                  [eVoting]="eVoting"
-                                  [eCounting]="eCounting"
-                                  [readonly]="resultReadonly || !canEnterResults"
-                                  [totalCountOfVoters]="resultDetail.totalCountOfVoters"
-                                  [participationLabel]="'ELECTION.VOTER_PARTICIPATION'"
-                                  [countOfVoters]="resultDetail.countOfVoters"
-                                  (countOfVotersChange)="updateCountOfVotersValid(); updateUnsavedChanges()"></vo-ausm-ballot-count-input>
-
+        [eVoting]="eVoting"
+        [eCounting]="eCounting"
+        [readonly]="resultReadonly || !canEnterResults"
+        [totalCountOfVoters]="resultDetail.totalCountOfVoters"
+        [participationLabel]="'ELECTION.VOTER_PARTICIPATION'"
+        [countOfVoters]="resultDetail.countOfVoters"
+      (countOfVotersChange)="updateCountOfVotersValid(); updateUnsavedChanges()"></vo-ausm-ballot-count-input>
       <div>
         <ng-container>
           <h4 translate>POLITICAL_BUSINESS.SUBMISSION</h4>
@@ -36,38 +35,41 @@
           </vo-ausm-contest-detail-submission-tile>
         </ng-container>
       </div>
-      <div *ngIf="canReadListResults">
-        <h4 translate>POLITICAL_BUSINESS.RESULT</h4>
-        <vo-ausm-contest-detail-submission-tile
-          [titleText]="'PROPORTIONAL_ELECTION.SHOW_RESULTS' | translate"
-          [buttonText]="'APP.OPEN'"
-          (buttonClick)="navigateToResults()">
-        </vo-ausm-contest-detail-submission-tile>
-      </div>
+      @if (canReadListResults) {
+        <div>
+          <h4 translate>POLITICAL_BUSINESS.RESULT</h4>
+          <vo-ausm-contest-detail-submission-tile
+            [titleText]="'PROPORTIONAL_ELECTION.SHOW_RESULTS' | translate"
+            [buttonText]="'APP.OPEN'"
+            (buttonClick)="navigateToResults()">
+          </vo-ausm-contest-detail-submission-tile>
+        </div>
+      }
     </div>
-
-    <vo-ausm-contest-political-business-detail-footer *ngIf="!contestLocked
-                                                        && (!contentReadonly || isResponsibleMonitorAuthority)
-                                                        && (canAudit || canFinishSubmissionAndAudit || (canFinishSubmission && (result.state === states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING || result.state === states.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION)))"
-                                                      (selectResultEntry)="selectResultEntry = true"
-                                                      (validateAndSave)="validateAndSave()"
-                                                      (validate)="validateAndSave()"
-                                                      (save)="save()"
-                                                      (stateUpdate)="stateUpdate($event)"
-                                                      [isResponsibleMonitorAuthority]="isResponsibleMonitorAuthority"
-                                                      [isActionExecuting]="isActionExecuting"
-                                                      [state]="result.state"
-                                                      [canValidateAndSave]="!contentReadonly && hasUnsavedChanges && countOfVotersValid"
-                                                      [canValidate]="!contentReadonly && countOfVotersValid"
-                                                      [canSave]="!contentReadonly && countOfVotersValid"
-                                                      [canSubmit]="!contentReadonly && !hasUnsavedChanges"
-                                                      [contestId]="resultDetail.election.contestId"
-                                                      [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
-                                                      [statePlausibilisedDisabled]="contestCantonDefaults?.statePlausibilisedDisabled"
-                                                      [domainOfInfluenceType]="resultDetail.election.domainOfInfluence!.type">
-    </vo-ausm-contest-political-business-detail-footer>
-  </ng-template>
-</ng-container>
-<ng-template #spinner>
+    @if (!contestLocked
+      && (!contentReadonly || isResponsibleMonitorAuthority)
+      && (canAudit || canFinishSubmissionAndAudit || ((canFinishSubmission || canEnterResults) && (result.state === states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING || result.state === states.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION)))) {
+      <vo-ausm-contest-political-business-detail-footer
+        (selectResultEntry)="selectResultEntry = true"
+        (validateAndSave)="validateAndSave()"
+        (validate)="validateAndSave()"
+        (save)="save()"
+        (stateUpdate)="stateUpdate($event)"
+        [isResponsibleMonitorAuthority]="isResponsibleMonitorAuthority"
+        [isActionExecuting]="isActionExecuting"
+        [state]="result.state"
+        [canValidateAndSave]="!contentReadonly && hasUnsavedChanges && countOfVotersValid"
+        [canValidate]="!contentReadonly && countOfVotersValid"
+        [canSave]="!contentReadonly && countOfVotersValid"
+        [canSubmit]="!contentReadonly && !hasUnsavedChanges"
+        [contestId]="resultDetail.election.contestId"
+        [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
+        [statePlausibilisedDisabled]="contestCantonDefaults?.statePlausibilisedDisabled"
+        [domainOfInfluenceType]="resultDetail.election.domainOfInfluence!.type"
+        [countingCircleResult]="resultDetail">
+      </vo-ausm-contest-political-business-detail-footer>
+    }
+  }
+} @else {
   <bc-spinner></bc-spinner>
-</ng-template>
+}

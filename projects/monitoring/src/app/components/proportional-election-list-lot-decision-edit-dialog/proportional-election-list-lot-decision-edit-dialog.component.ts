@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ProportionalElectionManualEndResultDialogData } from '../proportional-election-manual-end-result-dialog/proportional-election-manual-end-result-dialog.component';
 import {
@@ -23,6 +23,8 @@ import {
   standalone: false,
 })
 export class ProportionalElectionListLotDecisionEditDialogComponent {
+  private readonly dialogRef = inject<MatDialogRef<ProportionalElectionManualEndResultDialogData>>(MatDialogRef);
+
   public readonly columns = ['description', 'winner'];
   public lotDecisionEntries: ProportionalElectionEndResultListLotDecisionEntry[] = [];
 
@@ -33,10 +35,9 @@ export class ProportionalElectionListLotDecisionEditDialogComponent {
   public selectedListUnions: ProportionalElectionListUnion[] = [];
   public loading: boolean = false;
 
-  constructor(
-    private readonly dialogRef: MatDialogRef<ProportionalElectionManualEndResultDialogData>,
-    @Inject(MAT_DIALOG_DATA) dialogData: ProportionalElectionListLotDecisionEditDialogData,
-  ) {
+  constructor() {
+    const dialogData = inject<ProportionalElectionListLotDecisionEditDialogData>(MAT_DIALOG_DATA);
+
     this.listEndResults = dialogData.lists;
     this.lists = this.listEndResults.map(x => x.list);
     const listUnions = distinct(

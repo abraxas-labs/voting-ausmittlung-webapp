@@ -1,4 +1,6 @@
-<h4 *ngIf="showTitle" class="mt-4 mb-2">{{ endResultValue?.election?.title }}</h4>
+@if (showTitle) {
+  <h4 class="mt-4 mb-2">{{ endResultValue?.election?.title }}</h4>
+}
 
 <bc-table [dataSource]="candidateResults">
   <ng-container columnDef="rank">
@@ -45,14 +47,18 @@
 
   <ng-container columnDef="state">
     <bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.STATE' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element"><span *ngIf="element.state !== undefined">{{'ELECTION.CANDIDATE.STATES.' + element.state | translate}}</span></bc-data-cell>
+    <bc-data-cell *dataCellDef="let element">
+      @if (element.state !== undefined) {
+        <span>{{'ELECTION.CANDIDATE.STATES.' + element.state | translate}}</span>
+      }
+    </bc-data-cell>
   </ng-container>
 
   <ng-container columnDef="lotDecision">
     <bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.LOT_DECISION' | translate }}</bc-header-cell>
     <bc-data-cell *dataCellDef="let element"><span>
       <bc-checkbox [checked]="element.lotDecision"
-                   [disabled]="true"></bc-checkbox>
+        [disabled]="true"></bc-checkbox>
     </span></bc-data-cell>
   </ng-container>
 

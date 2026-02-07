@@ -18,7 +18,7 @@
 
   // variable workaround due to angular bug https://github.com/angular/angular/issues/28897
   grid-template-columns: repeat(var(--candidate-results-column-count), fit-content(15rem)) 10rem;
-  grid-gap: 0.5rem 0.8rem;
+  gap: 0.5rem 0.8rem;
   margin-top: 0.5rem;
 
   .candidate-number {

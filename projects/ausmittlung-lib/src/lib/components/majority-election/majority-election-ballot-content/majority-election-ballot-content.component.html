@@ -1,70 +1,75 @@
-<div *ngIf="isSecondaryElection" class="py-2">
-  <vo-ausm-majority-election-secondary-info [election]="ballot.election"> </vo-ausm-majority-election-secondary-info>
-</div>
+@if (isSecondaryElection) {
+  <div class="py-2">
+    <vo-ausm-majority-election-secondary-info [election]="ballot.election"> </vo-ausm-majority-election-secondary-info>
+  </div>
+}
 <div class="content">
   <div class="ballot-stats">
-    <div class="candidate-modify" *ngIf="!readonly">
-      <div>
-        <bc-text
-          #toggleCandidateInput
-          [focusOnLoad]="!isSecondaryElection"
+    @if (!readonly) {
+      <div class="candidate-modify">
+        <div>
+          <bc-text
+            #toggleCandidateInput
+            [focusOnLoad]="!isSecondaryElection"
           [label]="
             (isSecondaryElection
               ? 'ELECTION.BALLOT_DETAIL.TOGGLE_CANDIDATE'
               : 'ELECTION.BALLOT_DETAIL.TOGGLE_CANDIDATE_SHORTCUT'
             ) | translate
           "
-          [readonly]="readonly || disabled"
-          [(ngModel)]="toggleCandidateValue"
-          [hint]="'ELECTION.BALLOT_DETAIL.EDIT_CANDIDATE_HINT' | translate"
-          (ngModelChange)="tryToggleCandidate($event)"
-          [optionalText]="''"
-          [subscriptSizing]="'dynamic'"
-        ></bc-text>
+            [readonly]="readonly || disabled"
+            [(ngModel)]="toggleCandidateValue"
+            [hint]="'ELECTION.BALLOT_DETAIL.EDIT_CANDIDATE_HINT' | translate"
+            (ngModelChange)="tryToggleCandidate($event)"
+            [optionalText]="''"
+            [subscriptSizing]="'dynamic'"
+          ></bc-text>
+        </div>
       </div>
-    </div>
-    <bc-number
-      *ngIf="showInvalidVotes"
-      [label]="'MAJORITY_ELECTION.INVALID_VOTES' | translate"
-      [min]="0"
-      [max]="ballot.election.numberOfMandates"
-      [required]="true"
-      [allowUndefined]="false"
-      [readonly]="disabled || readonly"
-      [error]="ballot.invalidVoteCount < 0 || ballot.invalidVoteCount > ballot.election.numberOfMandates"
-      [value]="ballot.invalidVoteCount"
-      (valueChange)="setInvalidVoteCount(+$event)"
-      [subscriptSizing]="'dynamic'"
-    ></bc-number>
-    <bc-number
-      *ngIf="showIndividualVotes"
-      [label]="'MAJORITY_ELECTION.INDIVIDUAL' | translate"
-      [min]="0"
-      [max]="ballot.election.numberOfMandates"
-      [required]="true"
-      [allowUndefined]="false"
-      [readonly]="disabled || readonly"
-      [error]="ballot.individualVoteCount < 0 || ballot.individualVoteCount > ballot.election.numberOfMandates"
-      [value]="ballot.individualVoteCount"
-      (valueChange)="setIndividualVoteCount(+$event)"
-      (keydown.enter)="automaticEmptyVoteCounting ? contentCompleted.emit($event) : undefined"
-      [subscriptSizing]="'dynamic'"
-    ></bc-number>
-    <bc-number
-      *ngIf="showEmptyVotes"
-      [label]="'ELECTION.BALLOT_DETAIL.EMPTY' | translate"
-      [min]="0"
-      [max]="ballot.election.numberOfMandates"
-      [required]="true"
-      [allowUndefined]="false"
-      [readonly]="disabled || readonly || automaticEmptyVoteCounting"
-      [error]="ballot.computedEmptyVoteCount !== ballot.emptyVoteCount || ballot.emptyVoteCount < 0"
-      [value]="ballot.emptyVoteCount"
-      (valueChange)="updateManualEmptyVoteCount(+$event)"
-      [tabIndex]="readonly || automaticEmptyVoteCounting ? -1 : 0"
-      (keydown.enter)="contentCompleted.emit($event)"
-      [subscriptSizing]="'dynamic'"
-    ></bc-number>
+    }
+    @if (showInvalidVotes) {
+      <bc-number
+        [label]="'MAJORITY_ELECTION.INVALID_VOTES' | translate"
+        [min]="0"
+        [max]="ballot.election.numberOfMandates"
+        [required]="true"
+        [allowUndefined]="false"
+        [readonly]="disabled || readonly"
+        [error]="ballot.invalidVoteCount < 0 || ballot.invalidVoteCount > ballot.election.numberOfMandates"
+        [value]="ballot.invalidVoteCount"
+        (valueChange)="setInvalidVoteCount(+$event)"
+        [subscriptSizing]="'dynamic'"
+      ></bc-number>
+    }
+    @if (showIndividualVotes) {
+      <bc-number
+        [label]="'MAJORITY_ELECTION.INDIVIDUAL' | translate"
+        [min]="0"
+        [max]="ballot.election.numberOfMandates"
+        [required]="true"
+        [allowUndefined]="false"
+        [readonly]="disabled || readonly"
+        [error]="ballot.individualVoteCount < 0 || ballot.individualVoteCount > ballot.election.numberOfMandates"
+        [value]="ballot.individualVoteCount"
+        (valueChange)="setIndividualVoteCount(+$event)"
+        [subscriptSizing]="'dynamic'"
+      ></bc-number>
+    }
+    @if (showEmptyVotes) {
+      <bc-number
+        [label]="'ELECTION.BALLOT_DETAIL.EMPTY' | translate"
+        [min]="0"
+        [max]="ballot.election.numberOfMandates"
+        [required]="true"
+        [allowUndefined]="false"
+        [readonly]="disabled || readonly || automaticEmptyVoteCounting"
+        [error]="ballot.computedEmptyVoteCount !== ballot.emptyVoteCount || ballot.emptyVoteCount < 0"
+        [value]="ballot.emptyVoteCount"
+        (valueChange)="updateManualEmptyVoteCount(+$event)"
+        [tabIndex]="readonly || automaticEmptyVoteCounting ? -1 : 0"
+        [subscriptSizing]="'dynamic'"
+      ></bc-number>
+    }
   </div>
   <div class="spacer"></div>
   <div>
@@ -74,7 +79,7 @@
       [hasEmptyVotes]="ballot.computedEmptyVoteCount > 0"
       (toggleCandidate)="toggleCandidate($event)"
       [candidateCheckDigit]="candidateCheckDigit"
-    >
+      >
     </vo-ausm-majority-election-ballot-candidates>
   </div>
   <div class="spacer"></div>

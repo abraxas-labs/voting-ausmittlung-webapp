@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { MajorityElectionBallotGroupEntry, MajorityElectionCandidate } from '../../../models';
 
@@ -13,9 +13,13 @@ import { MajorityElectionBallotGroupEntry, MajorityElectionCandidate } from '../
   standalone: false,
 })
 export class MajorityElectionBallotGroupCandidatesPipe implements PipeTransform {
+  readonly i18n = inject(TranslateService);
+
   private readonly individualCandidate: MajorityElectionCandidate;
 
-  constructor(readonly i18n: TranslateService) {
+  constructor() {
+    const i18n = this.i18n;
+
     const individualCandidateName = i18n.instant('MAJORITY_ELECTION.INDIVIDUAL');
     this.individualCandidate = {
       id: '',

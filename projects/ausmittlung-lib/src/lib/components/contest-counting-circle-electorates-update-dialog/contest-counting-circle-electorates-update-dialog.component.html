@@ -2,36 +2,47 @@
   <h1 header>{{ 'CONTEST.DETAIL.ELECTORATE.DIALOG_TITLE' | translate }}</h1>
 
   <div content class="container">
-    <div class="electorates" *ngFor="let electorate of electorates; let index = index">
-      <bc-text
-        [label]="'CONTEST.DETAIL.ELECTORATE.DOMAIN_OF_INFLUENCE_TYPES' | translate"
-        [readonly]="true"
-        [required]="true"
-        [value]="electorateLabelByIndex.get(index)"
+    @for (electorate of electorates; track electorate; let index = $index) {
+      <div class="electorates">
+        <bc-text
+          [label]="'CONTEST.DETAIL.ELECTORATE.DOMAIN_OF_INFLUENCE_TYPES' | translate"
+          [readonly]="true"
+          [required]="true"
+          [value]="electorateLabelByIndex.get(index)"
         [subscriptSizing]="'dynamic'"></bc-text>
+        @if (!readonly) {
+          <bc-button
+            variant="tertiary"
+            icon="plus"
+            [label]="'CONTEST.DETAIL.ELECTORATE.ASSIGN_OPEN' | translate"
+            (buttonClick)="assign(electorate)"></bc-button>
+        } @else {
+          <div></div>
+        }
+        @if (!readonly) {
+          <bc-icon
+            icon="trash"
+            iconColor="error"
+            class="clickable"
+            (click)="remove(index)"></bc-icon>
+        } @else {
+          <div></div>
+        }
+      </div>
+    }
+
+    @if (electorates.length === 0) {
+      <p class="no-data my-2">{{'CONTEST.DETAIL.ELECTORATE.NO_DATA' | translate}}</p>
+    }
+
+    @if (!readonly) {
       <bc-button
-        *ngIf="!readonly; else empty"
+        class="mt-2"
         variant="tertiary"
         icon="plus"
-        [label]="'CONTEST.DETAIL.ELECTORATE.ASSIGN_OPEN' | translate"
-        (buttonClick)="assign(electorate)"></bc-button>
-      <bc-icon
-        *ngIf="!readonly; else empty"
-        icon="trash"
-        iconColor="error"
-        class="clickable"
-        (click)="remove(index)"></bc-icon>
-    </div>
-
-    <p *ngIf="electorates.length === 0" class="no-data my-2">{{'CONTEST.DETAIL.ELECTORATE.NO_DATA' | translate}}</p>
-
-    <bc-button
-      *ngIf="!readonly"
-      class="mt-2"
-      variant="tertiary"
-      icon="plus"
-      [label]="'CONTEST.DETAIL.ELECTORATE.ADD' | translate"
-      (buttonClick)="add()"></bc-button>
+        [label]="'CONTEST.DETAIL.ELECTORATE.ADD' | translate"
+        (buttonClick)="add()"></bc-button>
+    }
   </div>
 
   <div footer>
@@ -45,6 +56,3 @@
   </div>
 </vo-lib-dialog>
 
-<ng-template #empty>
-  <div></div>
-</ng-template>

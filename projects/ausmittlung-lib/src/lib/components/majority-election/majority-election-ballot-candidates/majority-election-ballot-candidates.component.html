@@ -1,19 +1,20 @@
-<div class="candidate-list">
+<!-- If this div is scrollable due to overflow, it will receive a tabindex by default (from the browser). We do not want this, as it interrupts the default tab flow. -->
+<div class="candidate-list" tabindex="-1">
   <bc-label class="title first" [label]="'APP.NR' | translate"></bc-label>
   <bc-label class="title" [label]="'ELECTION.BALLOT_DETAIL.CANDIDATE' | translate"></bc-label>
   <bc-label class="title" [label]="'MAJORITY_ELECTION.PARTY' | translate"></bc-label>
-  <ng-container *ngFor="let candidate of candidates">
+  @for (candidate of candidates; track candidate) {
     <bc-checkbox class="m-0"
-                 [tabIndex]="-1"
-                 [checked]="candidate.selected"
-                 [disabled]="readonly || (!candidate.selected && !hasEmptyVotes)"
-                 (checkedChange)="emitToggleCandidate(candidate, $event)"
-                 [subscriptSizing]="'dynamic'"></bc-checkbox>
+      [tabIndex]="-1"
+      [checked]="candidate.selected"
+      [disabled]="readonly || (!candidate.selected && !hasEmptyVotes)"
+      (checkedChange)="emitToggleCandidate(candidate, $event)"
+      [subscriptSizing]="'dynamic'"></bc-checkbox>
     <span [class.clickable]="!readonly && (candidate.selected || hasEmptyVotes)"
-          (click)="emitToggleCandidate(candidate)">{{candidate.number + (candidateCheckDigit ? candidate.checkDigit : '')}}</span>
+      (click)="emitToggleCandidate(candidate)">{{candidate.number + (candidateCheckDigit ? candidate.checkDigit : '')}}</span>
     <span [class.clickable]="!readonly && (candidate.selected || hasEmptyVotes)"
-          (click)="emitToggleCandidate(candidate)">{{candidate.politicalLastName}} {{candidate.politicalFirstName}}</span>
+      (click)="emitToggleCandidate(candidate)">{{candidate.politicalLastName}} {{candidate.politicalFirstName}}</span>
     <span [class.clickable]="!readonly && (candidate.selected || hasEmptyVotes)"
-          (click)="emitToggleCandidate(candidate)">{{candidate.party}}</span>
-  </ng-container>
+      (click)="emitToggleCandidate(candidate)">{{candidate.party}}</span>
+  }
 </div>

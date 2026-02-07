@@ -5,25 +5,15 @@
  */
 
 import { VoteReviewProcedure } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/vote_pb';
-import { DialogService, SnackbarService, ThemeService } from '@abraxas/voting-lib';
-import { Component, HostListener } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
-import {
-  PoliticalBusinessNewBundleNumberComponent,
-  PoliticalBusinessNewBundleNumberComponentData,
-} from '../../../components/political-business-new-bundle-number/political-business-new-bundle-number.component';
+import { Component, HostListener, inject } from '@angular/core';
+import { Params } from '@angular/router';
+import { PoliticalBusinessNewBundleNumberComponent } from '../../../components/political-business-new-bundle-number/political-business-new-bundle-number.component';
 import { PoliticalBusinessResultBundle, VoteResultBundles } from '../../../models';
-import { ResultExportService } from '../../../services/result-export.service';
-import { PermissionService } from '../../../services/permission.service';
 import { VoteResultBundleService } from '../../../services/vote-result-bundle.service';
 import { PoliticalBusinessBundleOverviewComponent } from '../../political-business-bundle-overview/political-business-bundle-overview.component';
 import { VoteBallotComponent } from '../vote-ballot/vote-ballot.component';
-import { ExportService } from '../../../services/export.service';
-import { DatePipe } from '@angular/common';
 import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/political_business_pb';
 import { Event, EventType, VoteResultBundleEventTypes } from '../../../models/event-log.model';
-import { EventLogService } from '../../../services/event-log.service';
 import { BallotBundleState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/ballot_bundle_pb';
 
 @Component({
@@ -33,38 +23,15 @@ import { BallotBundleState } from '@abraxas/voting-ausmittlung-service-proto/grp
   standalone: false,
 })
 export class VoteBundleOverviewComponent extends PoliticalBusinessBundleOverviewComponent<VoteResultBundles> {
+  private readonly resultBundleService = inject(VoteResultBundleService);
+
   public readonly reviewProcedures: typeof VoteReviewProcedure = VoteReviewProcedure;
 
   public result?: VoteResultBundles;
   public isCreatingBundle: boolean = false;
 
-  constructor(
-    private readonly resultBundleService: VoteResultBundleService,
-    permissionService: PermissionService,
-    i18n: TranslateService,
-    toast: SnackbarService,
-    dialog: DialogService,
-    route: ActivatedRoute,
-    router: Router,
-    themeService: ThemeService,
-    resultExportService: ResultExportService,
-    exportService: ExportService,
-    eventLogService: EventLogService,
-    datePipe: DatePipe,
-  ) {
-    super(
-      permissionService,
-      i18n,
-      toast,
-      dialog,
-      route,
-      router,
-      themeService,
-      resultExportService,
-      exportService,
-      eventLogService,
-      datePipe,
-    );
+  constructor() {
+    super();
   }
 
   public get watcherEventTypes(): EventType[] {
@@ -79,13 +46,9 @@ export class VoteBundleOverviewComponent extends PoliticalBusinessBundleOverview
 
     let bundleNumber: number | undefined;
     if (!this.result.politicalBusinessResult.entryParams.automaticBallotBundleNumberGeneration) {
-      const data: PoliticalBusinessNewBundleNumberComponentData = {
-        deletedUnusedBundleNumbers: this.getDeletedUnusedBundleNumbers(this.result.bundles),
-        usedBundleNumbers: this.getUsedBundleNumbers(this.result.bundles),
-      };
       bundleNumber = await this.dialog.openForResult<PoliticalBusinessNewBundleNumberComponent, number>(
         PoliticalBusinessNewBundleNumberComponent,
-        data,
+        {},
       );
       if (!bundleNumber) {
         return;
@@ -133,20 +96,8 @@ export class VoteBundleOverviewComponent extends PoliticalBusinessBundleOverview
     return this.resultBundleService.rejectBundleReview(bundle.id);
   }
 
-  public async generateBundleReviewExport(bundle: PoliticalBusinessResultBundle): Promise<void> {
-    if (this.result?.politicalBusinessResult.entryParams?.reviewProcedure !== VoteReviewProcedure.VOTE_REVIEW_PROCEDURE_PHYSICALLY) {
-      return;
-    }
-
-    return super.generateBundleReviewExport(bundle);
-  }
-
-  public async downloadBundleReviewExport(bundle: PoliticalBusinessResultBundle): Promise<void> {
-    if (this.result?.politicalBusinessResult.entryParams?.reviewProcedure !== VoteReviewProcedure.VOTE_REVIEW_PROCEDURE_PHYSICALLY) {
-      return;
-    }
-
-    return super.downloadBundleReviewExport(bundle);
+  public async resetBundle(bundle: PoliticalBusinessResultBundle): Promise<void> {
+    return this.resultBundleService.resetBundleToSubmissionFinished(bundle.id);
   }
 
   protected deleteBundleById(bundleId: string): Promise<void> {
@@ -187,6 +138,7 @@ export class VoteBundleOverviewComponent extends PoliticalBusinessBundleOverview
         break;
       case 'VoteResultBundleSubmissionFinished':
       case 'VoteResultBundleCorrectionFinished':
+      case 'VoteResultBundleResetToSubmissionFinished':
         this.setBundleState(e.entityId, BallotBundleState.BALLOT_BUNDLE_STATE_READY_FOR_REVIEW, e.data.bundleLog!);
         break;
       case 'VoteResultBallotCreated':

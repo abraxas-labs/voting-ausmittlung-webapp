@@ -11,8 +11,10 @@
     <p class="vote-count">{{voteCountRight | number}}</p>
   </div>
 
-  <div *ngIf="hasUnspecifiedVoteCount">
-    <p>{{ 'VOTE.BALLOT.ANSWER.UNSPECIFIED_SHORT' | translate }}</p>
-    <p class="vote-count">{{voteCountUnspecified | number}}</p>
-  </div>
+  @if (hasUnspecifiedVoteCount) {
+    <div>
+      <p>{{ 'VOTE.BALLOT.ANSWER.UNSPECIFIED_SHORT' | translate }}</p>
+      <p class="vote-count">{{voteCountUnspecified | number}}</p>
+    </div>
+  }
 </div>

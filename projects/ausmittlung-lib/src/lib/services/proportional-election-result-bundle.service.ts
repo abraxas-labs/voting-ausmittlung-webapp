@@ -14,6 +14,7 @@ import {
   GetProportionalElectionResultBallotRequest,
   GetProportionalElectionResultBundleRequest,
   GetProportionalElectionResultBundlesRequest,
+  ProportionalElectionResultBundleResetToSubmissionFinishedRequest,
   ProportionalElectionResultBundleSubmissionFinishedRequest,
   RejectProportionalElectionBundleReviewRequest,
   SucceedProportionalElectionBundleReviewRequest,
@@ -24,7 +25,7 @@ import {
   GetProportionalElectionResultBundleResponse,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/responses/proportional_election_result_bundle_responses_pb';
 import { GrpcBackendService, GrpcEnvironment, GrpcService } from '@abraxas/voting-lib';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Int32Value } from 'google-protobuf/google/protobuf/wrappers_pb';
 import {
   ProportionalElectionBallotCandidate,
@@ -47,7 +48,10 @@ import { PoliticalBusinessResultBundleService } from './political-business-resul
   providedIn: 'root',
 })
 export class ProportionalElectionResultBundleService extends GrpcService<ProportionalElectionResultBundleServicePromiseClient> {
-  constructor(grpcBackend: GrpcBackendService, @Inject(GRPC_ENV_INJECTION_TOKEN) env: GrpcEnvironment) {
+  constructor() {
+    const grpcBackend = inject(GrpcBackendService);
+    const env = inject<GrpcEnvironment>(GRPC_ENV_INJECTION_TOKEN);
+
     super(ProportionalElectionResultBundleServicePromiseClient, env, grpcBackend);
   }
 
@@ -108,7 +112,7 @@ export class ProportionalElectionResultBundleService extends GrpcService<Proport
     return this.requestEmptyResp(c => c.deleteBundle, req);
   }
 
-  public async createBallot(bundleId: string, uiData: ProportionalElectionBallotUiData): Promise<number> {
+  public async createBallot(bundleId: string, ballotNumber: number, uiData: ProportionalElectionBallotUiData): Promise<number> {
     const req = new CreateProportionalElectionResultBallotRequest();
     req.setBundleId(bundleId);
 
@@ -117,6 +121,13 @@ export class ProportionalElectionResultBundleService extends GrpcService<Proport
       emptyVoteCountValue.setValue(uiData.userEnteredEmptyVoteCount);
       req.setEmptyVoteCount(emptyVoteCountValue);
     }
+
+    if (!uiData.automaticBallotNumberGeneration) {
+      const ballotNumberValue = new Int32Value();
+      ballotNumberValue.setValue(ballotNumber);
+      req.setBallotNumber(ballotNumberValue);
+    }
+
     req.setCandidatesList(this.mapToCreateUpdateCandidatesRequest(uiData.listPositions));
     return await this.request(
       c => c.createBallot,
@@ -174,6 +185,12 @@ export class ProportionalElectionResultBundleService extends GrpcService<Proport
     await this.requestEmptyResp(c => c.rejectBundleReview, req);
   }
 
+  public async resetBundleToSubmissionFinished(bundleId: string): Promise<void> {
+    const req = new ProportionalElectionResultBundleResetToSubmissionFinishedRequest();
+    req.setBundleId(bundleId);
+    await this.requestEmptyResp(c => c.bundleResetToSubmissionFinished, req);
+  }
+
   private mapToBundles(proto: ProportionalElectionResultBundlesProto): ProportionalElectionResultBundles {
     return {
       politicalBusinessResult: ProportionalElectionResultService.mapToProportionalElectionResult(proto.getElectionResult()!),
@@ -193,6 +210,7 @@ export class ProportionalElectionResultBundleService extends GrpcService<Proport
     return {
       ...obj,
       createdBy: obj.createdBy!,
+      ballotNumbers: obj.ballotNumbersList,
       ballotNumbersToReview: obj.ballotNumbersToReviewList,
       protocolExport: this.mapToProtocolExport(proto.getProtocolExport()),
       logs: proto.getLogsList().map(x => PoliticalBusinessResultBundleService.mapToPoliticalBusinessResultBundleLog(x)),
@@ -209,6 +227,7 @@ export class ProportionalElectionResultBundleService extends GrpcService<Proport
         accumulated: false,
         descriptionWithoutDots: x.description.replace(/\./g, ''),
       })),
+      logs: proto.getLogsList().map(x => PoliticalBusinessResultBundleService.mapToPoliticalBusinessResultBallotLog(x)),
     };
   }
 

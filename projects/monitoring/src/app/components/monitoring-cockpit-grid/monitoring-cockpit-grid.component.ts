@@ -4,8 +4,8 @@
  * For license information see LICENSE file.
  */
 
-import { SegmentedControl } from '@abraxas/base-components/lib/components/formfields/segmented-control-group/segmented-control.model';
-import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { SegmentedControl } from '@abraxas/base-components';
+import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   ContestCantonDefaults,
@@ -42,6 +42,17 @@ import { EnumItemDescription, EnumUtil } from '@abraxas/voting-lib';
   standalone: false,
 })
 export class MonitoringCockpitGridComponent implements OnInit, AfterViewInit, OnDestroy {
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly eventLogService = inject(EventLogService);
+  private readonly resultService = inject(ResultService);
+  private readonly i18n = inject(TranslateService);
+  private readonly auth = inject(AuthorizationService);
+  private readonly voteResultService = inject(VoteResultService);
+  private readonly proportionalElectionResultService = inject(ProportionalElectionResultService);
+  private readonly majorityElectionResultService = inject(MajorityElectionResultService);
+  private readonly storageService = inject(StorageService);
+
   public readonly states: typeof CountingCircleResultState = CountingCircleResultState;
   public readonly domainOfInfluenceTypes: typeof DomainOfInfluenceType = DomainOfInfluenceType;
 
@@ -118,19 +129,9 @@ export class MonitoringCockpitGridComponent implements OnInit, AfterViewInit, On
 
   private watchStateSubscription?: Subscription;
 
-  constructor(
-    private readonly router: Router,
-    private readonly route: ActivatedRoute,
-    private readonly eventLogService: EventLogService,
-    private readonly resultService: ResultService,
-    private readonly i18n: TranslateService,
-    private readonly auth: AuthorizationService,
-    private readonly voteResultService: VoteResultService,
-    private readonly proportionalElectionResultService: ProportionalElectionResultService,
-    private readonly majorityElectionResultService: MajorityElectionResultService,
-    private readonly storageService: StorageService,
-    enumUtil: EnumUtil,
-  ) {
+  constructor() {
+    const enumUtil = inject(EnumUtil);
+
     this.doiTypeFilter = this.storageService.getDoiTypeFilter() ?? [];
     this.stateFilter = this.mapValueToStateFilter(this.storageService.getStateFilter() ?? this.storageService.stateFilterAll);
     this.stateList = enumUtil.getArrayWithDescriptions<CountingCircleResultState>(

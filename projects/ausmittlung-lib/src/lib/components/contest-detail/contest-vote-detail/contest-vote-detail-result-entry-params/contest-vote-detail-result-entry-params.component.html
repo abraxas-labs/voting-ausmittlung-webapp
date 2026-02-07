@@ -16,6 +16,12 @@
                        [(value)]="resultEntryParams.automaticBallotBundleNumberGeneration"
                        [subscriptSizing]="'dynamic'">
 </bc-radio-button-group>
+<bc-radio-button-group [label]="'VOTE.RESULT_ENTRY.BALLOT_NUMBER_GENERATION.TITLE' | translate"
+                       orientation="vertical"
+                       [items]="automaticBallotNumberGenerationChoices"
+                       [(value)]="resultEntryParams.automaticBallotNumberGeneration"
+                       [subscriptSizing]="'dynamic'">
+</bc-radio-button-group>
 <bc-radio-button-group [label]="'VOTE.RESULT_ENTRY.REVIEW_PROCEDURE.TITLE' | translate"
                        orientation="vertical"
                        [items]="reviewProcedureChoices"

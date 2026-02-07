@@ -1,40 +1,39 @@
-<header *ngIf="theme">
-  <bc-app-header-bar-iam
-    *ngIf="hasTenant; else nonIamHeader"
-    [link]="['/', theme]"
-    [title]="appTitle"
-    (tenantChanged)="switchTenant()"
-    [customLogoPath]="customLogo ?? ''"
-    [showRoles]="true"
-    logo="VO"
-  >
-    <vo-lib-environment-chip></vo-lib-environment-chip>
-  </bc-app-header-bar-iam>
-  <ng-template #nonIamHeader>
-    <bc-app-header-bar [link]="['/', theme]" [title]="appTitle" logo="VO"></bc-app-header-bar>
-  </ng-template>
-
-  <router-outlet *ngIf="!loading && hasTenant; else notAuthenticated"></router-outlet>
-</header>
+@if (theme) {
+  <header>
+    @if (hasTenant) {
+      <bc-app-header-bar-iam
+        [link]="['/', theme]"
+        [title]="appTitle"
+        (tenantChanged)="switchTenant()"
+        [customLogoPath]="customLogo ?? ''"
+        [showRoles]="true"
+        logo="VO"
+        >
+        <vo-lib-environment-chip></vo-lib-environment-chip>
+      </bc-app-header-bar-iam>
+    } @else {
+      <bc-app-header-bar [link]="['/', theme]" [title]="appTitle" logo="VO"></bc-app-header-bar>
+    }
+    @if (!loading && hasTenant) {
+      <router-outlet></router-outlet>
+    } @else {
+      <div class="p-5">
+        @if (!loading) {
+          <p translate>APP.NO_PERMISSIONS</p>
+          <div>
+            <bc-button (buttonClick)="reload()" [label]="'APP.RELOAD' | translate"></bc-button>
+            <bc-button class="ml-2" (buttonClick)="logout()" [label]="'APP.LOGOUT' | translate"></bc-button>
+          </div>
+        } @else {
+          <h1>
+            <bc-spinner class="mr-1"></bc-spinner>
+            {{ 'COMMON.LOADING' | translate }}
+          </h1>
+        }
+      </div>
+    }
+  </header>
+}
 <main>
   <bc-snackbar #snackbar horizontalPosition="right" verticalPosition="top" [action]="'APP.CLOSE' | translate"></bc-snackbar>
-
-  <ng-template #notAuthenticated>
-    <div class="p-5">
-      <ng-container *ngIf="!loading; else appLoading">
-        <p translate>APP.NO_PERMISSIONS</p>
-        <div>
-          <bc-button (buttonClick)="reload()" [label]="'APP.RELOAD' | translate"></bc-button>
-          <bc-button class="ml-2" (buttonClick)="logout()" [label]="'APP.LOGOUT' | translate"></bc-button>
-        </div>
-      </ng-container>
-    </div>
-
-    <ng-template #appLoading>
-      <h1>
-        <bc-spinner class="mr-1"></bc-spinner>
-        {{ 'COMMON.LOADING' | translate }}
-      </h1>
-    </ng-template>
-  </ng-template>
 </main>

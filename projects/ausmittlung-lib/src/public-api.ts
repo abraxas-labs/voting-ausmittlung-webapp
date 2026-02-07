@@ -59,6 +59,7 @@ export * from './lib/components/admonition/admonition.component';
 export * from './lib/components/result-import-dialog/result-import-dialog.component';
 export * from './lib/components/result-import-list-dialog/result-import-list-dialog.component';
 export * from './lib/components/majority-election-candidacy-info/majority-election-candidacy-info.component';
+export * from './lib/components/info-icon/info-icon.component';
 
 // pipes
 export * from './lib/pipes/translate-vote-question.pipe';

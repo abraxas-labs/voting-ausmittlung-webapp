@@ -4,26 +4,18 @@
  * For license information see LICENSE file.
  */
 
-import { DialogService, SnackbarService, ThemeService } from '@abraxas/voting-lib';
-import { ChangeDetectorRef, Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
 import {
   ContestCountingCircleDetails,
   ProportionalElectionResult,
   updateCountOfVotersCalculatedFields,
   ValidationSummary,
 } from '../../../models';
-import { PoliticalBusinessResultService } from '../../../services/political-business-result.service';
 import { ProportionalElectionResultService } from '../../../services/proportional-election-result.service';
-import { PermissionService } from '../../../services/permission.service';
-import { SecondFactorTransactionService } from '../../../services/second-factor-transaction.service';
 import { BallotCountInputComponent } from '../../ballot-count-input/ballot-count-input.component';
 import { AbstractContestPoliticalBusinessDetailComponent } from '../contest-political-business-detail/contest-political-business-detail-base.component';
-import { ContestPoliticalBusinessDetailComponent } from '../contest-political-business-detail/contest-political-business-detail.component';
 import { Permissions } from '../../../models/permissions.model';
-import { VOTING_AUSMITTLUNG_MONITORING_WEBAPP_URL } from '../../../tokens';
-import { UnsavedChangesService } from '../../../services/unsaved-changes.service';
 import { cloneDeep } from 'lodash';
 
 @Component({
@@ -36,41 +28,17 @@ export class ContestProportionalElectionDetailComponent
   extends AbstractContestPoliticalBusinessDetailComponent<ProportionalElectionResult, ProportionalElectionResultService>
   implements OnInit
 {
+  private readonly router = inject(Router);
+
   public countOfVotersValid: boolean = true;
   public canReadListResults: boolean = false;
 
   @ViewChild(BallotCountInputComponent)
   private ballotCountInputComponent?: BallotCountInputComponent;
 
-  constructor(
-    @Inject(VOTING_AUSMITTLUNG_MONITORING_WEBAPP_URL) votingAusmittlungMonitoringWebAppUrl: string,
-    parent: ContestPoliticalBusinessDetailComponent,
-    i18n: TranslateService,
-    toast: SnackbarService,
-    roleService: PermissionService,
-    resultService: ProportionalElectionResultService,
-    dialog: DialogService,
-    secondFactorTransactionService: SecondFactorTransactionService,
-    politicalBusinessResultService: PoliticalBusinessResultService,
-    cd: ChangeDetectorRef,
-    themeService: ThemeService,
-    unsavedChangesService: UnsavedChangesService,
-    private readonly router: Router,
-  ) {
-    super(
-      votingAusmittlungMonitoringWebAppUrl,
-      i18n,
-      toast,
-      resultService,
-      dialog,
-      secondFactorTransactionService,
-      politicalBusinessResultService,
-      cd,
-      roleService,
-      themeService,
-      unsavedChangesService,
-      parent,
-    );
+  constructor() {
+    const resultService = inject(ProportionalElectionResultService);
+    super(resultService);
   }
 
   public override async ngOnInit(): Promise<void> {

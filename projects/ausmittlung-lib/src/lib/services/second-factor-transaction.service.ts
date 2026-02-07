@@ -5,16 +5,15 @@
  */
 
 import { DialogService } from '@abraxas/voting-lib';
-import { Injectable } from '@angular/core';
-import { RpcError } from 'grpc-web';
+import { Injectable, inject } from '@angular/core';
 import { defer, Observable, of, OperatorFunction, throwError } from 'rxjs';
 import { concatMap, retryWhen } from 'rxjs/operators';
 import {
   SecondFactorTransactionDialogComponent,
   SecondFactorTransactionDialogData,
 } from '../components/transaction-request-dialog/second-factor-transaction-dialog.component';
+import { isErrorType } from './utils/error.utils';
 
-const ERROR_TYPE_SEPARATOR = ':';
 const ERROR_TYPE_VERIFY_SECOND_FACTOR = 'VerifySecondFactorTimeoutException';
 const RETRY_COUNT = 5;
 
@@ -22,7 +21,7 @@ const RETRY_COUNT = 5;
   providedIn: 'root',
 })
 export class SecondFactorTransactionService {
-  constructor(private readonly dialog: DialogService) {}
+  private readonly dialog = inject(DialogService);
 
   public showDialogAndExecuteVerifyAction<T>(action: () => Observable<T>, code: string, qrCode: string): Promise<void> {
     const data: SecondFactorTransactionDialogData = {
@@ -60,11 +59,8 @@ export class SecondFactorTransactionService {
           retryWhen(errs =>
             errs.pipe(
               concatMap((err, index) => {
-                const grpcError = err as RpcError;
-                const errorType = grpcError?.message?.split(ERROR_TYPE_SEPARATOR)[0];
-
                 // after timeout retry x times (see RETRY_COUNT)
-                if (errorType === ERROR_TYPE_VERIFY_SECOND_FACTOR && index < RETRY_COUNT) {
+                if (isErrorType(err, ERROR_TYPE_VERIFY_SECOND_FACTOR) && index < RETRY_COUNT) {
                   return of(null);
                 }
 

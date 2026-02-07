@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ActivatedRouteSnapshot, createUrlTreeFromSnapshot, UrlTree } from '@angular/router';
 import { ContestState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/contest_pb';
 import { ContestService } from 'ausmittlung-lib';
@@ -13,9 +13,9 @@ import { ContestService } from 'ausmittlung-lib';
   providedIn: 'root',
 })
 export class ContestDateGuard {
-  private alreadyRedirected: boolean = false;
+  private readonly contestService = inject(ContestService);
 
-  constructor(private readonly contestService: ContestService) {}
+  private alreadyRedirected: boolean = false;
 
   public async canActivate(currentRoute: ActivatedRouteSnapshot): Promise<boolean | UrlTree> {
     if (this.alreadyRedirected) {

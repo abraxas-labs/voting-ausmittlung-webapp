@@ -5,7 +5,7 @@
  */
 
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { TextComponent } from '@abraxas/base-components';
+import { NumberComponent } from '@abraxas/base-components';
 
 @Component({
   selector: 'vo-ausm-ballot-navigation',
@@ -15,10 +15,31 @@ import { TextComponent } from '@abraxas/base-components';
 })
 export class BallotNavigationComponent {
   @Input()
-  public minBallotNumber: number = 0;
+  public minBallotNumber: number = 1;
+
+  private _maxBallotNumber: number | undefined;
 
   @Input()
-  public maxBallotNumber: number = 0;
+  public set maxBallotNumber(v: number | undefined) {
+    if (v === undefined) {
+      this._maxBallotNumber = undefined;
+      return;
+    }
+
+    // New ballots shorty set this to 0, as no ballots exist for a short amount of time (until the first ballot is created)
+    // Setting this to 0 in turn sets the ballot number to 0, which we do not want
+    this._maxBallotNumber = Math.max(1, v);
+  }
+
+  public get maxBallotNumber(): number | undefined {
+    return this._maxBallotNumber;
+  }
+
+  @Input({ required: true })
+  public canGoPrevious: boolean = false;
+
+  @Input({ required: true })
+  public canGoNext: boolean = false;
 
   @Input()
   public readonly: boolean = true;
@@ -27,37 +48,52 @@ export class BallotNavigationComponent {
   public labelBallotNumber: string = 'ELECTION.BALLOT_DETAIL.BALLOT_NR';
 
   @Output()
-  public ballotNumberChange: EventEmitter<number> = new EventEmitter<number>();
+  public ballotNumberEntered: EventEmitter<number> = new EventEmitter<number>();
+
+  @Output()
+  public previousBallotRequest: EventEmitter<void> = new EventEmitter<void>();
+
+  @Output()
+  public nextBallotRequest: EventEmitter<void> = new EventEmitter<void>();
 
   @ViewChild('navigationComponent')
-  private navigationComponent!: TextComponent;
+  private navigationComponent!: NumberComponent;
 
-  public ballotNumberValue: number = 1;
-  public ballotNumberOriginalValue: number = 1;
+  public ballotNumberValue: number | undefined;
+  public ballotNumberOriginalValue: number | undefined;
 
-  @Input()
-  public set ballotNumber(v: number) {
+  // Allow undefined under certain conditions, such as when setting the ballot number manually for the first time
+  public allowUndefined = true;
+
+  @Input({ required: true })
+  public set ballotNumber(v: number | undefined) {
+    v = !v ? undefined : v;
+    this.allowUndefined = v === undefined;
     this.ballotNumberValue = v;
     this.ballotNumberOriginalValue = v;
   }
 
-  public emitNewBallotNumber(delta: number = 0): void {
-    if (this.readonly) {
+  public enterBallotNumber(): void {
+    this.allowUndefined = false;
+    if (this.readonly || this.ballotNumberValue === this.ballotNumberOriginalValue) {
       return;
     }
 
-    this.ballotNumberValue += delta;
-
-    if (
-      this.ballotNumberValue !== this.ballotNumberOriginalValue &&
-      this.ballotNumberValue <= this.maxBallotNumber &&
-      this.ballotNumberValue >= this.minBallotNumber
-    ) {
-      this.ballotNumberChange.emit(this.ballotNumberValue);
+    if ((this.maxBallotNumber && this.ballotNumberValue! <= this.maxBallotNumber) || this.ballotNumberValue! >= this.minBallotNumber) {
+      this.ballotNumberEntered.emit(this.ballotNumberValue);
     }
   }
 
   public setFocus(): void {
     this.navigationComponent.setFocus();
+  }
+
+  public changeBallotNumber(v: any): void {
+    if (v === this.ballotNumberValue) {
+      return;
+    }
+
+    this.ballotNumberValue = v === null ? undefined : v;
+    this.allowUndefined = !!v;
   }
 }

@@ -4,8 +4,8 @@
  * For license information see LICENSE file.
  */
 
-import { ConfirmDialogData, ConfirmDialogResult } from '@abraxas/voting-lib/lib/components/dialog/confirm-dialog/confirm-dialog.component';
-import { Component, Inject } from '@angular/core';
+import { ConfirmDialogData, ConfirmDialogResult } from '@abraxas/voting-lib';
+import { Component, inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
@@ -15,6 +15,8 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   standalone: false,
 })
 export class ConfirmCommentDialogComponent {
+  private readonly dialogRef = inject<MatDialogRef<ConfirmCommentDialogResult>>(MatDialogRef);
+
   public readonly title: string;
   public readonly message: string;
   public readonly confirmText: string;
@@ -23,10 +25,9 @@ export class ConfirmCommentDialogComponent {
   public readonly hasComment: boolean;
   public comment: string = '';
 
-  constructor(
-    private readonly dialogRef: MatDialogRef<ConfirmCommentDialogResult>,
-    @Inject(MAT_DIALOG_DATA) dialogData: ConfirmCommentDialogData,
-  ) {
+  constructor() {
+    const dialogData = inject<ConfirmCommentDialogData>(MAT_DIALOG_DATA);
+
     this.title = dialogData.title;
     this.message = dialogData.message;
     this.showCancel = dialogData.showCancel;

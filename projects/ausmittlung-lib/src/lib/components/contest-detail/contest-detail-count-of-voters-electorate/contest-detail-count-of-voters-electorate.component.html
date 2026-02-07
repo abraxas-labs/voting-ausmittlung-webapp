@@ -1,8 +1,9 @@
 <vo-ausm-contest-detail-voting-cards-expansion-panel
   [header]="expansionPanelHeaderTitle">
-  <ng-container *ngFor="let voterTypeGroup of voterTypeGroups">
-    <bc-label *ngIf="voterTypeGroup.label" [label]="voterTypeGroup.label | translate"></bc-label>
-
+  @for (voterTypeGroup of voterTypeGroups; track voterTypeGroup) {
+    @if (voterTypeGroup.label) {
+      <bc-label [label]="voterTypeGroup.label | translate"></bc-label>
+    }
     <div class="count-of-voters mb-2">
       <bc-number
         [readonly]="readonly"
@@ -13,7 +14,6 @@
         [label]="'CONTEST.DETAIL.MEN' | translate"
         [subscriptSizing]="'dynamic'"
       ></bc-number>
-
       <bc-number
         [readonly]="readonly"
         [optionalText]="''"
@@ -23,7 +23,6 @@
         [label]="'CONTEST.DETAIL.WOMEN' | translate"
         [subscriptSizing]="'dynamic'"
       ></bc-number>
-
       <bc-number
         [readonly]="true"
         [tabIndex]="-1"
@@ -33,7 +32,7 @@
         [subscriptSizing]="'dynamic'">
       </bc-number>
     </div>
-  </ng-container>
+  }
 
   <bc-checkbox
     [disabled]="true"

@@ -1,51 +1,59 @@
-<ng-container *ngIf="!loadingCandidates; else spinner">
+@if (!loadingCandidates) {
   <div class="p-2 available-mappings">
     <h3 translate class="mb-2">RESULT_IMPORT.WRITE_INS.TITLE_MISSING_MAPPINGS</h3>
-    <div *ngIf="availableWriteInMappings.length === 0; else availableMappings">
-      <p class="no-data" translate>RESULT_IMPORT.WRITE_INS.NO_MORE_DATA</p>
-      <bc-button
-        *ngIf="canShowNextGroup"
-        variant="tertiary"
-        [label]="'RESULT_IMPORT.WRITE_INS.NEXT_ELECTION' | translate"
-        (buttonClick)="showNextGroup.emit()"
-      >
-      </bc-button>
-    </div>
-    <ng-template #availableMappings>
+    @if (availableWriteInMappings.length === 0) {
+      <div>
+        <p class="no-data" translate>RESULT_IMPORT.WRITE_INS.NO_MORE_DATA</p>
+        @if (canShowNextGroup) {
+          <bc-button
+            variant="tertiary"
+            [label]="'RESULT_IMPORT.WRITE_INS.NEXT_ELECTION' | translate"
+            (buttonClick)="showNextGroup.emit()"
+            >
+          </bc-button>
+        }
+      </div>
+    } @else {
       <div>
         <p class="keyboard-hint mt-1 mb-1">
           {{ 'RESULT_IMPORT.WRITE_INS.ASSIGN_SHORTCUT' | translate }}
-          <ng-container *ngIf="recordedCandidateNumber">: {{ recordedCandidateNumber }}</ng-container>
+          @if (recordedCandidateNumber) {
+            : {{ recordedCandidateNumber }}
+          }
         </p>
-        <p class="keyboard-message mt-0 mb-1" *ngIf="keyboardCandidateAssignedMessage$ | async as message" [class.error]="message.error">
-          {{ message.msg }}
-        </p>
+        @if (keyboardCandidateAssignedMessage$ | async; as message) {
+          <p class="keyboard-message mt-0 mb-1" [class.error]="message.error">
+            {{ message.msg }}
+          </p>
+        }
       </div>
       <div class="available-mapping-entries">
-        <div
-          class="available-mapping p-2 mb-2"
-          [class.selected]="writeIn.selected"
-          *ngFor="let writeIn of availableWriteInMappings"
-          (click)="toggleSelection(writeIn)"
-          [dndDraggable]="writeIn"
-        >
-          <mat-icon class="mr-1">drag_handle</mat-icon>
-          <span>{{ writeIn.writeInCandidateName }}</span>
-          <div class="spacer"></div>
-          <span class="count-of-votes">{{ writeIn.voteCount | number }}</span>
-        </div>
+        @for (writeIn of availableWriteInMappings; track writeIn) {
+          <div
+            class="available-mapping p-2 mb-2"
+            [class.selected]="writeIn.selected"
+            (click)="toggleSelection(writeIn)"
+            [dndDraggable]="writeIn"
+            >
+            <mat-icon class="mr-1">drag_handle</mat-icon>
+            <span>{{ writeIn.writeInCandidateName }}</span>
+            <div class="spacer"></div>
+            <span class="count-of-votes">{{ writeIn.voteCount | number }}</span>
+          </div>
+        }
       </div>
-    </ng-template>
+    }
   </div>
   <div class="p-2 candidates">
     <div class="buttons">
-      <bc-button
-        *ngIf="canShowResetMappings"
-        [disabled]="readOnly"
-        (buttonClick)="resetAllMappings()"
-        [label]="'RESULT_IMPORT.WRITE_INS.RESET' | translate"
-        variant="secondary"
-      ></bc-button>
+      @if (canShowResetMappings) {
+        <bc-button
+          [disabled]="readOnly"
+          (buttonClick)="resetAllMappings()"
+          [label]="'RESULT_IMPORT.WRITE_INS.RESET' | translate"
+          variant="secondary"
+        ></bc-button>
+      }
     </div>
     <h3 translate>RESULT_IMPORT.WRITE_INS.TITLE_CANDIDATES</h3>
     <div class="candidates-content">
@@ -73,9 +81,8 @@
             <th></th>
           </tr>
         </thead>
-
         <tbody>
-          <ng-container *ngFor="let candidateMapping of candidatesWithMappings">
+          @for (candidateMapping of candidatesWithMappings; track candidateMapping) {
             <tr [dndDropzone] [dndDisableIf]="readOnly" dndDragoverClass="drag-over" (dndDrop)="addMapping($event.data, candidateMapping)">
               <td>{{ candidateMapping.candidate.number }}</td>
               <td class="last-name-column">{{ candidateMapping.candidate.politicalLastName }}</td>
@@ -84,24 +91,26 @@
               <td>{{ candidateMapping.candidate.firstName }}</td>
               <td class="no-wrap">{{ candidateMapping.totalWriteInVoteCount | number }}</td>
               <td>
-                <div class="chip p-1 pl-2 m-1" *ngFor="let mapping of candidateMapping.writeInMappings">
-                  {{ mapping.writeInCandidateName }} ({{ mapping.voteCount | number }})
-                  <bc-icon
-                    *ngIf="!readOnly"
-                    icon="cancel"
-                    class="ml-1 clickable"
-                    (click)="removeMapping(mapping, candidateMapping); $event.preventDefault(); $event.stopPropagation()"
-                  ></bc-icon>
-                </div>
+                @for (mapping of candidateMapping.writeInMappings; track mapping) {
+                  <div class="chip p-1 pl-2 m-1">
+                    {{ mapping.writeInCandidateName }} ({{ mapping.voteCount | number }})
+                    @if (!readOnly) {
+                      <bc-icon
+                        icon="cancel"
+                        class="ml-1 clickable"
+                        (click)="removeMapping(mapping, candidateMapping); $event.preventDefault(); $event.stopPropagation()"
+                      ></bc-icon>
+                    }
+                  </div>
+                }
               </td>
             </tr>
-          </ng-container>
+          }
         </tbody>
       </table>
     </div>
   </div>
-</ng-container>
-
-<ng-template #spinner>
+} @else {
   <bc-spinner></bc-spinner>
-</ng-template>
+}
+

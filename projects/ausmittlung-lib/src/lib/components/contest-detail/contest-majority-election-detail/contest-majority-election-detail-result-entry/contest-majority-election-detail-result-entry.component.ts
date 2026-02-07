@@ -7,12 +7,12 @@
 import { RadioButton } from '@abraxas/base-components';
 import { MajorityElectionReviewProcedure } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/majority_election_pb';
 import { EnumUtil } from '@abraxas/voting-lib';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { isEqual } from 'lodash';
 import { MajorityElection, MajorityElectionResultEntry, MajorityElectionResultEntryParams } from '../../../../models';
 import { MajorityElectionResultService } from '../../../../services/majority-election-result.service';
-import { Subscription } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'vo-ausm-contest-majority-election-detail-result-entry',
@@ -21,6 +21,8 @@ import { ActivatedRoute } from '@angular/router';
   standalone: false,
 })
 export class ContestMajorityElectionDetailResultEntryComponent implements OnInit, OnDestroy {
+  private readonly resultService = inject(MajorityElectionResultService);
+
   public readonly resultEntries: typeof MajorityElectionResultEntry = MajorityElectionResultEntry;
 
   public readonly resultEntryVariants: RadioButton[];
@@ -62,11 +64,10 @@ export class ContestMajorityElectionDetailResultEntryComponent implements OnInit
   public useCandidateCheckDigit: boolean = false;
   private readonly routeSubscription: Subscription;
 
-  constructor(
-    private readonly resultService: MajorityElectionResultService,
-    enumUtil: EnumUtil,
-    route: ActivatedRoute,
-  ) {
+  constructor() {
+    const enumUtil = inject(EnumUtil);
+    const route = inject(ActivatedRoute);
+
     this.resultEntryVariants = enumUtil
       .getArrayWithDescriptions<MajorityElectionResultEntry>(MajorityElectionResultEntry, 'MAJORITY_ELECTION.RESULT_ENTRY.LONG.')
       .map(x => ({ displayText: x.description, value: x.value }) as RadioButton);
@@ -100,6 +101,7 @@ export class ContestMajorityElectionDetailResultEntryComponent implements OnInit
         ballotBundleSampleSize,
         automaticEmptyVoteCounting,
         automaticBallotBundleNumberGeneration,
+        automaticBallotNumberGeneration,
         ballotNumberGeneration,
         reviewProcedure,
         candidateCheckDigit,
@@ -109,6 +111,7 @@ export class ContestMajorityElectionDetailResultEntryComponent implements OnInit
         ballotBundleSampleSize,
         automaticEmptyVoteCounting,
         automaticBallotBundleNumberGeneration,
+        automaticBallotNumberGeneration,
         ballotNumberGeneration,
         reviewProcedure,
         candidateCheckDigit,

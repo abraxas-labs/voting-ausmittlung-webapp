@@ -3,42 +3,44 @@
 
   <div content class="container">
     <vo-ausm-contest-detail-count-of-voters [readonly]="readonly"
-                                            [eVoting]="eVoting"
-                                            [enabledVoterTypes]="enabledVoterTypes"
-                                            [countOfVotersInformationSubTotals]="countOfVotersInformationSubTotals"
-                                            [domainOfInfluenceTypes]="domainOfInfluenceTypes"
-                                            [electorates]="electorateSummary?.effectiveElectoratesList"
-                                            (countOfVotersChange)="contentChanged()"></vo-ausm-contest-detail-count-of-voters>
+      [eVoting]="eVoting"
+      [enabledVoterTypes]="enabledVoterTypes"
+      [countOfVotersInformationSubTotals]="countOfVotersInformationSubTotals"
+      [domainOfInfluenceTypes]="domainOfInfluenceTypes"
+      [electorates]="electorateSummary?.effectiveElectoratesList"
+      (countOfVotersChange)="contentChanged()"></vo-ausm-contest-detail-count-of-voters>
 
-    <vo-ausm-contest-detail-voting-cards *ngIf="domainOfInfluenceTypes"
-                                         [readonly]="readonly"
-                                         [(votingCards)]="votingCards"
-                                         (votingCardsChange)="contentChanged()"
-                                         [enabledVotingCardChannels]="enabledVotingCardChannels"
-                                         [domainOfInfluenceTypes]="domainOfInfluenceTypes"
-                                         [electorates]="electorateSummary?.effectiveElectoratesList"
-                                         [canton]="canton"></vo-ausm-contest-detail-voting-cards>
+    @if (domainOfInfluenceTypes) {
+      <vo-ausm-contest-detail-voting-cards
+        [readonly]="readonly"
+        [(votingCards)]="votingCards"
+        (votingCardsChange)="contentChanged()"
+        [enabledVotingCardChannels]="enabledVotingCardChannels"
+        [domainOfInfluenceTypes]="domainOfInfluenceTypes"
+        [electorates]="electorateSummary?.effectiveElectoratesList"
+        [canton]="canton"></vo-ausm-contest-detail-voting-cards>
+    }
 
-    <ng-container *ngIf="countingMachineEnabled">
+    @if (countingMachineEnabled) {
       <h4 translate class="mt-2">COUNTING_MACHINES.TITLE</h4>
       <bc-dropdown [required]="true"
-                   [readonly]="readonly"
-                   [items]="countingMachines"
-                   displayExpr="description"
-                   valueExpr="value"
-                   [(value)]="countingMachine"
-                   (valueChange)="contentChanged()"
-                   [clearable]="false"
-                   [subscriptSizing]="'dynamic'"></bc-dropdown>
-    </ng-container>
+        [readonly]="readonly"
+        [items]="countingMachines"
+        displayExpr="description"
+        valueExpr="value"
+        [(value)]="countingMachine"
+        (valueChange)="contentChanged()"
+        [clearable]="false"
+      [subscriptSizing]="'dynamic'"></bc-dropdown>
+    }
   </div>
 
   <div footer>
     <vo-lib-button-bar [hasSaveButton]="!readonly"
-                       [canSave]="true"
-                       (save)="save()"
-                       [sticky]="false"
-                       [cancelLabel]="(readonly ? 'APP.CLOSE' : 'COMMON.CANCEL') | translate"
-                       (cancel)="closeWithUnsavedChangesCheck()"></vo-lib-button-bar>
+      [canSave]="true"
+      (save)="save()"
+      [sticky]="false"
+      [cancelLabel]="(readonly ? 'APP.CLOSE' : 'COMMON.CANCEL') | translate"
+      (cancel)="closeWithUnsavedChangesCheck()"></vo-lib-button-bar>
   </div>
 </vo-lib-dialog>

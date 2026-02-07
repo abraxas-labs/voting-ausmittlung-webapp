@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { MajorityElectionResult } from '../../../../models';
 import { BallotCountInputComponent } from '../../../ballot-count-input/ballot-count-input.component';
@@ -23,6 +23,11 @@ import { Permissions } from '../../../../models/permissions.model';
   standalone: false,
 })
 export class ContestMajorityElectionDetailDetailedComponent implements OnInit {
+  private readonly router = inject(Router);
+  private readonly themeService = inject(ThemeService);
+  private readonly dialogService = inject(DialogService);
+  private readonly permissionService = inject(PermissionService);
+
   @Input()
   public readonly: boolean = true;
 
@@ -46,13 +51,6 @@ export class ContestMajorityElectionDetailDetailedComponent implements OnInit {
 
   public canReadBallotGroups: boolean = false;
   public canEnterResults: boolean = false;
-
-  constructor(
-    private readonly router: Router,
-    private readonly themeService: ThemeService,
-    private readonly dialogService: DialogService,
-    private readonly permissionService: PermissionService,
-  ) {}
 
   public async ngOnInit(): Promise<void> {
     this.canEnterResults = await this.permissionService.hasPermission(Permissions.PoliticalBusinessResult.EnterResults);

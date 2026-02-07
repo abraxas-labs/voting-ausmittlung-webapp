@@ -11,6 +11,7 @@
   position: sticky;
   bottom: -1rem; // stick to the bottom, main of page has a margin bottom of 1rem
   background-color: $color-white;
+  z-index: 1;
 
   > * {
     @extend .mx-3;

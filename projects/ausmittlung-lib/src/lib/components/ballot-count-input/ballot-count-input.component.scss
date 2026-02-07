@@ -1,6 +1,6 @@
 .input-container {
   display: grid;
-  grid-gap: 0.5rem 0.7rem;
+  gap: 0.5rem 0.7rem;
   align-items: center;
 
   @for $i from 1 through 6 {

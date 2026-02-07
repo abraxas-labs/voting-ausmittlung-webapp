@@ -1,0 +1,11 @@
+@use '@abraxas/voting-lib/style/spacing' as *;
+
+div.info-label {
+  display: flex;
+
+  bc-icon {
+    @extend .px-1, .ml-3;
+
+    cursor: pointer;
+  }
+}

@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { DomainOfInfluence } from '../../models';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
@@ -14,12 +14,13 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   standalone: false,
 })
 export class ContactPersonDialogComponent {
+  private readonly dialogRef = inject<MatDialogRef<ContactPersonDialogComponentData>>(MatDialogRef);
+
   public readonly domainOfInfluences: DomainOfInfluence[];
 
-  constructor(
-    private readonly dialogRef: MatDialogRef<ContactPersonDialogComponentData>,
-    @Inject(MAT_DIALOG_DATA) dialogData: ContactPersonDialogComponentData,
-  ) {
+  constructor() {
+    const dialogData = inject<ContactPersonDialogComponentData>(MAT_DIALOG_DATA);
+
     this.domainOfInfluences = dialogData.domainOfInfluences;
   }
 

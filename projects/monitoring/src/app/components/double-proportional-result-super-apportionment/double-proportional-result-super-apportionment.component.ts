@@ -66,6 +66,9 @@ export class DoubleProportionalResultSuperApportionmentComponent {
     this.gridTemplateRowsStyle = `repeat(${defaultGridRows + additionalGridRows}, min-content)`;
   }
 
+  @Input()
+  public readonly: boolean = false;
+
   @ViewChild(DoubleProportionalResultSuperApportionmentLotDecisionComponent)
   public lotDecision?: DoubleProportionalResultSuperApportionmentLotDecisionComponent;
 

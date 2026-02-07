@@ -1,8 +1,9 @@
 .content {
   margin-top: 3rem;
+  width: fit-content;
   display: grid;
-  grid-template-columns: repeat(2, min-content) 1fr minmax(4rem, min-content);
-  grid-gap: 0.2rem 1.5rem;
+  grid-template-columns: min-content 1fr min-content minmax(4rem, min-content);
+  gap: 0.2rem 1.5rem;
 
   .total {
     margin-top: 0.7rem;
@@ -14,6 +15,7 @@
   }
 }
 
-.content-box {
-  max-width: 35rem;
+// do not display the hint in error state, UI would jump around
+::ng-deep bc-number mat-hint {
+  display: none !important;
 }

@@ -5,7 +5,7 @@
  */
 
 import { RadioButton } from '@abraxas/base-components';
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { BallotNumberGeneration, MajorityElectionResultEntryParams, ProportionalElectionResultEntryParams } from '../../models';
 
@@ -16,6 +16,8 @@ import { BallotNumberGeneration, MajorityElectionResultEntryParams, Proportional
   standalone: false,
 })
 export class ElectionResultEntryParamsComponent {
+  private readonly i18n = inject(TranslateService);
+
   @Input()
   public resultEntryParams!: MajorityElectionResultEntryParams | ProportionalElectionResultEntryParams;
 
@@ -28,9 +30,31 @@ export class ElectionResultEntryParamsComponent {
   @Input()
   public useCandidateCheckDigit: boolean = false;
 
+  public automaticBallotBundleNumberGenerationChoices: RadioButton[];
+  public automaticBallotNumberGenerationChoices: RadioButton[];
   public automaticEmptyVoteCountingChoices: RadioButton[];
 
-  constructor(private readonly i18n: TranslateService) {
+  constructor() {
+    this.automaticBallotBundleNumberGenerationChoices = [
+      {
+        value: true,
+        displayText: this.i18n.instant('ELECTION.RESULT_ENTRY.BALLOT_BUNDLE_NUMBER_GENERATION.AUTOMATIC'),
+      },
+      {
+        value: false,
+        displayText: this.i18n.instant('ELECTION.RESULT_ENTRY.BALLOT_BUNDLE_NUMBER_GENERATION.MANUAL'),
+      },
+    ];
+    this.automaticBallotNumberGenerationChoices = [
+      {
+        value: true,
+        displayText: this.i18n.instant('ELECTION.RESULT_ENTRY.BALLOT_NUMBER_GENERATION.AUTOMATIC'),
+      },
+      {
+        value: false,
+        displayText: this.i18n.instant('ELECTION.RESULT_ENTRY.BALLOT_NUMBER_GENERATION.MANUAL'),
+      },
+    ];
     this.automaticEmptyVoteCountingChoices = [
       {
         value: true,
@@ -41,15 +65,5 @@ export class ElectionResultEntryParamsComponent {
         displayText: this.i18n.instant('ELECTION.RESULT_ENTRY.AUTOMATIC_EMPTY_VOTE_COUNTING.MANUAL'),
       },
     ];
-  }
-
-  public updateAutomaticBallotBundleNumberGeneration(value: boolean): void {
-    this.resultEntryParams.automaticBallotBundleNumberGeneration = value;
-    if (
-      !value &&
-      this.resultEntryParams.ballotNumberGeneration !== BallotNumberGeneration.BALLOT_NUMBER_GENERATION_RESTART_FOR_EACH_BUNDLE
-    ) {
-      this.resultEntryParams.ballotNumberGeneration = BallotNumberGeneration.BALLOT_NUMBER_GENERATION_RESTART_FOR_EACH_BUNDLE;
-    }
   }
 }

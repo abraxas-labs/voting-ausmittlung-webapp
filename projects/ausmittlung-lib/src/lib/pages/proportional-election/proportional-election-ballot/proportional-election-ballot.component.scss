@@ -1,11 +1,17 @@
 @use '@abraxas/voting-lib/style/spacing' as *;
+@use '@abraxas/voting-lib/style/color' as *;
 
 .content > *:not(:first-child) {
   margin-top: 2rem;
 }
 
 .content-box {
-  max-width: 100rem;
+  display: flex;
+  border-top: 1px solid $color-grey-4;
+
+  .ballot-content {
+    max-width: 100rem;
+  }
 }
 
 .clickable-icon {

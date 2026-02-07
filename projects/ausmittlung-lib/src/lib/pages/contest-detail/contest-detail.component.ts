@@ -6,7 +6,7 @@
 
 import { AuthorizationService, Tenant } from '@abraxas/base-components';
 import { DialogService, SnackbarService } from '@abraxas/voting-lib';
-import { AfterViewInit, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, QueryList, ViewChildren, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ContestPoliticalBusinessDetailComponent } from '../../components/contest-detail/contest-political-business-detail/contest-political-business-detail.component';
@@ -57,6 +57,19 @@ import { EventLogService } from '../../services/event-log.service';
   standalone: false,
 })
 export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy {
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly eventLogService = inject(EventLogService);
+  private readonly resultService = inject(ResultService);
+  private readonly auth = inject(AuthorizationService);
+  private readonly cd = inject(ChangeDetectorRef);
+  private readonly dialogService = inject(DialogService);
+  private readonly politicalBusinessResultService = inject(PoliticalBusinessResultService);
+  private readonly permissionService = inject(PermissionService);
+  private readonly toast = inject(SnackbarService);
+  private readonly i18n = inject(TranslateService);
+  private readonly contestService = inject(ContestService);
+
   public resultList?: ResultList;
   public loading: boolean = true;
 
@@ -111,21 +124,10 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
   private canImport: boolean = false;
   private canDeleteImport: boolean = false;
 
-  constructor(
-    breadcrumbsService: BreadcrumbsService,
-    private readonly route: ActivatedRoute,
-    private readonly router: Router,
-    private readonly eventLogService: EventLogService,
-    private readonly resultService: ResultService,
-    private readonly auth: AuthorizationService,
-    private readonly cd: ChangeDetectorRef,
-    private readonly dialogService: DialogService,
-    private readonly politicalBusinessResultService: PoliticalBusinessResultService,
-    private readonly permissionService: PermissionService,
-    private readonly toast: SnackbarService,
-    private readonly i18n: TranslateService,
-    private readonly contestService: ContestService,
-  ) {
+  constructor() {
+    const breadcrumbsService = inject(BreadcrumbsService);
+    const route = this.route;
+
     this.breadcrumbs = breadcrumbsService.contestDetail;
     this.routeQueryParamsSubscription = this.route.queryParams.subscribe(({ politicalBusinessId }) =>
       this.tryExpandPoliticalBusinesses(politicalBusinessId),

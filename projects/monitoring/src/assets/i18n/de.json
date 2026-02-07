@@ -142,6 +142,15 @@
           "DESCRIPTION": "Sind Sie sicher, dass Sie den Dialog verlassen möchten? Es wurden noch nicht alle relevanten Losentscheide gefällt."
         }
       },
+      "LOT_DECISION_STATE": "Offene Losentscheide",
+      "LOT_DECISION_STATES": {
+        "0": "Nein",
+        "1": "Nein",
+        "2": "Zwingend",
+        "3": "Optional",
+        "4": "Erledigt"
+      },
+      "OPEN_REQUIRED_LOT_DECISION_INFO": "Es wurden noch nicht alle relevanten Losentscheide gefällt.",
       "BALLOT_COUNT": {
         "RECEIVED": "eingegangene WZ",
         "BLANK": "leere WZ",
@@ -183,6 +192,7 @@
     "ELECTION_COUNTING_DONE_OF": "{{countOfDoneElections}} von {{totalCountOfElections}}",
     "FINALIZE": "Sitzverteilung auslösen",
     "REVERT_FINALIZE": "Sitzverteilung zurücksetzen",
+    "LOT_DECISION_STATE": "Offene Losentscheide",
     "DOUBLE_PROPORTIONAL_RESULT": {
       "REDIRECT": "Sitzverteilung"
     },
@@ -347,6 +357,7 @@
   "ERROR_MESSAGES": {
     "UnknownCountingCircleInImportException": "Es können nur Resultate zum aktuellen Auszählungskreis importiert werden.",
     "CountingCircleResultInInvalidStateForImportException": "Resultate können nur importiert werden, wenn noch kein Resultat geprüft wurde.",
-    "EVotingNotActiveException": "eVoting ist auf mind. einem Auszählungskreis mit zu importierenden Resultaten nicht aktiv."
+    "EVotingNotActiveException": "eVoting ist auf mind. einem Auszählungskreis mit zu importierenden Resultaten nicht aktiv.",
+    "Ech0110RequiredException": "Sofern ein eCH-0222 in der Version 1.0 importiert wird, muss zusätzlich ein eCH-0110 mitgeliefert werden."
   }
 }

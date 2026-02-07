@@ -1,50 +1,54 @@
 <vo-lib-page [contentLoading]="loading"
-             header="ELECTION.REVIEW_BALLOT_DETAIL.TITLE">
-  <div *ngIf="electionResult && electionResult.entryParams && bundle" class="content">
-    <vo-ausm-majority-election-info [electionResult]="electionResult"></vo-ausm-majority-election-info>
-
-    <div>
-      <vo-ausm-majority-election-bundle-table [bundleSize]="electionResult.entryParams.ballotBundleSize"
-                                              [bundles]="[bundle]"></vo-ausm-majority-election-bundle-table>
+  header="ELECTION.REVIEW_BALLOT_DETAIL.TITLE">
+  @if (electionResult && electionResult.entryParams && bundle) {
+    <div class="content">
+      <vo-ausm-majority-election-info [electionResult]="electionResult"></vo-ausm-majority-election-info>
+      <div class="content-box">
+        <div class="ballot-content pt-3">
+          <vo-ausm-ballot-review-stepper [reviewBallots]="reviewBallots"
+            [disabled]="loadingBallot || !ballot || actionExecuting"
+            [ballotTitle]="'ELECTION.REVIEW_BALLOT_DETAIL.BALLOT_TITLE' | translate:ballot "
+            [correctionOngoing]="correctionOngoing"
+            (startCorrection)="startCorrection()"
+            (cancelCorrection)="cancelCorrection()"
+            (submitCorrection)="submitCorrection()"
+            (ballotNumberSelected)="loadBallot($event)"
+            (reviewBallotChange)="updateState()"></vo-ausm-ballot-review-stepper>
+          @if (!loadingBallot && !!ballot) {
+            <vo-ausm-majority-election-ballot-contents class="mb-3"
+              [ballot]="ballot"
+              [showInvalidVotes]="electionResult.election.contest!.cantonDefaults!.majorityElectionInvalidVotes"
+              [loadingBallot]="loadingBallot"
+              [readonly]="!correctionOngoing"
+              [disabled]="actionExecuting"
+              [candidateCheckDigit]="electionResult.entryParams.candidateCheckDigit"
+              [showEmptyVotes]="electionResult.election.numberOfMandates !== 1 || electionResult.secondaryMajorityElectionResults.length > 0">
+            </vo-ausm-majority-election-ballot-contents>
+          } @else {
+            @if (loadingBallot) {
+              <bc-spinner></bc-spinner>
+            }
+          }
+        </div>
+        <div class="p-3 pl-5">
+          <vo-ausm-ballot-history [logs]="ballot?.logs" header="ELECTION.BALLOT_HISTORY.TITLE"></vo-ausm-ballot-history>
+          <vo-ausm-majority-election-bundle-info [bundleSize]="electionResult.entryParams.ballotBundleSize"
+                                                 [bundle]="bundle"></vo-ausm-majority-election-bundle-info>
+        </div>
+      </div>
     </div>
-
-    <div class="content-box">
-      <vo-ausm-ballot-review-stepper [reviewBallots]="reviewBallots"
-                                     [disabled]="loadingBallot || !ballot || actionExecuting"
-                                     [ballotTitle]="'ELECTION.REVIEW_BALLOT_DETAIL.BALLOT_TITLE' | translate:ballot "
-                                     [correctionOngoing]="correctionOngoing"
-                                     (startCorrection)="startCorrection()"
-                                     (cancelCorrection)="cancelCorrection()"
-                                     (submitCorrection)="submitCorrection()"
-                                     (ballotNumberSelected)="loadBallot($event)"
-                                     (reviewBallotChange)="updateState()"></vo-ausm-ballot-review-stepper>
-
-      <ng-container *ngIf="!loadingBallot && !!ballot; else spinner">
-        <vo-ausm-majority-election-ballot-contents class="mb-3"
-                                                   [ballot]="ballot"
-                                                   [showInvalidVotes]="electionResult.election.contest!.cantonDefaults!.majorityElectionInvalidVotes"
-                                                   [loadingBallot]="loadingBallot"
-                                                   [readonly]="!correctionOngoing"
-                                                   [disabled]="actionExecuting"
-                                                   [candidateCheckDigit]="electionResult.entryParams.candidateCheckDigit"
-                                                   [showEmptyVotes]="electionResult.election.numberOfMandates !== 1 || electionResult.secondaryMajorityElectionResults.length > 0">
-        </vo-ausm-majority-election-ballot-contents>
-      </ng-container>
-    </div>
-  </div>
+  }
 
   <ng-container page-footer>
-    <vo-ausm-result-ballot-review-button-bar class="content-box"
-                                               *ngIf="electionResult && bundle"
-                                               (back)="back()"
-                                               (rejectBundleReview)="rejectBundleReview()"
-                                               (succeedBundleReview)="succeedBundleReview()"
-                                               [actionExecuting]="actionExecuting"
-                                               [disabled]="loadingBallot || !ballot"
-                                               [canSucceed]="canSucceed"></vo-ausm-result-ballot-review-button-bar>
+    @if (electionResult && bundle) {
+      <vo-ausm-result-ballot-review-button-bar class="content-box"
+        (back)="back()"
+        (rejectBundleReview)="rejectBundleReview()"
+        (succeedBundleReview)="succeedBundleReview()"
+        [actionExecuting]="actionExecuting"
+        [disabled]="loadingBallot || !ballot"
+        [canSucceed]="canSucceed"></vo-ausm-result-ballot-review-button-bar>
+    }
   </ng-container>
 </vo-lib-page>
 
-<ng-template #spinner>
-  <bc-spinner *ngIf="loadingBallot"></bc-spinner>
-</ng-template>

@@ -1,37 +1,41 @@
 <ng-container>
-  <div
-    *ngIf="result"
-    class="p-2 counting-circle-result"
-    (click)="openDetail.emit()"
-    [ngClass]="'result-state-' + result.state"
-    [matTooltip]="stateDescriptionsByState[result.state] ?? 'COUNTING_CIRCLE_RESULT_STATE.' + result.state | translate"
-    matTooltipPosition="above"
-    matTooltipShowDelay="600"
-  >
-    <span *ngIf="result.submissionDoneTimestamp || result.readyForCorrectionTimestamp">{{
-        (result.state === states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY
-            ? result.auditedTentativelyTimestamp
-            : result.state === states.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED
-              ? result.plausibilisedTimestamp
-              : result.state === states.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION
-                ? result.readyForCorrectionTimestamp
-                : result.submissionDoneTimestamp
-        ) | date: 'mediumTime'
-      }}</span>
-    <bc-switch
-      *ngIf="
+  @if (result) {
+    <div
+      class="p-2 counting-circle-result"
+      (click)="openDetail.emit()"
+      [ngClass]="'result-state-' + result.state"
+      [matTooltip]="stateDescriptionsByState[result.state] ?? 'COUNTING_CIRCLE_RESULT_STATE.' + result.state | translate"
+      matTooltipPosition="above"
+      matTooltipShowDelay="600"
+      >
+      @if (result.submissionDoneTimestamp || result.readyForCorrectionTimestamp) {
+        <span>{{
+          (result.state === states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY
+          ? result.auditedTentativelyTimestamp
+          : result.state === states.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED
+          ? result.plausibilisedTimestamp
+          : result.state === states.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION
+          ? result.readyForCorrectionTimestamp
+          : result.submissionDoneTimestamp
+          ) | date: 'mediumTime'
+        }}</span>
+      }
+      @if (
         showPublishSwitch &&
         (result.state === states.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY ||
         result.state === states.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED ||
-          (publishResultsBeforeAuditedTentatively && (
-            result.state === states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE ||
-            result.state === states.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE)
-          )
+        (publishResultsBeforeAuditedTentatively && (
+        result.state === states.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE ||
+        result.state === states.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE)
         )
-      "
-      [checked]="result.published"
-      (checkedChange)="publishedChanged.emit($event)"
-      [disabled]="disabled"
-    ></bc-switch>
-  </div>
+        )
+        ) {
+        <bc-switch
+          [checked]="result.published"
+          (checkedChange)="publishedChanged.emit($event)"
+          [disabled]="disabled"
+        ></bc-switch>
+      }
+    </div>
+  }
 </ng-container>

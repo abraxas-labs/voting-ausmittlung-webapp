@@ -1,0 +1,22 @@
+<h5 class="full-column mb-0 mt-2" translate>POLITICAL_BUSINESS.BUNDLE_INFO.TITLE</h5>
+
+<bc-readonly class="full-column" [label]="'POLITICAL_BUSINESS.BUNDLE_NUMBER' | translate">
+  {{ bundle.number }}
+</bc-readonly>
+<bc-readonly [label]="'ELECTION.COUNT_OF_LISTS' | translate">
+  {{ bundle.countOfBallots }}
+</bc-readonly>
+<bc-readonly [label]="'ELECTION.COUNT_OF_MODIFIED_LISTS' | translate">
+  {{ bundle.countOfModifiedBallots }}
+</bc-readonly>
+<bc-readonly class="full-column" [label]="'APP.STATE' | translate">
+  <vo-ausm-result-bundle-state-chip
+    [state]="bundle.state"
+    [tooltip]="bundle.logs | politicalBusinessResultBundleLogs"></vo-ausm-result-bundle-state-chip>
+</bc-readonly>
+<bc-readonly class="full-column" [label]="'ELECTION.BUNDLE_CREATED_BY' | translate">
+  {{ bundle.createdBy?.fullName }}
+</bc-readonly>
+<bc-readonly class="full-column" [label]="'ELECTION.BUNDLE_REVIEWED_BY' | translate">
+  {{ bundle.reviewedBy?.fullName }}
+</bc-readonly>

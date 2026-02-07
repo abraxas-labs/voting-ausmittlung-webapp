@@ -1,8 +1,18 @@
-<div *ngIf="contactPerson">
-  <span *ngIf="contactPerson.firstName || contactPerson.familyName">
-    {{contactPerson.firstName}} {{contactPerson.familyName}}
-  </span>
-  <span *ngIf="contactPerson.email">{{contactPerson.email}}</span>
-  <span *ngIf="contactPerson.phone">{{contactPerson.phone}}</span>
-  <span *ngIf="contactPerson.mobilePhone">{{contactPerson.mobilePhone}}</span>
-</div>
+@if (contactPerson) {
+  <div>
+    @if (contactPerson.firstName || contactPerson.familyName) {
+      <span>
+        {{contactPerson.firstName}} {{contactPerson.familyName}}
+      </span>
+    }
+    @if (contactPerson.email) {
+      <span>{{contactPerson.email}}</span>
+    }
+    @if (contactPerson.phone) {
+      <span>{{contactPerson.phone}}</span>
+    }
+    @if (contactPerson.mobilePhone) {
+      <span>{{contactPerson.mobilePhone}}</span>
+    }
+  </div>
+}

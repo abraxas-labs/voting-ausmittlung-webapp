@@ -58,6 +58,7 @@
       "MEN": "Männer",
       "WOMEN": "Frauen",
       "TOTAL": "Total",
+      "TOTAL_FOR_TYPE": "Total {{type}}",
       "SWISS": "Inlandschweizer",
       "FOREIGNER": "Ausländer",
       "MINOR": "Minderjährige",
@@ -82,7 +83,8 @@
       },
       "INFO": {
         "CONTEST": "Urnengang",
-        "COUNTING_CIRCLE": "Auszählungskreis"
+        "COUNTING_CIRCLE": "Auszählungskreis",
+        "DOMAIN_OF_INFLUENCE": "Wahlkreis"
       },
       "CONTACT_DATA": {
         "TITLE": "Kontaktdaten",
@@ -149,18 +151,21 @@
       "3": "Proporzwahl",
       "4": "Majorzwahl"
     },
-    "REUSE_BUNDLE_NUMBER": {
-      "TITLE": "Bundnummer bereits in Verwendung",
-      "MSG": "Die Nummer ist bereits einem gelöschten Bund zugeordnet.\nWollen Sie die Bundnummer wiederverwenden?"
-    },
     "BUNDLE_DELETE_CONFIRM": {
       "TITLE": "Löschen?",
       "MSG": "Sind Sie sicher, dass Sie den Bund löschen wollen?"
     },
     "NEW_BUNDLE_TITLE": "Neuen Bund erfassen",
     "BUNDLE_NUMBER": "Bund-Nr.",
-    "DUPLICATED_BUNDLE_NUMBER": "Diese Bundnummer wird bereits verwendet.",
     "CREATE_BUNDLE": "Bund erstellen",
+    "RESET_BUNDLE_TO_SUBMISSION_FINISHED": "Zurück auf 'Kontrolle offen'",
+    "BUNDLE_INFO": {
+      "TITLE": "Bund-Infos"
+    },
+    "BALLOT_HISTORY": {
+      "NONE": "Keine Änderungen"
+    },
+    "CANNOT_REVIEW_MODIFIED_BUNDLE": "Sie dürfen keinen Bund auf kontrolliert setzen, den Sie selbst verändert haben.",
     "NR": "Geschäfts-Nr",
     "SHORT_DESCRIPTION": "Kurzbezeichnung",
     "SHORTCUT": {
@@ -190,6 +195,11 @@
       "BALLOT_BUNDLE_SAMPLE_SIZE_PERCENT": "Stichprobengrösse in Prozent",
       "BALLOT_BUNDLE_NUMBER_GENERATION": {
         "TITLE": "Vergabe Bundnummer",
+        "AUTOMATIC": "Automatisch",
+        "MANUAL": "Manuell"
+      },
+      "BALLOT_NUMBER_GENERATION": {
+        "TITLE": "Vergabe Stimmzettelnummer",
         "AUTOMATIC": "Automatisch",
         "MANUAL": "Manuell"
       },
@@ -367,7 +377,11 @@
       },
       "BALLOT_TITLE": "Stimmzettel-Nr. {{number}}"
     },
-    "COUNT_OF_LISTS": "Anzahl Stimmzettel"
+    "BALLOT_HISTORY": {
+      "TITLE": "Änderungen am Stimmzettel"
+    },
+    "COUNT_OF_LISTS": "Anzahl Stimmzettel",
+    "COUNT_OF_MODIFIED_LISTS": "Anzahl geändert"
   },
   "ELECTION": {
     "RESULT_ENTRY": {
@@ -380,14 +394,17 @@
       },
       "BALLOT_BUNDLE_NUMBER_GENERATION": {
         "TITLE": "Vergabe Bundnummer",
-        "AUTOMATIC": "Automatisch"
+        "AUTOMATIC": "Automatisch",
+        "MANUAL": "Manuell"
       },
       "BALLOT_NUMBER_GENERATION": {
         "TITLE": "Vergabe Wahlzettelnummer",
         "TYPES": {
           "1": "Neubeginn bei jedem Bund (z.B. 1-25)",
           "2": "Fortlaufend über alle Bunde (z.B. 1-25, 26-50, 51-75, …)"
-        }
+        },
+        "AUTOMATIC": "Automatisch",
+        "MANUAL": "Manuell"
       },
       "COUNTING_CIRCLE": "Auszählungskreis",
       "CANDIDATE_CHECK_DIGIT": {
@@ -395,14 +412,17 @@
         "USE": "Prüfziffer verwenden"
       }
     },
+    "BALLOT_HISTORY": {
+      "TITLE": "Änderungen am Wahlzettel"
+    },
     "NR_OF_MANDATES": "{{numberOfMandates}} Sitze",
     "VOTER_PARTICIPATION": "Wahlbeteiligung",
     "BALLOT_CARD": "Wahlzettel",
-    "BUNDLE_OVERVIEW": "Bundeübersicht und einzelne Wahlzettel erfassen",
+    "BUNDLE_OVERVIEW": "Bundübersicht",
     "NEW_BUNDLE": "+ Neuen Bund erfassen",
     "CONFIRM_BUNDLE_CREATION": "Bund {{number}}, bitte auf internen physischen Unterlagen erfassen (bspw. Bundblatt / Stapeldeckblatt / Wahlzettelcouvert)",
     "BUNDLE_SIZE": "Bund-Grösse",
-    "BUNDLE_CREATED_BY": "Erstellt von",
+    "BUNDLE_CREATED_BY": "Bearbeitet von",
     "BUNDLE_REVIEWED_BY": "Kontrolliert von",
     "BUNDLE_REVIEW": "Bundkontrolle",
     "BUNDLE_LOG_ENTRY": "{{state}}, {{timestamp}} Uhr, {{user}}",
@@ -413,6 +433,8 @@
       "4": "Kontrolliert",
       "5": "Gelöscht"
     },
+    "COUNT_OF_LISTS": "Anzahl Wahlzettel",
+    "COUNT_OF_MODIFIED_LISTS": "Anzahl geändert",
     "BALLOT_DETAIL": {
       "TITLE": "Wahlzettel erfassen",
       "DELETE": "Wahlzettel löschen",
@@ -552,7 +574,7 @@
     },
     "RESULTS": "Ergebnisübersicht",
     "SHOW_RESULTS": "Zur Ergebnisübersicht",
-    "MODIFIED_LISTS": "Einzelne Wahlzettel erfassen und Bundkontrolle",
+    "MODIFIED_LISTS": "Veränderte Wahlzettel erfassen und Bundkontrolle",
     "UNMODIFIED_LISTS": "Unveränderte Wahlzettel erfassen",
     "UNMODIFIED_LISTS_COUNT": "{{count}} unveränderte Wahlzettel erfasst",
     "NO_UNMODIFIED_LISTS": "Es sind noch keine unveränderte Wahlzettel erfasst",
@@ -587,7 +609,6 @@
     "SELECT_LIST_FOR_BUNDLE": "Liste für neuen Bund auswählen",
     "BALLOT_WITHOUT_LIST": "Wahlzettel ohne Parteibezeichnung",
     "BALLOT_WITHOUT_LIST_SHORT": "WoP",
-    "COUNT_OF_LISTS": "Anzahl Wahlzettel",
     "CUMULATED": "kumuliert",
     "EMPTY_VOTE_SLOT": "Leerer Listenplatz",
     "ENTER_LIST_NUMBER": "Listen-Nr. eingeben",
@@ -649,7 +670,7 @@
     "VALIDATE": "Prüfen",
     "SUBMIT_RESULTS": "Ergebnisse übermitteln",
     "SUBMIT_RESULTS_AND_AUDIT_TENTATIVELY": {
-      "TITLE": "Erfassung beenden und zu den Protokollen",
+      "TITLE": "Geschäft abschliessen",
       "HINT": "Absprung zu den Protokollen der kommunalen Geschäfte. Die Protokolle der eidgenössischen und kantonalen Geschäfte müssen in VOTING Ausmittlung Erfassung generiert werden."
     },
     "CREATE_PROTOCOL": "Protokoll erstellen",
@@ -934,6 +955,10 @@
         "VALID": "Total kontrollierte veränderte Wahlzettel ({{ totalCountOfBallots }}) + unveränderte Wahlzettel ({{ totalCountOfUnmodifiedLists }}) = ({{ sumBallotsAndUnmodifiedLists }}) stimmt mit der Anzahl gültiger Wahlzettel ({{ totalAccountedBallots }}) überein.",
         "INVALID": "Total kontrollierte veränderte Wahlzettel ({{ totalCountOfBallots }}) + unveränderte Wahlzettel ({{ totalCountOfUnmodifiedLists }}) = ({{ sumBallotsAndUnmodifiedLists }}) stimmt nicht mit der Anzahl gültiger Wahlzettel ({{ totalAccountedBallots }}) überein."
       },
+      "44": {
+        "VALID": "Die Kandidierenden-Stimmen dieses Geschäfts sind vollständig erfasst. Leere Zeilen ({{ blankRowsCount }}) + Kandidierenden-Stimmen ({{ candidateVotes }}) = {{ sumVoteCount }}. Vergleich: Mandate ({{ numberOfMandates }}) x Gültige Wahlzettel ({{ totalAccountedBallots }}) = {{ numberOfMandatesTimesAccountedBallots }}",
+        "INVALID": "Die Kandidierenden-Stimmen dieses Geschäfts sind noch nicht vollständig erfasst. Leere Zeilen ({{ blankRowsCount }}) + Kandidierenden-Stimmen ({{ candidateVotes }}) = {{ sumVoteCount }}. Vergleich: Mandate ({{ numberOfMandates }}) x Gültige Wahlzettel ({{ totalAccountedBallots }}) = {{ numberOfMandatesTimesAccountedBallots }}"
+      },
       "50": {
         "VALID": "Es sind keine Bunde mehr in Arbeit.",
         "INVALID": "Es sind noch Bunde in Arbeit."
@@ -1050,7 +1075,7 @@
     "LIST_TITLE": "Importierte Ergebnisse",
     "TITLE": "Ergebnisse importieren",
     "IMPORT": "Ergebnisse importieren",
-    "EXPLANATION": "Sowohl die eCH-0222- als auch die eCH-0110-Datei müssen ausgewählt und miteinander hochgeladen werden.",
+    "EXPLANATION": "Die eCH-0222-Date muss hochgeladen werden. Bei älteren eCH-0222-Versionen muss zusätzlich die eCH-0110-Datei ausgewählt und hochgeladen werden.",
     "SELECT_FILE": "Datei auswählen",
     "E_CH_STANDARD": "eCH-Datenstandard",
     "E_CH_TYPES": {
@@ -1066,6 +1091,7 @@
     "STARTED_BY": "Importiert durch",
     "STARTED": "Datum/Uhrzeit",
     "IMPORTED_COUNTING_CIRCLES": "Importierte Auszählungskreise",
+    "EMPTY_COUNTING_CIRCLES": "Auszählungskreise ohne Ergebnisse",
     "IGNORED_COUNTING_CIRCLES": "Ignorierte Auszählungskreise",
     "IGNORED_COUNTING_CIRCLE": {
       "TEST_COUNTING_CIRCLE": "(Testurne)",

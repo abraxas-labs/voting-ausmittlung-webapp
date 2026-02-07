@@ -7,7 +7,7 @@
 import { ExpansionPanelComponent } from '@abraxas/base-components';
 import { CountingCircleResultState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/counting_circle_pb';
 import { DialogService } from '@abraxas/voting-lib';
-import { ChangeDetectorRef, Component, Input, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, ViewChild, inject } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { ContestCantonDefaults, ContestCountingCircleDetails, PoliticalBusinessType, ResultListResult } from '../../../models';
 import { CommentsDialogComponent, CommentsDialogComponentData } from '../../comments-dialog/comments-dialog.component';
@@ -23,6 +23,9 @@ import {
   standalone: false,
 })
 export class ContestPoliticalBusinessDetailComponent {
+  private readonly dialog = inject(DialogService);
+  private readonly cd = inject(ChangeDetectorRef);
+
   public readonly politicalBusinessType: typeof PoliticalBusinessType = PoliticalBusinessType;
 
   @Input()
@@ -51,11 +54,6 @@ export class ContestPoliticalBusinessDetailComponent {
   private readonly countingCircleDetailsUpdatedSubject: Subject<ContestCountingCircleDetails> = new Subject<ContestCountingCircleDetails>();
 
   private readonly expandedSubject: Subject<boolean> = new Subject<boolean>();
-
-  constructor(
-    private readonly dialog: DialogService,
-    private readonly cd: ChangeDetectorRef,
-  ) {}
 
   public set expanded(x: boolean) {
     this.expansionPanel.expanded = x;

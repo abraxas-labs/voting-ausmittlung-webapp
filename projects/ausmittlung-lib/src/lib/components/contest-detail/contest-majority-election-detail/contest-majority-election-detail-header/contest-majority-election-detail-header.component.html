@@ -1,9 +1,11 @@
-<vo-ausm-info-panel-entry *ngIf="election.countOfSecondaryBusinesses > 0"
-                          [hasTopSpacing]="false"
-                          label="ELECTION_GROUPS.TITLE">
-  {{election.countOfSecondaryBusinesses}} {{('ELECTION_GROUPS.SECONDARY_ELECTION' + (election.countOfSecondaryBusinesses === 1 ? '_SINGLE' : '')) | translate}}
-</vo-ausm-info-panel-entry>
+@if (election.countOfSecondaryBusinesses > 0) {
+  <vo-ausm-info-panel-entry
+    [hasTopSpacing]="false"
+    label="ELECTION_GROUPS.TITLE">
+    {{election.countOfSecondaryBusinesses}} {{('ELECTION_GROUPS.SECONDARY_ELECTION' + (election.countOfSecondaryBusinesses === 1 ? '_SINGLE' : '')) | translate}}
+  </vo-ausm-info-panel-entry>
+}
 <vo-ausm-info-panel-entry label="MAJORITY_ELECTION.TITLE"
-                          [hasTopSpacing]="false">
+  [hasTopSpacing]="false">
   {{'ELECTION.NR_OF_MANDATES' | translate:election}}
 </vo-ausm-info-panel-entry>

@@ -1,5 +1,7 @@
-<ng-container *ngIf="lotDecisions.lotDecisions.length > 0">
-  <h4 *ngIf="showTitle" class="mt-4 mb-2">{{lotDecisions.election.title}}</h4>
+@if (lotDecisions.lotDecisions.length > 0) {
+  @if (showTitle) {
+    <h4 class="mt-4 mb-2">{{lotDecisions.election.title}}</h4>
+  }
   <div class="candidate-results">
     <bc-label [label]="'ELECTION.CANDIDATE.RANK' | translate"></bc-label>
     <bc-label [label]="'ELECTION.CANDIDATE.NUMBER' | translate"></bc-label>
@@ -9,7 +11,7 @@
     <bc-label [label]="'ELECTION.CANDIDATE.RANK_AFTER_LOT_DECISION' | translate"></bc-label>
     <bc-label [label]="'ELECTION.CANDIDATE.LOT_DECISION_REQUIRED' | translate"></bc-label>
 
-    <ng-container *ngFor="let lotDecision of lotDecisions.lotDecisions">
+    @for (lotDecision of lotDecisions.lotDecisions; track lotDecision) {
       <span>{{lotDecision.originalRank}}</span>
       <span>{{lotDecision.candidate.number}}</span>
       <vo-ausm-majority-election-candidacy-info class="candidate-name" [candidate]="lotDecision.candidate"></vo-ausm-majority-election-candidacy-info>
@@ -17,19 +19,19 @@
       <span>{{lotDecision.voteCount}}</span>
       <ng-container *ngTemplateOutlet="rankDropdownTemplate; context: {$implicit: lotDecision}"></ng-container>
       <span>{{(lotDecision.lotDecisionRequired ? 'APP.YES' : 'APP.NO') | translate}}</span>
-    </ng-container>
+    }
   </div>
 
   <ng-template #rankDropdownTemplate let-lotDecision>
     <span>
       <bc-dropdown #rankDropdownInput
-                   [value]="lotDecision.selectedRank"
-                   (valueChange)="updateSelectedRank(lotDecision, $event)"
-                   valueExpr="value"
-                   displayExpr="description"
-                   [items]="lotDecision.selectableRanks"
-                   [disabled]="disabled"
-                   [subscriptSizing]="'dynamic'"></bc-dropdown>
+        [value]="lotDecision.selectedRank"
+        (valueChange)="updateSelectedRank(lotDecision, $event)"
+        valueExpr="value"
+        displayExpr="description"
+        [items]="lotDecision.selectableRanks"
+        [disabled]="disabled"
+        [subscriptSizing]="'dynamic'"></bc-dropdown>
     </span>
   </ng-template>
-</ng-container>
+}

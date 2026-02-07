@@ -5,8 +5,8 @@
  */
 
 import { DialogService } from '@abraxas/voting-lib';
-import { Component, Input, OnChanges } from '@angular/core';
-import { Contest, ContestState, CountingCircle } from '../../models';
+import { Component, Input, OnChanges, inject } from '@angular/core';
+import { Contest, ContestState, CountingCircle, PoliticalBusiness } from '../../models';
 import {
   ContestPastUnlockDialogComponent,
   ContestPastUnlockDialogData,
@@ -21,6 +21,10 @@ import { CountingCircleResultState } from '@abraxas/voting-ausmittlung-service-p
   standalone: false,
 })
 export class ContestHeaderComponent implements OnChanges {
+  private readonly dialog = inject(DialogService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+
   @Input()
   public contest?: Contest;
 
@@ -28,32 +32,27 @@ export class ContestHeaderComponent implements OnChanges {
   public countingCircle?: CountingCircle;
 
   @Input()
+  public politicalBusiness?: PoliticalBusiness;
+
+  @Input()
   public state?: CountingCircleResultState;
 
   @Input()
   public accessibleCountingCircles: CountingCircle[] = [];
 
+  @Input()
+  public accessiblePoliticalBusinesses: PoliticalBusiness[] = [];
+
   public readonly states: typeof ContestState = ContestState;
 
   public selectedCountingCircle?: CountingCircle;
+  public selectedPoliticalBusiness?: PoliticalBusiness;
 
-  constructor(
-    private readonly dialog: DialogService,
-    private readonly router: Router,
-    private readonly route: ActivatedRoute,
-  ) {}
+  public politicalBusinessDisplayExpr: (pb: PoliticalBusiness) => string = (pb: PoliticalBusiness) => pb.domainOfInfluence!.name;
 
   public ngOnChanges(): void {
-    if (!this.countingCircle || this.accessibleCountingCircles.length === 0 || !this.contest) {
-      return;
-    }
-
-    if (this.accessibleCountingCircles.length === 1) {
-      this.selectedCountingCircle = this.accessibleCountingCircles[0];
-      return;
-    }
-
-    this.selectedCountingCircle = this.accessibleCountingCircles.find(x => x.id === this.countingCircle!.id);
+    this.updateCountingCircles();
+    this.updatePoliticalBusinesses();
   }
 
   public openPastUnlockDialog(): void {
@@ -78,5 +77,43 @@ export class ContestHeaderComponent implements OnChanges {
     delete this.selectedCountingCircle;
 
     await this.router.navigate(['..', countingCircle.id], { relativeTo: this.route });
+  }
+
+  public async politicalBusinessChanged(politicalBusiness?: PoliticalBusiness): Promise<void> {
+    if (!politicalBusiness || !this.selectedPoliticalBusiness || politicalBusiness.id === this.selectedPoliticalBusiness.id) {
+      return;
+    }
+
+    delete this.politicalBusiness;
+    delete this.contest;
+    delete this.selectedPoliticalBusiness;
+
+    await this.router.navigate(['..', politicalBusiness.id], { relativeTo: this.route });
+  }
+
+  private updateCountingCircles(): void {
+    if (!this.countingCircle || this.accessibleCountingCircles.length === 0) {
+      return;
+    }
+
+    if (this.accessibleCountingCircles.length === 1) {
+      this.selectedCountingCircle = this.accessibleCountingCircles[0];
+      return;
+    }
+
+    this.selectedCountingCircle = this.accessibleCountingCircles.find(x => x.id === this.countingCircle!.id);
+  }
+
+  private updatePoliticalBusinesses(): void {
+    if (!this.politicalBusiness || this.accessiblePoliticalBusinesses.length === 0) {
+      return;
+    }
+
+    if (this.accessiblePoliticalBusinesses.length === 1) {
+      this.selectedPoliticalBusiness = this.accessiblePoliticalBusinesses[0];
+      return;
+    }
+
+    this.selectedPoliticalBusiness = this.accessiblePoliticalBusinesses.find(x => x.id === this.politicalBusiness!.id);
   }
 }

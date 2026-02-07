@@ -1,21 +1,30 @@
 <div [class.result-container]="showElectionHeader">
-  <vo-ausm-majority-election-secondary-info
-    *ngIf="showElectionHeader"
-    [centeredTitle]="true"
-    [election]="result.election"
-  ></vo-ausm-majority-election-secondary-info>
+  @if (showElectionHeader) {
+    <vo-ausm-majority-election-secondary-info
+      [centeredTitle]="true"
+      [election]="result.election"
+    ></vo-ausm-majority-election-secondary-info>
+  }
   <div [class.p-3]="showElectionHeader" class="pb-3">
-    <h4 *ngIf="showElectionHeader" translate>POLITICAL_BUSINESS.SUBMISSION</h4>
+    @if (showElectionHeader) {
+      <h4 translate>POLITICAL_BUSINESS.SUBMISSION</h4>
+    }
     <ng-container [ngTemplateOutlet]="buttonsTemplate" [ngTemplateOutletContext]="{electionId:result.election.id}"></ng-container>
     <div class="candidate-results" #candidateResultsContainer [class.large-ml]="showElectionHeader">
       <bc-label [label]="'CANDIDATE.NR' | translate"></bc-label>
       <bc-label [label]="'CANDIDATE.CANDIDACY' | translate"></bc-label>
       <bc-label [label]="'MAJORITY_ELECTION.PARTY' | translate"></bc-label>
-      <bc-label *ngIf="eVotingValue || eCountingValue" [label]="'ELECTION.VOTE_COUNT_CONVENTIONAL' | translate"></bc-label>
-      <bc-label *ngIf="eVotingValue" [label]="'ELECTION.VOTE_COUNT_E_VOTING' | translate"></bc-label>
-      <bc-label *ngIf="eCountingValue" [label]="'ELECTION.VOTE_COUNT_E_COUNTING' | translate"></bc-label>
+      @if (eVotingValue || eCountingValue) {
+        <bc-label [label]="'ELECTION.VOTE_COUNT_CONVENTIONAL' | translate"></bc-label>
+      }
+      @if (eVotingValue) {
+        <bc-label [label]="'ELECTION.VOTE_COUNT_E_VOTING' | translate"></bc-label>
+      }
+      @if (eCountingValue) {
+        <bc-label [label]="'ELECTION.VOTE_COUNT_E_COUNTING' | translate"></bc-label>
+      }
       <bc-label [label]="'ELECTION.VOTE_COUNT' | translate"></bc-label>
-      <ng-container *ngFor="let candidate of result.candidateResults">
+      @for (candidate of result.candidateResults; track candidate) {
         <span class="candidate-number">{{ candidate.candidate.number }}</span>
         <vo-ausm-majority-election-candidacy-info [candidate]="candidate.candidate"></vo-ausm-majority-election-candidacy-info>
         <span>{{ candidate.candidate.party }}</span>
@@ -23,16 +32,22 @@
           [readonly]="readonly"
           [value]="candidate.conventionalVoteCount"
           [min]="0"
-          [error]="candidate.conventionalVoteCount < 0"
+          [error]="!candidate.conventionalVoteCount || candidate.conventionalVoteCount < 0"
           (valueChange)="setConventionalVoteCount(candidate, $event); contentChanged.emit()"
           [subscriptSizing]="'dynamic'"
         ></bc-number>
-        <bc-number *ngIf="eVotingValue" [readonly]="true" [tabIndex]="-1" [value]="candidate.eVotingExclWriteInsVoteCount + candidate.eVotingWriteInsVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
-        <bc-number *ngIf="eCountingValue" [readonly]="true" [tabIndex]="-1" [value]="candidate.eCountingExclWriteInsVoteCount + candidate.eCountingWriteInsVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
-        <bc-number *ngIf="eCountingValue || eVotingValue" [readonly]="true" [tabIndex]="-1" [value]="(candidate.conventionalVoteCount ?? 0) + candidate.eVotingExclWriteInsVoteCount + candidate.eVotingWriteInsVoteCount + candidate.eCountingExclWriteInsVoteCount + candidate.eCountingWriteInsVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
-      </ng-container>
+        @if (eVotingValue) {
+          <bc-number [readonly]="true" [tabIndex]="-1" [value]="candidate.eVotingExclWriteInsVoteCount + candidate.eVotingWriteInsVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
+        }
+        @if (eCountingValue) {
+          <bc-number [readonly]="true" [tabIndex]="-1" [value]="candidate.eCountingExclWriteInsVoteCount + candidate.eCountingWriteInsVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
+        }
+        @if (eCountingValue || eVotingValue) {
+          <bc-number [readonly]="true" [tabIndex]="-1" [value]="(candidate.conventionalVoteCount ?? 0) + candidate.eVotingExclWriteInsVoteCount + candidate.eVotingWriteInsVoteCount + candidate.eCountingExclWriteInsVoteCount + candidate.eCountingWriteInsVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
+        }
+      }
 
-      <ng-container *ngIf="showIndividualVotes">
+      @if (showIndividualVotes) {
         <span translate class="candidate-candidacy">MAJORITY_ELECTION.INDIVIDUAL</span>
         <span><!-- party --></span>
         <bc-number
@@ -46,24 +61,28 @@
           (valueChange)="setConventionalIndividualVoteCount($event); contentChanged.emit()"
           [subscriptSizing]="'dynamic'"
         ></bc-number>
-        <bc-number
-          *ngIf="eVotingValue"
-          [readonly]="true"
-          [tabIndex]="-1"
-          [value]="result.eVotingSubTotal.individualVoteCount"
-          [subscriptSizing]="'dynamic'"
-        ></bc-number>
-        <bc-number
-          *ngIf="eCountingValue"
-          [readonly]="true"
-          [tabIndex]="-1"
-          [value]="result.eCountingSubTotal.individualVoteCount"
-          [subscriptSizing]="'dynamic'"
-        ></bc-number>
-        <bc-number *ngIf="eVotingValue || eCountingValue" [readonly]="true" [tabIndex]="-1" [value]="result.individualVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
-      </ng-container>
+        @if (eVotingValue) {
+          <bc-number
+            [readonly]="true"
+            [tabIndex]="-1"
+            [value]="result.eVotingSubTotal.individualVoteCount"
+            [subscriptSizing]="'dynamic'"
+          ></bc-number>
+        }
+        @if (eCountingValue) {
+          <bc-number
+            [readonly]="true"
+            [tabIndex]="-1"
+            [value]="result.eCountingSubTotal.individualVoteCount"
+            [subscriptSizing]="'dynamic'"
+          ></bc-number>
+        }
+        @if (eVotingValue || eCountingValue) {
+          <bc-number [readonly]="true" [tabIndex]="-1" [value]="result.individualVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
+        }
+      }
 
-      <ng-container *ngIf="showEmptyVotes">
+      @if (showEmptyVotes) {
         <span translate class="candidate-candidacy">MAJORITY_ELECTION.EMPTY_VOTES</span>
         <span><!-- party --></span>
         <bc-number
@@ -76,12 +95,18 @@
           (valueChange)="setConventionalEmptyVoteCount($event); contentChanged.emit()"
           [subscriptSizing]="'dynamic'"
         ></bc-number>
-        <bc-number *ngIf="eVotingValue" [readonly]="true" [tabIndex]="-1" [value]="result.eVotingSubTotal.emptyVoteCountWriteIns + result.eVotingSubTotal.emptyVoteCountExclWriteIns" [subscriptSizing]="'dynamic'"></bc-number>
-        <bc-number *ngIf="eCountingValue" [readonly]="true" [tabIndex]="-1" [value]="result.eCountingSubTotal.emptyVoteCountWriteIns + result.eCountingSubTotal.emptyVoteCountExclWriteIns" [subscriptSizing]="'dynamic'"></bc-number>
-        <bc-number *ngIf="eVotingValue || eCountingValue" [readonly]="true" [tabIndex]="-1" [value]="(result.conventionalSubTotal.emptyVoteCountExclWriteIns ?? 0) + result.eVotingSubTotal.emptyVoteCountWriteIns + result.eVotingSubTotal.emptyVoteCountExclWriteIns + result.eCountingSubTotal.emptyVoteCountWriteIns + result.eCountingSubTotal.emptyVoteCountExclWriteIns" [subscriptSizing]="'dynamic'"></bc-number>
-      </ng-container>
+        @if (eVotingValue) {
+          <bc-number [readonly]="true" [tabIndex]="-1" [value]="result.eVotingSubTotal.emptyVoteCountWriteIns + result.eVotingSubTotal.emptyVoteCountExclWriteIns" [subscriptSizing]="'dynamic'"></bc-number>
+        }
+        @if (eCountingValue) {
+          <bc-number [readonly]="true" [tabIndex]="-1" [value]="result.eCountingSubTotal.emptyVoteCountWriteIns + result.eCountingSubTotal.emptyVoteCountExclWriteIns" [subscriptSizing]="'dynamic'"></bc-number>
+        }
+        @if (eVotingValue || eCountingValue) {
+          <bc-number [readonly]="true" [tabIndex]="-1" [value]="(result.conventionalSubTotal.emptyVoteCountExclWriteIns ?? 0) + result.eVotingSubTotal.emptyVoteCountWriteIns + result.eVotingSubTotal.emptyVoteCountExclWriteIns + result.eCountingSubTotal.emptyVoteCountWriteIns + result.eCountingSubTotal.emptyVoteCountExclWriteIns" [subscriptSizing]="'dynamic'"></bc-number>
+        }
+      }
 
-      <ng-container *ngIf="showInvalidVotes">
+      @if (showInvalidVotes) {
         <span translate class="candidate-candidacy">MAJORITY_ELECTION.INVALID_VOTES</span>
         <span><!-- party --></span>
         <bc-number
@@ -95,10 +120,16 @@
           (valueChange)="setConventionalInvalidVoteCount($event); contentChanged.emit()"
           [subscriptSizing]="'dynamic'"
         ></bc-number>
-        <bc-number *ngIf="eVotingValue" [readonly]="true" [tabIndex]="-1" [value]="result.eVotingSubTotal.invalidVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
-        <bc-number *ngIf="eCountingValue" [readonly]="true" [tabIndex]="-1" [value]="result.eCountingSubTotal.invalidVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
-        <bc-number *ngIf="eVotingValue || eCountingValue" [readonly]="true" [tabIndex]="-1" [value]="result.invalidVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
-      </ng-container>
+        @if (eVotingValue) {
+          <bc-number [readonly]="true" [tabIndex]="-1" [value]="result.eVotingSubTotal.invalidVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
+        }
+        @if (eCountingValue) {
+          <bc-number [readonly]="true" [tabIndex]="-1" [value]="result.eCountingSubTotal.invalidVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
+        }
+        @if (eVotingValue || eCountingValue) {
+          <bc-number [readonly]="true" [tabIndex]="-1" [value]="result.invalidVoteCount" [subscriptSizing]="'dynamic'"></bc-number>
+        }
+      }
     </div>
   </div>
 </div>

@@ -4,9 +4,8 @@
  * For license information see LICENSE file.
  */
 
-import { DialogService } from '@abraxas/voting-lib';
-import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, inject } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'vo-ausm-political-business-new-bundle-number',
@@ -15,20 +14,9 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   standalone: false,
 })
 export class PoliticalBusinessNewBundleNumberComponent {
+  private readonly dialogRef = inject<MatDialogRef<any>>(MatDialogRef);
+
   public bundleNumber?: number;
-  public duplicatedBundleNumber: boolean = false;
-
-  private readonly usedBundleNumbers: number[];
-  private readonly deletedUnusedBundleNumbers: number[];
-
-  constructor(
-    private readonly dialogRef: MatDialogRef<any>,
-    private readonly dialog: DialogService,
-    @Inject(MAT_DIALOG_DATA) dialogData: PoliticalBusinessNewBundleNumberComponentData,
-  ) {
-    this.usedBundleNumbers = dialogData.usedBundleNumbers;
-    this.deletedUnusedBundleNumbers = dialogData.deletedUnusedBundleNumbers;
-  }
 
   public async done(): Promise<void> {
     if (!(await this.checkBundleNumber())) {
@@ -49,24 +37,9 @@ export class PoliticalBusinessNewBundleNumberComponent {
     }
 
     this.bundleNumber = +newNumber;
-    this.duplicatedBundleNumber =
-      this.usedBundleNumbers.includes(this.bundleNumber) && !this.deletedUnusedBundleNumbers.includes(this.bundleNumber);
   }
 
   private async checkBundleNumber(): Promise<boolean> {
-    if (!this.bundleNumber || this.duplicatedBundleNumber) {
-      return false;
-    }
-
-    if (!this.usedBundleNumbers.includes(this.bundleNumber)) {
-      return true;
-    }
-
-    return await this.dialog.confirm('POLITICAL_BUSINESS.REUSE_BUNDLE_NUMBER.TITLE', 'POLITICAL_BUSINESS.REUSE_BUNDLE_NUMBER.MSG');
+    return !!this.bundleNumber;
   }
-}
-
-export interface PoliticalBusinessNewBundleNumberComponentData {
-  usedBundleNumbers: number[];
-  deletedUnusedBundleNumbers: number[];
 }

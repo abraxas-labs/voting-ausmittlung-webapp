@@ -2,11 +2,13 @@
 
   <vo-lib-page-header header>
     <vo-ausm-breadcrumbs [items]="breadcrumbs" left></vo-ausm-breadcrumbs>
-    <vo-ausm-contest-header center *ngIf="contestResultList?.contest" [contest]="contestResultList!.contest"
-      [countingCircle]="contestResultList!.countingCircle" [state]="contestResultList!.state"></vo-ausm-contest-header>
+    @if (contestResultList?.contest) {
+      <vo-ausm-contest-header center [contest]="contestResultList!.contest"
+        [countingCircle]="contestResultList!.countingCircle" [state]="contestResultList!.state"></vo-ausm-contest-header>
+    }
   </vo-lib-page-header>
 
-  <ng-container *ngIf="contestResultList">
+  @if (contestResultList) {
     <h2 class="mt-3" translate>CONTEST.DETAIL.COUNT_OF_VOTERS_AND_VOTING_CARDS</h2>
     <div class="mb-3">
       <vo-ausm-contest-detail-info
@@ -20,17 +22,20 @@
         [domainOfInfluenceTypes]="domainOfInfluenceTypes" [canton]="canton" [readonly]="true">
       </vo-ausm-contest-detail-info>
     </div>
-  </ng-container>
+  }
 
-  <vo-ausm-proportional-election-info *ngIf="electionResult" [electionResult]="electionResult">
-  </vo-ausm-proportional-election-info>
+  @if (electionResult) {
+    <vo-ausm-proportional-election-info [electionResult]="electionResult">
+    </vo-ausm-proportional-election-info>
+  }
 
-  <vo-ausm-voting-data-source-tabs
-    *ngIf="contestResultList && (contestResultList.details.eVoting || contestResultList.details.eCountingResultsImported)"
-    class="mt-3 mb-3"
-    [eVoting]="contestResultList.details.eVoting"
-    [eCounting]="contestResultList.details.eCountingResultsImported"
-    (dataSourceChange)="setDataPrefix($event)"></vo-ausm-voting-data-source-tabs>
+  @if (contestResultList && (contestResultList.details.eVoting || contestResultList.details.eCountingResultsImported)) {
+    <vo-ausm-voting-data-source-tabs
+      class="mt-3 mb-3"
+      [eVoting]="contestResultList.details.eVoting"
+      [eCounting]="contestResultList.details.eCountingResultsImported"
+      (dataSourceChange)="setDataPrefix($event)"></vo-ausm-voting-data-source-tabs>
+  }
 
   <vo-lib-split-screen [class.mt-5]="contestResultList && !contestResultList.details.eVoting">
     <bc-table selection left class="pr-4" [dataSource]="listResults">
@@ -97,10 +102,11 @@
         selectionRow
         [selectionRowValue]="row"
         (click)="rowSelection.toggle(); selectListResult(row)"></bc-data-row>
-      </bc-table>
+    </bc-table>
 
-      <div right class="pl-4">
-        <bc-table *ngIf="selectedListResult; else nothingSelected"
+    <div right class="pl-4">
+      @if (selectedListResult) {
+        <bc-table
           [dataSource]="selectedListResult.candidateResultsList">
           <ng-container columnDef="number">
             <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.CANDIDATE.CANDIDATE_NUMBER_ABBREVIATION' |
@@ -155,10 +161,9 @@
           <bc-header-row *headerRowDef="let row; columns: candidateColumns"></bc-header-row>
           <bc-data-row *dataRowDef="let row; columns: candidateColumns; let i = index"></bc-data-row>
         </bc-table>
-
-        <ng-template #nothingSelected>
-          <p class="no-data mt-2" translate>PROPORTIONAL_ELECTION.LIST.NONE_SELECTED</p>
-        </ng-template>
-      </div>
+      } @else {
+        <p class="no-data mt-2" translate>PROPORTIONAL_ELECTION.LIST.NONE_SELECTED</p>
+      }
+    </div>
   </vo-lib-split-screen>
 </vo-lib-page>

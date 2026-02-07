@@ -28,17 +28,18 @@
     [readonly]="readonly"
   ></vo-ausm-vote-ballot-question-answer-button>
 
-  <vo-ausm-vote-ballot-question-answer-button
-    *ngIf="ballotNumberOfQuestions > 1"
-    [class.selected-unspecified]="answer === BallotQuestionAnswer.BALLOT_QUESTION_ANSWER_UNSPECIFIED
-      || answer === TieBreakQuestionAnswer.TIE_BREAK_QUESTION_ANSWER_UNSPECIFIED"
-    [selected]="answer === BallotQuestionAnswer.BALLOT_QUESTION_ANSWER_UNSPECIFIED
-      || answer === TieBreakQuestionAnswer.TIE_BREAK_QUESTION_ANSWER_UNSPECIFIED"
-    [text]="'VOTE.BALLOT.ANSWER.UNSPECIFIED' | translate"
-    (clicked)="updateAnswer(isTieBreakQuestion
-      ? TieBreakQuestionAnswer.TIE_BREAK_QUESTION_ANSWER_UNSPECIFIED
-      : BallotQuestionAnswer.BALLOT_QUESTION_ANSWER_UNSPECIFIED)"
-    [disabled]="disabled"
-    [readonly]="readonly"
-  ></vo-ausm-vote-ballot-question-answer-button>
+  @if (ballotNumberOfQuestions > 1) {
+    <vo-ausm-vote-ballot-question-answer-button
+      [class.selected-unspecified]="answer === BallotQuestionAnswer.BALLOT_QUESTION_ANSWER_UNSPECIFIED
+        || answer === TieBreakQuestionAnswer.TIE_BREAK_QUESTION_ANSWER_UNSPECIFIED"
+      [selected]="answer === BallotQuestionAnswer.BALLOT_QUESTION_ANSWER_UNSPECIFIED
+        || answer === TieBreakQuestionAnswer.TIE_BREAK_QUESTION_ANSWER_UNSPECIFIED"
+      [text]="'VOTE.BALLOT.ANSWER.UNSPECIFIED' | translate"
+      (clicked)="updateAnswer(isTieBreakQuestion
+        ? TieBreakQuestionAnswer.TIE_BREAK_QUESTION_ANSWER_UNSPECIFIED
+        : BallotQuestionAnswer.BALLOT_QUESTION_ANSWER_UNSPECIFIED)"
+      [disabled]="disabled"
+      [readonly]="readonly"
+    ></vo-ausm-vote-ballot-question-answer-button>
+  }
 </div>

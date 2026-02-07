@@ -6,10 +6,7 @@
 
 import { VoteReviewProcedure } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/vote_pb';
 import { AfterViewInit, Component, Input } from '@angular/core';
-import { PermissionService } from '../../../services/permission.service';
-import { UserService } from '../../../services/user.service';
 import { ResultBundleTableComponent } from '../../result-bundle-table/result-bundle-table-component.directive';
-import { EnumUtil } from '@abraxas/voting-lib';
 import { ProtocolExportState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/export_pb';
 
 @Component({
@@ -27,6 +24,7 @@ export class VoteBundleTableComponent extends ResultBundleTableComponent impleme
     this.bundleSizeColumn,
     this.createdByColumn,
     this.countOfBallotsColumn,
+    this.countOfModifiedBallotsColumn,
     this.stateColumn,
     this.reviewedByColumn,
     this.reviewColumn,
@@ -41,8 +39,8 @@ export class VoteBundleTableComponent extends ResultBundleTableComponent impleme
   @Input()
   public enableBundleSizeColumn: boolean = true;
 
-  constructor(userService: UserService, roleService: PermissionService, enumUtil: EnumUtil) {
-    super(userService, roleService, enumUtil);
+  constructor() {
+    super();
   }
 
   public override ngAfterViewInit(): void {
@@ -50,10 +48,6 @@ export class VoteBundleTableComponent extends ResultBundleTableComponent impleme
 
     if (!this.enableBundleSizeColumn) {
       this.columns.splice(2, 1);
-    }
-
-    if (!this.enableReviewColumn) {
-      this.columns.splice(this.columns.length - 2, 1);
     }
 
     if (!this.enableActions) {

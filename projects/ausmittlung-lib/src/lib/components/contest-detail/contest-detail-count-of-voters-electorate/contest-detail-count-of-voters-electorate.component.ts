@@ -5,7 +5,7 @@
  */
 
 import { DomainOfInfluenceType } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/domain_of_influence_pb';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { SimpleVoterTypeGroup } from '../contest-detail-count-of-voters/contest-detail-count-of-voters.component';
 
@@ -16,6 +16,8 @@ import { SimpleVoterTypeGroup } from '../contest-detail-count-of-voters/contest-
   standalone: false,
 })
 export class ContestDetailCountOfVotersElectorateComponent {
+  private readonly i18n = inject(TranslateService);
+
   public expansionPanelHeaderTitle: string = '';
   public voterTypeGroupsValue: SimpleVoterTypeGroup[] = [];
 
@@ -28,8 +30,6 @@ export class ContestDetailCountOfVotersElectorateComponent {
       type: v.map(d => this.i18n.instant(`DOMAIN_OF_INFLUENCE_TYPES.${d}`)).join(', '),
     });
   }
-
-  constructor(private readonly i18n: TranslateService) {}
 
   public get voterTypeGroups(): SimpleVoterTypeGroup[] {
     return this.voterTypeGroupsValue;

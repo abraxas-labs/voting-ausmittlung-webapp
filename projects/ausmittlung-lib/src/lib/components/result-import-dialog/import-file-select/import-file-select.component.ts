@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { EchType, ImportFile } from '../import-file.model';
 import { EnumItemDescription, EnumUtil } from '@abraxas/voting-lib';
 
@@ -15,6 +15,8 @@ import { EnumItemDescription, EnumUtil } from '@abraxas/voting-lib';
   standalone: false,
 })
 export class ImportFileSelectComponent implements OnInit {
+  readonly enumUtil = inject(EnumUtil);
+
   public echTypes: EnumItemDescription<EchType>[];
   public selectedFiles: ImportFile[] = [];
   public selectedEchType: EchType = EchType.Ech0222;
@@ -29,7 +31,9 @@ export class ImportFileSelectComponent implements OnInit {
   @ViewChild('fileInput')
   private fileInput!: ElementRef;
 
-  constructor(readonly enumUtil: EnumUtil) {
+  constructor() {
+    const enumUtil = this.enumUtil;
+
     this.echTypes = enumUtil.getArrayWithDescriptions<EchType>(EchType, 'RESULT_IMPORT.E_CH_TYPES.');
   }
 

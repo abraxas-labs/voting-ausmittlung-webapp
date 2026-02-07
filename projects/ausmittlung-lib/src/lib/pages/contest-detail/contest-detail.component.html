@@ -4,68 +4,78 @@
       <vo-ausm-breadcrumbs [items]="breadcrumbs"></vo-ausm-breadcrumbs>
     </div>
     <vo-ausm-contest-header center [contest]="resultList?.contest" [countingCircle]="resultList?.countingCircle" [state]="resultList?.state" [accessibleCountingCircles]="accessibleCountingCircles"></vo-ausm-contest-header>
-    <div right *ngIf="!!resultList">
-      <bc-button variant="tertiary"
-                 [label]="'CONTEST.DETAIL.CONTACT_DATA.TITLE_DETAILS' | translate"
-                 (buttonClick)="openContactDialog()"></bc-button>
-      <bc-button *ngIf="canEditElectorates && resultList.currentTenantIsResponsible"
-                 variant="tertiary"
-                 [label]="'CONTEST.DETAIL.ELECTORATE.EDIT' | translate"
-                 (buttonClick)="openElectoratesDialog()"></bc-button>
-      <vo-ausm-contest-state-change-button
-        class="ml-3"
-        [contentReadonly]="contentReadonly"
-        [resultList]="resultList"
-        [showResetResultsInTestingPhase]="showResetResultsInTestingPhase"
-        [showSetAllAuditedTentatively]="showSetAllAuditedTentatively"
-        (finishSubmission)="finishSubmission()"
-        [stateDescriptionsByState]="resultList.contest.cantonDefaults.countingCircleResultStateDescriptionsByState"></vo-ausm-contest-state-change-button>
-      <bc-button *ngIf="showExport" variant="tertiary" (buttonClick)="export()" [label]="'CONTEST.DETAIL.EXPORT' | translate"></bc-button>
-      <bc-button *ngIf="showImports" variant="tertiary" (buttonClick)="import()" [label]="'RESULT_IMPORT.BUTTON_TITLE' | translate"></bc-button>
-    </div>
+    @if (!!resultList) {
+      <div right>
+        <bc-button variant="tertiary"
+          [label]="'CONTEST.DETAIL.CONTACT_DATA.TITLE_DETAILS' | translate"
+          (buttonClick)="openContactDialog()"></bc-button>
+        @if (canEditElectorates && resultList.currentTenantIsResponsible) {
+          <bc-button
+            variant="tertiary"
+            [label]="'CONTEST.DETAIL.ELECTORATE.EDIT' | translate"
+            (buttonClick)="openElectoratesDialog()"></bc-button>
+        }
+        <vo-ausm-contest-state-change-button
+          class="ml-3"
+          [contentReadonly]="contentReadonly"
+          [resultList]="resultList"
+          [showResetResultsInTestingPhase]="showResetResultsInTestingPhase"
+          [showSetAllAuditedTentatively]="showSetAllAuditedTentatively"
+          (finishSubmission)="finishSubmission()"
+          [stateDescriptionsByState]="resultList.contest.cantonDefaults.countingCircleResultStateDescriptionsByState"></vo-ausm-contest-state-change-button>
+        @if (showExport) {
+          <bc-button variant="tertiary" (buttonClick)="export()" [label]="'CONTEST.DETAIL.EXPORT' | translate"></bc-button>
+        }
+        @if (showImports) {
+          <bc-button variant="tertiary" (buttonClick)="import()" [label]="'RESULT_IMPORT.BUTTON_TITLE' | translate"></bc-button>
+        }
+      </div>
+    }
   </vo-lib-page-header>
 
-  <div *ngIf="resultList">
-    <ng-container>
-      <h2 class="mt-3" translate>CONTEST.DETAIL.COUNT_OF_VOTERS_AND_VOTING_CARDS</h2>
-
-      <!-- Component should be re-rendered when the counting circle is changed -->
-      <vo-ausm-contest-detail-info
-        *ngIf="!loading"
-        [eVoting]="resultList.details.eVoting"
-        [eCounting]="resultList.details.eCounting"
-        [eCountingResultsImported]="resultList.details.eCountingResultsImported"
-        [enabledVoterTypes]="resultList.enabledVoterTypes"
-        [countOfVotersInformationSubTotals]="resultList.details.countOfVotersInformationSubTotals"
-        [votingCards]="resultList.details.votingCards"
-        [enabledVotingCardChannels]="resultList.enabledVotingCardChannels"
-        [domainOfInfluenceTypes]="domainOfInfluenceTypes"
-        [countingMachineEnabled]="countingMachineEnabled"
-        [countingMachine]="resultList.details.countingMachine"
-        [canton]="canton"
-        [contestId]="resultList.contest.id"
-        [countingCircleId]="resultList.countingCircle.id"
-        [electorateSummary]="resultList.electorateSummary"
-        [readonly]="contentReadonly
-        || sidebarReadonly
-        || !resultList?.currentTenantIsResponsible
-        || !canEditCountingCircleDetails"
-        (saved)="updateCountOfVoters($event)">
-      </vo-ausm-contest-detail-info>
-
-      <h2 class="mt-3" translate>CONTEST.DETAIL.POLITICAL_BUSINESSES</h2>
-    </ng-container>
-
-    <div class="political-business-list">
-      <div *ngFor="let result of resultList.results">
-        <vo-ausm-contest-political-business-detail
-          [contentReadonly]="contentReadonly || !resultList.currentTenantIsResponsible"
-          [contestLocked]="resultList?.contest.locked"
-          [isResponsibleMonitorAuthority]="tenant?.id === result.politicalBusiness.domainOfInfluence.secureConnectId"
-          [contestCountingCircleDetails]="resultList.details"
-          [result]="result"
-          [contestCantonDefaults]="resultList.contest.cantonDefaults"></vo-ausm-contest-political-business-detail>
+  @if (resultList) {
+    <div>
+      <ng-container>
+        <h2 class="mt-3" translate>CONTEST.DETAIL.COUNT_OF_VOTERS_AND_VOTING_CARDS</h2>
+        <!-- Component should be re-rendered when the counting circle is changed -->
+        @if (!loading) {
+          <vo-ausm-contest-detail-info
+            [eVoting]="resultList.details.eVoting"
+            [eCounting]="resultList.details.eCounting"
+            [eCountingResultsImported]="resultList.details.eCountingResultsImported"
+            [enabledVoterTypes]="resultList.enabledVoterTypes"
+            [countOfVotersInformationSubTotals]="resultList.details.countOfVotersInformationSubTotals"
+            [votingCards]="resultList.details.votingCards"
+            [enabledVotingCardChannels]="resultList.enabledVotingCardChannels"
+            [domainOfInfluenceTypes]="domainOfInfluenceTypes"
+            [countingMachineEnabled]="countingMachineEnabled"
+            [countingMachine]="resultList.details.countingMachine"
+            [canton]="canton"
+            [contestId]="resultList.contest.id"
+            [countingCircleId]="resultList.countingCircle.id"
+            [electorateSummary]="resultList.electorateSummary"
+            [readonly]="contentReadonly
+            || sidebarReadonly
+            || !resultList?.currentTenantIsResponsible
+            || !canEditCountingCircleDetails"
+            (saved)="updateCountOfVoters($event)">
+          </vo-ausm-contest-detail-info>
+        }
+        <h2 class="mt-3" translate>CONTEST.DETAIL.POLITICAL_BUSINESSES</h2>
+      </ng-container>
+      <div class="political-business-list">
+        @for (result of resultList.results; track result) {
+          <div>
+            <vo-ausm-contest-political-business-detail
+              [contentReadonly]="contentReadonly || !resultList.currentTenantIsResponsible"
+              [contestLocked]="resultList.contest.locked"
+              [isResponsibleMonitorAuthority]="tenant?.id === result.politicalBusiness.domainOfInfluence?.secureConnectId"
+              [contestCountingCircleDetails]="resultList.details"
+              [result]="result"
+              [contestCantonDefaults]="resultList.contest.cantonDefaults"></vo-ausm-contest-political-business-detail>
+          </div>
+        }
       </div>
     </div>
-  </div>
+  }
 </vo-lib-page>

@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Directive, Input, OnChanges, TemplateRef, ViewContainerRef } from '@angular/core';
+import { Directive, Input, OnChanges, TemplateRef, ViewContainerRef, inject } from '@angular/core';
 import { PermissionService } from '../services/permission.service';
 
 @Directive({
@@ -13,14 +13,12 @@ import { PermissionService } from '../services/permission.service';
   standalone: false,
 })
 export class PermissionDirective implements OnChanges {
+  private readonly templateRef = inject<TemplateRef<any>>(TemplateRef);
+  private readonly viewContainerRef = inject(ViewContainerRef);
+  private readonly permissionService = inject(PermissionService);
+
   @Input('voAusmPermission')
   public permission: string = '';
-
-  constructor(
-    private readonly templateRef: TemplateRef<any>,
-    private readonly viewContainerRef: ViewContainerRef,
-    private readonly permissionService: PermissionService,
-  ) {}
 
   public async ngOnChanges(): Promise<void> {
     if (await this.permissionService.hasPermission(this.permission)) {

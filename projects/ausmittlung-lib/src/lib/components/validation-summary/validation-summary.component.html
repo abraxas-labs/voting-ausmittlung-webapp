@@ -1,34 +1,54 @@
-<div *ngIf="summary">
-  <h3 class="mb-2" *ngIf="summary.title">{{ summary.title }}</h3>
-
-  <div *ngFor="let group of summary.requiredValidationResults | validationGroup" class="mb-2">
-    <h4 *ngIf="group.key" class="mb-1">{{ group.key }}</h4>
-    <ng-container *ngIf="group.value | validValidation: false as invalidValidations">
-      <div *ngIf="invalidValidations.length > 0" class="mb-3">
-        <vo-ausm-validation-result *ngFor="let result of invalidValidations" [result]="result">
-        </vo-ausm-validation-result>
+@if (summary) {
+  <div>
+    @if (summary.title) {
+      <h3 class="mb-2">{{ summary.title }}</h3>
+    }
+    @for (group of summary.requiredValidationResults | validationGroup; track group) {
+      <div class="mb-2">
+        @if (group.key) {
+          <h4 class="mb-1">{{ group.key }}</h4>
+        }
+        @if (group.value | validValidation: false; as invalidValidations) {
+          @if (invalidValidations.length > 0) {
+            <div class="mb-3">
+              @for (result of invalidValidations; track result) {
+                <vo-ausm-validation-result [result]="result">
+                </vo-ausm-validation-result>
+              }
+            </div>
+          }
+        }
+        @if (group.value | validValidation; as validValidations) {
+          @if (validValidations.length > 0) {
+            <bc-expansion-panel>
+              <div header>
+                <h4 class="mb-0">
+                  <bc-icon class="title-icon" icon="check-circle"></bc-icon>
+                  <span translate>VALIDATION.SHOW_ALL</span>
+                </h4>
+              </div>
+              @for (result of validValidations; track result) {
+                <vo-ausm-validation-result [result]="result">
+                </vo-ausm-validation-result>
+              }
+            </bc-expansion-panel>
+          }
+        }
       </div>
-    </ng-container>
-    <ng-container *ngIf="group.value | validValidation as validValidations">
-      <bc-expansion-panel *ngIf="validValidations.length > 0">
-        <div header>
-          <h4 class="mb-0">
-            <bc-icon class="title-icon" icon="check-circle"></bc-icon>
-            <span translate>VALIDATION.SHOW_ALL</span>
-          </h4>
+    }
+    @if ((summary.optionalValidationResults | validationGroup).length > 0) {
+      <p class="mt-3 mb-2" translate>VALIDATION.PLAUSIBILISATION.HEADER</p>
+      @for (group of summary.optionalValidationResults | validationGroup; track group) {
+        <div class="mb-2">
+          @if (group.key) {
+            <h4 class="mb-1">{{ group.key }}</h4>
+          }
+          @for (result of group.value; track result) {
+            <vo-ausm-validation-result [result]="result">
+            </vo-ausm-validation-result>
+          }
         </div>
-        <vo-ausm-validation-result *ngFor="let result of validValidations" [result]="result">
-        </vo-ausm-validation-result>
-      </bc-expansion-panel>
-    </ng-container>
+      }
+    }
   </div>
-
-  <ng-container *ngIf="(summary.optionalValidationResults | validationGroup).length > 0">
-    <p class="mt-3 mb-2" translate>VALIDATION.PLAUSIBILISATION.HEADER</p>
-    <div *ngFor="let group of summary.optionalValidationResults | validationGroup" class="mb-2">
-      <h4 *ngIf="group.key" class="mb-1">{{ group.key }}</h4>
-      <vo-ausm-validation-result *ngFor="let result of group.value" [result]="result">
-      </vo-ausm-validation-result>
-    </div>
-  </ng-container>
-</div>
+}

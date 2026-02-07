@@ -5,10 +5,8 @@
  */
 
 import { BallotType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/vote_pb';
-import { DialogService, SnackbarService } from '@abraxas/voting-lib';
-import { Component, HostListener, ViewChild } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, inject, ViewChild, OnInit, OnDestroy } from '@angular/core';
+import { Params } from '@angular/router';
 import { ShortcutDialogComponent, ShortcutDialogData } from '../../../components/ballot-shortcut-dialog/shortcut-dialog.component';
 import {
   BallotBundleState,
@@ -21,8 +19,6 @@ import {
   VoteResultBallotQuestionAnswer,
   VoteResultBallotTieBreakQuestionAnswer,
 } from '../../../models';
-import { PermissionService } from '../../../services/permission.service';
-import { UserService } from '../../../services/user.service';
 import { VoteResultBundleService } from '../../../services/vote-result-bundle.service';
 import { VoteResultService } from '../../../services/vote-result.service';
 import { PoliticalBusinessBallotComponent } from '../../political-business-ballot/political-business-ballot.component';
@@ -34,7 +30,13 @@ import { BallotHeaderComponent } from '../../../components/ballot-header/ballot-
   styleUrls: ['./vote-ballot.component.scss'],
   standalone: false,
 })
-export class VoteBallotComponent extends PoliticalBusinessBallotComponent<VoteResult, PoliticalBusinessResultBundle, VoteResultBallot> {
+export class VoteBallotComponent
+  extends PoliticalBusinessBallotComponent<VoteResult, PoliticalBusinessResultBundle, VoteResultBallot>
+  implements OnInit, OnDestroy
+{
+  private readonly resultBundleService = inject(VoteResultBundleService);
+  private readonly resultService = inject(VoteResultService);
+
   public BallotType: typeof BallotType = BallotType;
 
   @ViewChild(BallotHeaderComponent)
@@ -42,19 +44,11 @@ export class VoteBallotComponent extends PoliticalBusinessBallotComponent<VoteRe
 
   public ballotResult?: BallotResult;
   public activeAnswer?: VoteResultBallotQuestionAnswer | VoteResultBallotTieBreakQuestionAnswer;
+  private readonly keyEventHandler: (event: KeyboardEvent) => void;
 
-  constructor(
-    route: ActivatedRoute,
-    router: Router,
-    dialog: DialogService,
-    toast: SnackbarService,
-    i18n: TranslateService,
-    userService: UserService,
-    permissionService: PermissionService,
-    private readonly resultBundleService: VoteResultBundleService,
-    private readonly resultService: VoteResultService,
-  ) {
-    super(userService, route, dialog, i18n, router, toast, permissionService);
+  constructor() {
+    super();
+    this.keyEventHandler = this.handleKeyCombinations.bind(this);
   }
 
   protected get deletedBallotLabel(): string {
@@ -66,37 +60,81 @@ export class VoteBallotComponent extends PoliticalBusinessBallotComponent<VoteRe
     this.hasChanges = true;
   }
 
-  @HostListener('document:keydown.control.alt.1', ['$event'])
-  // control + alt + 1 (not on the numeric keypad) converts to the char '¦'
-  @HostListener('document:keydown.control.alt.¦', ['$event'])
-  public setAnswerYes(event?: KeyboardEvent): void {
-    event?.preventDefault();
+  public async ngOnInit(): Promise<void> {
+    // We need to handle this event in the capturing phase, which the @HostListener cannot do.
+    // Otherwise, the event could be handled first by input elements and numbers could be typed out that are actually shortcuts.
+    // With this approach, we can handle the event first before it reaches the input element.
+    document.addEventListener('keydown', this.keyEventHandler, true);
+    await super.ngOnInit();
+  }
+
+  public ngOnDestroy(): void {
+    super.ngOnDestroy();
+    window.removeEventListener('keydown', this.keyEventHandler, true);
+  }
+
+  public handleKeyCombinations(event: KeyboardEvent): void {
+    // control + alt + 1 (not on the numeric keypad) converts to the char '¦'
+    if (event.key === '¦') {
+      this.setAnswerYes();
+      return;
+    }
+
+    // control + alt + 2 (not on the numeric keypad) converts to the char '@'
+    if (event.key === '@') {
+      this.setAnswerNo();
+      return;
+    }
+
+    // control + alt + 3 (not on the numeric keypad) converts to the char '#'
+    if (event.key === '#') {
+      this.setAnswerUnspecified();
+      return;
+    }
+
+    if (!event.ctrlKey || !event.altKey) {
+      return;
+    }
+
+    let handled = false;
+    if (event.key === '1') {
+      handled = true;
+      this.setAnswerYes();
+    } else if (event.key === '2') {
+      handled = true;
+      this.setAnswerNo();
+    } else if (event.key === '3') {
+      handled = true;
+      this.setAnswerUnspecified();
+    }
+
+    if (handled) {
+      // This only needs to be called for the numeric inputs.
+      // When doing this for the non-numerics inputs above, it would result in NaN being written in number input fields
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }
+
+  public setAnswerYes(): void {
     const result = this.trySetQuestionAnswer(BallotQuestionAnswer.BALLOT_QUESTION_ANSWER_YES);
     if (!result) {
       this.trySetTieBreakQuestionAnswer(TieBreakQuestionAnswer.TIE_BREAK_QUESTION_ANSWER_Q1);
     }
   }
 
-  @HostListener('document:keydown.control.alt.2', ['$event'])
-  // control + alt + 2 (not on the numeric keypad) converts to the char '@'
-  @HostListener('document:keydown.control.alt.@', ['$event'])
-  public setAnswerNo(event?: KeyboardEvent): void {
-    event?.preventDefault();
+  public setAnswerNo(): void {
     const result = this.trySetQuestionAnswer(BallotQuestionAnswer.BALLOT_QUESTION_ANSWER_NO);
     if (!result) {
       this.trySetTieBreakQuestionAnswer(TieBreakQuestionAnswer.TIE_BREAK_QUESTION_ANSWER_Q2);
     }
   }
 
-  @HostListener('document:keydown.control.alt.3', ['$event'])
-  // control + alt + 3 (not on the numeric keypad) converts to the char '#'
-  @HostListener('document:keydown.control.alt.#', ['$event'])
-  public setAnswerUnspecified(event?: KeyboardEvent): void {
+  public setAnswerUnspecified(): void {
     if (!this.ballotResult || this.ballotResult.ballot.ballotType === BallotType.BALLOT_TYPE_STANDARD_BALLOT) {
       return;
     }
 
-    event?.preventDefault();
     const result = this.trySetQuestionAnswer(BallotQuestionAnswer.BALLOT_QUESTION_ANSWER_UNSPECIFIED);
     if (!result) {
       this.trySetTieBreakQuestionAnswer(TieBreakQuestionAnswer.TIE_BREAK_QUESTION_ANSWER_UNSPECIFIED);
@@ -140,12 +178,13 @@ export class VoteBallotComponent extends PoliticalBusinessBallotComponent<VoteRe
     this.updateActiveAnswer();
   }
 
-  protected async createNewBallot(): Promise<VoteResultBallot> {
+  protected newBallot(): VoteResultBallot {
     this.ballot = {
       isNew: true,
-      number: this.currentMaxBallotNumber,
+      number: this.politicalBusinessResult!.entryParams?.automaticBallotNumberGeneration ? this.currentMaxBallotNumber : 0,
       questionAnswers: [],
       tieBreakQuestionAnswers: [],
+      logs: [],
     };
 
     if (this.ballotResult) {
@@ -181,10 +220,12 @@ export class VoteBallotComponent extends PoliticalBusinessBallotComponent<VoteRe
     this.ballotResult = await this.resultService.getBallotResult(params.ballotResultId);
     this.bundle = {
       countOfBallots: 0,
+      countOfModifiedBallots: 0,
       id: bundleId,
       state: BallotBundleState.BALLOT_BUNDLE_STATE_IN_PROCESS,
       number: this.route.snapshot.queryParams.bundleNumber,
       createdBy: await this.userService.getUser(),
+      ballotNumbers: [],
       ballotNumbersToReview: [],
       logs: [],
     };
@@ -192,7 +233,11 @@ export class VoteBallotComponent extends PoliticalBusinessBallotComponent<VoteRe
   }
 
   protected saveNewBallot(bundle: PoliticalBusinessResultBundle, ballot: VoteResultBallot): Promise<number> {
-    return this.resultBundleService.createBallot(bundle.id, ballot);
+    return this.resultBundleService.createBallot(
+      bundle.id,
+      ballot,
+      this.politicalBusinessResult!.entryParams!.automaticBallotNumberGeneration,
+    );
   }
 
   protected updateBallot(bundle: PoliticalBusinessResultBundle, ballot: VoteResultBallot): Promise<void> {

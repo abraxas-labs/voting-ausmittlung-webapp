@@ -10,7 +10,7 @@ import {
   ProportionalElectionUnionResultServicePromiseClient,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/proportional_election_union_result_service_grpc_web_pb';
 import { GrpcBackendService, GrpcEnvironment, GrpcStreamingService } from '@abraxas/voting-lib';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   DoubleProportionalResult,
@@ -45,7 +45,10 @@ export class ProportionalElectionUnionResultService extends GrpcStreamingService
   ProportionalElectionUnionResultServicePromiseClient,
   ProportionalElectionUnionResultServiceClient
 > {
-  constructor(grpcBackend: GrpcBackendService, @Inject(GRPC_ENV_INJECTION_TOKEN) env: GrpcEnvironment) {
+  constructor() {
+    const grpcBackend = inject(GrpcBackendService);
+    const env = inject<GrpcEnvironment>(GRPC_ENV_INJECTION_TOKEN);
+
     super(ProportionalElectionUnionResultServicePromiseClient, ProportionalElectionUnionResultServiceClient, env, grpcBackend);
   }
 

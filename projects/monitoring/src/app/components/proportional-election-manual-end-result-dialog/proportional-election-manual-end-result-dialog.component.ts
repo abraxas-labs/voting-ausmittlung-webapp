@@ -5,7 +5,7 @@
  */
 
 import { DialogService, EnumItemDescription, EnumUtil, SnackbarService } from '@abraxas/voting-lib';
-import { Component, Inject, ViewChild } from '@angular/core';
+import { Component, ViewChild, inject } from '@angular/core';
 import { MatStepper } from '@angular/material/stepper';
 import { TranslateService } from '@ngx-translate/core';
 import {
@@ -28,6 +28,12 @@ import {
   standalone: false,
 })
 export class ProportionalElectionManualEndResultDialogComponent {
+  private readonly i18n = inject(TranslateService);
+  private readonly toast = inject(SnackbarService);
+  private readonly dialogRef = inject<MatDialogRef<ProportionalElectionManualEndResultDialogData>>(MatDialogRef);
+  private readonly resultService = inject(ProportionalElectionResultService);
+  private readonly dialogService = inject(DialogService);
+
   @ViewChild(MatStepper, { static: true })
   public stepper!: MatStepper;
 
@@ -44,15 +50,10 @@ export class ProportionalElectionManualEndResultDialogComponent {
   public manualCandidateEndResults?: ProportionalElectionManualCandidateEndResult[];
   public hasAnyOpenRequiredCandidateStates: boolean = true;
 
-  constructor(
-    enumUtil: EnumUtil,
-    private readonly i18n: TranslateService,
-    private readonly toast: SnackbarService,
-    private readonly dialogRef: MatDialogRef<ProportionalElectionManualEndResultDialogData>,
-    private readonly resultService: ProportionalElectionResultService,
-    private readonly dialogService: DialogService,
-    @Inject(MAT_DIALOG_DATA) dialogData: ProportionalElectionManualEndResultDialogData,
-  ) {
+  constructor() {
+    const enumUtil = inject(EnumUtil);
+    const dialogData = inject<ProportionalElectionManualEndResultDialogData>(MAT_DIALOG_DATA);
+
     this.lists = dialogData.lists;
     this.proportionalElectionId = dialogData.proportionalElectionId;
     this.listLotDecisions = dialogData.listLotDecisions;

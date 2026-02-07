@@ -14,7 +14,7 @@ import {
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/proportional_election_end_result_pb';
 import { ProportionalElectionCandidateEndResultState } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/proportional_election_end_result_pb';
 import { PoliticalBusinessCountOfVoters } from './count-of-voters.model';
-import { ElectionEndResultAvailableLotDecision } from './election-lot-decision.model';
+import { ElectionEndResultAvailableLotDecision, ElectionLotDecisionState } from './election-lot-decision.model';
 import { PoliticalBusinessEndResult } from './political-business-end-result.model';
 import { ProportionalElectionCandidateResultSubTotal, ProportionalElectionListResultSubTotal } from './proportional-election-result.model';
 import {
@@ -41,6 +41,8 @@ export interface ProportionalElectionEndResult extends PoliticalBusinessEndResul
   manualEndResultRequired: boolean;
   mandateDistributionTriggered: boolean;
   listLotDecisions: ProportionalElectionEndResultListLotDecision[];
+  lotDecisionState: ElectionLotDecisionState;
+  hasOpenRequiredLotDecisions: boolean;
 }
 
 export interface ProportionalElectionListEndResult {
@@ -55,6 +57,7 @@ export interface ProportionalElectionListEndResult {
   candidateEndResults: ProportionalElectionCandidateEndResult[];
   listUnion?: ProportionalElectionListUnion;
   subListUnion?: ProportionalElectionListUnion;
+  lotDecisionState: ElectionLotDecisionState;
   hasOpenRequiredLotDecisions: boolean;
 }
 

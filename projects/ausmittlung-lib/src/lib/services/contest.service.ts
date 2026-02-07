@@ -13,7 +13,7 @@ import {
   ListContestSummariesRequest,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/contest_requests_pb';
 import { GrpcBackendService, GrpcEnvironment, GrpcService } from '@abraxas/voting-lib';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ContestCantonDefaults, CountingCircle, DomainOfInfluence, DomainOfInfluenceProto } from '../models';
 import { Contest, ContestCantonDefaultsProto, ContestProto, ContestSummary, ContestSummaryProto } from '../models/contest.model';
 import { GRPC_ENV_INJECTION_TOKEN } from './tokens';
@@ -23,7 +23,10 @@ import { groupBySingle } from './utils/array.utils';
   providedIn: 'root',
 })
 export class ContestService extends GrpcService<ContestServicePromiseClient> {
-  constructor(grpcBackend: GrpcBackendService, @Inject(GRPC_ENV_INJECTION_TOKEN) env: GrpcEnvironment) {
+  constructor() {
+    const grpcBackend = inject(GrpcBackendService);
+    const env = inject<GrpcEnvironment>(GRPC_ENV_INJECTION_TOKEN);
+
     super(ContestServicePromiseClient, env, grpcBackend);
   }
 

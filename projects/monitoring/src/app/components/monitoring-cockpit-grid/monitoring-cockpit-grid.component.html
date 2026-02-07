@@ -29,7 +29,7 @@
         filterValueExpr="value"
         sort
         *headerCellDef
-      >
+        >
         {{ 'MONITORING_COCKPIT.STATE' | translate }}
       </bc-header-cell>
       <bc-data-cell *dataCellDef="let element">
@@ -42,142 +42,150 @@
       <bc-data-cell *dataCellDef="let element">{{ element.countingCircleWithDetails.countingCircle.name }}</bc-data-cell>
     </ng-container>
 
-    <ng-container
-      *ngFor="let politicalBusiness of filteredPoliticalBusinesses"
-      [columnDef]="this.politicalBusinessColumnPrefix + politicalBusiness.id"
-    >
-      <bc-header-cell
-        filter
-        filterType="list"
-        [filterItems]="stateList"
-        filterDisplayExpr="description"
-        filterValueExpr="value"
-        sort
-        *headerCellDef
-      >
-        <span truncateWithTooltip tooltip>
-          {{ politicalBusiness.title }}
-        </span>
-      </bc-header-cell>
-      <bc-data-cell *dataCellDef="let element">
-        <app-monitoring-cockpit-grid-entry
-          (openDetail)="openDetail(element.countingCircleWithDetails.countingCircle, politicalBusiness)"
-          [results]="[element.resultsByPoliticalBusinessId[politicalBusiness.id]]"
-          [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
-          [disabled]="publishing"
-          [showPublishSwitch]="
-            manualPublishResultsEnabled && politicalBusiness.domainOfInfluence?.type < domainOfInfluenceTypes.DOMAIN_OF_INFLUENCE_TYPE_MU
-          "
-          [publishResultsBeforeAuditedTentatively]="publishResultsBeforeAuditedTentatively"
-          (publishedChanged)="
-            updatePublished($event, politicalBusiness.businessType, [element.resultsByPoliticalBusinessId[politicalBusiness.id]])
-          "
+    @for (politicalBusiness of filteredPoliticalBusinesses; track politicalBusiness) {
+      <ng-container
+        [columnDef]="this.politicalBusinessColumnPrefix + politicalBusiness.id"
         >
-        </app-monitoring-cockpit-grid-entry>
-      </bc-data-cell>
-    </ng-container>
+        <bc-header-cell
+          filter
+          filterType="list"
+          [filterItems]="stateList"
+          filterDisplayExpr="description"
+          filterValueExpr="value"
+          sort
+          *headerCellDef
+          >
+          <span truncateWithTooltip tooltip>
+            {{ politicalBusiness.title }}
+          </span>
+        </bc-header-cell>
+        <bc-data-cell *dataCellDef="let element">
+          <app-monitoring-cockpit-grid-entry
+            (openDetail)="openDetail(element.countingCircleWithDetails.countingCircle, politicalBusiness)"
+            [results]="[element.resultsByPoliticalBusinessId[politicalBusiness.id]]"
+            [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
+            [disabled]="publishing"
+            [showPublishSwitch]="
+              manualPublishResultsEnabled && politicalBusiness.domainOfInfluence && politicalBusiness.domainOfInfluence.type < domainOfInfluenceTypes.DOMAIN_OF_INFLUENCE_TYPE_MU
+            "
+            [publishResultsBeforeAuditedTentatively]="publishResultsBeforeAuditedTentatively"
+            (publishedChanged)="
+              updatePublished($event, politicalBusiness.businessType, [element.resultsByPoliticalBusinessId[politicalBusiness.id]])
+            "
+            >
+          </app-monitoring-cockpit-grid-entry>
+        </bc-data-cell>
+      </ng-container>
+    }
 
-    <ng-container
-      *ngFor="let politicalBusinessUnion of filteredPoliticalBusinessUnions"
-      [columnDef]="this.politicalBusinessColumnPrefix + politicalBusinessUnion.id"
-    >
-      <bc-header-cell
-        filter
-        filterType="list"
-        [filterItems]="stateList"
-        filterDisplayExpr="description"
-        filterValueExpr="value"
-        sort
-        *headerCellDef
-      >
-        <span truncateWithTooltip tooltip>
-          {{ politicalBusinessUnion.description }}
-        </span>
-      </bc-header-cell>
-      <bc-data-cell *dataCellDef="let element">
-        <app-monitoring-cockpit-grid-entry
-          (openDetail)="openDetail(element.countingCircleWithDetails.countingCircle, undefined)"
-          [results]="element.resultsByPoliticalBusinessUnionId[politicalBusinessUnion.id] ?? []"
-          [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
-          [disabled]="publishing"
-          [showPublishSwitch]="
-            manualPublishResultsEnabled &&
-            politicalBusinessUnion.politicalBusinesses[0].domainOfInfluence.type < domainOfInfluenceTypes.DOMAIN_OF_INFLUENCE_TYPE_MU
-          "
-          [publishResultsBeforeAuditedTentatively]="publishResultsBeforeAuditedTentatively"
-          (publishedChanged)="
-            updatePublished(
-              $event,
-              politicalBusinessUnion.politicalBusinesses[0].businessType,
-              element.resultsByPoliticalBusinessUnionId[politicalBusinessUnion.id] ?? []
-            )
-          "
+    @for (politicalBusinessUnion of filteredPoliticalBusinessUnions; track politicalBusinessUnion) {
+      <ng-container
+        [columnDef]="this.politicalBusinessColumnPrefix + politicalBusinessUnion.id"
         >
-        </app-monitoring-cockpit-grid-entry>
-      </bc-data-cell>
-    </ng-container>
+        <bc-header-cell
+          filter
+          filterType="list"
+          [filterItems]="stateList"
+          filterDisplayExpr="description"
+          filterValueExpr="value"
+          sort
+          *headerCellDef
+          >
+          <span truncateWithTooltip tooltip>
+            {{ politicalBusinessUnion.description }}
+          </span>
+        </bc-header-cell>
+        <bc-data-cell *dataCellDef="let element">
+          <app-monitoring-cockpit-grid-entry
+            (openDetail)="openDetail(element.countingCircleWithDetails.countingCircle, undefined)"
+            [results]="element.resultsByPoliticalBusinessUnionId[politicalBusinessUnion.id] ?? []"
+            [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
+            [disabled]="publishing"
+            [showPublishSwitch]="
+              manualPublishResultsEnabled &&
+              politicalBusinessUnion.politicalBusinesses[0].domainOfInfluence &&
+              politicalBusinessUnion.politicalBusinesses[0].domainOfInfluence.type < domainOfInfluenceTypes.DOMAIN_OF_INFLUENCE_TYPE_MU
+            "
+            [publishResultsBeforeAuditedTentatively]="publishResultsBeforeAuditedTentatively"
+            (publishedChanged)="
+              updatePublished(
+                $event,
+                politicalBusinessUnion.politicalBusinesses[0].businessType,
+                element.resultsByPoliticalBusinessUnionId[politicalBusinessUnion.id] ?? []
+              )
+            "
+            >
+          </app-monitoring-cockpit-grid-entry>
+        </bc-data-cell>
+      </ng-container>
+    }
 
     <ng-container [columnDef]="notOwnedPoliticalBusinessColumn">
       <bc-header-cell filter sort *headerCellDef>{{ 'MONITORING_COCKPIT.NOT_OWNED_POLITICAL_BUSINESS.TITLE' | translate }}</bc-header-cell>
       <bc-data-cell *dataCellDef="let element">
-        <div
-          *ngIf="element.resultsByCountingCircleId[element.countingCircleWithDetails.countingCircle.id] as results"
-          class="not-owned-political-business-container"
-          (click)="openDetail(element.countingCircleWithDetails.countingCircle, undefined)"
-        >
-          <span>{{
-            'MONITORING_COCKPIT.NOT_OWNED_POLITICAL_BUSINESS.' + (results.length > 1 ? 'MULTIPLE' : 'SINGLE')
+        @if (element.resultsByCountingCircleId[element.countingCircleWithDetails.countingCircle.id]; as results) {
+          <div
+            class="not-owned-political-business-container"
+            (click)="openDetail(element.countingCircleWithDetails.countingCircle, undefined)"
+            >
+            <span>{{
+              'MONITORING_COCKPIT.NOT_OWNED_POLITICAL_BUSINESS.' + (results.length > 1 ? 'MULTIPLE' : 'SINGLE')
               | translate: { count: results.length }
-          }}</span>
-        </div>
+            }}</span>
+          </div>
+        }
       </bc-data-cell>
     </ng-container>
 
-    <ng-container
-      *ngFor="let politicalBusiness of filteredPoliticalBusinesses"
-      [columnDef]="this.statusBarColumnPrefix + politicalBusiness.id"
-    >
-      <bc-header-cell *headerCellDef>
-        <app-monitoring-cockpit-button-container
-          [politicalBusiness]="politicalBusiness"
-          [readOnly]="readOnly || toCheckStateFilterIsSelected || filter.active.length > 0"
-          [countingCircleResults]="countingCircleResults"
-          [filteredCountingCircleResults]="filteredCountingCircleResults"
-          [contestCantonDefaults]="contestCantonDefaults"
+    @for (politicalBusiness of filteredPoliticalBusinesses; track politicalBusiness) {
+      <ng-container
+        [columnDef]="this.statusBarColumnPrefix + politicalBusiness.id"
         >
-        </app-monitoring-cockpit-button-container>
-        <app-monitoring-cockpit-grid-status-bar
-          *ngIf="stateFilter.length === 0"
-          [filteredCountingCircleResults]="filteredCountingCircleResults"
-          [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
-          [politicalBusinessId]="politicalBusiness.id"
-        >
-        </app-monitoring-cockpit-grid-status-bar>
-      </bc-header-cell>
-    </ng-container>
+        <bc-header-cell *headerCellDef>
+          <app-monitoring-cockpit-button-container
+            [politicalBusiness]="politicalBusiness"
+            [readOnly]="readOnly || toCheckStateFilterIsSelected || filter.active.length > 0"
+            [countingCircleResults]="countingCircleResults"
+            [filteredCountingCircleResults]="filteredCountingCircleResults"
+            [contestCantonDefaults]="contestCantonDefaults"
+            >
+          </app-monitoring-cockpit-button-container>
+          @if (stateFilter.length === 0) {
+            <app-monitoring-cockpit-grid-status-bar
+              [filteredCountingCircleResults]="filteredCountingCircleResults"
+              [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
+              [politicalBusinessId]="politicalBusiness.id"
+              >
+            </app-monitoring-cockpit-grid-status-bar>
+          }
+        </bc-header-cell>
+      </ng-container>
+    }
 
-    <ng-container
-      *ngFor="let politicalBusinessUnion of filteredPoliticalBusinessUnions"
-      [columnDef]="this.statusBarColumnPrefix + politicalBusinessUnion.id"
-    >
-      <bc-header-cell *headerCellDef>
-        <app-monitoring-cockpit-button-container
-          [politicalBusinessUnion]="politicalBusinessUnion"
-          [readOnly]="readOnly || stateFilter.length > 0 || filter.active.length > 0"
-          [countingCircleResults]="countingCircleResults"
-          [filteredCountingCircleResults]="filteredCountingCircleResults"
-          [contestCantonDefaults]="contestCantonDefaults"
+    @for (politicalBusinessUnion of filteredPoliticalBusinessUnions; track politicalBusinessUnion) {
+      <ng-container
+        [columnDef]="this.statusBarColumnPrefix + politicalBusinessUnion.id"
         >
-        </app-monitoring-cockpit-button-container>
-        <app-monitoring-cockpit-grid-status-bar
-          *ngIf="stateFilter.length === 0"
-          [filteredCountingCircleResults]="filteredCountingCircleResults"
-          [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
-          [politicalBusinessUnionId]="politicalBusinessUnion.id"
-        >
-        </app-monitoring-cockpit-grid-status-bar>
-      </bc-header-cell>
-    </ng-container>
+        <bc-header-cell *headerCellDef>
+          <app-monitoring-cockpit-button-container
+            [politicalBusinessUnion]="politicalBusinessUnion"
+            [readOnly]="readOnly || stateFilter.length > 0 || filter.active.length > 0"
+            [countingCircleResults]="countingCircleResults"
+            [filteredCountingCircleResults]="filteredCountingCircleResults"
+            [contestCantonDefaults]="contestCantonDefaults"
+            >
+          </app-monitoring-cockpit-button-container>
+          @if (stateFilter.length === 0) {
+            <app-monitoring-cockpit-grid-status-bar
+              [filteredCountingCircleResults]="filteredCountingCircleResults"
+              [stateDescriptionsByState]="contestCantonDefaults?.countingCircleResultStateDescriptionsByState"
+              [politicalBusinessUnionId]="politicalBusinessUnion.id"
+              >
+            </app-monitoring-cockpit-grid-status-bar>
+          }
+        </bc-header-cell>
+      </ng-container>
+    }
 
     <ng-container [columnDef]="emptySubHeaderColumn">
       <bc-header-cell *headerCellDef></bc-header-cell>
@@ -192,7 +200,7 @@
       selectionRow
       [selectionRowValue]="row"
       (click)="openDetail(row.countingCircleWithDetails.countingCircle)"
-    >
+      >
     </bc-data-row>
     <ng-template noDataRow>
       <tr class="bc-row-data">

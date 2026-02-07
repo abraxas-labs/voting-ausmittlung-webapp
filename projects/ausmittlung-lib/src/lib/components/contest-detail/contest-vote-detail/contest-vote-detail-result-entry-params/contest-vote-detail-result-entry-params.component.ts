@@ -7,7 +7,7 @@
 import { RadioButton } from '@abraxas/base-components';
 import { VoteReviewProcedure } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/vote_pb';
 import { EnumUtil } from '@abraxas/voting-lib';
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { VoteResultEntryParams } from '../../../../models';
 
@@ -18,6 +18,8 @@ import { VoteResultEntryParams } from '../../../../models';
   standalone: false,
 })
 export class ContestVoteDetailResultEntryParamsComponent {
+  private readonly i18n = inject(TranslateService);
+
   @Input()
   public resultEntryParams!: VoteResultEntryParams;
 
@@ -25,12 +27,12 @@ export class ContestVoteDetailResultEntryParamsComponent {
   public enforceReviewProcedure: boolean = true;
 
   public automaticBallotBundleNumberGenerationChoices: RadioButton[];
+  public automaticBallotNumberGenerationChoices: RadioButton[];
   public reviewProcedureChoices: RadioButton[];
 
-  constructor(
-    private readonly i18n: TranslateService,
-    enumUtil: EnumUtil,
-  ) {
+  constructor() {
+    const enumUtil = inject(EnumUtil);
+
     this.automaticBallotBundleNumberGenerationChoices = [
       {
         value: true,
@@ -39,6 +41,16 @@ export class ContestVoteDetailResultEntryParamsComponent {
       {
         value: false,
         displayText: this.i18n.instant('VOTE.RESULT_ENTRY.BALLOT_BUNDLE_NUMBER_GENERATION.MANUAL'),
+      },
+    ];
+    this.automaticBallotNumberGenerationChoices = [
+      {
+        value: true,
+        displayText: this.i18n.instant('VOTE.RESULT_ENTRY.BALLOT_NUMBER_GENERATION.AUTOMATIC'),
+      },
+      {
+        value: false,
+        displayText: this.i18n.instant('VOTE.RESULT_ENTRY.BALLOT_NUMBER_GENERATION.MANUAL'),
       },
     ];
     this.reviewProcedureChoices = enumUtil

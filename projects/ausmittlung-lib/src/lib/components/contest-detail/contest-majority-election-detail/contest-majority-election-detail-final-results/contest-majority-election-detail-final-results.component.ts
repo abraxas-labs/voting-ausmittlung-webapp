@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
 import { MajorityElection, MajorityElectionResult } from '../../../../models';
 import { BallotCountInputComponent } from '../../../ballot-count-input/ballot-count-input.component';
 import {
@@ -20,6 +20,8 @@ import { DialogService } from '@abraxas/voting-lib';
   standalone: false,
 })
 export class ContestMajorityElectionDetailFinalResultsComponent {
+  private readonly dialogService = inject(DialogService);
+
   @Input()
   public readonly: boolean = true;
 
@@ -43,8 +45,6 @@ export class ContestMajorityElectionDetailFinalResultsComponent {
 
   @ViewChild(BallotCountInputComponent)
   private ballotCountInputComponent!: BallotCountInputComponent;
-
-  constructor(private readonly dialogService: DialogService) {}
 
   public setFocus(): void {
     this.ballotCountInputComponent.setFocus();

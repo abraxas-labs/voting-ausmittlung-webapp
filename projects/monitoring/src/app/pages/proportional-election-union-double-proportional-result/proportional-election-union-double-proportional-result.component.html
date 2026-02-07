@@ -1,5 +1,5 @@
 <vo-lib-page [contentLoading]="loading"
-             header="DOUBLE_PROPORTIONAL_RESULT.TITLE">
+  header="DOUBLE_PROPORTIONAL_RESULT.TITLE">
 
   <vo-lib-page-header header>
     <div left>
@@ -15,45 +15,54 @@
     <vo-ausm-contest-header center [contest]="doubleProportionalResult?.contest"></vo-ausm-contest-header>
   </vo-lib-page-header>
 
-  <div class="mb-3" *ngIf="doubleProportionalResult && steps">
-    <div class="stepper">
-      <div></div>
-      <!-- RM Comment -->
-      <mat-horizontal-stepper labelPosition="bottom"
-                              (selectionChange)="selectedStepIndex = $event.selectedIndex">
-        <ng-template matStepperIcon="number" let-index="index">
-          <ng-container *ngTemplateOutlet="stepperHeader; context: {$implicit: index}"></ng-container>
-        </ng-template>
-        <ng-template matStepperIcon="edit" let-index="index">
-          <ng-container *ngTemplateOutlet="stepperHeader; context: {$implicit: index}"></ng-container>
-        </ng-template>
-        <mat-step *ngFor="let step of steps"
-                  [hasError]="step.hasError"
-                  [completed]="step.completed"
-                  [editable]="true">
-          <ng-template matStepLabel>
-            <span>{{step.label | translate}}</span>
+  @if (doubleProportionalResult && steps) {
+    <div class="mb-3">
+      <div class="stepper">
+        <div></div>
+        <mat-horizontal-stepper labelPosition="bottom"
+          (selectionChange)="selectedStepIndex = $event.selectedIndex">
+          <ng-template matStepperIcon="number" let-index="index">
+            <ng-container *ngTemplateOutlet="stepperHeader; context: {$implicit: index}"></ng-container>
           </ng-template>
-        </mat-step>
-      </mat-horizontal-stepper>
-
-      <ng-template #stepperHeader let-index>
-        <ng-container *ngIf="!steps[index].hasError; else stepHasError">
-          <mat-icon>done</mat-icon>
-        </ng-container>
-        <ng-template #stepHasError>
-          <mat-icon>warning</mat-icon>
+          <ng-template matStepperIcon="edit" let-index="index">
+            <ng-container *ngTemplateOutlet="stepperHeader; context: {$implicit: index}"></ng-container>
+          </ng-template>
+          @for (step of steps; track step) {
+            <mat-step
+              [hasError]="step.hasError"
+              [completed]="false"
+              [editable]="true">
+              <ng-template matStepLabel>
+                <span>{{step.label | translate}}</span>
+              </ng-template>
+            </mat-step>
+          }
+        </mat-horizontal-stepper>
+        <ng-template #stepperHeader let-index>
+          @if (!steps[index].hasError) {
+            <mat-icon>done</mat-icon>
+          } @else {
+            <mat-icon>warning</mat-icon>
+          }
         </ng-template>
-      </ng-template>
-    </div>
+      </div>
 
-    <ng-container *ngIf="doubleProportionalResult && steps">
-      <ng-container *ngIf="selectedStepIndex === 0; else subApportionmentView">
-        <app-double-proportional-result-super-apportionment [doubleProportionalResult]="doubleProportionalResult" (update)="handleApportionmentUpdate()"></app-double-proportional-result-super-apportionment>
-      </ng-container>
-      <ng-template #subApportionmentView>
-        <app-double-proportional-result-sub-apportionment [doubleProportionalResult]="doubleProportionalResult" (update)="handleApportionmentUpdate()"></app-double-proportional-result-sub-apportionment>
-      </ng-template>
-    </ng-container>
-  </div>
+      @if (lotDecisionUpdating) {
+      <div class="calculation-spinner">
+        <bc-spinner></bc-spinner>
+      </div>
+      }
+      @if (doubleProportionalResult && steps) {
+        @if (selectedStepIndex === 0) {
+          <app-double-proportional-result-super-apportionment
+            [doubleProportionalResult]="doubleProportionalResult"
+            (update)="handleApportionmentUpdate()"
+            [readonly]="doubleProportionalResult.contest.locked || lotDecisionUpdating"
+          ></app-double-proportional-result-super-apportionment>
+        } @else {
+          <app-double-proportional-result-sub-apportionment [doubleProportionalResult]="doubleProportionalResult" (update)="handleApportionmentUpdate()"></app-double-proportional-result-sub-apportionment>
+        }
+      }
+    </div>
+  }
 </vo-lib-page>

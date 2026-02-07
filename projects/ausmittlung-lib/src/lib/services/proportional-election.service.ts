@@ -11,7 +11,7 @@ import {
   ListProportionalElectionCandidatesRequest,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/proportional_election_requests_pb';
 import { GrpcBackendService, GrpcEnvironment, GrpcService } from '@abraxas/voting-lib';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   ProportionalElection,
   ProportionalElectionCandidate,
@@ -28,7 +28,10 @@ import { GRPC_ENV_INJECTION_TOKEN } from './tokens';
 export class ProportionalElectionService extends GrpcService<ProportionalElectionServicePromiseClient> {
   private candidatesCache: { [id: string]: ProportionalElectionCandidate[] } = {};
 
-  constructor(grpcBackend: GrpcBackendService, @Inject(GRPC_ENV_INJECTION_TOKEN) env: GrpcEnvironment) {
+  constructor() {
+    const grpcBackend = inject(GrpcBackendService);
+    const env = inject<GrpcEnvironment>(GRPC_ENV_INJECTION_TOKEN);
+
     super(ProportionalElectionServicePromiseClient, env, grpcBackend);
   }
 
@@ -54,6 +57,10 @@ export class ProportionalElectionService extends GrpcService<ProportionalElectio
       mandateAlgorithm ===
       ProportionalElectionMandateAlgorithm.PROPORTIONAL_ELECTION_MANDATE_ALGORITHM_DOUBLE_PROPORTIONAL_1_DOI_0_DOI_QUORUM
     );
+  }
+
+  public static isDoubleProportional(mandateAlgorithm: ProportionalElectionMandateAlgorithm) {
+    return this.isUnionDoubleProportional(mandateAlgorithm) || this.isNonUnionDoubleProportional(mandateAlgorithm);
   }
 
   public async getLists(electionId: string): Promise<ProportionalElectionList[]> {

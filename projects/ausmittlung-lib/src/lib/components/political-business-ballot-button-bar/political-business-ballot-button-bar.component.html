@@ -1,19 +1,23 @@
 <div>
-  <bc-button *ngIf="!readonly"
-             class="mr-3"
-             [disabled]="disabled || actionExecuting || !nextBallotEnabled"
-             (buttonClick)="nextBallot.emit()"
-             [label]="labelNext | translate"
-             variant="primary"></bc-button>
-  <vo-lib-inline-spinner *ngIf="!readonly"
-                         class="ml-3"
-                         [loading]="actionExecuting"
-                         position="right">
-    <bc-button [disabled]="readonly || disabled || actionExecuting || !canSubmitBundle"
-               [label]="'ELECTION.BALLOT_DETAIL.SUBMIT_BUNDLE' | translate"
-               (buttonClick)="submitBundle.emit()"></bc-button>
-  </vo-lib-inline-spinner>
+  @if (!readonly) {
+    <bc-button
+      class="mr-3"
+      [disabled]="disabled || actionExecuting || !nextBallotEnabled"
+      (buttonClick)="nextBallot.emit()"
+      [label]="labelNext | translate"
+    variant="primary"></bc-button>
+  }
+  @if (!readonly) {
+    <vo-lib-inline-spinner
+      class="ml-3"
+      [loading]="actionExecuting"
+      position="right">
+      <bc-button [disabled]="readonly || disabled || actionExecuting || !canSubmitBundle"
+        [label]="'ELECTION.BALLOT_DETAIL.SUBMIT_BUNDLE' | translate"
+        (buttonClick)="submitBundle.emit()"></bc-button>
+    </vo-lib-inline-spinner>
+  }
 </div>
 <bc-button [disabled]="disabled || actionExecuting"
-           [label]="'APP.BACK' | translate"
-           (buttonClick)="back.emit()"></bc-button>
+  [label]="'APP.BACK' | translate"
+  (buttonClick)="back.emit()"></bc-button>

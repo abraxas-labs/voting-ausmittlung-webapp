@@ -1,0 +1,13 @@
+bc-readonly {
+  width: fit-content;
+}
+
+:host {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem;
+}
+
+.full-column {
+  grid-column: span 2;
+}

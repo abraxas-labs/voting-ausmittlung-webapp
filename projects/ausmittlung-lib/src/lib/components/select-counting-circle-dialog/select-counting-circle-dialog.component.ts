@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, Inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CountingCircle } from '../../models';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
@@ -15,12 +15,13 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   standalone: false,
 })
 export class SelectCountingCircleDialogComponent {
+  private readonly dialogRef = inject<MatDialogRef<SelectCountingCircleDialogData, SelectCountingCircleDialogResult>>(MatDialogRef);
+
   public readonly countingCircles: CountingCircle[];
 
-  constructor(
-    private readonly dialogRef: MatDialogRef<SelectCountingCircleDialogData, SelectCountingCircleDialogResult>,
-    @Inject(MAT_DIALOG_DATA) dialogData: SelectCountingCircleDialogData,
-  ) {
+  constructor() {
+    const dialogData = inject<SelectCountingCircleDialogData>(MAT_DIALOG_DATA);
+
     this.countingCircles = dialogData.countingCircles;
   }
 

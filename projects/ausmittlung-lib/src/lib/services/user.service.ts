@@ -5,17 +5,17 @@
  */
 
 import { AuthenticationService } from '@abraxas/base-components';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { User } from '../models';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
+  private readonly auth = inject(AuthenticationService);
+
   // user change needs a reload of the page, no extra handling needed
   private cachedUser?: User;
-
-  constructor(private readonly auth: AuthenticationService) {}
 
   public async getUser(): Promise<User> {
     if (this.cachedUser) {

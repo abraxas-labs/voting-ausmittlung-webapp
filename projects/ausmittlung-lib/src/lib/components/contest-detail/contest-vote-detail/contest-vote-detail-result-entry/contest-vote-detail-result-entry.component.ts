@@ -6,7 +6,7 @@
 
 import { RadioButton } from '@abraxas/base-components';
 import { EnumUtil } from '@abraxas/voting-lib';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { isEqual } from 'lodash';
 import { Vote, VoteResultEntry, VoteResultEntryParams } from '../../../../models';
 import { VoteResultService } from '../../../../services/vote-result.service';
@@ -18,6 +18,9 @@ import { VoteResultService } from '../../../../services/vote-result.service';
   standalone: false,
 })
 export class ContestVoteDetailResultEntryComponent implements OnInit {
+  private readonly enums = inject(EnumUtil);
+  private readonly voteResultService = inject(VoteResultService);
+
   public readonly resultEntries: typeof VoteResultEntry = VoteResultEntry;
 
   public readonly resultEntryVariants: RadioButton[];
@@ -56,10 +59,9 @@ export class ContestVoteDetailResultEntryComponent implements OnInit {
   private originalResultEntry: VoteResultEntry = VoteResultEntry.VOTE_RESULT_ENTRY_UNSPECIFIED;
   private originalResultEntryParams!: VoteResultEntryParams;
 
-  constructor(
-    private readonly enums: EnumUtil,
-    private readonly voteResultService: VoteResultService,
-  ) {
+  constructor() {
+    const enums = this.enums;
+
     this.resultEntryVariants = enums
       .getArrayWithDescriptions<VoteResultEntry>(VoteResultEntry, 'VOTE.RESULT_ENTRY.LONG.')
       .map(x => ({ displayText: x.description, value: x.value }) as RadioButton);
@@ -74,10 +76,12 @@ export class ContestVoteDetailResultEntryComponent implements OnInit {
     this.resultEntryParams = { ...this.resultEntryParams };
 
     if (this.isInitialSetup || !this.resultEntryParams) {
-      const { ballotBundleSampleSizePercent, automaticBallotBundleNumberGeneration, reviewProcedure } = this.vote;
+      const { ballotBundleSampleSizePercent, automaticBallotBundleNumberGeneration, automaticBallotNumberGeneration, reviewProcedure } =
+        this.vote;
       this.resultEntryParams = {
         ballotBundleSampleSizePercent,
         automaticBallotBundleNumberGeneration,
+        automaticBallotNumberGeneration,
         reviewProcedure,
       };
     }

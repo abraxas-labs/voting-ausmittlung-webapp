@@ -1,42 +1,61 @@
 <vo-lib-page [contentLoading]="loading">
-  <vo-lib-page-header header *ngIf="resultOverview">
-    <vo-ausm-breadcrumbs left [items]="[{name: 'MONITORING_COCKPIT.TITLE'}]"></vo-ausm-breadcrumbs>
-    <vo-ausm-contest-header center [contest]="resultOverview?.contest"></vo-ausm-contest-header>
-    <div right>
-      <bc-button *ngIf="resultOverview && !resultOverview.contest.locked && exportConfigs.length > 0"
-                 variant="tertiary"
-                 [label]="'CONTEST.DETAIL.EXPORT_COCKPIT' | translate"
-                 (buttonClick)="exportCockpit()"></bc-button>
-      <bc-button class="ml-2"
-                 variant="tertiary"
-                 [label]="'CONTEST.DETAIL.EXPORT' | translate"
-                 (buttonClick)="export()"></bc-button>
-      <bc-button *ngIf="resultOverview && !resultOverview.contest.locked && resultOverview.contest.eVoting && resultOverview.currentTenantIsContestManager"
-                 class="ml-2"
-                 variant="tertiary"
-                 [label]="'CONTEST.DETAIL.IMPORT' | translate"
-                 (buttonClick)="import()"></bc-button>
-    </div>
-  </vo-lib-page-header>
+  @if (resultOverview) {
+    <vo-lib-page-header header>
+      <vo-ausm-breadcrumbs left [items]="[{name: 'MONITORING_COCKPIT.TITLE'}]"></vo-ausm-breadcrumbs>
+      <vo-ausm-contest-header center [contest]="resultOverview?.contest"></vo-ausm-contest-header>
+      <div right>
+        @if (resultOverview && !resultOverview.contest.locked && exportConfigs.length > 0) {
+          <bc-button
+            variant="tertiary"
+            [label]="'CONTEST.DETAIL.EXPORT_COCKPIT' | translate"
+            (buttonClick)="exportCockpit()"></bc-button>
+        }
+        <bc-button class="ml-2"
+          variant="tertiary"
+          [label]="'CONTEST.DETAIL.EXPORT' | translate"
+          (buttonClick)="export()"></bc-button>
+        @if (resultOverview && !resultOverview.contest.locked && resultOverview.contest.eVoting && resultOverview.currentTenantIsContestManager) {
+          <bc-button
+            class="ml-2"
+            variant="tertiary"
+            [label]="'CONTEST.DETAIL.IMPORT' | translate"
+            (buttonClick)="import()"></bc-button>
+        }
+      </div>
+    </vo-lib-page-header>
+  }
 
-  <bc-tab-bar *ngIf="resultOverview?.currentTenantIsContestManager; else monitoringCockpitGrid" (selectedChange)="tabChanged($event)" [selectedIndex]="initialSelectedTab" [rounded]="true">
-    <bc-tab [label]="'MONITORING_COCKPIT.TAB_MONITORING' | translate">
-      <ng-container *ngTemplateOutlet="monitoringCockpitGrid"></ng-container>
-    </bc-tab>
-    <bc-tab [label]="'MONITORING_COCKPIT.TAB_POLITICAL_BUSINESS_OVERVIEW' | translate">
-      <app-monitoring-political-businesses-overview *ngIf="resultOverview" [resultOverview]="resultOverview">
-      </app-monitoring-political-businesses-overview>
-    </bc-tab>
-  </bc-tab-bar>
+  @if (resultOverview?.currentTenantIsContestManager) {
+    <bc-tab-bar (selectedChange)="tabChanged($event)" [selectedIndex]="initialSelectedTab" [rounded]="true">
+      <bc-tab [label]="'MONITORING_COCKPIT.TAB_MONITORING' | translate">
+        <ng-container *ngTemplateOutlet="monitoringCockpitGrid"></ng-container>
+      </bc-tab>
+      <bc-tab [label]="'MONITORING_COCKPIT.TAB_POLITICAL_BUSINESS_OVERVIEW' | translate">
+        @if (resultOverview) {
+          <app-monitoring-political-businesses-overview [resultOverview]="resultOverview">
+          </app-monitoring-political-businesses-overview>
+        }
+      </bc-tab>
+    </bc-tab-bar>
+  } @else {
+    @if (resultOverview) {
+      <app-monitoring-cockpit-grid
+        [resultOverview]="resultOverview"
+        [manualPublishResultsEnabled]="manualPublishResultsEnabled"
+        [publishResultsBeforeAuditedTentatively]="publishResultsBeforeAuditedTentatively"
+      ></app-monitoring-cockpit-grid>
+    }
+  }
 
 
 </vo-lib-page>
 
 <ng-template #monitoringCockpitGrid>
-  <app-monitoring-cockpit-grid
-    *ngIf="resultOverview"
-    [resultOverview]="resultOverview"
-    [manualPublishResultsEnabled]="manualPublishResultsEnabled"
-    [publishResultsBeforeAuditedTentatively]="publishResultsBeforeAuditedTentatively"
-  ></app-monitoring-cockpit-grid>
+  @if (resultOverview) {
+    <app-monitoring-cockpit-grid
+      [resultOverview]="resultOverview"
+      [manualPublishResultsEnabled]="manualPublishResultsEnabled"
+      [publishResultsBeforeAuditedTentatively]="publishResultsBeforeAuditedTentatively"
+    ></app-monitoring-cockpit-grid>
+  }
 </ng-template>

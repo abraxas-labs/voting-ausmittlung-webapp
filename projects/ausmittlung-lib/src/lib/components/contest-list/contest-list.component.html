@@ -17,16 +17,18 @@
   <ng-container columnDef="contestEntriesDetails">
     <bc-header-cell filter *headerCellDef>{{ 'CONTEST.POLITICAL_BUSINESSES' | translate }}</bc-header-cell>
     <bc-data-cell *dataCellDef="let element">
-      <div class="my-1" *ngFor="let detail of element.contestEntriesDetails">
-        {{
-          'CONTEST.POLITICAL_BUSINESSES_ENTRY'
-            | translate
-              : {
-                  domainOfInfluenceType: ('DOMAIN_OF_INFLUENCE_TYPES.' + detail.domainOfInfluenceType | translate),
-                  contestEntriesCount: detail.contestEntriesCount,
-                }
-        }}
-      </div>
+      @for (detail of element.contestEntriesDetails; track detail) {
+        <div class="my-1">
+          {{
+            'CONTEST.POLITICAL_BUSINESSES_ENTRY'
+              | translate
+                : {
+                    domainOfInfluenceType: ('DOMAIN_OF_INFLUENCE_TYPES.' + detail.domainOfInfluenceType | translate),
+                    contestEntriesCount: detail.contestEntriesCount,
+                  }
+          }}
+        </div>
+      }
     </bc-data-cell>
   </ng-container>
 

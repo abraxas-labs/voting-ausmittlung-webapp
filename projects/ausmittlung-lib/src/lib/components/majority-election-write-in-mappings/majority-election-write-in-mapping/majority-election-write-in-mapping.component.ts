@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Component, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { merge, Observable, Subject } from 'rxjs';
 import { debounceTime, map } from 'rxjs/operators';
@@ -62,6 +62,9 @@ const candidateIdByMappingTarget: Record<MajorityElectionWriteInMappingTarget, s
   standalone: false,
 })
 export class MajorityElectionWriteInMappingComponent implements OnChanges {
+  private readonly majorityElectionService = inject(MajorityElectionService);
+  private readonly i18n = inject(TranslateService);
+
   public loadingCandidates: boolean = true;
   public candidatesWithMappings: CandidateWithMappings[] = [];
   public availableWriteInMappings: MajorityElectionWriteInMapping[] = [];
@@ -96,10 +99,7 @@ export class MajorityElectionWriteInMappingComponent implements OnChanges {
   private readonly keyboardCandidateAssignedMessage: Subject<KeyboardMessage> = new Subject<KeyboardMessage>();
   private readonly keyboardCandidateAssignedMessageReset: Subject<void> = new Subject<void>();
 
-  constructor(
-    private readonly majorityElectionService: MajorityElectionService,
-    private readonly i18n: TranslateService,
-  ) {
+  constructor() {
     // messages with content are immediately shown.
     // messages without content leave the previous message for 2s
     this.keyboardCandidateAssignedMessage$ = merge(

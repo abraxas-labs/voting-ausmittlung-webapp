@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform, inject } from '@angular/core';
 import { PoliticalBusinessResultBundleLog } from '../models';
 import { TranslateService } from '@ngx-translate/core';
 import { DatePipe } from '@angular/common';
@@ -14,10 +14,8 @@ import { DatePipe } from '@angular/common';
   standalone: false,
 })
 export class PoliticalBusinessResultBundleLogsPipe implements PipeTransform {
-  constructor(
-    private readonly i18n: TranslateService,
-    private readonly datePipe: DatePipe,
-  ) {}
+  private readonly i18n = inject(TranslateService);
+  private readonly datePipe = inject(DatePipe);
 
   public transform(logs: PoliticalBusinessResultBundleLog[]): string {
     return logs

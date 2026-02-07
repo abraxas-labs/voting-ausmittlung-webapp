@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { ContestSummary } from '../../models';
 import { FilterDirective, SortDirective, TableDataSource } from '@abraxas/base-components';
 import { TranslateService } from '@ngx-translate/core';
@@ -15,6 +15,8 @@ import { TranslateService } from '@ngx-translate/core';
   standalone: false,
 })
 export class ContestListComponent implements OnInit, AfterViewInit, OnChanges {
+  private readonly i18n = inject(TranslateService);
+
   public readonly dateColumn = 'date';
   public readonly descriptionColumn = 'description';
   public readonly endOfTestingPhaseColumn = 'endOfTestingPhase';
@@ -54,8 +56,6 @@ export class ContestListComponent implements OnInit, AfterViewInit, OnChanges {
 
   public columns: string[] = [...this.originalColumns];
   public dataSource = new TableDataSource<ContestSummary>();
-
-  constructor(private readonly i18n: TranslateService) {}
 
   public ngOnInit(): void {
     const dataAccessor = (data: ContestSummary, filterId: string): string | number | Date => {
