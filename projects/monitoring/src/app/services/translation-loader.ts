@@ -8,6 +8,7 @@ import { TranslateLoader } from '@ngx-translate/core';
 import { all as merge } from 'deepmerge';
 import { from, Observable } from 'rxjs';
 import deAppTranslations from '../../assets/i18n/de.json';
+// eslint-disable-next-line no-restricted-imports
 import deAusmittlungLibTranslations from '../../../../ausmittlung-lib/assets/ausmittlung-lib/i18n/de.json';
 import deLibTranslations from '../../../../../node_modules/@abraxas/voting-lib/assets/voting-lib/i18n/de.json';
 

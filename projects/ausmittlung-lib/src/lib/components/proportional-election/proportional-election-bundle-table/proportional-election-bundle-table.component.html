@@ -95,11 +95,13 @@
     <ng-container [columnDef]="reviewColumn">
       <bc-header-cell *headerCellDef>{{ 'ELECTION.BUNDLE_REVIEW' | translate }}</bc-header-cell>
       <bc-data-cell *dataCellDef="let bundle">
-        @if (bundle.state >= bundleStates.BALLOT_BUNDLE_STATE_READY_FOR_REVIEW) {
+        @if (bundle.state >= bundleStates.BALLOT_BUNDLE_STATE_READY_FOR_REVIEW && canReviewBundle) {
           @if (!bundle.protocolExport) {
-            <bc-button [label]="'ELECTION.BALLOT_DETAIL.START_GENERATE' | translate"
-              [variant]="'tertiary'" (buttonClick)="generateBundleReviewExport.emit(bundle); $event.preventDefault(); $event.stopPropagation()">
-            </bc-button>
+            @if (!bundle.hasUiSnapshotMismatch) {
+              <bc-button [label]="'ELECTION.BALLOT_DETAIL.START_GENERATE' | translate"
+                [variant]="'tertiary'" (buttonClick)="generateBundleReviewExport.emit(bundle); $event.preventDefault(); $event.stopPropagation()">
+              </bc-button>
+            }
           } @else {
             @switch (bundle.protocolExport.state) {
               @case (protocolExportStates.PROTOCOL_EXPORT_STATE_GENERATING) {
@@ -119,7 +121,6 @@
           }
         }
 
-
         <ng-template #generateBundleReview>
           @if (bundle.protocolExport.state !== protocolExportStates.PROTOCOL_EXPORT_STATE_GENERATING) {
             <bc-icon icon="turn-left"
@@ -133,6 +134,7 @@
     <ng-container [columnDef]="actionsColumn">
       <bc-header-cell *headerCellDef class="actions-header"></bc-header-cell>
       <bc-data-cell *dataCellDef="let bundle">
+      @if (!bundle.hasUiSnapshotMismatch) {
         @if (!readOnly) {
           <vo-lib-action-menu>
             @if ((bundle.state === bundleStates.BALLOT_BUNDLE_STATE_IN_PROCESS
@@ -145,9 +147,7 @@
             @if ((!canUpdate || (bundle.state !== bundleStates.BALLOT_BUNDLE_STATE_IN_PROCESS
               && bundle.state !== bundleStates.BALLOT_BUNDLE_STATE_IN_CORRECTION))
               && (canReadAll || (canRead && bundle.createdBy.secureConnectId === currentUser?.secureConnectId))) {
-              <vo-lib-action-menu-item
-                icon="info" text="ELECTION.SHOW_BALLOT" (click)="selectBundle(bundle)">
-              </vo-lib-action-menu-item>
+              <ng-container *ngTemplateOutlet="generateShowBallotActionMenuItem"></ng-container>
             }
             @if (bundle.state === bundleStates.BALLOT_BUNDLE_STATE_READY_FOR_REVIEW
               && canReviewBundle
@@ -158,11 +158,7 @@
               </vo-lib-action-menu-item>
             }
             @if (bundle.state >= bundleStates.BALLOT_BUNDLE_STATE_READY_FOR_REVIEW && canReviewBundle) {
-              <vo-lib-action-menu-item
-                icon="turn-left"
-                [text]="'ELECTION.BALLOT_DETAIL.GENERATE'"
-                (click)="generateBundleReviewExport.emit(bundle)">
-              </vo-lib-action-menu-item>
+              <ng-container *ngTemplateOutlet="generateBundleReviewActionMenuItem"></ng-container>
             }
             @if (bundle.state === bundleStates.BALLOT_BUNDLE_STATE_READY_FOR_REVIEW
               && canReviewBundle
@@ -187,10 +183,33 @@
           </vo-lib-action-menu>
         } @else {
           <vo-lib-action-menu>
-            <vo-lib-action-menu-item icon="info" text="ELECTION.SHOW_BALLOT"
-              (click)="selectBundle(bundle)"></vo-lib-action-menu-item>
+            <ng-container *ngTemplateOutlet="generateShowBallotActionMenuItem"></ng-container>
+
+          @if (bundle.state >= bundleStates.BALLOT_BUNDLE_STATE_READY_FOR_REVIEW && canReviewBundle && bundle.protocolExport?.state === protocolExportStates.PROTOCOL_EXPORT_STATE_GENERATING) {
+            <ng-container *ngTemplateOutlet="generateBundleReviewActionMenuItem"></ng-container>
+          }
           </vo-lib-action-menu>
         }
+      } @else {
+        <bc-spinner></bc-spinner>
+      }
+
+        <ng-template #generateShowBallotActionMenuItem>
+          <vo-lib-action-menu-item
+            icon="info-circle-o"
+            text="ELECTION.SHOW_BALLOT"
+            (click)="selectBundle(bundle)">
+          </vo-lib-action-menu-item>
+        </ng-template>
+
+        <ng-template #generateBundleReviewActionMenuItem>
+          <vo-lib-action-menu-item
+            icon="turn-left"
+            [text]="'ELECTION.BALLOT_DETAIL.GENERATE'"
+            (click)="generateBundleReviewExport.emit(bundle)">
+          </vo-lib-action-menu-item>
+        </ng-template>
+
       </bc-data-cell>
     </ng-container>
 

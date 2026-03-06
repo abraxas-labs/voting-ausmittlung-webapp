@@ -16,6 +16,7 @@ import {
   ResultImportListDialogResult,
   ResultOverview,
   ResultService,
+  ResultImportCompletedEvent,
 } from 'ausmittlung-lib';
 import { Subscription } from 'rxjs';
 import {
@@ -25,7 +26,6 @@ import {
 import { AuthorizationService, Tenant } from '@abraxas/base-components';
 import { ResultImportType } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/import_pb';
 import { StorageService } from '../../services/storage.service';
-import { ResultImportCompletedEvent } from '../../../../../ausmittlung-lib/src/lib/models';
 
 @Component({
   selector: 'app-monitoring-overview',

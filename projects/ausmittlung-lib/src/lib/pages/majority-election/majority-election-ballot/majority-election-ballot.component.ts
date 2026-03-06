@@ -145,26 +145,8 @@ export class MajorityElectionBallotComponent extends ElectionBallotComponent<
     }
   }
 
-  protected async loadBallotData(bundleId: string, ballotNumber: number): Promise<void> {
-    this.ballot = await this.resultBundleService.getBallot(bundleId, ballotNumber, this.electionByIds!);
-  }
-
-  protected async reconstructData(resultId: string, bundleId: string): Promise<void> {
-    this.politicalBusinessResult = await this.resultService.getByResultId(resultId);
-    this.buildElectionData(this.politicalBusinessResult);
-    this.bundle = {
-      countOfBallots: 0,
-      countOfModifiedBallots: 0,
-      id: bundleId,
-      state: BallotBundleState.BALLOT_BUNDLE_STATE_IN_PROCESS,
-      number: this.route.snapshot.queryParams.bundleNumber,
-      createdBy: await this.userService.getUser(),
-      ballotNumbers: [],
-      ballotNumbersToReview: [],
-      logs: [],
-    };
-    this.computeBundleData();
-    await this.loadCandidates(this.politicalBusinessResult.election.id);
+  protected async loadBallotData(bundleId: string, ballotNumber: number, cachedBallot?: MajorityElectionResultBallot): Promise<void> {
+    this.ballot = cachedBallot ?? (await this.resultBundleService.getBallot(bundleId, ballotNumber, this.electionByIds!));
   }
 
   protected saveNewBallot(bundle: PoliticalBusinessResultBundle, ballot: MajorityElectionResultBallot): Promise<number> {

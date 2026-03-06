@@ -28,7 +28,6 @@ export class VoteBundleOverviewComponent extends PoliticalBusinessBundleOverview
   public readonly reviewProcedures: typeof VoteReviewProcedure = VoteReviewProcedure;
 
   public result?: VoteResultBundles;
-  public isCreatingBundle: boolean = false;
 
   constructor() {
     super();
@@ -57,19 +56,16 @@ export class VoteBundleOverviewComponent extends PoliticalBusinessBundleOverview
 
     this.isCreatingBundle = true;
     try {
-      const response = await this.resultBundleService.createBundle(
+      this.createdBundleData = await this.resultBundleService.createBundle(
         this.result.politicalBusinessResult.id,
         this.result.ballotResult.id,
         bundleNumber,
       );
-      await this.router.navigate([response.bundleId, VoteBallotComponent.newId], {
-        relativeTo: this.route,
-        queryParams: {
-          bundleNumber: response.bundleNumber,
-        },
-      });
-    } finally {
+
+      this.tryNavigateToCreatedBundleAfterDelay();
+    } catch (err) {
       this.isCreatingBundle = false;
+      throw err;
     }
   }
 

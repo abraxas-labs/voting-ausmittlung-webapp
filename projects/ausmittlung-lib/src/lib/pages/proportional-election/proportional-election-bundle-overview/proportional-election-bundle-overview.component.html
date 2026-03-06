@@ -1,38 +1,48 @@
-<vo-lib-page [contentLoading]="loading"
+<vo-lib-page [contentLoading]="loading || !runtimeConfigService.initialized"
   header="ELECTION.BUNDLE_OVERVIEW">
   @if (result) {
-    <vo-ausm-proportional-election-info [electionResult]="result.politicalBusinessResult"></vo-ausm-proportional-election-info>
-    <div class="my-4">
-      <div class="shortcut-container">
-        <bc-icon class="clickable-icon" icon="question-circle-o" (click)="showShortcutDialog()"></bc-icon>
+    @if (!politicalBusinessDetailEntryDenied) {
+      <vo-ausm-proportional-election-info [electionResult]="result.politicalBusinessResult"></vo-ausm-proportional-election-info>
+      <div class="my-4">
+        <div class="shortcut-container">
+          <bc-icon class="clickable-icon" icon="question-circle-o" (click)="showShortcutDialog()"></bc-icon>
+        </div>
+        <vo-ausm-proportional-election-bundle-table [bundles]="result.bundles"
+          [bundleSize]="result.politicalBusinessResult.entryParams.ballotBundleSize"
+          [rowSelectable]="true"
+          [enablePagination]="true"
+          [enableActions]="true"
+          [enableSorting]="true"
+          [enableFiltering]="true"
+          [readOnly]="resultReadOnly"
+          (openDetail)="openBundle($event)"
+          (reviewBundle)="reviewBundle($event)"
+          (succeedBundleReview)="succeedBundleReview($event)"
+          (rejectBundleReview)="rejectBundleReview($event)"
+          (deleteBundle)="deleteBundle($event)"
+          (resetBundle)="resetBundle($event)"
+          (generateBundleReviewExport)="generateBundleReviewExport($event)"
+          (downloadBundleReviewExport)="downloadBundleReviewExport($event)"
+          [reviewProcedure]="result.politicalBusinessResult.entryParams?.reviewProcedure"
+          [enableReviewMultiple]="result.politicalBusinessResult.entryParams?.reviewProcedure === reviewProcedures.PROPORTIONAL_ELECTION_REVIEW_PROCEDURE_PHYSICALLY">
+        </vo-ausm-proportional-election-bundle-table>
       </div>
-      <vo-ausm-proportional-election-bundle-table [bundles]="result.bundles"
-        [bundleSize]="result.politicalBusinessResult.entryParams.ballotBundleSize"
-        [rowSelectable]="true"
-        [enablePagination]="true"
-        [enableActions]="true"
-        [enableSorting]="true"
-        [enableFiltering]="true"
-        [readOnly]="resultReadOnly"
-        (openDetail)="openBundle($event)"
-        (reviewBundle)="reviewBundle($event)"
-        (succeedBundleReview)="succeedBundleReview($event)"
-        (rejectBundleReview)="rejectBundleReview($event)"
-        (deleteBundle)="deleteBundle($event)"
-        (resetBundle)="resetBundle($event)"
-        (generateBundleReviewExport)="generateBundleReviewExport($event)"
-        (downloadBundleReviewExport)="downloadBundleReviewExport($event)"
-        [reviewProcedure]="result.politicalBusinessResult.entryParams?.reviewProcedure"
-        [enableReviewMultiple]="result.politicalBusinessResult.entryParams?.reviewProcedure === reviewProcedures.PROPORTIONAL_ELECTION_REVIEW_PROCEDURE_PHYSICALLY">
-      </vo-ausm-proportional-election-bundle-table>
-    </div>
-    <div class="sticky-buttons">
-      <vo-lib-button-bar [cancelLabel]="'APP.BACK' | translate"
-        [hasSaveButton]="canCreateBundle && !resultReadOnly"
-        [saveLabel]="'ELECTION.NEW_BUNDLE' | translate"
-        [canSave]="true"
-        (cancel)="back()"
-        (save)="createNewBundle()"></vo-lib-button-bar>
-    </div>
+      <div class="sticky-buttons">
+        <vo-lib-button-bar [cancelLabel]="'APP.BACK' | translate"
+          [hasSaveButton]="canCreateBundle && !resultReadOnly"
+          [saveLabel]="'ELECTION.NEW_BUNDLE' | translate"
+          [canSave]="true"
+          (cancel)="back()"
+          [saving]="isCreatingBundle"
+          (save)="createNewBundle()"></vo-lib-button-bar>
+      </div>
+    } @else {
+      <div class="content">
+        <p>{{ 'BUNDLE_OVERVIEW.POLITICAL_BUSINESS_DENIED' | translate }}</p>
+      </div>
+      <ng-container page-footer>
+        <bc-button [label]="'APP.BACK' | translate" (buttonClick)="back()"></bc-button>
+      </ng-container>
+    }
   }
 </vo-lib-page>

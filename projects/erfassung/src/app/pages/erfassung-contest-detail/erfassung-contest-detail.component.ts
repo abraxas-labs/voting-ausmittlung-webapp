@@ -4,16 +4,19 @@
  * For license information see LICENSE file.
  */
 
-import { Component, HostListener, OnDestroy, inject } from '@angular/core';
-import { HasUnsavedChanges, UnsavedChangesService } from 'ausmittlung-lib';
+import { Component, HostListener, OnDestroy, OnInit, inject } from '@angular/core';
+import { HasUnsavedChanges, PermissionService, UnsavedChangesService, Permissions } from 'ausmittlung-lib';
 
 @Component({
   selector: 'app-erfassung-contest-detail',
   templateUrl: './erfassung-contest-detail.component.html',
   standalone: false,
 })
-export class ErfassungContestDetailComponent implements HasUnsavedChanges, OnDestroy {
+export class ErfassungContestDetailComponent implements HasUnsavedChanges, OnInit, OnDestroy {
   private readonly unsavedChangesService = inject(UnsavedChangesService);
+  private readonly permissionService = inject(PermissionService);
+
+  public showExport: boolean = false;
 
   @HostListener('window:beforeunload')
   public beforeUnload(): boolean {
@@ -22,6 +25,10 @@ export class ErfassungContestDetailComponent implements HasUnsavedChanges, OnDes
 
   public get hasUnsavedChanges(): boolean {
     return this.unsavedChangesService.hasUnsavedChanges();
+  }
+
+  public async ngOnInit(): Promise<void> {
+    this.showExport = await this.permissionService.hasPermission(Permissions.Export.ExportData);
   }
 
   public ngOnDestroy(): void {

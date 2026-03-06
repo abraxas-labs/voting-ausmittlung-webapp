@@ -41,8 +41,11 @@ export interface PoliticalBusinessResultBundle {
   reviewedBy?: User;
   ballotNumbers: number[];
   ballotNumbersToReview: number[];
+  ballotNumbersModifiedDuringReview: number[];
   protocolExport?: ProtocolExport;
   logs: PoliticalBusinessResultBundleLog[];
+  ballotModificationUserIds: string[];
+  hasUiSnapshotMismatch?: boolean;
 }
 
 export interface PoliticalBusinessResultBallot {
@@ -60,4 +63,15 @@ export interface PoliticalBusinessResultBundleLog {
 export interface PoliticalBusinessResultBallotLog {
   user: User;
   timestamp: Date;
+}
+
+export interface CreatedPoliticalBusinessResultBundleData {
+  bundleId: string;
+  bundleNumber: number;
+}
+
+export interface PoliticalBusinessResultBundleUiSnapshot {
+  bundleId: string;
+  bundleState: BallotBundleState;
+  countOfBallots: number;
 }

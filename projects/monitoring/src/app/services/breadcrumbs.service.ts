@@ -4,8 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { BreadcrumbItem, BreadcrumbsService as BaseBreadcrumbsService } from 'ausmittlung-lib';
-import { CountingCircle, ProportionalElectionResult } from '../../../../ausmittlung-lib/src/lib/models';
+import { CountingCircle, ProportionalElectionResult, BreadcrumbItem, BreadcrumbsService as BaseBreadcrumbsService } from 'ausmittlung-lib';
 import { Injectable } from '@angular/core';
 
 @Injectable()

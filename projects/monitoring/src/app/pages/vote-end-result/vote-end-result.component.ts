@@ -14,6 +14,8 @@ import {
   VoteResultService,
   VoteEndResultEventTypes,
   EventLogService,
+  PermissionService,
+  Permissions,
 } from 'ausmittlung-lib';
 import { combineLatest, debounceTime, map, Subscription } from 'rxjs';
 import { EndResultStep } from '../../models/end-result-step.model';
@@ -33,6 +35,7 @@ export class VoteEndResultComponent implements OnDestroy {
   private readonly eventLogService = inject(EventLogService);
   private readonly secondFactorTransactionService = inject(SecondFactorTransactionService);
   private readonly router = inject(Router);
+  private readonly permissionService = inject(PermissionService);
 
   public loading: boolean = true;
   public stepActionLoading: boolean = false;
@@ -103,7 +106,7 @@ export class VoteEndResultComponent implements OnDestroy {
         this.endResultStep = newStep;
       }
 
-      this.updateShowExport();
+      await this.updateShowExport();
     } finally {
       this.stepActionLoading = false;
     }
@@ -159,13 +162,13 @@ export class VoteEndResultComponent implements OnDestroy {
         : !this.endResult.finalized
           ? EndResultStep.AllCountingCirclesDone
           : EndResultStep.Finalized;
-      this.updateShowExport();
+      await this.updateShowExport();
     } finally {
       this.loading = false;
     }
   }
 
-  private updateShowExport(): void {
-    this.showExport = this.endResult!.finalized;
+  private async updateShowExport(): Promise<void> {
+    this.showExport = this.endResult!.finalized && (await this.permissionService.hasPermission(Permissions.Export.ExportData));
   }
 }

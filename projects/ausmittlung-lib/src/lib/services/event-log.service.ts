@@ -21,11 +21,12 @@ import {
   ResultStateChangeEvent,
   ResultStateEventTypes,
 } from '../models/event-log.model';
-import { filter } from 'rxjs/operators';
+import { delay, filter } from 'rxjs/operators';
 import { EventDetails } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/event_log_pb';
 import { PoliticalBusinessResultBundleService } from './political-business-result-bundle.service';
 import { CountingCircleResultState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/counting_circle_pb';
-import { GRPC_ENV_INJECTION_TOKEN } from './tokens';
+import { GRPC_ENV_INJECTION_TOKEN, EVENT_LOG_CONFIG_INJECTION_TOKEN } from './tokens';
+import { EventLogConfig } from '../models/event-log-config.model';
 
 @Injectable({
   providedIn: 'root',
@@ -46,11 +47,11 @@ export class EventLogService extends GrpcService<EventLogServicePromiseClient> {
     }),
   );
   private watchCallSubscription?: Subscription;
+  private readonly eventLogConfig = inject<EventLogConfig>(EVENT_LOG_CONFIG_INJECTION_TOKEN);
 
   constructor() {
     const grpcBackend = inject(GrpcBackendService);
     const env = inject<GrpcEnvironment>(GRPC_ENV_INJECTION_TOKEN);
-
     super(EventLogServicePromiseClient, env, grpcBackend);
   }
 
@@ -131,6 +132,7 @@ export class EventLogService extends GrpcService<EventLogServicePromiseClient> {
     let events = this.watch$.pipe(
       filter(e => e.filterId == filterId),
       map(e => <Event<T>>e),
+      delay(this.eventLogConfig.watchDelayMs),
       finalize(() => (this.watchFilters = this.watchFilters.filter(f => f.getId() !== watchFilter.getId()))),
     );
 

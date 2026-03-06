@@ -20,6 +20,7 @@ import { VoteBundleOverviewComponent } from './pages/vote/vote-bundle-overview/v
 import { ResultCantonDefaultsResolver } from './services/resolvers/result-canton-defaults.resolver';
 import { HasUnsavedChangesGuard } from './services/guards/has-unsaved-changes.guard';
 import { inject } from '@angular/core';
+import { SystemBusyComponent } from './pages/system-busy/system-busy.component';
 
 export const proportionalElectionResultRoute: Route = {
   path: 'proportional-election-result/:resultId',
@@ -144,4 +145,9 @@ export const voteResultRoute: Route = {
       ],
     },
   ],
+};
+
+export const systemBusyRoute: Route = {
+  path: 'system-busy',
+  component: SystemBusyComponent,
 };

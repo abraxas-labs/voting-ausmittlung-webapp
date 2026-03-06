@@ -12,9 +12,9 @@ import * as moment from 'moment';
 import { SnackbarService, ThemeService } from '@abraxas/voting-lib';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { LocationStrategy } from '@angular/common';
-import { LanguageService } from '../../../ausmittlung-lib/src/lib/services/language.service';
 import { Title } from '@angular/platform-browser';
 import { filter } from 'rxjs/operators';
+import { RuntimeConfigService, LanguageService } from 'ausmittlung-lib';
 
 @Component({
   selector: 'app-root',
@@ -30,6 +30,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private readonly languageService = inject(LanguageService);
   private readonly locationStrategy = inject(LocationStrategy);
   private readonly title = inject(Title);
+  private readonly runtimeConfigService = inject(RuntimeConfigService);
 
   public authenticated = false;
   public hasTenant = false;
@@ -89,6 +90,7 @@ export class AppComponent implements OnInit, OnDestroy {
   public async ngOnInit(): Promise<void> {
     moment.locale(this.languageService.currentLanguage);
     this.translations.setDefaultLang(this.languageService.currentLanguage);
+    this.runtimeConfigService.initPolling();
   }
 
   public async reload(): Promise<void> {

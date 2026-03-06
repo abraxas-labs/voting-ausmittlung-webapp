@@ -13,6 +13,7 @@ import {
   DoubleProportionalResultApportionmentState,
   EventLogService,
   groupBySingle,
+  PermissionService,
   PoliticalBusiness,
   PoliticalBusinessType,
   ProportionalElectionCandidateEndResult,
@@ -28,6 +29,7 @@ import {
   SecondFactorTransactionService,
   sum,
   VotingDataSource,
+  Permissions,
 } from 'ausmittlung-lib';
 import { combineLatest, debounceTime, map, Subscription } from 'rxjs';
 import {
@@ -58,6 +60,7 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
   private readonly toast = inject(SnackbarService);
   private readonly secondFactorTransactionService = inject(SecondFactorTransactionService);
   private readonly eventLogService = inject(EventLogService);
+  private readonly permissionService = inject(PermissionService);
 
   public dataPrefix?: string;
 
@@ -159,7 +162,7 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
         this.endResultStep = newStep;
       }
 
-      this.updateShowExport();
+      await this.updateShowExport();
     } finally {
       if (!waitForWatcher) {
         this.stepActionLoading = false;
@@ -252,7 +255,7 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
       ProportionalElectionLotDecisionDialogResult
     >(ProportionalElectionLotDecisionDialogComponent, data, { disableClose: true });
 
-    this.updateEndResultByLotDecisions(result?.lotDecisionsByListId);
+    await this.updateEndResultByLotDecisions(result?.lotDecisionsByListId);
   }
 
   public async openEnterManualEndResult(): Promise<void> {
@@ -350,7 +353,7 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
       this.hasLotDecisions = this.endResult.listEndResults.some(le => le.candidateEndResults.some(x => x.lotDecisionEnabled));
       this.hasOpenRequiredLotDecisions = this.endResult.listEndResults.some(l => l.hasOpenRequiredLotDecisions);
       this.selectedListEndResult = undefined;
-      this.updateShowExport();
+      await this.updateShowExport();
       this.refreshTableColumns();
       this.endResultStep = !endResult.allCountingCirclesDone
         ? EndResultStep.CountingCirclesCounting
@@ -380,9 +383,9 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
     }
   }
 
-  private updateEndResultByLotDecisions(
+  private async updateEndResultByLotDecisions(
     lotDecisionsByListId: Record<string, ProportionalElectionEndResultLotDecision[]> | undefined,
-  ): void {
+  ): Promise<void> {
     if (!lotDecisionsByListId || !this.endResult) {
       return;
     }
@@ -413,7 +416,7 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
     }
 
     this.hasOpenRequiredLotDecisions = this.endResult.listEndResults.some(l => l.hasOpenRequiredLotDecisions);
-    this.updateShowExport();
+    await this.updateShowExport();
   }
 
   private updateCandidateEndResultByLotDecision(
@@ -472,7 +475,10 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
     }
   }
 
-  private updateShowExport(): void {
-    this.showExport = this.endResult!.finalized && !this.hasOpenRequiredLotDecisions;
+  private async updateShowExport(): Promise<void> {
+    this.showExport =
+      this.endResult!.finalized &&
+      !this.hasOpenRequiredLotDecisions &&
+      (await this.permissionService.hasPermission(Permissions.Export.ExportData));
   }
 }

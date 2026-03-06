@@ -1,4 +1,4 @@
-# ✨ Changelog (`v3.25.10`)
+# ✨ Changelog (`v3.27.8`)
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,103 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Info
 
 ```text
-This version -------- v3.25.10
-Previous version ---- v3.19.0
+This version -------- v3.27.8
+Previous version ---- v3.25.10
 Initial version ----- v1.25.0
-Total commits ------- 54
+Total commits ------- 15
 ```
+
+## [v3.27.8] - 2026-03-06
+
+### 🔄 Changed
+
+- updated system busy and bundle does not exist yet text
+
+## [v3.27.7] - 2026-03-06
+
+### 🆕 Added
+
+- add polling in the bundle overview if the ui snapshot mismatches
+
+## [v3.27.6] - 2026-03-06
+
+### 🆕 Added
+
+- add bundle detail entry denied option for political businesses
+
+## [v3.27.5] - 2026-03-05
+
+### 🆕 Added
+
+- Introduced a configurable delay for post-processing handlers when receiving events via the watch endpoint. This ensures that data fetched from the backend reflects the latest state under eventual consistency.
+  - The delay is controlled via `eventLogConfig.watchDelayMs` and defaults to 0.
+  - In environments where eventual consistency applies, set the value to `3 × wal_writer_delay` of the database WAL writer process to guarantee up-to-date data.
+
+## [v3.27.4] - 2026-03-04
+
+### 🔄 Changed
+
+- fix ballot caching for deleted ballots
+
+## [v3.27.3] - 2026-03-04
+
+### 🔄 Changed
+
+- adjusted bundle does not exist info text
+
+## [v3.27.2] - 2026-03-04
+
+### 🔄 Changed
+
+- mitigate race conditions in bundle and ballot views
+
+## [v3.27.1] - 2026-03-03
+
+### 🆕 Added
+
+- add bundle generation action menu item during running pdf generation in case of readonly state so regenerate is possible
+
+## [v3.27.0] - 2026-02-27
+
+### :new: Added
+
+- Introduce a configurable polling mechanism that periodically checks the backend pacing endpoint (/api/status/pacing) for load information.
+  - enable polling interval by defining `THROTTLE_POLLING_INTERVAL_SECONDS` in seconds
+  - defaults to 0 (disabled)
+- Based on the reported delay, gRPC and HTTP interceptors either:
+  - pass requests through immediately (delay = 0),
+  - delay requests by the specified milliseconds, or
+  - block all requests and redirect to a maintenance page (delay = Infinity).
+
+## [v3.26.2] - 2026-02-26
+
+### 🔄 Changed
+
+- allow empty vote ballots on variant ballots
+
+## [v3.26.1] - 2026-02-16
+
+### 🆕 Added
+
+- prevent review of self modified bundle as restricted bundle controller
+
+## [v3.26.0] - 2026-02-16
+
+### 🆕 Added
+
+- remember modified ballot numbers during review
+
+## [v3.25.12] - 2026-02-10
+
+### 🔄 Changed
+
+- hide export if missing permissions
+
+## [v3.25.11] - 2026-02-06
+
+### 🔄 Changed
+
+- hide bundle protocol generate button if no review permmissions
 
 ## [v3.25.10] - 2026-02-06
 

@@ -24,10 +24,18 @@
     "RESULT": "Ergebnis",
     "CLOSE": "Schliessen",
     "CONTINUE": "Weiter",
+    "IMPORTANT": "Wichtig",
     "SHORTCUT_TITLE": "Tastenkombinationen",
     "CONFIRM": "Bestätigen",
     "OPEN": "Öffnen",
     "ERROR_MESSAGE": "Es ist ein Fehler aufgetreten. Bitte führen Sie die Aktion erneut aus."
+  },
+  "SYSTEM": {
+    "BUSY": {
+      "TITLE": "Hohe Systemauslastung – Speicherung läuft",
+      "DESCRIPTION": "Aufgrund der hohen Auslastung, benötigt das System mehr Zeit für die Verarbeitung der einzelnen Eingaben. \nSobald Ihre Eingabe gespeichert wurde, werden Sie automatisch weitergeleitet und können mit der Erfassung fortfahren.",
+      "CTA": "Bitte vermeiden Sie weitere Eingaben. Danke für Ihre Geduld."
+    }
   },
   "CONTEST": {
     "TITLE": "Urnengänge",
@@ -345,7 +353,7 @@
       },
       "UNCHANGED_BALLOT": {
         "TITLE": "Stimmzettel unverändert",
-        "MSG": "Ein Stimmzettel ohne Antwort kann nicht gespeichert werden."
+        "MSG": "Sind Sie sicher, dass Sie diesen Stimmzettel bei allen Teilfragen ohne Antworten speichern möchten?"
       },
       "SHORTCUT": {
         "SET_YES": {
@@ -704,6 +712,17 @@
     "POLITICAL_LAST_NAME": "Politischer Nachname",
     "POLITICAL_FIRST_NAME": "Politischer Vorname",
     "CANDIDACY": "Kandidatur"
+  },
+  "BUNDLE_OVERVIEW": {
+    "POLITICAL_BUSINESS_DENIED": "Das Geschäft ist noch nicht zur Detailerfassung freigeschalten. Bitte versuchen Sie es später erneut."
+  },
+  "BALLOT_DETAIL": {
+    "BUNDLE_DOES_NOT_EXIST": {
+      "TITLE": "Hohe Systemauslastung – Bund wird erstellt",
+      "ELECTION_DESCRIPTION": "Der neue Bund wird gerade erstellt. Aufgrund der hohen Auslastung, benötigt das System mehr Zeit. \nSobald der Bund erstellt ist, können Sie mit der Wahlzettelerfassung fortfahren.",
+      "VOTE_DESCRIPTION": "Der neue Bund wird gerade erstellt. Aufgrund der hohen Auslastung, benötigt das System mehr Zeit. \nSobald der Bund erstellt ist, können Sie mit der Stimmzettelerfassung fortfahren.",
+      "CTA": "Bitte vermeiden Sie weitere Eingaben. Danke für Ihre Geduld."
+    }
   },
   "COMMENTS": {
     "TITLE": "Kommentare"

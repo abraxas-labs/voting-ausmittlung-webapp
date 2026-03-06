@@ -173,8 +173,9 @@ export class ProportionalElectionBallotComponent extends ElectionBallotComponent
     }
   }
 
-  protected async loadBallotData(bundleId: string, ballotNumber: number): Promise<void> {
-    this.ballot = await this.resultBundleService.getBallot(bundleId, ballotNumber);
+  protected async loadBallotData(bundleId: string, ballotNumber: number, cachedBallot?: ProportionalElectionResultBallot): Promise<void> {
+    this.ballot = cachedBallot ?? (await this.resultBundleService.getBallot(bundleId, ballotNumber));
+
     this.ballotUiData = this.ballotUiService.buildUiData(
       this.electionCandidates,
       this.politicalBusinessResult!.entryParams.automaticBallotNumberGeneration,
@@ -183,27 +184,6 @@ export class ProportionalElectionBallotComponent extends ElectionBallotComponent
       this.politicalBusinessResult!.entryParams.candidateCheckDigit,
       this.ballot,
     );
-  }
-
-  protected async reconstructData(resultId: string, bundleId: string): Promise<void> {
-    this.politicalBusinessResult = await this.resultService.getByResultId(resultId);
-    this.bundle = {
-      countOfBallots: 0,
-      countOfModifiedBallots: 0,
-      id: bundleId,
-      state: BallotBundleState.BALLOT_BUNDLE_STATE_IN_PROCESS,
-      number: this.route.snapshot.queryParams.bundleNumber,
-      createdBy: await this.userService.getUser(),
-      ballotNumbers: [],
-      ballotNumbersToReview: [],
-      logs: [],
-    };
-    this.computeBundleData();
-    if (!!this.route.snapshot.queryParams.listId) {
-      this.bundle.list = await this.electionService.getList(this.route.snapshot.queryParams.listId);
-    }
-
-    await this.loadCandidates(this.politicalBusinessResult.election.id, this.route.snapshot.queryParams.listId);
   }
 
   protected saveNewBallot(bundle: ProportionalElectionResultBundle, ballot: ProportionalElectionResultBallot): Promise<number> {

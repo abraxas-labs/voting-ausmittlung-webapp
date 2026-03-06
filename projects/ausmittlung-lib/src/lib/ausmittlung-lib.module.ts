@@ -159,6 +159,7 @@ import { InfoIconComponent } from './components/info-icon/info-icon.component';
 import { ProportionalElectionBundleInfoComponent } from './components/proportional-election/proportional-election-bundle-info/proportional-election-bundle-info.component';
 import { MajorityElectionBundleInfoComponent } from './components/majority-election/majority-election-bundle-info/majority-election-bundle-info.component';
 import { VoteBundleInfoComponent } from './components/vote/vote-bundle-info/vote-bundle-info.component';
+import { SystemBusyComponent } from './pages/system-busy/system-busy.component';
 
 @NgModule({
   declarations: [
@@ -277,6 +278,7 @@ import { VoteBundleInfoComponent } from './components/vote/vote-bundle-info/vote
     ImportFileSelectComponent,
     MajorityElectionCandidacyInfoComponent,
     InfoIconComponent,
+    SystemBusyComponent,
   ],
   imports: [
     CommonModule,

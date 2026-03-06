@@ -14,6 +14,7 @@ import {
   MajorityElectionResult,
   PoliticalBusinessResultBallot,
   PoliticalBusinessResultBundle,
+  PoliticalBusinessResultBundleUiSnapshot,
   ProportionalElectionResult,
   VoteResult,
 } from '../../models';
@@ -21,6 +22,8 @@ import { PermissionService } from '../../services/permission.service';
 import { UserService } from '../../services/user.service';
 import { Permissions } from '../../models/permissions.model';
 import { HasUnsavedChanges } from '../../services/guards/has-unsaved-changes.guard';
+
+const missingBundleReloadDelay = 5000;
 
 @Directive()
 export abstract class PoliticalBusinessBallotComponent<
@@ -43,11 +46,12 @@ export abstract class PoliticalBusinessBallotComponent<
     return !this.hasChanges;
   }
 
-  public static readonly newId: string = 'new';
+  public static readonly newId: number = 0;
 
   public loading: boolean = true;
   public loadingBallot: boolean = false;
   public actionExecuting: boolean = false;
+  public isDestroyed: boolean = false;
 
   public hasChanges: boolean = false;
   public politicalBusinessResult?: TResult;
@@ -63,6 +67,8 @@ export abstract class PoliticalBusinessBallotComponent<
   public canSubmitBundle: boolean = false;
   public canUpdateBallot: boolean = false;
 
+  protected ballotCacheByNumber: Record<number, TBallot | undefined> = {};
+
   private routeParamsSubscription: Subscription = Subscription.EMPTY;
 
   protected abstract get deletedBallotLabel(): string;
@@ -75,6 +81,7 @@ export abstract class PoliticalBusinessBallotComponent<
 
   public ngOnDestroy(): void {
     this.routeParamsSubscription.unsubscribe();
+    this.isDestroyed = true;
   }
 
   public get hasUnsavedChanges(): boolean {
@@ -202,6 +209,7 @@ export abstract class PoliticalBusinessBallotComponent<
       this.hasChanges = false;
       this.isLastBallot = true;
       this.isFirstBallot = this.bundle.countOfBallots === 1;
+      this.ballotCacheByNumber[this.ballot.number] = undefined;
 
       if (this.bundle.countOfBallots === 0) {
         delete this.ballot;
@@ -217,6 +225,21 @@ export abstract class PoliticalBusinessBallotComponent<
     }
   }
 
+  public async navigateBack(): Promise<void> {
+    const bundleUiSnapshot: PoliticalBusinessResultBundleUiSnapshot | undefined = !this.bundle
+      ? undefined
+      : {
+          bundleId: this.bundle.id,
+          bundleState: this.bundle.state,
+          countOfBallots: this.bundle.countOfBallots,
+        };
+
+    await this.router.navigate(['../../'], {
+      relativeTo: this.route,
+      state: { bundleUiSnapshot },
+    });
+  }
+
   public async submitBundleAndNavigate(): Promise<void> {
     if (!this.bundle || !this.politicalBusinessResult || !(await this.saveBallot())) {
       return;
@@ -225,6 +248,7 @@ export abstract class PoliticalBusinessBallotComponent<
     this.actionExecuting = true;
     try {
       await this.submitBundle(this.bundle.id, this.bundle.state);
+      this.bundle.state = BallotBundleState.BALLOT_BUNDLE_STATE_READY_FOR_REVIEW;
       await this.navigateBack();
     } finally {
       this.actionExecuting = false;
@@ -241,11 +265,9 @@ export abstract class PoliticalBusinessBallotComponent<
 
   protected abstract submitBundle(bundleId: string, state: BallotBundleState): Promise<void>;
 
-  protected abstract reconstructData(resultId: string, bundleId: string, params: Params): Promise<void>;
-
   protected abstract loadBundleData(bundleId: string): Promise<void>;
 
-  protected abstract loadBallotData(bundleId: string, ballotNumber: number): Promise<void>;
+  protected abstract loadBallotData(bundleId: string, ballotNumber: number, cachedBallot?: TBallot): Promise<void>;
 
   protected abstract validateBallot(): Promise<boolean>;
 
@@ -278,6 +300,7 @@ export abstract class PoliticalBusinessBallotComponent<
     if (this.ballot.isNew) {
       this.ballot.number = await this.saveNewBallot(this.bundle, this.ballot);
       this.ballot.isNew = false;
+      this.ballotCacheByNumber[this.ballot.number] = this.ballot;
     } else {
       await this.updateBallot(this.bundle, this.ballot);
     }
@@ -288,18 +311,28 @@ export abstract class PoliticalBusinessBallotComponent<
   }
 
   private async loadOrCreate(params: Params): Promise<void> {
-    if (params.ballotNumber === PoliticalBusinessBallotComponent.newId) {
-      await this.reconstructDataAndCreateNew(params.resultId, params.bundleId, params);
-      return;
+    try {
+      await this.loadData(params.bundleId, +params.ballotNumber);
+    } catch (err) {
+      console.error(err);
     }
 
-    await this.loadData(params.bundleId, +params.ballotNumber);
+    while (!this.bundle && !this.isDestroyed) {
+      try {
+        await new Promise(r => setTimeout(r, missingBundleReloadDelay));
+        await this.loadData(params.bundleId, +params.ballotNumber);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    if (this.bundle?.countOfBallots === 0 && !this.isDestroyed) {
+      await this.addInitialBallot();
+    }
   }
 
-  private async reconstructDataAndCreateNew(resultId: string, bundleId: string, params: Params): Promise<void> {
+  private async addInitialBallot(): Promise<void> {
     try {
-      // recreate information since it is likely that the event is not yet processed by the backend
-      await this.reconstructData(resultId, bundleId, params);
       await this.createBallot();
     } finally {
       this.loading = false;
@@ -319,6 +352,11 @@ export abstract class PoliticalBusinessBallotComponent<
       this.isFirstBallot = this.bundle!.countOfBallots <= 1 || this.bundle!.ballotNumbers.indexOf(ballotNumber) === 0;
       this.isLastBallot =
         this.bundle!.countOfBallots <= 1 || this.bundle!.ballotNumbers.indexOf(ballotNumber) === this.bundle!.ballotNumbers.length - 1;
+
+      if (!!this.ballot && !this.ballotCacheByNumber[this.ballot.number]) {
+        this.ballotCacheByNumber[this.ballot.number] = this.ballot;
+      }
+
       return;
     }
 
@@ -346,14 +384,11 @@ export abstract class PoliticalBusinessBallotComponent<
   private async loadBallot(bundleId: string, ballotNumber: number): Promise<void> {
     this.loadingBallot = true;
     try {
-      await this.loadBallotData(bundleId, ballotNumber);
+      const cachedBallot = this.ballotCacheByNumber[ballotNumber];
+      await this.loadBallotData(bundleId, ballotNumber, cachedBallot);
       this.hasChanges = false;
     } finally {
       this.loadingBallot = false;
     }
-  }
-
-  private async navigateBack(): Promise<void> {
-    await this.router.navigate(['../../'], { relativeTo: this.route });
   }
 }

@@ -1,5 +1,5 @@
 <vo-lib-page [contentLoading]="loading"
-  header="ELECTION.BALLOT_DETAIL.TITLE">
+  [header]="politicalBusinessResult && bundle ? 'ELECTION.BALLOT_DETAIL.TITLE' : 'BALLOT_DETAIL.BUNDLE_DOES_NOT_EXIST.TITLE'">
   @if (politicalBusinessResult && bundle) {
     <div class="content">
       <vo-ausm-proportional-election-info [electionResult]="politicalBusinessResult"></vo-ausm-proportional-election-info>
@@ -99,6 +99,17 @@
         (nextBallot)="nextBallot()"
         (back)="saveAndBack()"
         (submitBundle)="submitBundleAndNavigate()"></vo-ausm-political-business-ballot-button-bar>
+    </ng-container>
+  } @else {
+    <div>
+      <p class="pre-wrap">{{ 'BALLOT_DETAIL.BUNDLE_DOES_NOT_EXIST.ELECTION_DESCRIPTION' | translate }}</p>
+      <p>
+        <b>{{ 'APP.IMPORTANT' | translate }}: </b>
+        <span>{{ 'BALLOT_DETAIL.BUNDLE_DOES_NOT_EXIST.CTA' | translate }}</span>
+      </p>
+    </div>
+    <ng-container page-footer>
+      <bc-button [label]="'APP.BACK' | translate" (buttonClick)="navigateBack()"></bc-button>
     </ng-container>
   }
 </vo-lib-page>

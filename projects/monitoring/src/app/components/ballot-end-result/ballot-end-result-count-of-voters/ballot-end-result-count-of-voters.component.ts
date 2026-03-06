@@ -5,7 +5,7 @@
  */
 
 import { Component, Input } from '@angular/core';
-import { PoliticalBusinessCountOfVoters } from '../../../../../../ausmittlung-lib/src/lib/models';
+import { PoliticalBusinessCountOfVoters } from 'ausmittlung-lib';
 
 @Component({
   selector: 'app-ballot-end-result-count-of-voters',

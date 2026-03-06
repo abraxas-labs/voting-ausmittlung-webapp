@@ -57,16 +57,15 @@ export class MajorityElectionBundleOverviewComponent extends PoliticalBusinessBu
 
     this.isCreatingBundle = true;
     try {
-      const response = await this.resultBundleService.createBundle(this.result.politicalBusinessResult.id, bundleNumber);
-      await this.dialog.alert('APP.CONFIRM', this.i18n.instant('ELECTION.CONFIRM_BUNDLE_CREATION', { number: response.bundleNumber }));
-      await this.router.navigate([response.bundleId, MajorityElectionBallotComponent.newId], {
-        relativeTo: this.route,
-        queryParams: {
-          bundleNumber: response.bundleNumber,
-        },
-      });
-    } finally {
+      this.createdBundleData = await this.resultBundleService.createBundle(this.result.politicalBusinessResult.id, bundleNumber);
+      await this.dialog.alert(
+        'APP.CONFIRM',
+        this.i18n.instant('ELECTION.CONFIRM_BUNDLE_CREATION', { number: this.createdBundleData.bundleNumber }),
+      );
+      this.tryNavigateToCreatedBundleAfterDelay();
+    } catch (err) {
       this.isCreatingBundle = false;
+      throw err;
     }
   }
 

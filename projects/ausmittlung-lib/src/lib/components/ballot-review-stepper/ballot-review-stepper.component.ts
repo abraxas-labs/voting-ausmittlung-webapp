@@ -74,8 +74,12 @@ export class BallotReviewStepperComponent {
     }
 
     const ballotIndex = this.reviewBallotsValue.indexOf(this.selectedBallot);
-    this.selectedBallot.state = state;
-    this.reviewBallotChange.emit(this.selectedBallot);
+
+    // Even if the user marks a ballot as OK, the ballot should still be marked as fixed for the current review
+    if (this.selectedBallot.state !== ReviewState.FIXED) {
+      this.selectedBallot.state = state;
+      this.reviewBallotChange.emit(this.selectedBallot);
+    }
 
     this.navigateToNextIfNeeded(ballotIndex);
   }

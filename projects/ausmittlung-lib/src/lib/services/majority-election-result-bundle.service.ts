@@ -211,8 +211,10 @@ export class MajorityElectionResultBundleService extends GrpcService<MajorityEle
       createdBy: obj.createdBy!,
       ballotNumbers: obj.ballotNumbersList,
       ballotNumbersToReview: obj.ballotNumbersToReviewList,
+      ballotNumbersModifiedDuringReview: obj.ballotNumbersModifiedDuringReviewList,
       protocolExport: this.mapToProtocolExport(proto.getProtocolExport()),
       logs: proto.getLogsList().map(x => PoliticalBusinessResultBundleService.mapToPoliticalBusinessResultBundleLog(x)),
+      ballotModificationUserIds: proto.getBallotModificationUserIdsList(),
     };
   }
 

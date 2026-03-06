@@ -10,27 +10,37 @@ import { DialogService, SnackbarService, ThemeService } from '@abraxas/voting-li
 import { Directive, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { Subscription } from 'rxjs';
+import { catchError, EMPTY, filter, from, Subscription, switchMap, timer } from 'rxjs';
 import { ShortcutDialogComponent, ShortcutDialogData } from '../../components/ballot-shortcut-dialog/shortcut-dialog.component';
 import {
+  CreatedPoliticalBusinessResultBundleData,
+  Event,
+  EventType,
   MajorityElectionResultBundles,
+  Permissions,
   PoliticalBusinessResultBundle,
   PoliticalBusinessResultBundleLog,
   PoliticalBusinessResultBundles,
+  PoliticalBusinessResultBundleUiSnapshot,
   ProportionalElectionResultBundles,
+  ProtocolEventTypes,
   ProtocolExport,
   VoteResultBundles,
 } from '../../models';
 import { ResultExportService } from '../../services/result-export.service';
 import { PermissionService } from '../../services/permission.service';
 import { groupBySingle } from '../../services/utils/array.utils';
-import { Permissions } from '../../models/permissions.model';
 import { ExportService } from '../../services/export.service';
 import { ProtocolExportState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/export_pb';
 import { DatePipe } from '@angular/common';
 import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/political_business_pb';
-import { Event, EventType, ProtocolEventTypes } from '../../models/event-log.model';
 import { EventLogService } from '../../services/event-log.service';
+import { PoliticalBusinessBallotComponent } from '../political-business-ballot/political-business-ballot.component';
+import { RuntimeConfigService } from '../../services/runtime-config.service';
+
+const forceNavigateToCreatedBundleDelay: number = 5000;
+const uiSnapshotMismatchBundlePollingInitialDelay: number = 2000;
+const uiSnapshotMismatchBundlePollingInterval: number = 5000;
 
 @Directive()
 export abstract class PoliticalBusinessBundleOverviewComponent<
@@ -40,6 +50,7 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
   >
   implements OnInit, OnDestroy
 {
+  public readonly runtimeConfigService: RuntimeConfigService = inject(RuntimeConfigService);
   protected readonly permissionService = inject(PermissionService);
   protected readonly i18n = inject(TranslateService);
   protected readonly toast = inject(SnackbarService);
@@ -56,13 +67,35 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
   public resultReadOnly: boolean = true;
   public loading: boolean = true;
   public canCreateBundle: boolean = false;
+  public isCreatingBundle: boolean = false;
+  public politicalBusinessDetailEntryDenied: boolean = false;
+
+  protected createdBundleData?: CreatedPoliticalBusinessResultBundleData;
 
   private bundlesById: Record<string, TBundle> = {};
 
+  // Is set when a user made bundle modifications and redirects from the ballot view to the bundle overview view.
+  // This is set to determine whether the related bundle entry has already the latest data or not.
+  private bundleUiSnapshot?: PoliticalBusinessResultBundleUiSnapshot;
+
   private routeParamsSubscription?: Subscription;
   private watchSubscription?: Subscription;
+  private politicalBusinessEntryDeniedSubscription?: Subscription;
+  private uiSnapshotMismatchBundlePollingSubscription?: Subscription;
 
   public async ngOnInit(): Promise<void> {
+    if (history.state.bundleUiSnapshot) {
+      this.bundleUiSnapshot = history.state.bundleUiSnapshot;
+
+      // Remove the bundle ui snapshot value from the history state, so that after manual
+      // page refreshes the value disappears.
+      history.replaceState({ ...history.state, bundleUiSnapshot: null }, '');
+    }
+
+    this.politicalBusinessEntryDeniedSubscription = this.runtimeConfigService.denyDetailEntryPoliticalBusinessIds$.subscribe(ids =>
+      this.updatePoliticalBusinessDetailEntryDenied(ids),
+    );
+
     this.routeParamsSubscription = this.route.params.subscribe(params => this.loadData(params));
     this.canCreateBundle = await this.permissionService.hasPermission(Permissions.PoliticalBusinessResultBundle.Create);
   }
@@ -70,6 +103,8 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
   public ngOnDestroy(): void {
     this.routeParamsSubscription?.unsubscribe();
     this.watchSubscription?.unsubscribe();
+    this.politicalBusinessEntryDeniedSubscription?.unsubscribe();
+    this.uiSnapshotMismatchBundlePollingSubscription?.unsubscribe();
   }
 
   public async back(): Promise<void> {
@@ -208,6 +243,7 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
     if (!!bundle) {
       bundle.countOfBallots += delta;
     }
+    this.updateBundles();
   }
 
   protected async reloadBundle(id: string): Promise<void> {
@@ -253,12 +289,17 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
     try {
       this.watchSubscription?.unsubscribe();
       delete this.watchSubscription;
+
       await this.loadBundlesAndPrepareData(params);
+
+      await this.runtimeConfigService.ensureInitialized();
 
       this.resultReadOnly =
         this.result!.politicalBusinessResult.politicalBusiness.contest!.locked ||
         (this.result!.politicalBusinessResult.state !== CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING &&
           this.result!.politicalBusinessResult.state !== CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION);
+
+      this.updatePoliticalBusinessDetailEntryDenied();
 
       if (!this.resultReadOnly) {
         this.watchSubscription = this.eventLogService
@@ -286,10 +327,16 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
       x => x.id,
       x => x,
     );
+    this.updateBundles();
   }
 
-  private bundleCreatedOrUpdated(b: TBundle): void {
+  private async bundleCreatedOrUpdated(b: TBundle): Promise<void> {
     if (!this.result) {
+      return;
+    }
+
+    if (this.createdBundleData && this.createdBundleData.bundleId === b.id) {
+      await this.navigateToCreatedBundle();
       return;
     }
 
@@ -325,6 +372,7 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
       return;
     }
 
+    this.updateBundlesUiSnapshotState();
     this.result.bundles = [...this.result.bundles];
   }
 
@@ -354,5 +402,79 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
       description: '',
       entityDescription: '',
     };
+  }
+
+  protected tryNavigateToCreatedBundleAfterDelay(): void {
+    setTimeout(async () => {
+      if (this.isCreatingBundle) {
+        await this.navigateToCreatedBundle();
+      }
+    }, forceNavigateToCreatedBundleDelay);
+  }
+
+  protected async navigateToCreatedBundle(): Promise<void> {
+    if (!this.createdBundleData) {
+      throw new Error('No local data of a created bundle found');
+    }
+
+    await this.router.navigate([this.createdBundleData.bundleId, PoliticalBusinessBallotComponent.newId], {
+      relativeTo: this.route,
+    });
+
+    this.isCreatingBundle = false;
+    this.createdBundleData = undefined;
+  }
+
+  private updateBundlesUiSnapshotState(): void {
+    if (!this.result || !this.result.bundles || !this.bundleUiSnapshot) {
+      return;
+    }
+
+    const affectedBundle = this.result.bundles.find(b => b.id === this.bundleUiSnapshot!.bundleId);
+    if (!affectedBundle) {
+      return;
+    }
+
+    affectedBundle.hasUiSnapshotMismatch = !(
+      this.bundleUiSnapshot.bundleState === affectedBundle.state && this.bundleUiSnapshot.countOfBallots === affectedBundle.countOfBallots
+    );
+
+    if (!affectedBundle.hasUiSnapshotMismatch) {
+      this.bundleUiSnapshot = undefined;
+      this.uiSnapshotMismatchBundlePollingSubscription?.unsubscribe();
+      delete this.uiSnapshotMismatchBundlePollingSubscription;
+    } else {
+      this.createUiSnapshotMismatchBundlePollingSubscription(affectedBundle.id);
+    }
+  }
+
+  private updatePoliticalBusinessDetailEntryDenied(deniedIds?: ReadonlySet<string>): void {
+    const politicalBusinessId = this.result?.politicalBusinessResult.politicalBusinessId;
+    deniedIds ??= this.runtimeConfigService.denyDetailEntryPoliticalBusinessIds;
+    this.politicalBusinessDetailEntryDenied =
+      !this.resultReadOnly && politicalBusinessId !== undefined && deniedIds.has(politicalBusinessId);
+  }
+
+  private createUiSnapshotMismatchBundlePollingSubscription(bundleId: string): void {
+    if (this.uiSnapshotMismatchBundlePollingSubscription) {
+      return;
+    }
+
+    this.uiSnapshotMismatchBundlePollingSubscription = timer(
+      uiSnapshotMismatchBundlePollingInitialDelay,
+      uiSnapshotMismatchBundlePollingInterval,
+    )
+      .pipe(
+        filter(() => !!this.bundlesById[bundleId]?.hasUiSnapshotMismatch),
+        switchMap(() =>
+          from(this.reloadBundle(bundleId)).pipe(
+            catchError(error => {
+              console.error(error);
+              return EMPTY;
+            }),
+          ),
+        ),
+      )
+      .subscribe();
   }
 }

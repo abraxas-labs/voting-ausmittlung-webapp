@@ -4,24 +4,20 @@
  * For license information see LICENSE file.
  */
 
-import { DialogService, SnackbarService } from '@abraxas/voting-lib';
-import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
+import { DialogService } from '@abraxas/voting-lib';
+import { Component, OnDestroy, ViewChild, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { BallotReviewStepperComponent } from '../../../components/ballot-review-stepper/ballot-review-stepper.component';
 import {
-  BallotReview,
+  BallotBundleState,
   MajorityElectionBase,
   MajorityElectionResult,
   MajorityElectionResultBallot,
-  PoliticalBusinessResultBundle,
   ReviewState,
 } from '../../../models';
 import { MajorityElectionResultBundleService } from '../../../services/majority-election-result-bundle.service';
-import { PermissionService } from '../../../services/permission.service';
-import { Permissions } from '../../../models/permissions.model';
 import { isErrorType } from '../../../services/utils/error.utils';
+import { PoliticalBusinessBallotReviewComponent } from '../../political-business-ballot-review/political-business-ballot-review.component';
 
 const modifiedReviewForbiddenException = 'ReviewModifiedBundleForbiddenException';
 
@@ -31,28 +27,12 @@ const modifiedReviewForbiddenException = 'ReviewModifiedBundleForbiddenException
   styleUrls: ['./majority-election-ballot-review.component.scss'],
   standalone: false,
 })
-export class MajorityElectionBallotReviewComponent implements OnInit, OnDestroy {
-  private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
+export class MajorityElectionBallotReviewComponent extends PoliticalBusinessBallotReviewComponent implements OnDestroy {
   private readonly dialog = inject(DialogService);
-  private readonly i18n = inject(TranslateService);
   private readonly resultBundleService = inject(MajorityElectionResultBundleService);
-  private readonly permissionService = inject(PermissionService);
-  private readonly toast = inject(SnackbarService);
 
-  public loading: boolean = true;
-  public loadingBallot: boolean = true;
-  public actionExecuting: boolean = false;
-
-  public bundle?: PoliticalBusinessResultBundle;
   public electionResult?: MajorityElectionResult;
   public ballot?: MajorityElectionResultBallot;
-
-  public reviewBallots: BallotReview[] = [];
-
-  public canSucceedSelfModifiedBundle: boolean = false;
-  public canSucceed: boolean = false;
-  public correctionOngoing: boolean = false;
 
   @ViewChild(BallotReviewStepperComponent)
   public reviewStepper!: BallotReviewStepperComponent;
@@ -68,27 +48,12 @@ export class MajorityElectionBallotReviewComponent implements OnInit, OnDestroy 
   private readonly routeParamsSubscription: Subscription;
 
   constructor() {
+    super();
     this.routeParamsSubscription = this.route.params.subscribe(({ bundleId }) => this.loadData(bundleId));
-  }
-
-  public async ngOnInit(): Promise<void> {
-    this.canSucceedSelfModifiedBundle = await this.permissionService.hasPermission(
-      Permissions.PoliticalBusinessResultBundle.ReviewSelfModifiedBundle,
-    );
   }
 
   public ngOnDestroy(): void {
     this.routeParamsSubscription.unsubscribe();
-  }
-
-  public updateState(): void {
-    this.canSucceed = this.canSucceedSelfModifiedBundle
-      ? this.reviewBallots.every(x => x.state !== ReviewState.NOT_REVIEWED)
-      : this.reviewBallots.every(x => x.state === ReviewState.OK);
-  }
-
-  public async back(): Promise<void> {
-    await this.router.navigate(['../../'], { relativeTo: this.route });
   }
 
   public async submitCorrection(): Promise<void> {
@@ -107,6 +72,7 @@ export class MajorityElectionBallotReviewComponent implements OnInit, OnDestroy 
     try {
       this.actionExecuting = true;
       await this.resultBundleService.updateBallot(this.bundle.id, this.ballot, this.electionResult.entryParams!.automaticEmptyVoteCounting);
+      this.updateBundleModificationUsers();
       this.reviewStepper.setStateAndNavigate(ReviewState.FIXED);
       this.correctionOngoing = false;
     } finally {
@@ -166,6 +132,7 @@ export class MajorityElectionBallotReviewComponent implements OnInit, OnDestroy 
     this.actionExecuting = true;
     try {
       await this.resultBundleService.succeedBundleReview([this.bundle.id]);
+      this.bundle.state = BallotBundleState.BALLOT_BUNDLE_STATE_REVIEWED;
       await this.back();
     } catch (e: any) {
       if (isErrorType(e, modifiedReviewForbiddenException)) {
@@ -186,6 +153,7 @@ export class MajorityElectionBallotReviewComponent implements OnInit, OnDestroy 
     this.actionExecuting = true;
     try {
       await this.resultBundleService.rejectBundleReview(this.bundle.id);
+      this.bundle.state = BallotBundleState.BALLOT_BUNDLE_STATE_IN_CORRECTION;
       await this.back();
     } finally {
       this.actionExecuting = false;
@@ -213,7 +181,7 @@ export class MajorityElectionBallotReviewComponent implements OnInit, OnDestroy 
       this.electionResult = response.electionResult;
       this.reviewBallots = this.bundle.ballotNumbersToReview.map(ballotNumber => ({
         ballotNumber,
-        state: ReviewState.NOT_REVIEWED,
+        state: response.bundle.ballotNumbersModifiedDuringReview.includes(ballotNumber) ? ReviewState.FIXED : ReviewState.NOT_REVIEWED,
       }));
       this.buildElectionData(this.electionResult);
       if (this.reviewBallots.length > 0) {

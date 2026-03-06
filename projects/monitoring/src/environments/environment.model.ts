@@ -6,6 +6,7 @@
 
 import { AuthenticationConfig, AuthorizationConfig, TenantConfig, UserConfig } from '@abraxas/base-components';
 import { Environments, GrpcEnvironment } from '@abraxas/voting-lib';
+import { RuntimeConfigPollingConfig, EventLogConfig } from 'ausmittlung-lib';
 
 export interface Environment extends TenantConfig, UserConfig, AuthorizationConfig, GrpcEnvironment {
   production: boolean;
@@ -15,4 +16,6 @@ export interface Environment extends TenantConfig, UserConfig, AuthorizationConf
   restApiEndpoint: string;
   votingBasisWebApp: string;
   includeDelegations: boolean;
+  runtimeConfigPolling: RuntimeConfigPollingConfig;
+  eventLogConfig: EventLogConfig;
 }

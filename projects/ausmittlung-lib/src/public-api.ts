@@ -10,7 +10,6 @@
 export * from './lib/ausmittlung-lib.module';
 
 // services
-export * from './lib/services/tokens';
 export * from './lib/services/contest.service';
 export * from './lib/services/result.service';
 export * from './lib/services/permission.service';
@@ -26,6 +25,8 @@ export * from './lib/services/unsaved-changes.service';
 export * from './lib/services/proportional-election-union-result.service';
 export * from './lib/services/proportional-election.service';
 export * from './lib/services/event-log.service';
+export * from './lib/services/language.service';
+export * from './lib/services/runtime-config.service';
 
 // pages
 export * from './lib/pages/contest-detail/contest-detail.component';
@@ -88,3 +89,9 @@ export * from './lib/tokens';
 // guards
 export * from './lib/services/guards/has-unsaved-changes.guard';
 export * from './lib/services/guards/has-deactivate.guard';
+
+// interceptors
+export * from './lib/services/interceptors/grpc-language.interceptor';
+export * from './lib/services/interceptors/http-language.interceptor';
+export * from './lib/services/interceptors/grpc-throttling.interceptor';
+export * from './lib/services/interceptors/http-throttling.interceptor';

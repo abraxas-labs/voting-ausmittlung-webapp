@@ -12,6 +12,7 @@ import {
   majorityElectionResultRoute,
   proportionalElectionResultRoute,
   ResultExportComponent,
+  systemBusyRoute,
   voteResultRoute,
 } from 'ausmittlung-lib';
 import { ErfassungContestDetailComponent } from './pages/erfassung-contest-detail/erfassung-contest-detail.component';
@@ -36,6 +37,7 @@ const routes: Routes = [
         pathMatch: 'full',
         redirectTo: 'contests',
       },
+      systemBusyRoute,
       {
         path: 'contests',
         children: [

@@ -8,12 +8,13 @@ import { inject, NgModule } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterModule, Routes } from '@angular/router';
 import {
   ContestCantonDefaultsResolver,
+  HasDeactivateGuard,
   majorityElectionResultRoute,
+  PoliticalBusinessCantonDefaultsResolver,
   proportionalElectionResultRoute,
   ResultExportComponent,
+  systemBusyRoute,
   voteResultRoute,
-  PoliticalBusinessCantonDefaultsResolver,
-  HasDeactivateGuard,
 } from 'ausmittlung-lib';
 import { MajorityElectionEndResultComponent } from './pages/majority-election-end-result/majority-election-end-result.component';
 import { MonitoringContestDetailComponent } from './pages/monitoring-contest-detail/monitoring-contest-detail.component';
@@ -42,6 +43,7 @@ const routes: Routes = [
         pathMatch: 'full',
         redirectTo: 'contests',
       },
+      systemBusyRoute,
       {
         path: 'contests',
         children: [

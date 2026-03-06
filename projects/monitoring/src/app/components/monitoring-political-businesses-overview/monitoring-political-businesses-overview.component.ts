@@ -5,8 +5,8 @@
  */
 
 import { Component, Input, OnInit } from '@angular/core';
-import { SimplePoliticalBusiness } from '../../../../../ausmittlung-lib/src/lib/models';
 import {
+  SimplePoliticalBusiness,
   CountingCircleResultState,
   flatten,
   groupBy,

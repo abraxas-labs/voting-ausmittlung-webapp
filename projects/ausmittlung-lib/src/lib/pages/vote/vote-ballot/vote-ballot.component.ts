@@ -5,8 +5,7 @@
  */
 
 import { BallotType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/vote_pb';
-import { Component, inject, ViewChild, OnInit, OnDestroy } from '@angular/core';
-import { Params } from '@angular/router';
+import { Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ShortcutDialogComponent, ShortcutDialogData } from '../../../components/ballot-shortcut-dialog/shortcut-dialog.component';
 import {
   BallotBundleState,
@@ -20,7 +19,6 @@ import {
   VoteResultBallotTieBreakQuestionAnswer,
 } from '../../../models';
 import { VoteResultBundleService } from '../../../services/vote-result-bundle.service';
-import { VoteResultService } from '../../../services/vote-result.service';
 import { PoliticalBusinessBallotComponent } from '../../political-business-ballot/political-business-ballot.component';
 import { BallotHeaderComponent } from '../../../components/ballot-header/ballot-header.component';
 
@@ -35,7 +33,6 @@ export class VoteBallotComponent
   implements OnInit, OnDestroy
 {
   private readonly resultBundleService = inject(VoteResultBundleService);
-  private readonly resultService = inject(VoteResultService);
 
   public BallotType: typeof BallotType = BallotType;
 
@@ -203,8 +200,8 @@ export class VoteBallotComponent
     this.computeBundleData();
   }
 
-  protected async loadBallotData(bundleId: string, ballotNumber: number, ballotResultId?: string): Promise<void> {
-    this.ballot = await this.resultBundleService.getBallot(bundleId, ballotNumber);
+  protected async loadBallotData(bundleId: string, ballotNumber: number, cachedBallot?: VoteResultBallot): Promise<void> {
+    this.ballot = cachedBallot ?? (await this.resultBundleService.getBallot(bundleId, ballotNumber));
 
     if (this.ballot?.questionAnswers.length === 0 && this.ballotResult) {
       this.ballot.questionAnswers = this.ballotResult.ballot.ballotQuestionsList.map(x => ({ question: x }));
@@ -213,23 +210,6 @@ export class VoteBallotComponent
     if (this.ballot?.tieBreakQuestionAnswers.length === 0 && this.ballotResult) {
       this.ballot.tieBreakQuestionAnswers = this.ballotResult.ballot.tieBreakQuestionsList.map(x => ({ question: x }));
     }
-  }
-
-  protected async reconstructData(resultId: string, bundleId: string, params: Params): Promise<void> {
-    this.politicalBusinessResult = await this.resultService.getByResultId(resultId);
-    this.ballotResult = await this.resultService.getBallotResult(params.ballotResultId);
-    this.bundle = {
-      countOfBallots: 0,
-      countOfModifiedBallots: 0,
-      id: bundleId,
-      state: BallotBundleState.BALLOT_BUNDLE_STATE_IN_PROCESS,
-      number: this.route.snapshot.queryParams.bundleNumber,
-      createdBy: await this.userService.getUser(),
-      ballotNumbers: [],
-      ballotNumbersToReview: [],
-      logs: [],
-    };
-    this.computeBundleData();
   }
 
   protected saveNewBallot(bundle: PoliticalBusinessResultBundle, ballot: VoteResultBallot): Promise<number> {
@@ -272,13 +252,20 @@ export class VoteBallotComponent
         qa => qa.answer === TieBreakQuestionAnswer.TIE_BREAK_QUESTION_ANSWER_UNSPECIFIED || qa.answer === undefined,
       )
     ) {
-      await this.dialog.alert(
+      const confirmUnchangedBallot = await this.dialog.confirm(
         this.i18n.instant('VOTE.BALLOT_DETAIL.UNCHANGED_BALLOT.TITLE'),
         this.i18n.instant('VOTE.BALLOT_DETAIL.UNCHANGED_BALLOT.MSG'),
+        this.i18n.instant('ACTIONS.SAVE'),
       );
-      return false;
+
+      if (confirmUnchangedBallot) {
+        this.setUndefinedAnswersToUnspecified();
+      }
+
+      return confirmUnchangedBallot;
     }
 
+    this.setUndefinedAnswersToUnspecified();
     return true;
   }
 
@@ -331,5 +318,19 @@ export class VoteBallotComponent
     }
 
     delete this.activeAnswer;
+  }
+
+  private setUndefinedAnswersToUnspecified(): void {
+    if (!this.ballot) {
+      return;
+    }
+
+    for (const qa of this.ballot.questionAnswers.filter(x => x.answer === undefined)) {
+      qa.answer = BallotQuestionAnswer.BALLOT_QUESTION_ANSWER_UNSPECIFIED;
+    }
+
+    for (const qa of this.ballot.tieBreakQuestionAnswers.filter(x => x.answer === undefined)) {
+      qa.answer = TieBreakQuestionAnswer.TIE_BREAK_QUESTION_ANSWER_UNSPECIFIED;
+    }
   }
 }

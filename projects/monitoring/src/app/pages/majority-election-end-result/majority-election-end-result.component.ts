@@ -14,6 +14,8 @@ import {
   SecondFactorTransactionService,
   MajorityElectionEndResultEventTypes,
   EventLogService,
+  PermissionService,
+  Permissions,
 } from 'ausmittlung-lib';
 import { combineLatest, debounceTime, map, Subscription } from 'rxjs';
 import {
@@ -38,6 +40,7 @@ export class MajorityElectionEndResultComponent implements OnDestroy {
   private readonly secondFactorTransactionService = inject(SecondFactorTransactionService);
   private readonly eventLogService = inject(EventLogService);
   private readonly router = inject(Router);
+  private readonly permissionService = inject(PermissionService);
 
   public loading: boolean = true;
   public stepActionLoading: boolean = false;
@@ -123,7 +126,7 @@ export class MajorityElectionEndResultComponent implements OnDestroy {
         this.endResultStep = newStep;
       }
 
-      this.updateShowExport();
+      await this.updateShowExport();
     } finally {
       this.stepActionLoading = false;
     }
@@ -214,7 +217,7 @@ export class MajorityElectionEndResultComponent implements OnDestroy {
         : !this.endResult.finalized || !this.finalizeEnabled
           ? EndResultStep.AllCountingCirclesDone
           : EndResultStep.Finalized;
-      this.updateShowExport();
+      await this.updateShowExport();
     } finally {
       this.loading = false;
     }
@@ -224,7 +227,10 @@ export class MajorityElectionEndResultComponent implements OnDestroy {
     }
   }
 
-  private updateShowExport(): void {
-    this.showExport = !this.hasOpenRequiredLotDecisions && this.endResult!.finalized;
+  private async updateShowExport(): Promise<void> {
+    this.showExport =
+      !this.hasOpenRequiredLotDecisions &&
+      this.endResult!.finalized &&
+      (await this.permissionService.hasPermission(Permissions.Export.ExportData));
   }
 }

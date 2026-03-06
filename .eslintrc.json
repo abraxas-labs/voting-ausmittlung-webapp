@@ -24,5 +24,18 @@
       "files": ["*.component.ts"],
       "extends": ["plugin:@angular-eslint/template/process-inline-templates"]
     }
-  ]
+  ],
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["**/../ausmittlung-lib/**"],
+            "message": "Do not import from ausmittlung-lib via relative path. Use the module instead."
+          }
+        ]
+      }
+    ]
+  }
 }

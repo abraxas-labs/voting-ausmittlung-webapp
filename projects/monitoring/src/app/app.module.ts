@@ -52,9 +52,13 @@ import {
   getCommonProviders,
   GRPC_ENV_INJECTION_TOKEN,
   REST_API_URL_INJECTION_TOKEN,
+  EVENT_LOG_CONFIG_INJECTION_TOKEN,
+  GrpcLanguageInterceptor,
+  HttpLanguageInterceptor,
+  GrpcThrottlingInterceptor,
+  RUNTIME_CONFIG_POLLING_CONFIG_INJECTION_TOKEN,
+  HttpThrottlingInterceptor,
 } from 'ausmittlung-lib';
-import { GrpcLanguageInterceptor } from '../../../ausmittlung-lib/src/lib/services/interceptors/grpc-language.interceptor';
-import { HttpLanguageInterceptor } from '../../../ausmittlung-lib/src/lib/services/interceptors/http-language.interceptor';
 import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -207,6 +211,14 @@ registerLocaleData(localeDeCh);
       useValue: environment.restApiEndpoint,
     },
     {
+      provide: RUNTIME_CONFIG_POLLING_CONFIG_INJECTION_TOKEN,
+      useValue: environment.runtimeConfigPolling,
+    },
+    {
+      provide: EVENT_LOG_CONFIG_INJECTION_TOKEN,
+      useValue: environment.eventLogConfig,
+    },
+    {
       provide: BaseBreadcrumbsService,
       useClass: BreadcrumbsService,
     },
@@ -216,9 +228,19 @@ registerLocaleData(localeDeCh);
       useClass: GrpcLanguageInterceptor,
     },
     {
+      provide: GRPC_INTERCEPTORS,
+      multi: true,
+      useClass: GrpcThrottlingInterceptor,
+    },
+    {
       provide: HTTP_INTERCEPTORS,
       multi: true,
       useClass: HttpLanguageInterceptor,
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      multi: true,
+      useClass: HttpThrottlingInterceptor,
     },
     {
       provide: FORMFIELD_DEFAULT_OPTIONS,
