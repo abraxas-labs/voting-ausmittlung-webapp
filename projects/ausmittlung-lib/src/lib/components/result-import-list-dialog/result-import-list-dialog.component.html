@@ -1,7 +1,7 @@
 <vo-lib-dialog [contentLoading]="loading">
   <div header>
     <h3 translate>RESULT_IMPORT.LIST_TITLE</h3>
-    @if (resultsImported && canDeleteImport) {
+    @if (resultsImported && canDeleteImport && !isECounting) {
       <div>
         <bc-button [label]="'RESULT_IMPORT.DELETE' | translate" color="warn" (buttonClick)="deleteResults()"></bc-button>
       </div>
@@ -75,6 +75,32 @@
                   <span class="non-test-counting-circle">{{
                   'RESULT_IMPORT.IGNORED_COUNTING_CIRCLE.NON_TEST_COUNTING_CIRCLE' | translate }}</span>
                 }
+              </li>
+            }
+          </ul>
+        </bc-data-cell>
+      </ng-container>
+
+      <ng-container columnDef="importedPoliticalBusinesses">
+        <bc-header-cell *headerCellDef>{{ 'RESULT_IMPORT.IMPORTED_POLITICAL_BUSINESSES' | translate }}</bc-header-cell>
+        <bc-data-cell *dataCellDef="let element">
+          <ul>
+            @for (importedPoliticalBusiness of element.importedPoliticalBusinessesList; track importedPoliticalBusiness) {
+              <li>
+                <span>{{ importedPoliticalBusiness.politicalBusinessNumber }}</span>
+              </li>
+            }
+          </ul>
+        </bc-data-cell>
+      </ng-container>
+
+      <ng-container columnDef="ignoredPoliticalBusinesses">
+        <bc-header-cell *headerCellDef>{{ 'RESULT_IMPORT.IGNORED_POLITICAL_BUSINESSES' | translate }}</bc-header-cell>
+        <bc-data-cell *dataCellDef="let element">
+          <ul>
+            @for (ignoredPoliticalBusiness of element.ignoredPoliticalBusinessesList; track ignoredPoliticalBusiness) {
+              <li>
+                <span>{{ ignoredPoliticalBusiness.politicalBusinessNumber }}</span>
               </li>
             }
           </ul>

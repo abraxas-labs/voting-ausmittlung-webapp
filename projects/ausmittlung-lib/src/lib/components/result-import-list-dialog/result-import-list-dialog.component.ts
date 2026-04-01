@@ -32,6 +32,7 @@ export class ResultImportListDialogComponent implements OnInit {
   public loading: boolean = true;
   public resultImports: ResultImport[] = [];
   public resultsImported: boolean = false;
+  public isECounting: boolean = false;
 
   private readonly importType: ResultImportType;
   private readonly contestId: string;
@@ -47,9 +48,14 @@ export class ResultImportListDialogComponent implements OnInit {
     this.countingCircleId = dialogData.countingCircleId;
     this.canDeleteImport = dialogData.canDeleteImport;
     this.canImport = dialogData.canImport;
+    this.isECounting = this.importType === ResultImportType.RESULT_IMPORT_TYPE_ECOUNTING;
 
     if (this.importType == ResultImportType.RESULT_IMPORT_TYPE_EVOTING) {
       this.columns.push('importedCountingCircles', 'emptyCountingCircles', 'ignoredCountingCircles');
+    }
+
+    if (this.importType == ResultImportType.RESULT_IMPORT_TYPE_ECOUNTING) {
+      this.columns.push('importedPoliticalBusinesses', 'ignoredPoliticalBusinesses');
     }
   }
 

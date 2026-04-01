@@ -105,6 +105,7 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
   private readonly parentExpandedSubscription?: Subscription;
   private readonly parentCountingCircleDetailsUpdatedSubscription?: Subscription;
   private readonly stateChangeSubscription?: Subscription;
+  private readonly parentECountingImportDeletedSubscription?: Subscription;
 
   // eslint-disable-next-line @angular-eslint/prefer-inject
   protected constructor(protected readonly resultService: TService) {
@@ -115,6 +116,8 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
     this.parentCountingCircleDetailsUpdatedSubscription = parent.countingCircleDetailsUpdated$.subscribe(details =>
       this.countingCircleDetailsUpdated(details),
     );
+
+    this.parentECountingImportDeletedSubscription = parent.eCountingImportDeleted$.subscribe(() => this.resetECountingResults());
 
     this.stateChangeSubscription = this.politicalBusinessResultService.resultStateChanged$
       .pipe(filter(({ resultId }) => this.result.id === resultId))
@@ -137,6 +140,7 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
     this.parentExpandedSubscription?.unsubscribe();
     this.parentCountingCircleDetailsUpdatedSubscription?.unsubscribe();
     this.stateChangeSubscription?.unsubscribe();
+    this.parentECountingImportDeletedSubscription?.unsubscribe();
   }
 
   public countingCircleDetailsUpdated(values: ContestCountingCircleDetails): void {
@@ -344,6 +348,8 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
   }
 
   protected abstract setFocus(): void;
+
+  protected abstract resetECountingResults(): void;
 
   private async expanded(): Promise<void> {
     if (!this.isDataLoaded) {

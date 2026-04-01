@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import {
   ContestCountingCircleDetails,
   ProportionalElectionResult,
+  resetCountOfVotersSubTotal,
   updateCountOfVotersCalculatedFields,
   ValidationSummary,
 } from '../../../models';
@@ -136,5 +137,14 @@ export class ContestProportionalElectionDetailComponent
 
   protected async loadValidationSummary(): Promise<ValidationSummary> {
     return this.resultService.validateEnterCountOfVoters(this.resultDetail!.id, this.resultDetail!.countOfVoters);
+  }
+
+  protected resetECountingResults(): void {
+    if (!this.resultDetail) {
+      return;
+    }
+
+    resetCountOfVotersSubTotal(this.resultDetail.countOfVoters.eCountingSubTotal);
+    updateCountOfVotersCalculatedFields(this.resultDetail.countOfVoters);
   }
 }

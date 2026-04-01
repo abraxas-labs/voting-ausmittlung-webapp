@@ -45,6 +45,12 @@ div[header] {
   }
 }
 
+.delete-e-counting {
+  @extend .mb-3;
+
+  text-align: right;
+}
+
 vo-ausm-result-state-box {
   min-width: 10rem;
 }

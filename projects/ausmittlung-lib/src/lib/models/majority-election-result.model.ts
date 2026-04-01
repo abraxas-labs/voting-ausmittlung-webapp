@@ -24,7 +24,11 @@ import {
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/majority_election_result_sub_total_pb';
 import { MajorityElectionResultEntry as MajorityElectionResultEntryProto } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/majority_election_pb';
 import { PoliticalBusinessResultBundle, PoliticalBusinessResultBundles } from './ballot-bundle.model';
-import { PoliticalBusinessNullableCountOfVoters } from './count-of-voters.model';
+import {
+  PoliticalBusinessNullableCountOfVoters,
+  resetCountOfVotersSubTotal,
+  updateCountOfVotersCalculatedFields,
+} from './count-of-voters.model';
 import { CountingCircle } from './counting-circle.model';
 import { ElectionResultBallot } from './election-result-ballot.model';
 import {
@@ -186,6 +190,47 @@ export function resetMajorityConventionalResults(result: MajorityElectionResult)
     for (const candidateResult of secondaryResult.candidateResults) {
       candidateResult.conventionalVoteCount = conventionalDefaultValue;
       candidateResult.voteCount = candidateResult.eVotingInclWriteInsVoteCount + candidateResult.eCountingInclWriteInsVoteCount;
+    }
+  }
+}
+
+export function resetMajorityECountingResults(result: MajorityElectionResult): void {
+  result.individualVoteCount -= result.eCountingSubTotal.individualVoteCount;
+  result.emptyVoteCount -= result.eCountingSubTotal.emptyVoteCountInclWriteIns;
+  result.invalidVoteCount -= result.eCountingSubTotal.invalidVoteCount;
+
+  result.eCountingSubTotal.individualVoteCount = 0;
+  result.eCountingSubTotal.emptyVoteCountInclWriteIns = 0;
+  result.eCountingSubTotal.emptyVoteCountExclWriteIns = 0;
+  result.eCountingSubTotal.emptyVoteCountWriteIns = 0;
+  result.eCountingSubTotal.invalidVoteCount = 0;
+
+  resetCountOfVotersSubTotal(result.countOfVoters.eCountingSubTotal);
+  updateCountOfVotersCalculatedFields(result.countOfVoters);
+
+  for (const candidateResult of result.candidateResults) {
+    candidateResult.eCountingWriteInsVoteCount = 0;
+    candidateResult.eCountingExclWriteInsVoteCount = 0;
+    candidateResult.eCountingInclWriteInsVoteCount = 0;
+    candidateResult.voteCount = candidateResult.eVotingInclWriteInsVoteCount + (candidateResult.conventionalVoteCount ?? 0);
+  }
+
+  for (const secondaryResult of result.secondaryMajorityElectionResults) {
+    secondaryResult.individualVoteCount -= secondaryResult.eCountingSubTotal.individualVoteCount;
+    secondaryResult.emptyVoteCount -= secondaryResult.eCountingSubTotal.emptyVoteCountInclWriteIns;
+    secondaryResult.invalidVoteCount -= secondaryResult.eCountingSubTotal.invalidVoteCount;
+
+    secondaryResult.eCountingSubTotal.individualVoteCount = 0;
+    secondaryResult.eCountingSubTotal.emptyVoteCountInclWriteIns = 0;
+    secondaryResult.eCountingSubTotal.emptyVoteCountExclWriteIns = 0;
+    secondaryResult.eCountingSubTotal.emptyVoteCountWriteIns = 0;
+    secondaryResult.eCountingSubTotal.invalidVoteCount = 0;
+
+    for (const candidateResult of secondaryResult.candidateResults) {
+      candidateResult.eCountingWriteInsVoteCount = 0;
+      candidateResult.eCountingExclWriteInsVoteCount = 0;
+      candidateResult.eCountingInclWriteInsVoteCount = 0;
+      candidateResult.voteCount = candidateResult.eVotingInclWriteInsVoteCount + (candidateResult.conventionalVoteCount ?? 0);
     }
   }
 }

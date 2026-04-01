@@ -10,6 +10,7 @@ import {
   MajorityElectionResult,
   MajorityElectionResultEntry,
   resetMajorityConventionalResults,
+  resetMajorityECountingResults,
   updateCountOfVotersCalculatedFields,
   ValidationSummary,
 } from '../../../models';
@@ -124,5 +125,13 @@ export class ContestMajorityElectionDetailComponent extends AbstractContestPolit
     return this.resultDetail!.entry === MajorityElectionResultEntry.MAJORITY_ELECTION_RESULT_ENTRY_FINAL_RESULTS
       ? await this.resultService.validateEnterCandidateResults(this.resultDetail!)
       : await this.resultService.validateEnterCountOfVoters(this.resultDetail!.id, this.resultDetail!.countOfVoters);
+  }
+
+  protected resetECountingResults(): void {
+    if (!this.resultDetail) {
+      return;
+    }
+
+    resetMajorityECountingResults(this.resultDetail);
   }
 }

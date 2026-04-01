@@ -36,6 +36,19 @@
       @if (result.politicalBusiness.active) {
         <div
           >
+          @if (result.eCountingImported) {
+            <div class="delete-e-counting">
+              <vo-lib-inline-spinner [loading]="isDeletingECountingImportData" class="mr-3">
+                <bc-button
+                  [label]="'POLITICAL_BUSINESS.DELETE_E_COUNTING_IMPORT_DATA' | translate"
+                  color="warn"
+                  (buttonClick)="deleteECountingImportData()"
+                  [disabled]="isDeletingECountingImportData"
+                ></bc-button>
+              </vo-lib-inline-spinner>
+            </div>
+          }
+
           @switch (result.politicalBusiness.businessType) {
             @case (politicalBusinessType.POLITICAL_BUSINESS_TYPE_VOTE) {
               <vo-ausm-contest-vote-detail

@@ -10,6 +10,7 @@ import { cloneDeep, isEqual } from 'lodash';
 import {
   BallotQuestionResult,
   ContestCountingCircleDetails,
+  resetCountOfVotersSubTotal,
   TieBreakQuestionResult,
   updateCountOfVotersCalculatedFields,
   ValidationSummary,
@@ -138,6 +139,20 @@ export class ContestVoteDetailComponent extends AbstractContestPoliticalBusiness
     }
   }
 
+  protected resetECountingResults(): void {
+    if (!this.resultDetail) {
+      return;
+    }
+
+    for (const ballotResult of this.resultDetail.results) {
+      resetCountOfVotersSubTotal(ballotResult.countOfVoters.eCountingSubTotal);
+      updateCountOfVotersCalculatedFields(ballotResult.countOfVoters);
+
+      this.resetQuestionECountingResults(ballotResult.questionResults);
+      this.resetQuestionECountingResults(ballotResult.tieBreakQuestionResults);
+    }
+  }
+
   private resetQuestionResults(questionResults: BallotQuestionResult[] | TieBreakQuestionResult[], isDetailedEntry: boolean): void {
     const conventionalDefaultValue = isDetailedEntry ? 0 : undefined;
 
@@ -152,6 +167,18 @@ export class ContestVoteDetailComponent extends AbstractContestPoliticalBusiness
         questionResult.eVotingSubTotal.totalCountOfAnswer2 + questionResult.eCountingSubTotal.totalCountOfAnswer2;
       questionResult.totalCountOfAnswerUnspecified =
         questionResult.eVotingSubTotal.totalCountOfAnswerUnspecified + questionResult.eCountingSubTotal.totalCountOfAnswerUnspecified;
+    }
+  }
+
+  private resetQuestionECountingResults(questionResults: BallotQuestionResult[] | TieBreakQuestionResult[]): void {
+    for (const questionResult of questionResults) {
+      questionResult.totalCountOfAnswer1 -= questionResult.eCountingSubTotal.totalCountOfAnswer1;
+      questionResult.totalCountOfAnswer2 -= questionResult.eCountingSubTotal.totalCountOfAnswer2;
+      questionResult.totalCountOfAnswerUnspecified -= questionResult.eCountingSubTotal.totalCountOfAnswerUnspecified;
+
+      questionResult.eCountingSubTotal.totalCountOfAnswer1 = 0;
+      questionResult.eCountingSubTotal.totalCountOfAnswer2 = 0;
+      questionResult.eCountingSubTotal.totalCountOfAnswerUnspecified = 0;
     }
   }
 }

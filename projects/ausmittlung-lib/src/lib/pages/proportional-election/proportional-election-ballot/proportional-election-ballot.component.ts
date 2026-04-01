@@ -24,6 +24,7 @@ import { ProportionalElectionResultService } from '../../../services/proportiona
 import { ProportionalElectionService } from '../../../services/proportional-election.service';
 import { ElectionBallotComponent } from '../../election-ballot/election-ballot.component';
 import { BallotHeaderComponent } from '../../../components/ballot-header/ballot-header.component';
+import { Int32Value } from 'google-protobuf/google/protobuf/wrappers_pb';
 
 @Component({
   selector: 'vo-ausm-proportional-election-ballot',
@@ -186,12 +187,36 @@ export class ProportionalElectionBallotComponent extends ElectionBallotComponent
     );
   }
 
-  protected saveNewBallot(bundle: ProportionalElectionResultBundle, ballot: ProportionalElectionResultBallot): Promise<number> {
-    return this.resultBundleService.createBallot(bundle.id, ballot.number, this.ballotUiData);
+  protected async saveNewBallot(bundle: ProportionalElectionResultBundle, ballot: ProportionalElectionResultBallot): Promise<number> {
+    const number = await this.resultBundleService.createBallot(bundle.id, ballot.number, this.ballotUiData);
+
+    // Set the values to the ballot if the creation succeeded, so that the cache is correct.
+    this.updateBallotCache(ballot, this.ballotUiData);
+
+    return number;
   }
 
-  protected updateBallot(bundle: ProportionalElectionResultBundle, ballot: ProportionalElectionResultBallot): Promise<void> {
-    return this.resultBundleService.updateBallot(bundle.id, ballot.number, this.ballotUiData);
+  protected async updateBallot(bundle: ProportionalElectionResultBundle, ballot: ProportionalElectionResultBallot): Promise<void> {
+    await this.resultBundleService.updateBallot(bundle.id, ballot.number, this.ballotUiData);
+
+    // Set the values to the ballot if the update succeeded, so that the cache is correct.
+    this.updateBallotCache(ballot, this.ballotUiData);
+  }
+
+  private updateBallotCache(ballot: ProportionalElectionResultBallot, uiData: ProportionalElectionBallotUiData): void {
+    // Set the values to the ballot if the creation succeeded, so that the cache is correct.
+    ballot.emptyVoteCount = uiData.automaticEmptyVoteCounting ? uiData.emptyVoteCount : uiData.userEnteredEmptyVoteCount;
+    ballot.candidates = [];
+
+    for (const position of uiData.listPositions) {
+      if (position.listCandidate) {
+        ballot.candidates.push({ ...position.listCandidate, position: position.position, accumulated: false });
+      }
+
+      if (position.replacementCandidate) {
+        ballot.candidates.push({ ...position.replacementCandidate, position: position.position, accumulated: false });
+      }
+    }
   }
 
   protected deleteBallot(bundleId: string, ballotNumber: number): Promise<void> {

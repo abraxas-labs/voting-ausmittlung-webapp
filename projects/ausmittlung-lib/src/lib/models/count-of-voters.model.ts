@@ -54,6 +54,13 @@ export interface ElectorateCountOfVotersInformationSubTotal {
   domainOfInfluenceTypes: DomainOfInfluenceType[];
 }
 
+export function resetCountOfVotersSubTotal(subTotal: PoliticalBusinessCountOfVotersSubTotal): void {
+  subTotal.accountedBallots = 0;
+  subTotal.blankBallots = 0;
+  subTotal.invalidBallots = 0;
+  subTotal.receivedBallots = 0;
+}
+
 export function updateCountOfVotersCalculatedFields(
   countOfVoters: PoliticalBusinessNullableCountOfVoters,
   totalCountOfVoters?: number,

@@ -6,7 +6,7 @@
 
 import { ExpansionPanelComponent } from '@abraxas/base-components';
 import { CountingCircleResultState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/counting_circle_pb';
-import { DialogService } from '@abraxas/voting-lib';
+import { DialogService, SnackbarService } from '@abraxas/voting-lib';
 import { ChangeDetectorRef, Component, Input, ViewChild, inject } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { ContestCantonDefaults, ContestCountingCircleDetails, PoliticalBusinessType, ResultListResult } from '../../../models';
@@ -15,6 +15,8 @@ import {
   ContactPersonDialogComponent,
   ContactPersonDialogComponentData,
 } from '../../contact-person-dialog/contact-person-dialog.component';
+import { ResultImportService } from '../../../services/result-import.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'vo-ausm-contest-political-business-detail',
@@ -25,8 +27,12 @@ import {
 export class ContestPoliticalBusinessDetailComponent {
   private readonly dialog = inject(DialogService);
   private readonly cd = inject(ChangeDetectorRef);
+  private readonly resultImportService = inject(ResultImportService);
+  private readonly toast = inject(SnackbarService);
+  private readonly i18n = inject(TranslateService);
 
   public readonly politicalBusinessType: typeof PoliticalBusinessType = PoliticalBusinessType;
+  public isDeletingECountingImportData: boolean = false;
 
   @Input()
   public result!: ResultListResult;
@@ -54,6 +60,7 @@ export class ContestPoliticalBusinessDetailComponent {
   private readonly countingCircleDetailsUpdatedSubject: Subject<ContestCountingCircleDetails> = new Subject<ContestCountingCircleDetails>();
 
   private readonly expandedSubject: Subject<boolean> = new Subject<boolean>();
+  private readonly eCountingImportDeletedSubject: Subject<void> = new Subject<void>();
 
   public set expanded(x: boolean) {
     this.expansionPanel.expanded = x;
@@ -66,6 +73,10 @@ export class ContestPoliticalBusinessDetailComponent {
 
   public get expanded$(): Observable<boolean> {
     return this.expandedSubject.asObservable();
+  }
+
+  public get eCountingImportDeleted$(): Observable<void> {
+    return this.eCountingImportDeletedSubject.asObservable();
   }
 
   public get countingCircleDetailsUpdated$(): Observable<ContestCountingCircleDetails> {
@@ -101,5 +112,22 @@ export class ContestPoliticalBusinessDetailComponent {
       domainOfInfluences: [this.result.politicalBusiness.domainOfInfluence],
     };
     this.dialog.open(ContactPersonDialogComponent, data);
+  }
+
+  public async deleteECountingImportData(): Promise<void> {
+    this.isDeletingECountingImportData = true;
+
+    try {
+      await this.resultImportService.deleteECountingPoliticalBusinessResultImportData(
+        this.contestCountingCircleDetails.contestId,
+        this.contestCountingCircleDetails.countingCircleId,
+        this.result.politicalBusiness.id,
+      );
+      this.toast.success(this.i18n.instant('APP.DELETED'));
+      this.result.eCountingImported = false;
+      this.eCountingImportDeletedSubject.next();
+    } finally {
+      this.isDeletingECountingImportData = false;
+    }
   }
 }

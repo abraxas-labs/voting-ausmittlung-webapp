@@ -191,6 +191,7 @@ export class ResultService extends GrpcStreamingService<ResultServicePromiseClie
       auditedTentativelyTimestamp: data.getAuditedTentativelyTimestamp()?.toDate(),
       plausibilisedTimestamp: data.getPlausibilisedTimestamp()?.toDate(),
       politicalBusiness: PoliticalBusinessService.mapToPoliticalBusiness(data.getPoliticalBusiness()!),
+      eCountingImported: data.getECountingImported(),
     };
   }
 

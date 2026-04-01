@@ -1,4 +1,4 @@
-# ✨ Changelog (`v3.27.8`)
+# ✨ Changelog (`v3.28.1`)
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Info
 
 ```text
-This version -------- v3.27.8
-Previous version ---- v3.25.10
+This version -------- v3.28.1
+Previous version ---- v3.27.8
 Initial version ----- v1.25.0
-Total commits ------- 15
+Total commits ------- 2
 ```
+
+## [v3.28.1] - 2026-03-25
+
+### 🔄 Changed
+
+- keep proportional election ballot cache up to date
+
+## [v3.28.0] - 2026-03-23
+
+### 🔄 Changed
+
+- e-counting import flow without deleting previous imports
 
 ## [v3.27.8] - 2026-03-06
 

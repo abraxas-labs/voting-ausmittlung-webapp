@@ -105,6 +105,7 @@ export interface ResultListResult {
   auditedTentativelyTimestamp?: Date;
   plausibilisedTimestamp?: Date;
   hasComments: boolean;
+  eCountingImported: boolean;
 }
 
 export interface CountingCircleResult {

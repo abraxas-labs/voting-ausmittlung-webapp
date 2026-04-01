@@ -5,7 +5,7 @@
  */
 
 import {
-  DeleteECountingResultImportDataRequest,
+  DeleteECountingResultPoliticalBusinessImportDataRequest,
   DeleteEVotingResultImportDataRequest,
   GetMajorityElectionWriteInMappingsRequest,
   ListECountingResultImportsRequest,
@@ -110,9 +110,6 @@ export class ResultImportService extends GrpcService<ResultImportServicePromiseC
       case ResultImportType.RESULT_IMPORT_TYPE_EVOTING:
         await this.deleteEVotingResultImportData(contestId);
         break;
-      case ResultImportType.RESULT_IMPORT_TYPE_ECOUNTING:
-        await this.deleteECountingResultImportData(contestId, countingCircleId!);
-        break;
       default:
         throw new Error('unknown import type ' + importType);
     }
@@ -124,11 +121,16 @@ export class ResultImportService extends GrpcService<ResultImportServicePromiseC
     return this.requestEmptyResp(c => c.deleteEVotingImportData, req);
   }
 
-  public deleteECountingResultImportData(contestId: string, countingCircleId: string): Promise<void> {
-    const req = new DeleteECountingResultImportDataRequest();
+  public deleteECountingPoliticalBusinessResultImportData(
+    contestId: string,
+    countingCircleId: string,
+    politicalBusinessId: string,
+  ): Promise<void> {
+    const req = new DeleteECountingResultPoliticalBusinessImportDataRequest();
     req.setContestId(contestId);
     req.setCountingCircleId(countingCircleId);
-    return this.requestEmptyResp(c => c.deleteECountingImportData, req);
+    req.setPoliticalBusinessId(politicalBusinessId);
+    return this.requestEmptyResp(c => c.deleteECountingPoliticalBusinessImportData, req);
   }
 
   public async mapMajorityElectionWriteIns(mappings: MajorityElectionWriteInMappings, countingCircleId: string): Promise<void> {

@@ -188,7 +188,8 @@
     },
     "SUBMISSION": "Erfassung",
     "RESULT": "Ergebnis",
-    "NO_BUNDLES": "Keine Bunde vorhanden..."
+    "NO_BUNDLES": "Keine Bunde vorhanden...",
+    "DELETE_E_COUNTING_IMPORT_DATA": "E-Counting Ergebnisse löschen"
   },
   "VOTE": {
     "RESULT_ENTRY": {
@@ -1116,6 +1117,8 @@
       "TEST_COUNTING_CIRCLE": "(Testurne)",
       "NON_TEST_COUNTING_CIRCLE": "(Keine Testurne!)"
     },
+    "IMPORTED_POLITICAL_BUSINESSES": "Betroffene Geschäfte",
+    "IGNORED_POLITICAL_BUSINESSES": "Ignorierte Geschäfte",
     "DELETED_FILE_NAME": "Importierte Ergebnisse gelöscht",
     "DELETE": "Importierte Ergebnisse löschen",
     "DELETE_CONFIRM_TITLE": "Sind Sie sicher?",
