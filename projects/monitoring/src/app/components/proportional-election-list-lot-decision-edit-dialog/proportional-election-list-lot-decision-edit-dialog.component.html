@@ -1,6 +1,4 @@
-<vo-lib-dialog>
-  <h3 header translate>PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.ADD</h3>
-
+<vo-lib-dialog [header]="'PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.ADD' | translate" (dialogClose)="close()">
   <div content>
     <div class="grid">
       <div>
@@ -23,37 +21,36 @@
         <h4 translate class="mb-0">{{ 'PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.LOT_DECISION_ENTRY.TITLE' | translate }}</h4>
         <bc-table class="w-full" [dataSource]="lotDecisionEntries">
           <ng-container columnDef="description">
-            <bc-header-cell *headerCellDef>
+            <th bc-header-cell *headerCellDef>
               {{ 'PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.LOT_DECISION_ENTRY.DESCRIPTION' | translate }}
-            </bc-header-cell>
-            <bc-data-cell *dataCellDef="let element">
+            </th>
+            <td bc-data-cell *dataCellDef="let element">
               {{ element.description }}
-            </bc-data-cell>
+            </td>
           </ng-container>
 
           <ng-container columnDef="winner">
-            <bc-header-cell *headerCellDef>
+            <th bc-header-cell *headerCellDef>
               {{ 'PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.LOT_DECISION_ENTRY.WINNER' | translate }}
-            </bc-header-cell>
-            <bc-data-cell *dataCellDef="let element">
+            </th>
+            <td bc-data-cell *dataCellDef="let element">
               <bc-checkbox [(checked)]="element.winning"></bc-checkbox>
-            </bc-data-cell>
+            </td>
           </ng-container>
 
-          <bc-header-row *headerRowDef="let row; columns: columns"></bc-header-row>
-          <bc-data-row *dataRowDef="let row; columns: columns; let i = index"></bc-data-row>
+          <tr bc-header-row *headerRowDef="let row; columns: columns"></tr>
+          <tr bc-data-row *dataRowDef="let row; columns: columns; let i = index"></tr>
         </bc-table>
       </div>
     </div>
   </div>
 
-  <div footer>
-    <vo-lib-button-bar
-      (save)="save()"
-      [canSave]="canSave"
-      [sticky]="false"
-      [saveLabel]="'COMMON.ADD' | translate"
-      (cancel)="close()"
-    ></vo-lib-button-bar>
-  </div>
+  <vo-lib-button-bar
+    footer
+    (save)="save()"
+    [canSave]="canSave"
+    [sticky]="false"
+    [saveLabel]="'COMMON.ADD' | translate"
+    (cancel)="close()"
+  ></vo-lib-button-bar>
 </vo-lib-dialog>

@@ -1,6 +1,4 @@
-<vo-lib-dialog>
-  <h3 header>{{'CONTEST.DETAIL.CONTACT_DATA.TITLE_AUTHORITY' | translate}}</h3>
-
+<vo-lib-dialog [header]="'CONTEST.DETAIL.CONTACT_DATA.TITLE_AUTHORITY' | translate" (dialogClose)="done()">
   <div content>
     @for (domainOfInfluence of domainOfInfluences; track domainOfInfluence) {
       <div class="my-2 mb-4">
@@ -10,10 +8,9 @@
           !!domainOfInfluence.contactPerson?.familyName ||
           !!domainOfInfluence.contactPerson?.phone ||
           !!domainOfInfluence.contactPerson?.mobilePhone ||
-          !!domainOfInfluence.contactPerson?.email) {
-          <vo-ausm-contact-person-data
-            [contactPerson]="domainOfInfluence.contactPerson"
-          ></vo-ausm-contact-person-data>
+          !!domainOfInfluence.contactPerson?.email
+        ) {
+          <vo-ausm-contact-person-data [contactPerson]="domainOfInfluence.contactPerson"></vo-ausm-contact-person-data>
         } @else {
           <span class="no-data" translate>CONTEST.DETAIL.CONTACT_DATA.NO_DATA</span>
         }
@@ -21,10 +18,11 @@
     }
   </div>
 
-  <div footer>
-    <vo-lib-button-bar [hasSaveButton]="false"
-      [sticky]="false"
-      [cancelLabel]="'APP.CLOSE' | translate"
-      (cancel)="done()"></vo-lib-button-bar>
-  </div>
+  <vo-lib-button-bar
+    footer
+    [hasSaveButton]="false"
+    [sticky]="false"
+    [cancelLabel]="'APP.CLOSE' | translate"
+    (cancel)="done()"
+  ></vo-lib-button-bar>
 </vo-lib-dialog>

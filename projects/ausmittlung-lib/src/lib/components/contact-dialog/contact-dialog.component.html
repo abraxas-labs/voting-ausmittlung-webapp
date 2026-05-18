@@ -1,6 +1,4 @@
-<vo-lib-dialog>
-  <h1 header>{{ 'CONTEST.DETAIL.CONTACT_DATA.TITLE_DIALOG' | translate }}</h1>
-
+<vo-lib-dialog [header]="'CONTEST.DETAIL.CONTACT_DATA.TITLE_DIALOG' | translate" (dialogClose)="cancel()">
   <div content class="container">
     <div class="left">
       <h2>{{ 'CONTEST.DETAIL.CONTACT_DATA.TITLE_AUTHORITY' | translate }}</h2>
@@ -36,8 +34,7 @@
         [checked]="countingCircle.contactPersonSameDuringEventAsAfter"
         (checkedChange)="setContactPersonSameDuringEventAsAfter($event)"
         [subscriptSizing]="'dynamic'"
-        >
-      </bc-checkbox>
+      ></bc-checkbox>
       @if (!countingCircle.contactPersonSameDuringEventAsAfter) {
         <vo-ausm-contact-person-edit
           class="form"
@@ -49,19 +46,18 @@
     </div>
   </div>
 
-  <div footer>
-    <vo-lib-button-bar
-      [hasCancelButton]="showCancel"
-      [hasSaveButton]="!readonly"
-      [saving]="saving"
-      [canSave]="
-        !!countingCircle.contactPersonDuringEvent?.phone &&
-        !!countingCircle.contactPersonDuringEvent?.mobilePhone &&
-        (countingCircle.contactPersonSameDuringEventAsAfter ||
-          (!!countingCircle.contactPersonAfterEvent?.phone && !!countingCircle.contactPersonAfterEvent?.mobilePhone))
-      "
-      (save)="save()"
-      (cancel)="cancel()"
-    ></vo-lib-button-bar>
-  </div>
+  <vo-lib-button-bar
+    footer
+    [hasCancelButton]="showCancel"
+    [hasSaveButton]="!readonly"
+    [saving]="saving"
+    [canSave]="
+      !!countingCircle.contactPersonDuringEvent?.phone &&
+      !!countingCircle.contactPersonDuringEvent?.mobilePhone &&
+      (countingCircle.contactPersonSameDuringEventAsAfter ||
+        (!!countingCircle.contactPersonAfterEvent?.phone && !!countingCircle.contactPersonAfterEvent?.mobilePhone))
+    "
+    (save)="save()"
+    (cancel)="cancel()"
+  ></vo-lib-button-bar>
 </vo-lib-dialog>

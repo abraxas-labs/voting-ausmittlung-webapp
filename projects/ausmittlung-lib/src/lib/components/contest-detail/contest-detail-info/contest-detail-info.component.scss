@@ -5,7 +5,7 @@
 .container {
   @extend .p-3;
 
-  background-color: $color-grey-7;
+  background-color: $color-surface-bg-neutral-bright;
   border-radius: 4px;
   gap: 1rem 7rem;
   display: flex;
@@ -37,7 +37,7 @@
 
 h5 {
   margin-bottom: 0.25rem;
-  color: $color-grey-2;
+  color: $color-text-secondary;
 }
 
 ::ng-deep .bold-label label {

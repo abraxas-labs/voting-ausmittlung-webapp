@@ -3,20 +3,20 @@
 
 $classes: (
   success: (
-    $color-success,
-    $color-success-25,
+    $color-signal-success,
+    $color-signal-success-light,
   ),
   info: (
-    $color-info,
-    $color-info-25,
+    $color-signal-info,
+    $color-signal-info-light,
   ),
   warning: (
-    $color-warning,
-    $color-warning-25,
+    $color-signal-warning,
+    $color-signal-warning-light,
   ),
   error: (
-    $color-error,
-    $color-error-25,
+    $color-signal-error,
+    $color-signal-error-light,
   ),
 );
 

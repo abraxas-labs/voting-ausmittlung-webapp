@@ -1,14 +1,14 @@
-<vo-lib-dialog>
-  <h3 header>{{'CONTEST.DETAIL.COUNT_OF_VOTERS_AND_VOTING_CARDS' | translate}}</h3>
-
+<vo-lib-dialog [header]="'CONTEST.DETAIL.COUNT_OF_VOTERS_AND_VOTING_CARDS' | translate" (dialogClose)="closeWithUnsavedChangesCheck()">
   <div content class="container">
-    <vo-ausm-contest-detail-count-of-voters [readonly]="readonly"
+    <vo-ausm-contest-detail-count-of-voters
+      [readonly]="readonly"
       [eVoting]="eVoting"
       [enabledVoterTypes]="enabledVoterTypes"
       [countOfVotersInformationSubTotals]="countOfVotersInformationSubTotals"
       [domainOfInfluenceTypes]="domainOfInfluenceTypes"
       [electorates]="electorateSummary?.effectiveElectoratesList"
-      (countOfVotersChange)="contentChanged()"></vo-ausm-contest-detail-count-of-voters>
+      (countOfVotersChange)="contentChanged()"
+    ></vo-ausm-contest-detail-count-of-voters>
 
     @if (domainOfInfluenceTypes) {
       <vo-ausm-contest-detail-voting-cards
@@ -18,12 +18,14 @@
         [enabledVotingCardChannels]="enabledVotingCardChannels"
         [domainOfInfluenceTypes]="domainOfInfluenceTypes"
         [electorates]="electorateSummary?.effectiveElectoratesList"
-        [canton]="canton"></vo-ausm-contest-detail-voting-cards>
+        [canton]="canton"
+      ></vo-ausm-contest-detail-voting-cards>
     }
 
     @if (countingMachineEnabled) {
       <h4 translate class="mt-2">COUNTING_MACHINES.TITLE</h4>
-      <bc-dropdown [required]="true"
+      <bc-dropdown
+        [required]="true"
         [readonly]="readonly"
         [items]="countingMachines"
         displayExpr="description"
@@ -31,16 +33,18 @@
         [(value)]="countingMachine"
         (valueChange)="contentChanged()"
         [clearable]="false"
-      [subscriptSizing]="'dynamic'"></bc-dropdown>
+        [subscriptSizing]="'dynamic'"
+      ></bc-dropdown>
     }
   </div>
 
-  <div footer>
-    <vo-lib-button-bar [hasSaveButton]="!readonly"
-      [canSave]="true"
-      (save)="save()"
-      [sticky]="false"
-      [cancelLabel]="(readonly ? 'APP.CLOSE' : 'COMMON.CANCEL') | translate"
-      (cancel)="closeWithUnsavedChangesCheck()"></vo-lib-button-bar>
-  </div>
+  <vo-lib-button-bar
+    footer
+    [hasSaveButton]="!readonly"
+    [canSave]="true"
+    (save)="save()"
+    [sticky]="false"
+    [cancelLabel]="(readonly ? 'APP.CLOSE' : 'COMMON.CANCEL') | translate"
+    (cancel)="closeWithUnsavedChangesCheck()"
+  ></vo-lib-button-bar>
 </vo-lib-dialog>

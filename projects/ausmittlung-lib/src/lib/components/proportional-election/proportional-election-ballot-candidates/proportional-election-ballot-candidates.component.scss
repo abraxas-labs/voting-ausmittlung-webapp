@@ -17,7 +17,7 @@
   }
 
   .empty-vote {
-    color: $color-grey-4;
+    color: $color-text-secondary;
     grid-column: 2 / span 2;
 
     &.replacement-candidate {
@@ -34,7 +34,7 @@
 
     &.removed-from-list {
       text-decoration: line-through;
-      color: $color-grey-4;
+      color: $color-text-secondary;
     }
   }
 

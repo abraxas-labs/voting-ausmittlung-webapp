@@ -44,10 +44,10 @@ const uiSnapshotMismatchBundlePollingInterval: number = 5000;
 
 @Directive()
 export abstract class PoliticalBusinessBundleOverviewComponent<
-    T extends (ProportionalElectionResultBundles | MajorityElectionResultBundles | VoteResultBundles) &
-      PoliticalBusinessResultBundles<TBundle>,
-    TBundle extends PoliticalBusinessResultBundle = T extends PoliticalBusinessResultBundles<infer U> ? U : never,
-  >
+  T extends (ProportionalElectionResultBundles | MajorityElectionResultBundles | VoteResultBundles) &
+    PoliticalBusinessResultBundles<TBundle>,
+  TBundle extends PoliticalBusinessResultBundle = T extends PoliticalBusinessResultBundles<infer U> ? U : never,
+>
   implements OnInit, OnDestroy
 {
   public readonly runtimeConfigService: RuntimeConfigService = inject(RuntimeConfigService);

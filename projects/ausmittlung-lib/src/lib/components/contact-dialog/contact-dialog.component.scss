@@ -1,7 +1,7 @@
 @use '@abraxas/voting-lib/style/color' as *;
 
 .subtitle {
-  color: $color-grey-3;
+  color: $color-text-secondary;
 }
 
 bc-checkbox {
@@ -10,7 +10,7 @@ bc-checkbox {
 
 .line {
   width: 1px;
-  background-color: $color-grey-5;
+  background-color: $color-border-soft;
 }
 
 .container {

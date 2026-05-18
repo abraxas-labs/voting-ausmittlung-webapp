@@ -4,64 +4,64 @@
 
 <bc-table [dataSource]="candidateResults">
   <ng-container columnDef="rank">
-    <bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.RANK' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">{{ element.rank }}</bc-data-cell>
+    <th bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.RANK' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element">{{ element.rank }}</td>
   </ng-container>
 
   <ng-container columnDef="number">
-    <bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.NUMBER' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">{{ element.candidate.number }}</bc-data-cell>
+    <th bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.NUMBER' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element">{{ element.candidate.number }}</td>
   </ng-container>
 
   <ng-container columnDef="candidacy">
-    <bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.CANDIDACY' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">
+    <th bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.CANDIDACY' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element">
       <vo-ausm-majority-election-candidacy-info [candidate]="element.candidate"></vo-ausm-majority-election-candidacy-info>
-    </bc-data-cell>
+    </td>
   </ng-container>
 
   <ng-container columnDef="party">
-    <bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.PARTY' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">{{ element.candidate.party }}</bc-data-cell>
+    <th bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.PARTY' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element">{{ element.candidate.party }}</td>
   </ng-container>
 
   <ng-container columnDef="conventionalVoteCount">
-    <bc-header-cell *headerCellDef>{{ 'ELECTION.VOTE_COUNT_CONVENTIONAL' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">{{ element.conventionalVoteCount }}</bc-data-cell>
+    <th bc-header-cell *headerCellDef>{{ 'ELECTION.VOTE_COUNT_CONVENTIONAL' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element">{{ element.conventionalVoteCount }}</td>
   </ng-container>
 
   <ng-container columnDef="eVotingVoteCount">
-    <bc-header-cell *headerCellDef>{{ 'ELECTION.VOTE_COUNT_E_VOTING' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">{{ element.eVotingVoteCount }}</bc-data-cell>
+    <th bc-header-cell *headerCellDef>{{ 'ELECTION.VOTE_COUNT_E_VOTING' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element">{{ element.eVotingVoteCount }}</td>
   </ng-container>
 
   <ng-container columnDef="eCountingVoteCount">
-    <bc-header-cell *headerCellDef>{{ 'ELECTION.VOTE_COUNT_E_COUNTING' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">{{ element.eCountingVoteCount }}</bc-data-cell>
+    <th bc-header-cell *headerCellDef>{{ 'ELECTION.VOTE_COUNT_E_COUNTING' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element">{{ element.eCountingVoteCount }}</td>
   </ng-container>
 
   <ng-container columnDef="voteCount">
-    <bc-header-cell *headerCellDef>{{ 'ELECTION.VOTE_COUNT' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">{{ element.voteCount }}</bc-data-cell>
+    <th bc-header-cell *headerCellDef>{{ 'ELECTION.VOTE_COUNT' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element">{{ element.voteCount }}</td>
   </ng-container>
 
   <ng-container columnDef="state">
-    <bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.STATE' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">
+    <th bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.STATE' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element">
       @if (element.state !== undefined) {
         <span>{{'ELECTION.CANDIDATE.STATES.' + element.state | translate}}</span>
       }
-    </bc-data-cell>
+    </td>
   </ng-container>
 
   <ng-container columnDef="lotDecision">
-    <bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.LOT_DECISION' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element"><span>
+    <th bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.LOT_DECISION' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element"><span>
       <bc-checkbox [checked]="element.lotDecision"
         [disabled]="true"></bc-checkbox>
-    </span></bc-data-cell>
+    </span></td>
   </ng-container>
 
-  <bc-header-row *headerRowDef="let row; columns: columns"></bc-header-row>
-  <bc-data-row *dataRowDef="let row; columns: columns; let i = index"></bc-data-row>
+  <tr bc-header-row *headerRowDef="let row; columns: columns"></tr>
+  <tr bc-data-row *dataRowDef="let row; columns: columns; let i = index"></tr>
 </bc-table>

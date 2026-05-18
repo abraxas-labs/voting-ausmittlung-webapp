@@ -1,6 +1,4 @@
-<vo-lib-dialog>
-  <h1 header>{{ 'CONTEST.DETAIL.ELECTORATE.DIALOG_TITLE' | translate }}</h1>
-
+<vo-lib-dialog [header]="'CONTEST.DETAIL.ELECTORATE.DIALOG_TITLE' | translate" (dialogClose)="cancel()">
   <div content class="container">
     @for (electorate of electorates; track electorate; let index = $index) {
       <div class="electorates">
@@ -9,22 +7,20 @@
           [readonly]="true"
           [required]="true"
           [value]="electorateLabelByIndex.get(index)"
-        [subscriptSizing]="'dynamic'"></bc-text>
+          [subscriptSizing]="'dynamic'"
+        ></bc-text>
         @if (!readonly) {
           <bc-button
             variant="tertiary"
             icon="plus"
             [label]="'CONTEST.DETAIL.ELECTORATE.ASSIGN_OPEN' | translate"
-            (buttonClick)="assign(electorate)"></bc-button>
+            (buttonClick)="assign(electorate)"
+          ></bc-button>
         } @else {
           <div></div>
         }
         @if (!readonly) {
-          <bc-icon
-            icon="trash"
-            iconColor="error"
-            class="clickable"
-            (click)="remove(index)"></bc-icon>
+          <bc-icon icon="trash" iconColor="error" class="clickable" (click)="remove(index)"></bc-icon>
         } @else {
           <div></div>
         }
@@ -32,7 +28,7 @@
     }
 
     @if (electorates.length === 0) {
-      <p class="no-data my-2">{{'CONTEST.DETAIL.ELECTORATE.NO_DATA' | translate}}</p>
+      <p class="no-data my-2">{{ 'CONTEST.DETAIL.ELECTORATE.NO_DATA' | translate }}</p>
     }
 
     @if (!readonly) {
@@ -41,18 +37,17 @@
         variant="tertiary"
         icon="plus"
         [label]="'CONTEST.DETAIL.ELECTORATE.ADD' | translate"
-        (buttonClick)="add()"></bc-button>
+        (buttonClick)="add()"
+      ></bc-button>
     }
   </div>
 
-  <div footer>
-    <vo-lib-button-bar
-      [hasSaveButton]="!readonly"
-      [saving]="saving"
-      [canSave]="canSave"
-      (save)="save()"
-      (cancel)="cancel()"
-    ></vo-lib-button-bar>
-  </div>
+  <vo-lib-button-bar
+    footer
+    [hasSaveButton]="!readonly"
+    [saving]="saving"
+    [canSave]="canSave"
+    (save)="save()"
+    (cancel)="cancel()"
+  ></vo-lib-button-bar>
 </vo-lib-dialog>
-

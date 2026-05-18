@@ -1,8 +1,7 @@
-<vo-lib-dialog>
-  <h3 header translate>EXPORT_COCKPIT.TITLE</h3>
-
+<vo-lib-dialog [header]="'EXPORT_COCKPIT.TITLE' | translate" (dialogClose)="close()">
   <div content>
-    <bc-dropdown class="mb-2"
+    <bc-dropdown
+      class="mb-2"
       [label]="'EXPORT_COCKPIT.DESCRIPTION' | translate"
       [required]="true"
       [items]="configs"
@@ -10,21 +9,26 @@
       [value]="selectedConfig"
       [clearable]="false"
       (valueChange)="setSelectedConfig($event)"
-      [subscriptSizing]="'dynamic'"></bc-dropdown>
+      [subscriptSizing]="'dynamic'"
+    ></bc-dropdown>
     @if (selectedConfig) {
-      <app-export-cockpit-political-businesses [politicalBusinesses]="dialogData.politicalBusinesses"
+      <app-export-cockpit-political-businesses
+        [politicalBusinesses]="dialogData.politicalBusinesses"
         [exportConfig]="selectedConfig"
         (exportConfigChange)="hasEdits = true"
-        (isValidChange)="isValid = $event">
+        (isValidChange)="isValid = $event"
+      >
       </app-export-cockpit-political-businesses>
       <bc-radio-button-group
         class="mt-2"
         [items]="[
-          {value: false, displayText: 'EXPORT_COCKPIT.TRIGGER_MODE_MANUAL' | translate},
-          {value: true, displayText: 'EXPORT_COCKPIT.TRIGGER_MODE_AUTO' | translate}]"
+          { value: false, displayText: 'EXPORT_COCKPIT.TRIGGER_MODE_MANUAL' | translate },
+          { value: true, displayText: 'EXPORT_COCKPIT.TRIGGER_MODE_AUTO' | translate },
+        ]"
         [value]="triggerModeAuto"
         (valueChange)="setTriggerMode($event)"
-        [subscriptSizing]="'dynamic'"></bc-radio-button-group>
+        [subscriptSizing]="'dynamic'"
+      ></bc-radio-button-group>
       @if (triggerModeAuto) {
         <bc-number
           [label]="'EXPORT_COCKPIT.INTERVAL' | translate"
@@ -32,35 +36,39 @@
           [min]="0"
           [(ngModel)]="selectedConfig.intervalMinutes"
           (ngModelChange)="hasEdits = true"
-          [subscriptSizing]="'dynamic'"></bc-number>
+          [subscriptSizing]="'dynamic'"
+        ></bc-number>
       }
       <div class="trigger-container mt-2">
         <div class="trigger">
-          <bc-button (buttonClick)="saveAndTriggerManualExport()"
+          <bc-button
+            (buttonClick)="saveAndTriggerManualExport()"
             [disabled]="saving || triggeringExport"
-            [label]="'EXPORT_COCKPIT.TRIGGER_MANUAL' | translate"></bc-button>
+            [label]="'EXPORT_COCKPIT.TRIGGER_MANUAL' | translate"
+          ></bc-button>
           @if (triggeringExport) {
             <bc-spinner class="ml-1"></bc-spinner>
           }
         </div>
         @if (selectedConfig.latestExecution) {
-          <div class="latest-execution" >
+          <div class="latest-execution">
             <span translate>EXPORT_COCKPIT.LATEST_EXECUTION</span>
             <span>{{ selectedConfig.latestExecution | date: 'short' }}</span>
           </div>
         }
       </div>
     } @else {
-      <p class="no-data">{{'EXPORT_COCKPIT.NO_CONFIGS' | translate}}</p>
+      <p class="no-data">{{ 'EXPORT_COCKPIT.NO_CONFIGS' | translate }}</p>
     }
   </div>
 
-  <div footer>
-    <vo-lib-button-bar (save)="save()"
-      [saving]="saving"
-      [canSave]="!triggeringExport && hasEdits && isValid"
-      [sticky]="false"
-      [cancelLabel]="'APP.CLOSE' | translate"
-      (cancel)="close()"></vo-lib-button-bar>
-  </div>
+  <vo-lib-button-bar
+    footer
+    (save)="save()"
+    [saving]="saving"
+    [canSave]="!triggeringExport && hasEdits && isValid"
+    [sticky]="false"
+    [cancelLabel]="'APP.CLOSE' | translate"
+    (cancel)="close()"
+  ></vo-lib-button-bar>
 </vo-lib-dialog>

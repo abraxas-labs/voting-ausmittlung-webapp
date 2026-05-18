@@ -43,52 +43,52 @@
       class="pr-4"
       [dataSource]="endResult.proportionalElectionEndResults">
       <ng-container columnDef="domainOfInfluence">
-        <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.DOMAIN_OF_INFLUENCE' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">
+        <th bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.DOMAIN_OF_INFLUENCE' | translate }}</th>
+        <td bc-data-cell *dataCellDef="let element">
           @if(element.hasOpenRequiredLotDecisions) {
             <vo-ausm-info-icon [label]="element.election.domainOfInfluence.name" [iconTooltip]="'END_RESULT.ELECTION.OPEN_REQUIRED_LOT_DECISION_INFO'"></vo-ausm-info-icon>
           }
           @else {
             <ng-container>{{ element.election.domainOfInfluence.name }}</ng-container>
           }
-        </bc-data-cell>
+        </td>
       </ng-container>
       <ng-container columnDef="numberOfMandates">
-        <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.NUMBER_OF_MANDATES' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">{{ element.election.numberOfMandates }}</bc-data-cell>
+        <th bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.NUMBER_OF_MANDATES' | translate }}</th>
+        <td bc-data-cell *dataCellDef="let element">{{ element.election.numberOfMandates }}</td>
       </ng-container>
       <ng-container columnDef="countOfVoters">
-        <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.COUNT_OF_VOTERS' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">{{ element.countOfVotersInformation.totalCountOfVoters }}</bc-data-cell>
+        <th bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.COUNT_OF_VOTERS' | translate }}</th>
+        <td bc-data-cell *dataCellDef="let element">{{ element.countOfVotersInformation.totalCountOfVoters }}</td>
       </ng-container>
       <ng-container columnDef="countingCircleCountingDoneOf">
-        <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.COUNTING_DONE' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">{{ 'UNION_END_RESULT.COUNTING_CIRCLE_COUNTING_DONE_OF' | translate: element }}</bc-data-cell>
+        <th bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.COUNTING_DONE' | translate }}</th>
+        <td bc-data-cell *dataCellDef="let element">{{ 'UNION_END_RESULT.COUNTING_CIRCLE_COUNTING_DONE_OF' | translate: element }}</td>
       </ng-container>
       <ng-container columnDef="receivedBallots">
-        <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.BALLOT_COUNT.RECEIVED' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">{{ element.countOfVoters.totalReceivedBallots }}</bc-data-cell>
+        <th bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.BALLOT_COUNT.RECEIVED' | translate }}</th>
+        <td bc-data-cell *dataCellDef="let element">{{ element.countOfVoters.totalReceivedBallots }}</td>
       </ng-container>
       <ng-container columnDef="validBallots">
-        <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.BALLOT_COUNT.VALID' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">{{ element.countOfVoters.totalAccountedBallots }}</bc-data-cell>
+        <th bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.BALLOT_COUNT.VALID' | translate }}</th>
+        <td bc-data-cell *dataCellDef="let element">{{ element.countOfVoters.totalAccountedBallots }}</td>
       </ng-container>
       <ng-container columnDef="blankBallots">
-        <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.BALLOT_COUNT.BLANK' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">{{ element.countOfVoters.totalBlankBallots }}</bc-data-cell>
+        <th bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.BALLOT_COUNT.BLANK' | translate }}</th>
+        <td bc-data-cell *dataCellDef="let element">{{ element.countOfVoters.totalBlankBallots }}</td>
       </ng-container>
       <ng-container columnDef="invalidBallots">
-        <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.BALLOT_COUNT.INVALID' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">{{ element.countOfVoters.totalInvalidBallots }}</bc-data-cell>
+        <th bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.BALLOT_COUNT.INVALID' | translate }}</th>
+        <td bc-data-cell *dataCellDef="let element">{{ element.countOfVoters.totalInvalidBallots }}</td>
       </ng-container>
       <ng-container columnDef="lotDecisionState">
-        <bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.LOT_DECISION_STATE' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">{{ ('END_RESULT.ELECTION.LOT_DECISION_STATES.' + element.lotDecisionState) | translate }}</bc-data-cell>
+        <th bc-header-cell *headerCellDef>{{ 'UNION_END_RESULT.LOT_DECISION_STATE' | translate }}</th>
+        <td bc-data-cell *dataCellDef="let element">{{ ('END_RESULT.ELECTION.LOT_DECISION_STATES.' + element.lotDecisionState) | translate }}</td>
       </ng-container>
-      <bc-header-row *headerRowDef="let row; columns: columns"></bc-header-row>
-      <bc-data-row *dataRowDef="let row; columns: columns; let i = index" selectionToggle
+      <tr bc-header-row *headerRowDef="let row; columns: columns"></tr>
+      <tr bc-data-row *dataRowDef="let row; columns: columns; let i = index" selectionToggle
         [selectionToggleValue]="row" selectionRow [selectionRowValue]="row"
-        (click)="selectElectionEndResult(row)"></bc-data-row>
+        (click)="selectElectionEndResult(row)"></tr>
     </bc-table>
   }
 </vo-lib-page>

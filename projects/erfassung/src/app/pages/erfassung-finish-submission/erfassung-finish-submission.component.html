@@ -17,45 +17,45 @@
     @if (resultsDataSource.data.length > 0) {
       <bc-table selection [dataSource]="resultsDataSource">
         <ng-container columnDef="select">
-          <bc-header-cell *headerCellDef>
-            <bc-checkbox class="ml-2 mb-0" (checkedChange)="selectAllResults($event)"
+          <th bc-header-cell *headerCellDef>
+            <bc-checkbox class="mb-0" (checkedChange)="selectAllResults($event)"
               [checked]="selectedResults.hasValue() && allResultsSelected"
               [indeterminate]="selectedResults.hasValue() && !allResultsSelected" [disabled]="finishingResultSubmissions">
             </bc-checkbox>
-          </bc-header-cell>
-          <bc-data-cell *dataCellDef="let element">
-            <bc-checkbox class="ml-2"
+          </th>
+          <td bc-data-cell *dataCellDef="let element">
+            <bc-checkbox
               (checkedChange)="toggleResult(element, $event)"
               [checked]="selectedResults.isSelected(element)"
               [disabled]="element.state !== countingCircleResultStates.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING || finishingResultSubmissions">
             </bc-checkbox>
-          </bc-data-cell>
+          </td>
         </ng-container>
         <ng-container columnDef="politicalBusinessTitle">
-          <bc-header-cell *headerCellDef>{{ 'SUBMISSION_DONE.POLITICAL_BUSINESS' | translate }}</bc-header-cell>
-          <bc-data-cell *dataCellDef="let element">{{ element.politicalBusiness.title }}</bc-data-cell>
+          <th bc-header-cell *headerCellDef>{{ 'SUBMISSION_DONE.POLITICAL_BUSINESS' | translate }}</th>
+          <td bc-data-cell *dataCellDef="let element">{{ element.politicalBusiness.title }}</td>
         </ng-container>
         <ng-container columnDef="domainOfInfluenceType">
-          <bc-header-cell *headerCellDef>{{ 'SUBMISSION_DONE.DOMAIN_OF_INFLUENCE_TYPE' | translate }}</bc-header-cell>
-          <bc-data-cell *dataCellDef="let element">
+          <th bc-header-cell *headerCellDef>{{ 'SUBMISSION_DONE.DOMAIN_OF_INFLUENCE_TYPE' | translate }}</th>
+          <td bc-data-cell *dataCellDef="let element">
             {{ 'DOMAIN_OF_INFLUENCE_TYPES.' + element.politicalBusiness.domainOfInfluence.type | translate }}
-          </bc-data-cell>
+          </td>
         </ng-container>
         <ng-container columnDef="politicalBusinessType">
-          <bc-header-cell *headerCellDef>{{ 'SUBMISSION_DONE.POLITICAL_BUSINESS_TYPE' | translate }}</bc-header-cell>
-          <bc-data-cell *dataCellDef="let element">
+          <th bc-header-cell *headerCellDef>{{ 'SUBMISSION_DONE.POLITICAL_BUSINESS_TYPE' | translate }}</th>
+          <td bc-data-cell *dataCellDef="let element">
             {{ 'POLITICAL_BUSINESS.TYPE.' + element.politicalBusiness.businessType | translate }}
-          </bc-data-cell>
+          </td>
         </ng-container>
         <ng-container columnDef="countingCircleResultState">
-          <bc-header-cell *headerCellDef>{{ 'SUBMISSION_DONE.COUNTING_CIRCLE_RESULT_STATE' | translate }}</bc-header-cell>
-          <bc-data-cell *dataCellDef="let element">
+          <th bc-header-cell *headerCellDef>{{ 'SUBMISSION_DONE.COUNTING_CIRCLE_RESULT_STATE' | translate }}</th>
+          <td bc-data-cell *dataCellDef="let element">
             <vo-ausm-result-state-box [state]="element.state" [stateDescriptionsByState]="contest?.cantonDefaults.countingCircleResultStateDescriptionsByState"></vo-ausm-result-state-box>
-          </bc-data-cell>
+          </td>
         </ng-container>
-        <bc-header-row *headerRowDef="let row; columns: columns"></bc-header-row>
-        <bc-data-row *dataRowDef="let row; columns: columns; let i = index" selectionToggle [selectionToggleValue]="row"
-        selectionRow [selectionRowValue]="row"></bc-data-row>
+        <tr bc-header-row *headerRowDef="let row; columns: columns"></tr>
+        <tr bc-data-row *dataRowDef="let row; columns: columns; let i = index" selectionToggle [selectionToggleValue]="row"
+        selectionRow [selectionRowValue]="row" (click)="toggleResult(row)"></tr>
       </bc-table>
     } @else {
       <span class="no-data">{{'SUBMISSION_DONE.NO_RESULTS' | translate}}</span>

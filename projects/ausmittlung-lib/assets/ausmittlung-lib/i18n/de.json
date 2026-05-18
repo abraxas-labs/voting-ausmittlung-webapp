@@ -775,6 +775,18 @@
     "TYPE": "Ebene {{type}}",
     "TITLE": "Geschäftsebene"
   },
+  "DOMAIN_OF_INFLUENCE_SHORT_TYPES": {
+    "1": "CH",
+    "2": "CT",
+    "3": "BZ",
+    "4": "MU",
+    "5": "SK",
+    "6": "SC",
+    "7": "KI",
+    "8": "OG",
+    "9": "KO",
+    "10": "AN"
+  },
   "COUNTING_MACHINES": {
     "TITLE": "Technische Hilfsmittel",
     "1": "keine technischen Hilfsmittel",
@@ -1043,6 +1055,10 @@
           }
         }
       }
+    },
+    "E_COUNTING_IMPORT_MISSING": {
+      "TITLE": "Es wurden keine E-Counting Ergebnisse importiert",
+      "MESSAGE": "Es wurden keine E-Counting Ergebnisse importiert. Möchten Sie die Erfassung trotzdem abschliessen?"
     }
   },
   "RESULT_IMPORT": {
@@ -1119,6 +1135,7 @@
     },
     "IMPORTED_POLITICAL_BUSINESSES": "Betroffene Geschäfte",
     "IGNORED_POLITICAL_BUSINESSES": "Ignorierte Geschäfte",
+    "IGNORED_POLITICAL_BUSINESSES_HINT": "Um Geschäfte welche ignoriert werden neu zu importieren, müssen die E-Counting Resultate zuerst gelöscht werden.",
     "DELETED_FILE_NAME": "Importierte Ergebnisse gelöscht",
     "DELETE": "Importierte Ergebnisse löschen",
     "DELETE_CONFIRM_TITLE": "Sind Sie sicher?",

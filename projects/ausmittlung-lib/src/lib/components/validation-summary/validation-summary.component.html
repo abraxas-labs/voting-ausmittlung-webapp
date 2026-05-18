@@ -21,12 +21,12 @@
         @if (group.value | validValidation; as validValidations) {
           @if (validValidations.length > 0) {
             <bc-expansion-panel>
-              <div header>
+              <bc-expansion-panel-header>
                 <h4 class="mb-0">
                   <bc-icon class="title-icon" icon="check-circle"></bc-icon>
                   <span translate>VALIDATION.SHOW_ALL</span>
                 </h4>
-              </div>
+              </bc-expansion-panel-header>
               @for (result of validValidations; track result) {
                 <vo-ausm-validation-result [result]="result">
                 </vo-ausm-validation-result>

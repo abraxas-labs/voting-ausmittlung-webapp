@@ -12,13 +12,13 @@ p {
   align-items: center;
 
   bc-icon {
-    color: $color-success;
+    color: $color-signal-success;
 
     &.invalid {
-      color: $color-error;
+      color: $color-signal-error;
 
       &.optional {
-        color: $color-warning;
+        color: $color-signal-warning;
       }
     }
 

@@ -9,10 +9,14 @@ div[header] {
   padding-left: 1rem;
 
   .non-test-counting-circle {
-    color: $color-error;
+    color: $color-signal-error;
   }
 }
 
 bc-data-cell {
   vertical-align: baseline !important;
+}
+
+ul {
+  padding-inline-start: 20px;
 }

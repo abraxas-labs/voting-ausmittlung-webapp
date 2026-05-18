@@ -81,57 +81,57 @@
     @if (endResult) {
       <bc-table selection left class="pr-4" [dataSource]="endResult.listEndResults">
         <ng-container columnDef="orderNumber">
-          <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.ORDER_NUMBER_ABBREVIATION' | translate
-            }}</bc-header-cell>
-          <bc-data-cell *dataCellDef="let element">{{ element.list.orderNumber }}</bc-data-cell>
+          <th bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.ORDER_NUMBER_ABBREVIATION' | translate
+            }}</th>
+          <td bc-data-cell *dataCellDef="let element">{{ element.list.orderNumber }}</td>
         </ng-container>
         <ng-container columnDef="shortDescription">
-          <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.SHORT_DESCRIPTION_ABBREVIATION' | translate
-            }}</bc-header-cell>
-          <bc-data-cell *dataCellDef="let element">{{ element.list.shortDescription }}</bc-data-cell>
+          <th bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.SHORT_DESCRIPTION_ABBREVIATION' | translate
+            }}</th>
+          <td bc-data-cell *dataCellDef="let element">{{ element.list.shortDescription }}</td>
         </ng-container>
         <ng-container columnDef="listVotesCount">
-          <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.LIST_VOTES_COUNT' | translate }}</bc-header-cell>
-          <bc-data-cell *dataCellDef="let element">{{ (dataPrefix ? element[dataPrefix] : element).listVotesCount
-            }}</bc-data-cell>
+          <th bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.LIST_VOTES_COUNT' | translate }}</th>
+          <td bc-data-cell *dataCellDef="let element">{{ (dataPrefix ? element[dataPrefix] : element).listVotesCount
+            }}</td>
         </ng-container>
         <ng-container columnDef="blankRowsCount">
-          <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.BLANK_ROWS_COUNT' | translate }}</bc-header-cell>
-          <bc-data-cell *dataCellDef="let element">{{ (dataPrefix ? element[dataPrefix] : element).blankRowsCount
-            }}</bc-data-cell>
+          <th bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.BLANK_ROWS_COUNT' | translate }}</th>
+          <td bc-data-cell *dataCellDef="let element">{{ (dataPrefix ? element[dataPrefix] : element).blankRowsCount
+            }}</td>
         </ng-container>
         <ng-container columnDef="totalVoteCount">
-          <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.TOTAL_VOTE_COUNT' | translate }}</bc-header-cell>
-          <bc-data-cell *dataCellDef="let element">{{ (dataPrefix ? element[dataPrefix] : element).totalVoteCount
-            }}</bc-data-cell>
+          <th bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.TOTAL_VOTE_COUNT' | translate }}</th>
+          <td bc-data-cell *dataCellDef="let element">{{ (dataPrefix ? element[dataPrefix] : element).totalVoteCount
+            }}</td>
         </ng-container>
         <ng-container columnDef="nrOfMandates">
-          <bc-header-cell *headerCellDef>{{ 'ELECTION.NR_OF_MANDATES_TITLE' | translate }}</bc-header-cell>
-          <bc-data-cell *dataCellDef="let element">{{ element.numberOfMandates }}</bc-data-cell>
+          <th bc-header-cell *headerCellDef>{{ 'ELECTION.NR_OF_MANDATES_TITLE' | translate }}</th>
+          <td bc-data-cell *dataCellDef="let element">{{ element.numberOfMandates }}</td>
         </ng-container>
         <ng-container columnDef="lotDecisionState">
-          <bc-header-cell *headerCellDef>{{ 'END_RESULT.ELECTION.LOT_DECISION_STATE' | translate }}</bc-header-cell>
-          <bc-data-cell *dataCellDef="let element">{{ ('END_RESULT.ELECTION.LOT_DECISION_STATES.' + element.lotDecisionState) | translate }}</bc-data-cell>
+          <th bc-header-cell *headerCellDef>{{ 'END_RESULT.ELECTION.LOT_DECISION_STATE' | translate }}</th>
+          <td bc-data-cell *dataCellDef="let element">{{ ('END_RESULT.ELECTION.LOT_DECISION_STATES.' + element.lotDecisionState) | translate }}</td>
         </ng-container>
         <ng-container columnDef="listUnion">
-          <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST_UNION.LIST_UNION_ABBREVIATION' | translate
-            }}</bc-header-cell>
-          <bc-data-cell *dataCellDef="let element">{{ element.listUnion?.description }}</bc-data-cell>
+          <th bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST_UNION.LIST_UNION_ABBREVIATION' | translate
+            }}</th>
+          <td bc-data-cell *dataCellDef="let element">{{ element.listUnion?.description }}</td>
         </ng-container>
         <ng-container columnDef="subListUnion">
-          <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.SUB_LIST_UNION.SUB_LIST_UNION_ABBREVIATION' | translate
-            }}</bc-header-cell>
-          <bc-data-cell *dataCellDef="let element">{{ element.subListUnion?.description }}</bc-data-cell>
+          <th bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.SUB_LIST_UNION.SUB_LIST_UNION_ABBREVIATION' | translate
+            }}</th>
+          <td bc-data-cell *dataCellDef="let element">{{ element.subListUnion?.description }}</td>
         </ng-container>
-        <bc-header-row *headerRowDef="let row; columns: listColumns"></bc-header-row>
-        <bc-data-row
+        <tr bc-header-row *headerRowDef="let row; columns: listColumns"></tr>
+        <tr bc-data-row
           *dataRowDef="let row; columns: listColumns; let i = index"
           #rowSelection="selectionToggle"
           selectionToggle
           [selectionToggleValue]="row"
           selectionRow
           [selectionRowValue]="row"
-          (click)="rowSelection.toggle(); selectListEndResult(row)"></bc-data-row>
+          (click)="rowSelection.toggle(); selectListEndResult(row)"></tr>
       </bc-table>
     }
 
@@ -139,39 +139,39 @@
       @if (endResult && selectedListEndResult) {
         <bc-table [dataSource]="candidateEndResults">
           <ng-container columnDef="number">
-            <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.CANDIDATE.CANDIDATE_NUMBER_ABBREVIATION' |
-              translate }}</bc-header-cell>
-            <bc-data-cell *dataCellDef="let element">{{ element.candidate.number }}</bc-data-cell>
+            <th bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.CANDIDATE.CANDIDATE_NUMBER_ABBREVIATION' |
+              translate }}</th>
+            <td bc-data-cell *dataCellDef="let element">{{ element.candidate.number }}</td>
           </ng-container>
           <ng-container columnDef="lastName">
-            <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.CANDIDATE.LAST_NAME' | translate }}</bc-header-cell>
-            <bc-data-cell *dataCellDef="let element">{{ element.candidate.politicalLastName }}</bc-data-cell>
+            <th bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.CANDIDATE.LAST_NAME' | translate }}</th>
+            <td bc-data-cell *dataCellDef="let element">{{ element.candidate.politicalLastName }}</td>
           </ng-container>
           <ng-container columnDef="firstName">
-            <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.CANDIDATE.FIRST_NAME' | translate }}</bc-header-cell>
-            <bc-data-cell *dataCellDef="let element">{{ element.candidate.politicalFirstName }}</bc-data-cell>
+            <th bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.CANDIDATE.FIRST_NAME' | translate }}</th>
+            <td bc-data-cell *dataCellDef="let element">{{ element.candidate.politicalFirstName }}</td>
           </ng-container>
           <ng-container columnDef="voteCount">
-            <bc-header-cell *headerCellDef>{{ 'ELECTION.VOTE_COUNT' | translate }}</bc-header-cell>
-            <bc-data-cell *dataCellDef="let element">{{ (dataPrefix ? element[dataPrefix] : element).voteCount
-              }}</bc-data-cell>
+            <th bc-header-cell *headerCellDef>{{ 'ELECTION.VOTE_COUNT' | translate }}</th>
+            <td bc-data-cell *dataCellDef="let element">{{ (dataPrefix ? element[dataPrefix] : element).voteCount
+              }}</td>
           </ng-container>
           <ng-container columnDef="rank">
-            <bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.RANK' | translate }}</bc-header-cell>
-            <bc-data-cell *dataCellDef="let element">{{ element.rank }}</bc-data-cell>
+            <th bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.RANK' | translate }}</th>
+            <td bc-data-cell *dataCellDef="let element">{{ element.rank }}</td>
           </ng-container>
           <ng-container columnDef="state">
-            <bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.STATE' | translate }}</bc-header-cell>
-            <bc-data-cell *dataCellDef="let element"> <span
+            <th bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.STATE' | translate }}</th>
+            <td bc-data-cell *dataCellDef="let element"> <span
               class="candidate-state">{{'PROPORTIONAL_ELECTION.CANDIDATE.STATES.' + element.state |
-              translate}}</span></bc-data-cell>
+              translate}}</span></td>
           </ng-container>
           <ng-container columnDef="lotDecision">
-            <bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.LOT_DECISION' | translate }}</bc-header-cell>
-            <bc-data-cell *dataCellDef="let element">{{(element.lotDecision ? 'APP.YES' : 'APP.NO') | translate}}</bc-data-cell>
+            <th bc-header-cell *headerCellDef>{{ 'ELECTION.CANDIDATE.LOT_DECISION' | translate }}</th>
+            <td bc-data-cell *dataCellDef="let element">{{(element.lotDecision ? 'APP.YES' : 'APP.NO') | translate}}</td>
           </ng-container>
-          <bc-header-row *headerRowDef="let row; columns: candidateColumns"></bc-header-row>
-          <bc-data-row *dataRowDef="let row; columns: candidateColumns; let i = index"></bc-data-row>
+          <tr bc-header-row *headerRowDef="let row; columns: candidateColumns"></tr>
+          <tr bc-data-row *dataRowDef="let row; columns: candidateColumns; let i = index"></tr>
         </bc-table>
       } @else {
         <p class="no-data mt-2" translate>PROPORTIONAL_ELECTION.LIST.NONE_SELECTED</p>

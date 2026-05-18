@@ -4,7 +4,13 @@
  * For license information see LICENSE file.
  */
 
-import { AuthenticationService, AuthorizationService, SnackbarComponent } from '@abraxas/base-components';
+import {
+  AuthenticationService,
+  AuthorizationService,
+  CornerRadiusTokensThemes,
+  SnackbarComponent,
+  StylingService,
+} from '@abraxas/base-components';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
@@ -46,6 +52,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor() {
     const themeService = inject(ThemeService);
+    const stylingService = inject(StylingService);
+
+    stylingService.setRadius(CornerRadiusTokensThemes.Default);
 
     // enable automatic silent refresh
     this.oauthService.setupAutomaticSilentRefresh({}, 'access_token');

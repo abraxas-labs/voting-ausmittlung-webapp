@@ -1,5 +1,4 @@
-<vo-lib-dialog [contentLoading]="loading">
-  <h3 header>{{ 'PROPORTIONAL_ELECTION.SELECT_LIST_FOR_BUNDLE' | translate }}</h3>
+<vo-lib-dialog [contentLoading]="loading" [header]="'PROPORTIONAL_ELECTION.SELECT_LIST_FOR_BUNDLE' | translate" (dialogClose)="close()">
   <div content>
     <div class="form-container">
       @if (enableBundleNumber) {
@@ -39,29 +38,29 @@
     <div class="overflow">
       <bc-table [dataSource]="dataSource" selection #selection="selection" (selectionChange)="updateSelectedList($event)">
         <ng-container columnDef="select">
-          <bc-header-cell *headerCellDef></bc-header-cell>
-          <bc-data-cell *dataCellDef="let element">
+          <th bc-header-cell *headerCellDef></th>
+          <td bc-data-cell *dataCellDef="let element">
             <bc-radio-button selectionToggle [selectionToggleValue]="element" [checked]="selection.isSelected(element)"></bc-radio-button>
-          </bc-data-cell>
+          </td>
         </ng-container>
 
         <ng-container columnDef="orderNumber">
-          <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.ORDER_NUMBER' | translate }}</bc-header-cell>
-          <bc-data-cell *dataCellDef="let element">{{ element.orderNumber }}</bc-data-cell>
+          <th bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.ORDER_NUMBER' | translate }}</th>
+          <td bc-data-cell *dataCellDef="let element">{{ element.orderNumber }}</td>
         </ng-container>
 
         <ng-container columnDef="shortDescription">
-          <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.SHORT_DESCRIPTION' | translate }}</bc-header-cell>
-          <bc-data-cell *dataCellDef="let element">{{ element.shortDescription }}</bc-data-cell>
+          <th bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.SHORT_DESCRIPTION' | translate }}</th>
+          <td bc-data-cell *dataCellDef="let element">{{ element.shortDescription }}</td>
         </ng-container>
 
         <ng-container columnDef="description">
-          <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.DESCRIPTION' | translate }}</bc-header-cell>
-          <bc-data-cell *dataCellDef="let element">{{ element.description }}</bc-data-cell>
+          <th bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.DESCRIPTION' | translate }}</th>
+          <td bc-data-cell *dataCellDef="let element">{{ element.description }}</td>
         </ng-container>
 
-        <bc-header-row *headerRowDef="let row; columns: columns"></bc-header-row>
-        <bc-data-row
+        <tr bc-header-row *headerRowDef="let row; columns: columns"></tr>
+        <tr bc-data-row
           *dataRowDef="let row; columns: columns"
           #rowSelection="selectionToggle"
           selectionToggle
@@ -69,7 +68,7 @@
           selectionRow
           [selectionRowValue]="row"
           (click)="rowSelection.toggle()"
-        ></bc-data-row>
+        ></tr>
       </bc-table>
     </div>
   </div>

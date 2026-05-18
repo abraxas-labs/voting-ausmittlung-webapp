@@ -1,21 +1,15 @@
-<vo-lib-dialog>
-  <h3 header>{{'CONTEST.CHOOSE_COUNTING_CIRCLE.TITLE' | translate}}</h3>
-
+<vo-lib-dialog [header]="'CONTEST.CHOOSE_COUNTING_CIRCLE.TITLE' | translate" (dialogClose)="done()">
   @if (countingCircles) {
-    <div content
-      class="m-2"
-      >
-      <bc-dropdown class="full-width"
+    <div content class="m-2">
+      <bc-dropdown
+        class="full-width"
         [items]="countingCircles"
         displayExpr="name"
         (valueChange)="done($event)"
-        [subscriptSizing]="'dynamic'"></bc-dropdown>
+        [subscriptSizing]="'dynamic'"
+      ></bc-dropdown>
     </div>
   }
 
-  <div footer>
-    <vo-lib-button-bar [hasSaveButton]="false"
-      [sticky]="false"
-      (cancel)="done()"></vo-lib-button-bar>
-  </div>
+  <vo-lib-button-bar footer [hasSaveButton]="false" [sticky]="false" (cancel)="done()"></vo-lib-button-bar>
 </vo-lib-dialog>

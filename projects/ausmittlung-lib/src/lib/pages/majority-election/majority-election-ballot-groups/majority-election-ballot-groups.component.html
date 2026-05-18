@@ -55,19 +55,19 @@
         @if (entry.candidates.length > 0) {
           <bc-table [dataSource]="entry | majorityElectionBallotGroupCandidates">
             <ng-container columnDef="number">
-              <bc-header-cell *headerCellDef>{{ 'CANDIDATE.NR' | translate }}</bc-header-cell>
-              <bc-data-cell *dataCellDef="let element">{{ element.number }}</bc-data-cell>
+              <th bc-header-cell *headerCellDef>{{ 'CANDIDATE.NR' | translate }}</th>
+              <td bc-data-cell *dataCellDef="let element">{{ element.number }}</td>
             </ng-container>
             <ng-container columnDef="lastName">
-              <bc-header-cell *headerCellDef>{{ 'CANDIDATE.LAST_NAME' | translate }}</bc-header-cell>
-              <bc-data-cell *dataCellDef="let element">{{ element.politicalLastName }}</bc-data-cell>
+              <th bc-header-cell *headerCellDef>{{ 'CANDIDATE.LAST_NAME' | translate }}</th>
+              <td bc-data-cell *dataCellDef="let element">{{ element.politicalLastName }}</td>
             </ng-container>
             <ng-container columnDef="firstName">
-              <bc-header-cell *headerCellDef>{{ 'CANDIDATE.FIRST_NAME' | translate }}</bc-header-cell>
-              <bc-data-cell *dataCellDef="let element">{{ element.politicalFirstName }}</bc-data-cell>
+              <th bc-header-cell *headerCellDef>{{ 'CANDIDATE.FIRST_NAME' | translate }}</th>
+              <td bc-data-cell *dataCellDef="let element">{{ element.politicalFirstName }}</td>
             </ng-container>
-            <bc-header-row *headerRowDef="let row; columns: ['number', 'lastName', 'firstName']"></bc-header-row>
-            <bc-data-row *dataRowDef="let row; columns: ['number', 'lastName', 'firstName']; let i = index"></bc-data-row>
+            <tr bc-header-row *headerRowDef="let row; columns: ['number', 'lastName', 'firstName']"></tr>
+            <tr bc-data-row *dataRowDef="let row; columns: ['number', 'lastName', 'firstName']; let i = index"></tr>
           </bc-table>
         } @else {
           <p class="no-data mb-0" translate>MAJORITY_ELECTION.BALLOT_GROUP.NO_CANDIDATES</p>

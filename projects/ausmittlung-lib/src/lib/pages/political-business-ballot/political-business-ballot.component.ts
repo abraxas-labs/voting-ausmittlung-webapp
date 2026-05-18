@@ -27,10 +27,10 @@ const missingBundleReloadDelay = 5000;
 
 @Directive()
 export abstract class PoliticalBusinessBallotComponent<
-    TResult extends ProportionalElectionResult | MajorityElectionResult | VoteResult,
-    TBundle extends PoliticalBusinessResultBundle,
-    TBallot extends PoliticalBusinessResultBallot,
-  >
+  TResult extends ProportionalElectionResult | MajorityElectionResult | VoteResult,
+  TBundle extends PoliticalBusinessResultBundle,
+  TBallot extends PoliticalBusinessResultBallot,
+>
   implements OnInit, OnDestroy, HasUnsavedChanges
 {
   protected readonly userService = inject(UserService);

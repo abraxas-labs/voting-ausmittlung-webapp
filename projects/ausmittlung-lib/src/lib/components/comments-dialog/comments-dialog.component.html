@@ -1,27 +1,24 @@
-<vo-lib-dialog>
-  <h3 header>{{'COMMENTS.TITLE' | translate}}</h3>
-
+<vo-lib-dialog [header]="'COMMENTS.TITLE' | translate" (dialogClose)="done()">
   <div content>
     @if (loading) {
       <bc-spinner></bc-spinner>
     } @else {
       @for (comment of comments; track comment) {
-        <vo-ausm-admonition
-          class="m-2"
-          [type]="comment.createdByMonitoringAuthority ? 'warning' : 'success'">
+        <vo-ausm-admonition class="m-2" [type]="comment.createdByMonitoringAuthority ? 'warning' : 'success'">
           <div class="message-content">
-            <span class="wrap m-0">{{comment.content}}</span>
-            <span class="mt-3 author">{{comment.createdBy.fullName}} - {{comment.createdAt | date: 'short'}}</span>
+            <span class="wrap m-0">{{ comment.content }}</span>
+            <span class="mt-3 author">{{ comment.createdBy.fullName }} - {{ comment.createdAt | date: 'short' }}</span>
           </div>
         </vo-ausm-admonition>
       }
     }
   </div>
 
-  <div footer>
-    <vo-lib-button-bar [hasSaveButton]="false"
-      [sticky]="false"
-      [cancelLabel]="'APP.CLOSE' | translate"
-    (cancel)="done()"></vo-lib-button-bar>
-  </div>
+  <vo-lib-button-bar
+    footer
+    [hasSaveButton]="false"
+    [sticky]="false"
+    [cancelLabel]="'APP.CLOSE' | translate"
+    (cancel)="done()"
+  ></vo-lib-button-bar>
 </vo-lib-dialog>

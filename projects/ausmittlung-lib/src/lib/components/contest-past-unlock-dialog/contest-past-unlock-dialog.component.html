@@ -1,4 +1,4 @@
-<vo-lib-dialog>
+<vo-lib-dialog [header]="'CONTEST.PAST_UNLOCK.TITLE' | translate" (dialogClose)="close()">
   <h3 header>{{'CONTEST.PAST_UNLOCK.TITLE' | translate}}</h3>
 
   <div content>
@@ -6,12 +6,11 @@
     <p>{{'CONTEST.PAST_UNLOCK.REDIRECT_NOTE' | translate}}</p>
   </div>
 
-  <div footer>
-    <vo-lib-button-bar [sticky]="false"
-                       [saveLabel]="'CONTEST.PAST_UNLOCK.REDIRECT' | translate"
-                       [cancelLabel]="'APP.CLOSE' | translate"
-                       [hasSaveButton]="!!votingBasisWebAppUrl"
-                       (save)="redirect()"
-                       (cancel)="close()"></vo-lib-button-bar>
-  </div>
+  <vo-lib-button-bar footer
+                     [sticky]="false"
+                     [saveLabel]="'CONTEST.PAST_UNLOCK.REDIRECT' | translate"
+                     [cancelLabel]="'APP.CLOSE' | translate"
+                     [hasSaveButton]="!!votingBasisWebAppUrl"
+                     (save)="redirect()"
+                     (cancel)="close()"></vo-lib-button-bar>
 </vo-lib-dialog>

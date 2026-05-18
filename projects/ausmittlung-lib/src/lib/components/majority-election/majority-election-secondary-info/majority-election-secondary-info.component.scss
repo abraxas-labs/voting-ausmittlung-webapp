@@ -8,7 +8,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: $color-grey-7;
+  background-color: $color-surface-bg-neutral-bright;
 
   h4 {
     font-size: 1.3rem;
@@ -19,7 +19,7 @@
   }
 
   .label {
-    color: $color-grey-2;
+    color: $color-text-secondary;
     margin-bottom: 0.6rem;
   }
 }

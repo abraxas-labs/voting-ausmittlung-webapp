@@ -1,22 +1,22 @@
-<vo-lib-dialog>
-  <h3 header translate>RESULT_IMPORT.TITLE</h3>
-
+<vo-lib-dialog [header]="'RESULT_IMPORT.TITLE' | translate" (dialogClose)="close()">
   <div content>
     @if (eCH0110Supported) {
       <p>{{ 'RESULT_IMPORT.EXPLANATION' | translate }}</p>
     }
-    <vo-ausm-import-file-select content
+    <vo-ausm-import-file-select
+      content
       [ech0110Supported]="eCH0110Supported"
-      (filesChange)="filesChanged($event)"></vo-ausm-import-file-select>
+      (filesChange)="filesChanged($event)"
+    ></vo-ausm-import-file-select>
   </div>
 
-  <div footer class="mr-3">
-    <vo-lib-button-bar footer
-      [saveLabel]="'RESULT_IMPORT.IMPORT' | translate"
-      (save)="import()"
-      [hasSaveButton]="canImport"
-      [canSave]="filesValid"
-      [saving]="importing"
-      (cancel)="close()"></vo-lib-button-bar>
-  </div>
+  <vo-lib-button-bar
+    footer
+    [saveLabel]="'RESULT_IMPORT.IMPORT' | translate"
+    (save)="import()"
+    [hasSaveButton]="canImport"
+    [canSave]="filesValid"
+    [saving]="importing"
+    (cancel)="close()"
+  ></vo-lib-button-bar>
 </vo-lib-dialog>

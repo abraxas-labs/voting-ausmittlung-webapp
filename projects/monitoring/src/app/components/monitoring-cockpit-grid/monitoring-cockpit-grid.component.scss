@@ -21,8 +21,8 @@ bc-segmented-control-group {
 }
 
 .not-owned-political-business-container {
-  background-color: $color-grey-7;
-  border: 1px solid $color-grey-6;
+  background-color: $color-surface-bg-primary-bright;
+  border: 1px solid $color-border-soft;
   min-height: 2rem;
   border-radius: 4px;
   display: flex;
@@ -47,7 +47,7 @@ bc-segmented-control-group {
 }
 
 ::ng-deep [class*='bc-column-id-'] {
-  @include table.truncate-long-sortable-table-header();
+  @include table.truncate-long-simple-sortable-table-header();
 }
 
 .flex {

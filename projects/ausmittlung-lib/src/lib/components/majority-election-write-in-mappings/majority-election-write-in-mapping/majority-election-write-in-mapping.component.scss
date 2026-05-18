@@ -8,7 +8,7 @@
 
 .no-data {
   font-style: italic;
-  color: $color-grey-1;
+  color: $color-text-primary;
 }
 
 .available-mappings {
@@ -25,10 +25,10 @@
       display: flex;
       align-items: center;
       border-radius: 0.3rem;
-      border: 1px solid $color-grey-4;
+      border: 1px solid $color-border-soft;
 
       &.selected {
-        background-color: $color-grey-7;
+        background-color: $color-surface-bg-neutral-bright;
       }
 
       .spacer {
@@ -37,14 +37,14 @@
       }
 
       .count-of-votes {
-        color: $color-grey-2;
+        color: $color-text-secondary;
       }
     }
   }
 }
 
 .candidates {
-  border-left: 1px solid $color-grey-4;
+  border-left: 1px solid $color-border-soft;
   display: flex;
   flex-direction: column;
 
@@ -61,8 +61,8 @@
 
       th {
         text-align: left;
-        color: $color-black;
-        border-bottom: 1px solid $color-grey-2;
+        color: $color-text-primary;
+        border-bottom: 1px solid $color-border-secondary;
 
         &:first-child {
           padding-left: 0.2rem;
@@ -75,7 +75,7 @@
       }
 
       td {
-        border-bottom: 1px solid $color-grey-6;
+        border-bottom: 1px solid $color-border-soft;
         padding: 0.75rem 0.75rem 0.75rem 0;
         text-overflow: ellipsis;
         overflow: hidden;
@@ -91,14 +91,14 @@
       }
 
       .drag-over td {
-        background-color: $color-grey-7;
+        background-color: $color-surface-bg-neutral-bright;
       }
     }
   }
 }
 
 .chip {
-  background-color: $color-grey-5;
+  background-color: $color-surface-bg-neutral;
   border-radius: 0.4rem;
   display: inline-flex;
   align-items: center;
@@ -111,16 +111,16 @@
 .keyboard-hint {
   font-size: small;
   font-style: italic;
-  color: $color-grey-2;
+  color: $color-text-secondary;
 }
 
 .keyboard-message {
   font-size: small;
   font-style: italic;
-  color: $color-success;
+  color: $color-signal-success;
 
   &.error {
-    color: $color-warning;
+    color: $color-signal-warning;
   }
 }
 

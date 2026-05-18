@@ -1,19 +1,21 @@
-<vo-lib-dialog>
-  <h3 header>{{'POLITICAL_BUSINESS.NEW_BUNDLE_TITLE' | translate}}</h3>
+<vo-lib-dialog [header]="'POLITICAL_BUSINESS.NEW_BUNDLE_TITLE' | translate" (dialogClose)="done()">
   <div content>
-    <bc-number class="my-2"
+    <bc-number
+      class="my-2"
       [required]="true"
       [allowUndefined]="false"
       [label]="'POLITICAL_BUSINESS.BUNDLE_NUMBER' | translate"
       [value]="bundleNumber"
       [error]="!bundleNumber"
       (valueChange)="updateBundleNumber(+$event)"
-      [subscriptSizing]="'dynamic'">
-    </bc-number>
+      [subscriptSizing]="'dynamic'"
+    ></bc-number>
   </div>
-  <vo-lib-button-bar footer
+  <vo-lib-button-bar
+    footer
     (cancel)="close()"
     [saveLabel]="'POLITICAL_BUSINESS.CREATE_BUNDLE' | translate"
     (save)="done()"
-    [canSave]="!!bundleNumber"></vo-lib-button-bar>
+    [canSave]="!!bundleNumber"
+  ></vo-lib-button-bar>
 </vo-lib-dialog>

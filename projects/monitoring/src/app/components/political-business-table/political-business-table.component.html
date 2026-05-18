@@ -1,54 +1,54 @@
 <bc-table [sticky]="true" selection filter sort [sortMultiple]="true" [sortActive]="[{ id: domainOfInfluenceTypeColumn, direction: 'asc' }, { id: domainOfInfluenceColumn, direction: 'asc' }, { id: businessTypeColumn, direction: 'asc' }, { id: politicalBusinessNumberColumn, direction: 'asc' }]" [dataSource]="dataSource">
   <ng-container [columnDef]="minStateColumn">
-    <bc-header-cell filter filterType="list" [filterItems]="stateList"
+    <th bc-header-cell filter filterType="list" [filterItems]="stateList"
                     filterDisplayExpr="description" filterValueExpr="value" sort *headerCellDef>
       {{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.STATE' | translate }}
-    </bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">
+    </th>
+    <td bc-data-cell *dataCellDef="let element">
       <div class="state-colorbox"
            [ngClass]="'result-state-' + element.minState"></div>
-    </bc-data-cell>
+    </td>
   </ng-container>
   <ng-container [columnDef]="domainOfInfluenceTypeColumn">
-    <bc-header-cell filter filterType="list" [filterItems]="domainOfInfluenceTypeList"
+    <th bc-header-cell filter filterType="list" [filterItems]="domainOfInfluenceTypeList"
                     filterDisplayExpr="description" filterValueExpr="value" sort *headerCellDef>
       {{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.DOMAIN_OF_INFLUENCE_TYPE' | translate }}
-    </bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">{{ 'DOMAIN_OF_INFLUENCE_TYPES.' + element.domainOfInfluence.type | translate }}</bc-data-cell>
+    </th>
+    <td bc-data-cell *dataCellDef="let element">{{ 'DOMAIN_OF_INFLUENCE_TYPES.' + element.domainOfInfluence.type | translate }}</td>
   </ng-container>
   <ng-container [columnDef]="businessTypeColumn">
-    <bc-header-cell filter filterType="list" [filterItems]="politicalBusinessTypeList"
+    <th bc-header-cell filter filterType="list" [filterItems]="politicalBusinessTypeList"
                     filterDisplayExpr="description" filterValueExpr="value" sort *headerCellDef>
       {{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.POLITICAL_BUSINESS_TYPE.TITLE' | translate }}
-    </bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.POLITICAL_BUSINESS_TYPE.' + element.businessType + '-' + element.businessSubType | translate }}</bc-data-cell>
+    </th>
+    <td bc-data-cell *dataCellDef="let element">{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.POLITICAL_BUSINESS_TYPE.' + element.businessType + '-' + element.businessSubType | translate }}</td>
   </ng-container>
   <ng-container [columnDef]="politicalBusinessNumberColumn">
-    <bc-header-cell filter filterType="text" sort *headerCellDef>{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.NUMBER' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">{{ element.politicalBusinessNumber }}</bc-data-cell>
+    <th bc-header-cell filter filterType="text" sort *headerCellDef>{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.NUMBER' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element">{{ element.politicalBusinessNumber }}</td>
   </ng-container>
   <ng-container [columnDef]="shortDescriptionColumn">
-    <bc-header-cell filter filterType="text" sort *headerCellDef>{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.SHORT_DESCRIPTION' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">{{ element.shortDescription }}</bc-data-cell>
+    <th bc-header-cell filter filterType="text" sort *headerCellDef>{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.SHORT_DESCRIPTION' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element">{{ element.shortDescription }}</td>
   </ng-container>
   <ng-container [columnDef]="numberOfMandatesColumn">
-    <bc-header-cell filter filterType="number" sort *headerCellDef>{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.NUMBER_OF_MANDATES' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">{{ element.numberOfMandates }}</bc-data-cell>
+    <th bc-header-cell filter filterType="number" sort *headerCellDef>{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.NUMBER_OF_MANDATES' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element">{{ element.numberOfMandates }}</td>
   </ng-container>
   <ng-container [columnDef]="amountOfCountingCirclesColumn">
-    <bc-header-cell filter filterType="number" sort *headerCellDef>{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.COUNTING_CIRCLES' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">{{ element.amountOfCountingCircles }}</bc-data-cell>
+    <th bc-header-cell filter filterType="number" sort *headerCellDef>{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.COUNTING_CIRCLES' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element">{{ element.amountOfCountingCircles }}</td>
   </ng-container>
   <ng-container [columnDef]="domainOfInfluenceColumn">
-    <bc-header-cell filter filterType="text" sort *headerCellDef>{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.DOMAIN_OF_INFLUENCE' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">{{ element.domainOfInfluence.name }}</bc-data-cell>
+    <th bc-header-cell filter filterType="text" sort *headerCellDef>{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.DOMAIN_OF_INFLUENCE' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element">{{ element.domainOfInfluence.name }}</td>
   </ng-container>
-  <bc-header-row *headerRowDef="let row; columns: columns"></bc-header-row>
-  <bc-data-row *dataRowDef="let row; columns: columns; let i = index"
+  <tr bc-header-row *headerRowDef="let row; columns: columns"></tr>
+  <tr bc-data-row *dataRowDef="let row; columns: columns; let i = index"
                selectionToggle [selectionToggleValue]="row"
                selectionRow [selectionRowValue]="row"
                (click)="toggleRow(row)"
-               ></bc-data-row>
+               ></tr>
   <ng-template noDataRow>
     <tr class="bc-row-data">
       <td class="bc-cell" colspan="5" translate>MONITORING_POLITICAL_BUSINESSES_OVERVIEW.NO_POLITICAL_BUSINESSES</td>

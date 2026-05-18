@@ -1,4 +1,4 @@
-# ✨ Changelog (`v3.28.1`)
+# ✨ Changelog (`v3.29.4`)
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Info
 
 ```text
-This version -------- v3.28.1
-Previous version ---- v3.27.8
+This version -------- v3.29.4
+Previous version ---- v3.28.1
 Initial version ----- v1.25.0
-Total commits ------- 2
+Total commits ------- 5
 ```
+
+## [v3.29.4] - 2026-04-16
+
+### 🔄 Changed
+
+- fix cc sorting in monitoring cockpit
+
+## [v3.29.3] - 2026-04-15
+
+### 🔄 Changed
+
+- include domain of influence in e-counting political businesses import
+
+## [v3.29.2] - 2026-04-15
+
+### 🔄 Changed
+
+- update dependencies
+
+## [v3.29.1] - 2026-04-09
+
+### 🆕 Added
+
+- add e-counting import validation and data reload
+
+## [v3.29.0] - 2026-03-25
+
+### 🔄 Changed
+
+- update angular 21 and base-components
 
 ## [v3.28.1] - 2026-03-25
 

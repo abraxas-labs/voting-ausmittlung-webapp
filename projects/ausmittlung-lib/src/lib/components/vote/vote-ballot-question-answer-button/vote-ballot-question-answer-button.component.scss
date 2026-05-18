@@ -7,8 +7,8 @@
 
 .answer-button {
   width: 100%;
-  background-color: $color-white;
-  border: 1px solid $color-primary;
+  background-color: $color-surface-bg-neutral-full;
+  border: 1px solid $color-border-primary;
   border-radius: 4px;
   cursor: pointer;
   outline: none;
@@ -16,7 +16,7 @@
   font-size: 1rem;
   padding: 8px 32px;
   text-align: center;
-  color: $color-primary;
+  color: $color-text-brand;
   white-space: nowrap;
 
   &.selected {
@@ -25,15 +25,15 @@
   }
 
   &:hover {
-    background-color: $color-primary-10;
-    border-color: $color-primary-75;
-    color: $color-primary-75;
+    background-color: $color-surface-bg-primary-bright;
+    border-color: $color-border-primary;
+    color: $color-text-brand;
   }
 
   &[disabled] {
-    background-color: $color-white;
-    border-color: $color-grey-4;
-    color: $color-grey-4;
+    background-color: $color-surface-bg-neutral-full;
+    border-color: $color-border-soft;
+    color: $color-text-secondary;
     cursor: not-allowed;
     font-style: italic;
   }
@@ -41,24 +41,24 @@
 
 :host-context(.selected-yes) {
   .answer-button {
-    border-color: $color-success;
-    background-color: $color-success-10;
-    color: $color-success;
+    border-color: $color-signal-success;
+    background-color: $color-signal-success-light;
+    color: $color-signal-success;
   }
 }
 
 :host-context(.selected-no) {
   .answer-button {
-    border-color: $color-error;
-    background-color: $color-error-10;
-    color: $color-error;
+    border-color: $color-signal-error;
+    background-color: $color-signal-error-light;
+    color: $color-signal-error;
   }
 }
 
 :host-context(.selected-unspecified) {
   .answer-button {
-    border-color: $color-primary;
-    background-color: $color-primary-10;
-    color: $color-primary;
+    border-color: $color-border-primary;
+    background-color: $color-surface-bg-primary;
+    color: $color-text-brand;
   }
 }

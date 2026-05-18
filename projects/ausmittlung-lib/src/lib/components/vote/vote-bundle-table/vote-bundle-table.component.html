@@ -10,75 +10,79 @@
   <bc-table selection filter sort [sortActive]="[{ id: stateColumn, direction: 'asc' }, { id: numberColumn, direction: 'asc' }]"
     [filterDisabled]="!enableFiltering" [sortDisabled]="!enableSorting" [sortMultiple]="true" [dataSource]="dataSource">
     <ng-container columnDef="select">
-      <bc-header-cell *headerCellDef>
-        <bc-checkbox class="ml-2 mb-0" (checkedChange)="toggleAllRows($event)"
+      <th bc-header-cell *headerCellDef>
+        <bc-checkbox class="mb-0" (checkedChange)="toggleAllRows($event)"
           [checked]="selection.hasValue() && isAllSelected" [indeterminate]="selection.hasValue() && !isAllSelected">
         </bc-checkbox>
-      </bc-header-cell>
-      <bc-data-cell *dataCellDef="let element">
-        <bc-checkbox class="ml-2" (checkedChange)="toggleRow(element, $event)"
+      </th>
+      <td bc-data-cell *dataCellDef="let element">
+        <bc-checkbox (checkedChange)="toggleRow(element, $event)"
           [checked]="selection.isSelected(element)">
         </bc-checkbox>
-      </bc-data-cell>
+      </td>
     </ng-container>
 
     <ng-container [columnDef]="numberColumn">
-      <bc-header-cell [filter]="enableFiltering" filterType="number" [sort]="enableSorting" *headerCellDef>
+      <th bc-header-cell [filter]="enableFiltering" filterType="number" [sort]="enableSorting" *headerCellDef>
         <span truncateWithTooltip tooltip>{{ 'POLITICAL_BUSINESS.BUNDLE_NUMBER' | translate }}</span>
-      </bc-header-cell>
-      <bc-data-cell *dataCellDef="let element">{{ element.number }}</bc-data-cell>
+      </th>
+      <td bc-data-cell *dataCellDef="let element">{{ element.number }}</td>
     </ng-container>
 
     <ng-container [columnDef]="bundleSizeColumn">
-      <bc-header-cell [filter]="enableFiltering" filterType="number" [sort]="enableSorting" *headerCellDef>
+      <th bc-header-cell [filter]="enableFiltering" filterType="number" [sort]="enableSorting" *headerCellDef>
         <span truncateWithTooltip tooltip>{{ 'ELECTION.BUNDLE_SIZE' | translate }}</span>
-      </bc-header-cell>
-      <bc-data-cell *dataCellDef="let element">{{ bundleSize | number }}</bc-data-cell>
+      </th>
+      <td bc-data-cell *dataCellDef="let element">{{ bundleSize | number }}</td>
     </ng-container>
 
     <ng-container [columnDef]="createdByColumn">
-      <bc-header-cell [filter]="enableFiltering" filterType="text" [sort]="enableSorting" *headerCellDef>
+      <th bc-header-cell [filter]="enableFiltering" filterType="text" [sort]="enableSorting" *headerCellDef>
         <span truncateWithTooltip tooltip>{{ 'ELECTION.BUNDLE_CREATED_BY' | translate }}</span>
-      </bc-header-cell>
-      <bc-data-cell *dataCellDef="let element">{{ element.createdBy.fullName }}</bc-data-cell>
+      </th>
+      <td bc-data-cell *dataCellDef="let element">{{ element.createdBy.fullName }}</td>
     </ng-container>
 
     <ng-container [columnDef]="countOfBallotsColumn">
-      <bc-header-cell [filter]="enableFiltering" filterType="number" [sort]="enableSorting" *headerCellDef>
+      <th bc-header-cell [filter]="enableFiltering" filterType="number" [sort]="enableSorting" *headerCellDef>
         <span truncateWithTooltip tooltip>{{ 'VOTE.COUNT_OF_LISTS' | translate }}</span>
-      </bc-header-cell>
-      <bc-data-cell *dataCellDef="let element">{{ element.countOfBallots }}</bc-data-cell>
+      </th>
+      <td bc-data-cell *dataCellDef="let element">{{ element.countOfBallots }}</td>
     </ng-container>
 
     <ng-container [columnDef]="countOfModifiedBallotsColumn">
-      <bc-header-cell [filter]="enableFiltering" filterType="number" [sort]="enableSorting" *headerCellDef>
+      <th bc-header-cell [filter]="enableFiltering" filterType="number" [sort]="enableSorting" *headerCellDef>
         <span truncateWithTooltip tooltip>{{ 'VOTE.COUNT_OF_MODIFIED_LISTS' | translate }}</span>
-      </bc-header-cell>
-      <bc-data-cell *dataCellDef="let element">{{ element.countOfModifiedBallots }}</bc-data-cell>
+      </th>
+      <td bc-data-cell *dataCellDef="let element">{{ element.countOfModifiedBallots }}</td>
     </ng-container>
 
     <ng-container [columnDef]="stateColumn">
-      <bc-header-cell [filter]="enableFiltering" filterType="list" [filterItems]="stateList"
+      <th bc-header-cell [filter]="enableFiltering" filterType="list" [filterItems]="stateList"
         filterDisplayExpr="description" filterValueExpr="value" [sort]="enableSorting" *headerCellDef>
         <span truncateWithTooltip tooltip>{{ 'APP.STATE' | translate }}</span>
-      </bc-header-cell>
-      <bc-data-cell *dataCellDef="let element">
+      </th>
+      <td bc-data-cell *dataCellDef="let element">
         <vo-ausm-result-bundle-state-chip
           [state]="element.state"
           [tooltip]="element.logs | politicalBusinessResultBundleLogs"></vo-ausm-result-bundle-state-chip>
-      </bc-data-cell>
+      </td>
     </ng-container>
 
     <ng-container [columnDef]="reviewedByColumn">
-      <bc-header-cell [filter]="enableFiltering" filterType="text" [sort]="enableSorting" *headerCellDef>
+      <th bc-header-cell [filter]="enableFiltering" filterType="text" [sort]="enableSorting" *headerCellDef>
         <span truncateWithTooltip tooltip>{{ 'ELECTION.BUNDLE_REVIEWED_BY' | translate }}</span>
-      </bc-header-cell>
-      <bc-data-cell *dataCellDef="let element">{{ element.reviewedBy?.fullName }}</bc-data-cell>
+      </th>
+      <td bc-data-cell *dataCellDef="let element">{{ element.reviewedBy?.fullName }}</td>
     </ng-container>
 
     <ng-container [columnDef]="reviewColumn">
-      <bc-header-cell *headerCellDef>{{ 'ELECTION.BUNDLE_REVIEW' | translate }}</bc-header-cell>
-      <bc-data-cell *dataCellDef="let bundle">
+      <th bc-header-cell *headerCellDef>
+        <div class="mt-2">
+          {{ 'ELECTION.BUNDLE_REVIEW' | translate }}
+        </div>
+      </th>
+      <td bc-data-cell *dataCellDef="let bundle">
         @if (bundle.state >= bundleStates.BALLOT_BUNDLE_STATE_READY_FOR_REVIEW && canReviewBundle) {
           @if (!bundle.protocolExport) {
             @if (!bundle.hasUiSnapshotMismatch) {
@@ -113,12 +117,12 @@
             </bc-icon>
           }
         </ng-template>
-      </bc-data-cell>
+      </td>
     </ng-container>
 
     <ng-container [columnDef]="actionsColumn">
-      <bc-header-cell *headerCellDef class="actions-header"></bc-header-cell>
-      <bc-data-cell *dataCellDef="let bundle;">
+      <th bc-header-cell *headerCellDef class="actions-header"></th>
+      <td bc-data-cell *dataCellDef="let bundle;">
       @if (!bundle.hasUiSnapshotMismatch) {
         @if (!readOnly) {
           <vo-lib-action-menu>
@@ -195,14 +199,14 @@
           </vo-lib-action-menu-item>
         </ng-template>
 
-      </bc-data-cell>
+      </td>
     </ng-container>
 
 
-    <bc-header-row *headerRowDef="let row; columns: columns"></bc-header-row>
-    <bc-data-row *dataRowDef="let row; columns: columns; let i = index" selectionToggle [selectionToggleValue]="row"
+    <tr bc-header-row *headerRowDef="let row; columns: columns"></tr>
+    <tr bc-data-row *dataRowDef="let row; columns: columns; let i = index" selectionToggle [selectionToggleValue]="row"
       selectionRow [selectionRowValue]="row"
-      (click)="selectBundle(row)"></bc-data-row>
+      (click)="selectBundle(row)"></tr>
 
     <ng-template noDataRow>
       <tr class="bc-row-data">

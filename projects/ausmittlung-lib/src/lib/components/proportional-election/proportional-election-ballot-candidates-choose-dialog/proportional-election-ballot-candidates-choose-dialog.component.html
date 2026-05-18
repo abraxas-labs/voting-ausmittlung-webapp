@@ -1,6 +1,4 @@
-<vo-lib-dialog>
-  <h3 header>{{ 'ELECTION.BALLOT_DETAIL.REPLACE_CANDIDATE' | translate }}</h3>
-
+<vo-lib-dialog [header]="'ELECTION.BALLOT_DETAIL.REPLACE_CANDIDATE' | translate" (dialogClose)="done()">
   <div content>
     <bc-button
       variant="tertiary"
@@ -11,7 +9,7 @@
     <bc-text
       [label]="'ELECTION.BALLOT_DETAIL.REPLACE_CANDIDATE_SEARCH_AND_REPLACE' | translate"
       (valueChange)="search($event)"
-      [focusOnLoad]="true"
+      [autoFocus]="true"
       optionalText=""
       [subscriptSizing]="'dynamic'"
     ></bc-text>

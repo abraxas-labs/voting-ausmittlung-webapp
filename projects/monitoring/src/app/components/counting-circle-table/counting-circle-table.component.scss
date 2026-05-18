@@ -1,8 +1,8 @@
 @use '@abraxas/voting-lib/style/color' as *;
 @use '@abraxas/voting-lib/style/spacing' as *;
 
-$color-winning: $color-info-25;
-$color-losing: $color-error-25;
+$color-winning: $color-signal-info-light;
+$color-losing: $color-signal-error-light;
 
 .state-colorbox {
   border-radius: 4px;

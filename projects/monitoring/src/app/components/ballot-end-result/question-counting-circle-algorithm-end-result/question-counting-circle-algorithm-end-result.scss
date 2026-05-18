@@ -22,11 +22,11 @@
     @extend .mb-2;
 
     &.result-accepted {
-      color: $color-info;
+      color: $color-signal-info;
     }
 
     &:not(.result-accepted) {
-      color: $color-error;
+      color: $color-signal-error;
     }
   }
 }

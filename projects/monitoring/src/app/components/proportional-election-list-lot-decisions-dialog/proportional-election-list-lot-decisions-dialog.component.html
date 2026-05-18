@@ -1,26 +1,23 @@
-<vo-lib-dialog>
-  <h3 header translate>PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.TITLE</h3>
-
+<vo-lib-dialog [header]="'PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.TITLE' | translate" (dialogClose)="close()">
   <div content>
     <bc-table [dataSource]="dataSource">
       <ng-container columnDef="lists">
-        <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.LOT_DECISION.LISTS' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">{{ element.lists }}</bc-data-cell>
+        <th bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.LOT_DECISION.LISTS' | translate }}</th>
+        <td bc-data-cell *dataCellDef="let element">{{ element.lists }}</td>
       </ng-container>
       <ng-container columnDef="winners">
-        <bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.LOT_DECISION.WINNERS' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">{{ element.winners }}</bc-data-cell>
+        <th bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.LOT_DECISION.WINNERS' | translate }}</th>
+        <td bc-data-cell *dataCellDef="let element">{{ element.winners }}</td>
       </ng-container>
       <ng-container columnDef="actions">
-        <bc-header-cell *headerCellDef class="actions-header"></bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">
+        <th bc-header-cell *headerCellDef class="actions-header"></th>
+        <td bc-data-cell *dataCellDef="let element">
           <bc-icon (click)="removeListLotDecision(element)" icon="remove" class="clickable-icon"></bc-icon>
-        </bc-data-cell>
+        </td>
       </ng-container>
 
-      <bc-header-row *headerRowDef="let row; columns: columns"></bc-header-row>
-      <bc-data-row *dataRowDef="let row; columns: columns; let i = index">
-      </bc-data-row>
+      <tr bc-header-row *headerRowDef="let row; columns: columns"></tr>
+      <tr bc-data-row *dataRowDef="let row; columns: columns; let i = index"></tr>
     </bc-table>
     <bc-button
       class="mt-3"
@@ -31,12 +28,5 @@
     ></bc-button>
   </div>
 
-  <div footer>
-    <vo-lib-button-bar
-      (save)="save()"
-      [sticky]="false"
-      [saveLabel]="'COMMON.SAVE' | translate"
-      (cancel)="close()"
-    ></vo-lib-button-bar>
-  </div>
+  <vo-lib-button-bar footer (save)="save()" [sticky]="false" [saveLabel]="'COMMON.SAVE' | translate" (cancel)="close()"></vo-lib-button-bar>
 </vo-lib-dialog>

@@ -174,6 +174,18 @@ export class ErfassungFinishSubmissionComponent implements OnInit, OnDestroy {
   }
 
   private async confirmValidationOverviewDialog(contestId: string, countingCircleId: string, resultIds: string[]): Promise<boolean> {
+    const results = this.resultsDataSource.data.filter(r => resultIds.includes(r.id));
+    if (this.countingCircle!.eCounting && results.some(r => !r.eCountingImported)) {
+      const eCountingValidationResult = await this.dialogService.confirm(
+        'VALIDATION.E_COUNTING_IMPORT_MISSING.TITLE',
+        'VALIDATION.E_COUNTING_IMPORT_MISSING.MESSAGE',
+      );
+
+      if (!eCountingValidationResult) {
+        return false;
+      }
+    }
+
     const validationSummaries = await this.resultService.validateCountingCircleResults(contestId, countingCircleId, resultIds);
 
     const data: ValidationOverviewDialogData = {

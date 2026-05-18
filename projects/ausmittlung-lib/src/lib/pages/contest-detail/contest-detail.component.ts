@@ -380,6 +380,7 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     const title = `RESULT_IMPORT.IMPORTED.${importType}.TITLE`;
     if (!hasWriteIns) {
       await this.dialogService.alert(title, `RESULT_IMPORT.IMPORTED.${importType}.TEXT_WITHOUT_WRITE_INS`, 'APP.CONFIRM');
+      this.reloadAfterImportUpdated(importType);
       return;
     }
 
@@ -390,6 +391,7 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     );
 
     if (!confirmed) {
+      this.reloadAfterImportUpdated(importType);
       return;
     }
 
@@ -397,6 +399,7 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     this.resultList = await this.resultService.getList(this.resultList.contest.id, this.resultList.countingCircle.id);
 
     await this.mapWriteIns(importType);
+    this.reloadAfterImportUpdated(importType);
   }
 
   private async writeInMappingsUpdated(resultId: string, duplicatedCandidates: number, invalidDueToEmptyBallot: number): Promise<void> {
@@ -531,6 +534,12 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     const data = await this.resultService.getList(this.resultList.contest.id, this.resultList.countingCircle.id);
     for (const result of data.results) {
       this.stateUpdated(result.id, result.state, new Date());
+    }
+  }
+
+  private reloadAfterImportUpdated(importType: ResultImportType) {
+    if (importType === ResultImportType.RESULT_IMPORT_TYPE_ECOUNTING) {
+      window.location.reload();
     }
   }
 }

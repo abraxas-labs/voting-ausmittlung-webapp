@@ -50,11 +50,10 @@ export interface ResultOverviewCountingCircleWithDetails {
   details: ContestCountingCircleDetails;
 }
 
-export interface ResultOverviewCountingCircleResult
-  extends Omit<
-    ResultOverviewCountingCircleResultProto.AsObject,
-    'submissionDoneTimestamp' | 'readyForCorrectionTimestamp' | 'auditedTentativelyTimestamp' | 'plausibilisedTimestamp'
-  > {
+export interface ResultOverviewCountingCircleResult extends Omit<
+  ResultOverviewCountingCircleResultProto.AsObject,
+  'submissionDoneTimestamp' | 'readyForCorrectionTimestamp' | 'auditedTentativelyTimestamp' | 'plausibilisedTimestamp'
+> {
   submissionDoneTimestamp?: Date;
   readyForCorrectionTimestamp?: Date;
   auditedTentativelyTimestamp?: Date;

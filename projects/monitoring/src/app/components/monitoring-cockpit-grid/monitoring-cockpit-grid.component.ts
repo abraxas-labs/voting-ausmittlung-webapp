@@ -4,8 +4,8 @@
  * For license information see LICENSE file.
  */
 
-import { SegmentedControl } from '@abraxas/base-components';
-import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { AuthorizationService, FilterDirective, SegmentedControl, SortDirective, TableDataSource, Tenant } from '@abraxas/base-components';
+import { AfterViewInit, Component, inject, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   ContestCantonDefaults,
@@ -30,7 +30,6 @@ import {
 } from 'ausmittlung-lib';
 import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
-import { AuthorizationService, FilterDirective, SortDirective, TableDataSource, Tenant } from '@abraxas/base-components';
 import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/political_business_pb';
 import { StorageService } from '../../services/storage.service';
 import { EnumItemDescription, EnumUtil } from '@abraxas/voting-lib';
@@ -76,6 +75,17 @@ export class MonitoringCockpitGridComponent implements OnInit, AfterViewInit, On
     CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED,
   ];
   private readonly emptyStates: CountingCircleResultState[] = [];
+
+  private readonly resultStatePriority: Record<CountingCircleResultState, number> = {
+    [CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE]: 1,
+    [CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE]: 1, // correction done is handled as submission done (both have the same color)
+    [CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION]: 2,
+    [CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING]: 3,
+    [CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_INITIAL]: 4,
+    [CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY]: 5,
+    [CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_PLAUSIBILISED]: 6,
+    [CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_UNSPECIFIED]: 7,
+  };
 
   @Input()
   public manualPublishResultsEnabled: boolean = false;
@@ -432,35 +442,25 @@ export class MonitoringCockpitGridComponent implements OnInit, AfterViewInit, On
     b: FilteredCountingCircleResults,
     notOwnedPoliticalBusinessIds: string[],
   ): number {
-    // 1. order criteria: descending ResultState.Done count
-    const aCompletedCount = a.filteredResults.filter(
-      x =>
-        !notOwnedPoliticalBusinessIds.includes(x.politicalBusinessId) &&
-        (x.state === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE ||
-          x.state === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE),
-    ).length;
-    const bCompletedCount = b.filteredResults.filter(
-      x =>
-        !notOwnedPoliticalBusinessIds.includes(x.politicalBusinessId) &&
-        (x.state === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE ||
-          x.state === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE),
-    ).length;
-
-    if (aCompletedCount !== bCompletedCount) {
-      return bCompletedCount - aCompletedCount;
+    // 1. order criteria: total result state of cc (sorted by priority list)
+    const aResultStatePriority = this.resultStatePriority[a.minResultState];
+    const bResultStatePriority = this.resultStatePriority[b.minResultState];
+    if (aResultStatePriority !== bResultStatePriority) {
+      return aResultStatePriority - bResultStatePriority;
     }
 
-    // 2. order criteria: ascending by the latest done timestamp
-    if (aCompletedCount > 0) {
+    // 2. order criteria: ascending by the latest ready for correction timestamp if ready for correction
+    if (a.minResultState === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION) {
+      const initialZeroDate = new Date(0);
       const aLatestTimestamp = a.filteredResults
-        .filter(x => !notOwnedPoliticalBusinessIds.includes(x.politicalBusinessId) && !!x.submissionDoneTimestamp)
-        .map(x => x.submissionDoneTimestamp!)
-        .reduce((x, y) => (x > y ? x : y))
+        .filter(x => !notOwnedPoliticalBusinessIds.includes(x.politicalBusinessId) && !!x.readyForCorrectionTimestamp)
+        .map(x => x.readyForCorrectionTimestamp!)
+        .reduce((x, y) => (x > y ? x : y), initialZeroDate)
         .getTime();
       const bLatestTimestamp = b.filteredResults
-        .filter(x => !notOwnedPoliticalBusinessIds.includes(x.politicalBusinessId) && !!x.submissionDoneTimestamp)
-        .map(x => x.submissionDoneTimestamp!)
-        .reduce((x, y) => (x > y ? x : y))
+        .filter(x => !notOwnedPoliticalBusinessIds.includes(x.politicalBusinessId) && !!x.readyForCorrectionTimestamp)
+        .map(x => x.readyForCorrectionTimestamp!)
+        .reduce((x, y) => (x > y ? x : y), initialZeroDate)
         .getTime();
 
       if (aLatestTimestamp !== bLatestTimestamp) {
@@ -468,7 +468,40 @@ export class MonitoringCockpitGridComponent implements OnInit, AfterViewInit, On
       }
     }
 
-    // 3. order criteria: ascending by cc name
+    // 3. order criteria: ascending by the latest done timestamp if it has any completed results
+    const aHasCompletedResults = a.filteredResults.some(
+      x =>
+        !notOwnedPoliticalBusinessIds.includes(x.politicalBusinessId) &&
+        (x.state === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE ||
+          x.state === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE),
+    );
+
+    const bHasCompletedResults = b.filteredResults.some(
+      x =>
+        !notOwnedPoliticalBusinessIds.includes(x.politicalBusinessId) &&
+        (x.state === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_DONE ||
+          x.state === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE),
+    );
+
+    if (aHasCompletedResults && bHasCompletedResults) {
+      const initialZeroDate = new Date(0);
+      const aLatestTimestamp = a.filteredResults
+        .filter(x => !notOwnedPoliticalBusinessIds.includes(x.politicalBusinessId) && !!x.submissionDoneTimestamp)
+        .map(x => x.submissionDoneTimestamp!)
+        .reduce((x, y) => (x > y ? x : y), initialZeroDate)
+        .getTime();
+      const bLatestTimestamp = b.filteredResults
+        .filter(x => !notOwnedPoliticalBusinessIds.includes(x.politicalBusinessId) && !!x.submissionDoneTimestamp)
+        .map(x => x.submissionDoneTimestamp!)
+        .reduce((x, y) => (x > y ? x : y), initialZeroDate)
+        .getTime();
+
+      if (aLatestTimestamp !== bLatestTimestamp) {
+        return aLatestTimestamp - bLatestTimestamp;
+      }
+    }
+
+    // 4. order criteria: ascending by cc name
     return a.countingCircleWithDetails.countingCircle!.name.localeCompare(b.countingCircleWithDetails.countingCircle!.name);
   }
 

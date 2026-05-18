@@ -4,5 +4,9 @@
 .ready-for-correction-result {
   @extend .mb-1;
 
-  color: $color-grey-3;
+  color: $color-text-secondary;
+}
+
+.bc-column-select {
+  width: 3rem;
 }

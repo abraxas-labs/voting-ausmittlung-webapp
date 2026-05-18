@@ -1,22 +1,22 @@
 <bc-table selection filter sort [sortActive]="[{ id: 'date', direction: 'asc' }]" [dataSource]="dataSource">
   <ng-container columnDef="date">
-    <bc-header-cell filter filterType="date-extended" sort *headerCellDef>{{ 'CONTEST.DATE' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">{{ element.date | date }}</bc-data-cell>
+    <th bc-header-cell filter filterType="date-extended" sort *headerCellDef>{{ 'CONTEST.DATE' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element">{{ element.date | date }}</td>
   </ng-container>
 
   <ng-container columnDef="description">
-    <bc-header-cell filter sort *headerCellDef>{{ 'CONTEST.DESCRIPTION_HEADER' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">{{ element.description }}</bc-data-cell>
+    <th bc-header-cell filter sort *headerCellDef>{{ 'CONTEST.DESCRIPTION_HEADER' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element">{{ element.description }}</td>
   </ng-container>
 
   <ng-container columnDef="endOfTestingPhase">
-    <bc-header-cell filter filterType="date-extended" sort *headerCellDef>{{ 'CONTEST.END_OF_TESTING_PHASE' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">{{ element.endOfTestingPhase | date: 'short' }}</bc-data-cell>
+    <th bc-header-cell filter filterType="date-extended" sort *headerCellDef>{{ 'CONTEST.END_OF_TESTING_PHASE' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element">{{ element.endOfTestingPhase | date: 'short' }}</td>
   </ng-container>
 
   <ng-container columnDef="contestEntriesDetails">
-    <bc-header-cell filter *headerCellDef>{{ 'CONTEST.POLITICAL_BUSINESSES' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">
+    <th bc-header-cell filter *headerCellDef>{{ 'CONTEST.POLITICAL_BUSINESSES' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element">
       @for (detail of element.contestEntriesDetails; track detail) {
         <div class="my-1">
           {{
@@ -29,16 +29,16 @@
           }}
         </div>
       }
-    </bc-data-cell>
+    </td>
   </ng-container>
 
   <ng-container columnDef="owner">
-    <bc-header-cell filter sort *headerCellDef>{{ 'CONTEST.OWNER' | translate }}</bc-header-cell>
-    <bc-data-cell *dataCellDef="let element">{{ element.domainOfInfluence?.authorityName ?? '' }}</bc-data-cell>
+    <th bc-header-cell filter sort *headerCellDef>{{ 'CONTEST.OWNER' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element">{{ element.domainOfInfluence?.authorityName ?? '' }}</td>
   </ng-container>
 
-  <bc-header-row *headerRowDef="let row; columns: columns"></bc-header-row>
-  <bc-data-row
+  <tr bc-header-row *headerRowDef="let row; columns: columns"></tr>
+  <tr bc-data-row
     *dataRowDef="let row; columns: columns; let i = index"
     selectionToggle
     [selectionToggleValue]="row"
@@ -46,5 +46,5 @@
     [selectionRowValue]="row"
     (click)="openDetail.emit(row)"
   >
-  </bc-data-row>
+  </tr>
 </bc-table>

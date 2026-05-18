@@ -1,24 +1,19 @@
-<vo-lib-dialog>
-  <h3 header>{{title | translate}}</h3>
-
+<vo-lib-dialog [header]="title | translate" (dialogClose)="cancel()">
   <div content>
-    <p>{{message | translate}}</p>
+    <p>{{ message | translate }}</p>
     @if (hasComment) {
-      <bc-label
-        [label]="'APP.COMMENT' | translate"
-      [optional]="true"></bc-label>
+      <bc-label [label]="'APP.COMMENT' | translate" [optional]="true"></bc-label>
     }
     @if (hasComment) {
-      <bc-textarea
-      [(value)]="comment"></bc-textarea>
+      <bc-textarea [(value)]="comment"></bc-textarea>
     }
   </div>
 
-  <div footer class="buttons"
-    [class.align-right]="!showCancel">
-    @if (showCancel) {
-      <bc-button [label]="cancelText | translate" (buttonClick)="cancel()"></bc-button>
-    }
-    <bc-button variant="primary" [label]="confirmText | translate" (buttonClick)="confirm()"></bc-button>
-  </div>
+  <vo-lib-button-bar
+    footer
+    (cancel)="cancel()"
+    [cancelLabel]="cancelText | translate"
+    [saveLabel]="confirmText | translate"
+    (save)="confirm()"
+  ></vo-lib-button-bar>
 </vo-lib-dialog>

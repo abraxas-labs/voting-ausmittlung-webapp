@@ -1,42 +1,39 @@
-<vo-lib-dialog [contentLoading]="false">
-  <h1 header translate>CONTEST.DETAIL.ELECTORATE.ASSIGN.TITLE</h1>
-
+<vo-lib-dialog [header]="'CONTEST.DETAIL.ELECTORATE.ASSIGN.TITLE' | translate" (dialogClose)="close()">
   <div content>
     <div class="grid">
       <div>
         <bc-table selection class="w-full" [dataSource]="dataSource">
           <ng-container columnDef="select">
-            <bc-header-cell *headerCellDef>
+            <th bc-header-cell *headerCellDef>
               <bc-checkbox
-                class="ml-2 mb-0"
+                class="mb-0"
                 (checkedChange)="toggleAllRows($event)"
                 [checked]="selection.hasValue() && isAllSelected"
                 [indeterminate]="selection.hasValue() && !isAllSelected"
               >
               </bc-checkbox>
-            </bc-header-cell>
-            <bc-data-cell *dataCellDef="let element">
+            </th>
+            <td bc-data-cell *dataCellDef="let element">
               <bc-checkbox
-                class="ml-2"
                 (checkedChange)="toggleRow(element, $event)"
                 [checked]="selection.isSelected(element)"
               >
               </bc-checkbox>
-            </bc-data-cell>
+            </td>
           </ng-container>
 
           <ng-container columnDef="domainOfInfluenceType">
-            <bc-header-cell *headerCellDef>{{ 'CONTEST.DETAIL.ELECTORATE.ASSIGN.DOMAIN_OF_INFLUENCE_TYPE' | translate }}</bc-header-cell>
-            <bc-data-cell *dataCellDef="let element">
+            <th bc-header-cell *headerCellDef>{{ 'CONTEST.DETAIL.ELECTORATE.ASSIGN.DOMAIN_OF_INFLUENCE_TYPE' | translate }}</th>
+            <td bc-data-cell *dataCellDef="let element">
               <span>{{ 'CONTEST.DETAIL.ELECTORATE.ASSIGN.DOMAIN_OF_INFLUENCE_TYPE_PREFIX' | translate }} </span>
               <span>{{ 'DOMAIN_OF_INFLUENCE_TYPES.' + element | translate }}</span>
-            </bc-data-cell>
+            </td>
           </ng-container>
 
-          <bc-header-row *headerRowDef="let row; columns: columns"></bc-header-row>
-          <bc-data-row *dataRowDef="let row; columns: columns; let i = index" selectionToggle [selectionToggleValue]="row"
+          <tr bc-header-row *headerRowDef="let row; columns: columns"></tr>
+          <tr bc-data-row *dataRowDef="let row; columns: columns; let i = index" selectionToggle [selectionToggleValue]="row"
             selectionRow [selectionRowValue]="row" (click)="selection.toggle(row); updateIsAllSelected()">
-          </bc-data-row>
+          </tr>
         </bc-table>
       </div>
 
@@ -47,22 +44,22 @@
         <bc-table class="w-full" [dataSource]="selection.selected">
 
           <ng-container columnDef="domainOfInfluenceType">
-            <bc-header-cell *headerCellDef>{{ 'CONTEST.DETAIL.ELECTORATE.ASSIGN.DOMAIN_OF_INFLUENCE_TYPE' | translate }}</bc-header-cell>
-            <bc-data-cell *dataCellDef="let element">
+            <th bc-header-cell *headerCellDef>{{ 'CONTEST.DETAIL.ELECTORATE.ASSIGN.DOMAIN_OF_INFLUENCE_TYPE' | translate }}</th>
+            <td bc-data-cell *dataCellDef="let element">
               <span>{{ 'CONTEST.DETAIL.ELECTORATE.ASSIGN.DOMAIN_OF_INFLUENCE_TYPE_PREFIX' | translate }} </span>
               <span>{{ 'DOMAIN_OF_INFLUENCE_TYPES.' + element | translate }}</span>
-            </bc-data-cell>
+            </td>
           </ng-container>
 
           <ng-container columnDef="actions">
-            <bc-header-cell *headerCellDef class="actions-header"></bc-header-cell>
-            <bc-data-cell *dataCellDef="let element">
+            <th bc-header-cell *headerCellDef class="actions-header"></th>
+            <td bc-data-cell *dataCellDef="let element">
               <bc-icon class="clickable" (click)="selection.deselect(element)" icon="remove"></bc-icon>
-            </bc-data-cell>
+            </td>
           </ng-container>
 
-          <bc-header-row *headerRowDef="let row; columns: columnsSelected"></bc-header-row>
-          <bc-data-row *dataRowDef="let row; columns: columnsSelected; let i = index"></bc-data-row>
+          <tr bc-header-row *headerRowDef="let row; columns: columnsSelected"></tr>
+          <tr bc-data-row *dataRowDef="let row; columns: columnsSelected; let i = index"></tr>
         </bc-table>
       </div>
     </div>

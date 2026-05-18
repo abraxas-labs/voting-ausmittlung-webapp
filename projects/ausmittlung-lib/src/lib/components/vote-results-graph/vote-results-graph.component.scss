@@ -1,8 +1,8 @@
 @use '@abraxas/voting-lib/style/color' as *;
 @use '@abraxas/voting-lib/style/spacing' as *;
 
-$color-left: $color-info;
-$color-right: $color-error;
+$color-left: $color-signal-info;
+$color-right: $color-signal-error;
 
 .results-graph {
   display: flex;
@@ -33,7 +33,7 @@ $color-right: $color-error;
         flex-grow: 1;
 
         div {
-          background-color: $color-white;
+          background-color: $color-surface-bg-neutral-full;
         }
       }
     }
@@ -63,10 +63,10 @@ $color-right: $color-error;
     }
 
     &.looses {
-      color: $color-grey-3;
+      color: $color-text-secondary;
 
       .progress-container .progress {
-        background-color: $color-grey-5;
+        background-color: $color-surface-bg-neutral-dim;
       }
     }
   }

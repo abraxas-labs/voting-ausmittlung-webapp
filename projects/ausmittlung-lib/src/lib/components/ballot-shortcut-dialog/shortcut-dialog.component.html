@@ -1,6 +1,4 @@
-<vo-lib-dialog>
-  <h3 header>{{title | translate}}</h3>
-
+<vo-lib-dialog [header]="title | translate" (dialogClose)="close()">
   <div content>
     <div class="shortcuts">
       @for (shortcut of shortcuts; track shortcut) {

@@ -5,7 +5,7 @@
  */
 
 import { DialogService, SnackbarService, ThemeService } from '@abraxas/voting-lib';
-import { ChangeDetectorRef, Directive, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Directive, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -31,7 +31,6 @@ import {
 } from '../../validation-overview-dialog/validation-overview-dialog.component';
 import { ContestPoliticalBusinessDetailComponent } from './contest-political-business-detail.component';
 import { Permissions } from '../../../models/permissions.model';
-import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/political_business_pb';
 import { UnsavedChangesService } from '../../../services/unsaved-changes.service';
 import { cloneDeep, isEqual } from 'lodash';
 import { ResultService } from '../../../services/result.service';
@@ -39,9 +38,9 @@ import { VotingUrlService } from '../../../services/voting-url.service';
 
 @Directive()
 export abstract class AbstractContestPoliticalBusinessDetailComponent<
-    T extends CountingCircleResult,
-    TService extends PoliticalBusinessResultBaseService<T, any, any>,
-  >
+  T extends CountingCircleResult,
+  TService extends PoliticalBusinessResultBaseService<T, any, any>,
+>
   implements OnInit, OnDestroy
 {
   protected readonly i18n = inject(TranslateService);
@@ -218,6 +217,17 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
     isFinishingOperation: boolean,
     isAuditedTentativelyForSelfOwnedBusinesses: boolean = false,
   ): Promise<boolean> {
+    if (isFinishingOperation && !this.result.eCountingImported && this.eCounting) {
+      const eCountingValidationResult = await this.dialog.confirm(
+        'VALIDATION.E_COUNTING_IMPORT_MISSING.TITLE',
+        'VALIDATION.E_COUNTING_IMPORT_MISSING.MESSAGE',
+      );
+
+      if (!eCountingValidationResult) {
+        return false;
+      }
+    }
+
     const validationSummary = await this.loadValidationSummary();
 
     const data: ValidationOverviewDialogData = {

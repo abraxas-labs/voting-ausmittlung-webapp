@@ -1,40 +1,47 @@
-<vo-lib-dialog>
-  <h3 header translate>END_RESULT.ELECTION.LOT_DECISION.OPEN</h3>
-
+<vo-lib-dialog [header]="'END_RESULT.ELECTION.LOT_DECISION.OPEN' | translate" (dialogClose)="close()">
   <div content>
     @if (!loading && availableLotDecisions) {
       @if (!hasPrimaryAndSecondaryLotDecisions) {
-        <app-majority-election-lot-decision-list [lotDecisions]="availableLotDecisions"
-          (contentChanged)="hasChanges = true"></app-majority-election-lot-decision-list>
+        <app-majority-election-lot-decision-list
+          [lotDecisions]="availableLotDecisions"
+          (contentChanged)="hasChanges = true"
+        ></app-majority-election-lot-decision-list>
         @for (secondaryLotDecisions of availableLotDecisions.secondaryLotDecisions; track secondaryLotDecisions) {
-          <app-majority-election-lot-decision-list [lotDecisions]="secondaryLotDecisions"
+          <app-majority-election-lot-decision-list
+            [lotDecisions]="secondaryLotDecisions"
             [showTitle]="true"
-            (contentChanged)="hasChanges = true"></app-majority-election-lot-decision-list>
+            (contentChanged)="hasChanges = true"
+          ></app-majority-election-lot-decision-list>
         }
       } @else {
         <mat-horizontal-stepper
           labelPosition="bottom"
           [selectedIndex]="selectedStepIndex"
-          (selectedIndexChange)="selectedStepChange($event)">
+          (selectedIndexChange)="selectedStepChange($event)"
+        >
           <ng-template matStepperIcon="number" let-index="index"></ng-template>
           <ng-template matStepperIcon="edit" let-index="index"></ng-template>
           @for (step of steps; track step) {
-            <mat-step
-              [editable]="true">
+            <mat-step [editable]="true">
               <ng-template matStepLabel>
-                <span>{{step.label | translate}}</span>
+                <span>{{ step.label | translate }}</span>
               </ng-template>
             </mat-step>
           }
         </mat-horizontal-stepper>
         @if (selectedStepIndex === 0) {
-          <app-majority-election-lot-decision-list [lotDecisions]="availableLotDecisions" (contentChanged)="hasChanges = true"></app-majority-election-lot-decision-list>
+          <app-majority-election-lot-decision-list
+            [lotDecisions]="availableLotDecisions"
+            (contentChanged)="hasChanges = true"
+          ></app-majority-election-lot-decision-list>
         } @else {
           @for (secondaryLotDecisions of availableLotDecisions.secondaryLotDecisions; track secondaryLotDecisions) {
-            <app-majority-election-lot-decision-list [disabled]="!canEditStepSecondaryLotDecisions"
+            <app-majority-election-lot-decision-list
+              [disabled]="!canEditStepSecondaryLotDecisions"
               [lotDecisions]="secondaryLotDecisions"
               [showTitle]="true"
-              (contentChanged)="hasChanges = true"></app-majority-election-lot-decision-list>
+              (contentChanged)="hasChanges = true"
+            ></app-majority-election-lot-decision-list>
           }
         }
       }
@@ -43,10 +50,11 @@
     }
   </div>
 
-  <div footer>
-    <vo-lib-button-bar (save)="hasPrimaryAndSecondaryLotDecisions ? selectedStepChange(selectedStepIndex + 1) : singleStepSave()"
-      [sticky]="false"
-      [cancelLabel]="'APP.CLOSE' | translate"
-      (cancel)="close()"></vo-lib-button-bar>
-  </div>
+  <vo-lib-button-bar
+    footer
+    (save)="hasPrimaryAndSecondaryLotDecisions ? selectedStepChange(selectedStepIndex + 1) : singleStepSave()"
+    [sticky]="false"
+    [cancelLabel]="'APP.CLOSE' | translate"
+    (cancel)="close()"
+  ></vo-lib-button-bar>
 </vo-lib-dialog>

@@ -5,7 +5,7 @@
  */
 
 import { Component, inject } from '@angular/core';
-import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 @Component({
   selector: 'vo-ausm-shortcut-dialog',
@@ -14,6 +14,8 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
   standalone: false,
 })
 export class ShortcutDialogComponent {
+  private readonly dialogRef = inject<MatDialogRef<void>>(MatDialogRef);
+
   public title: string;
   public shortcuts: Shortcut[];
   public confirmText: string;
@@ -24,6 +26,10 @@ export class ShortcutDialogComponent {
     this.title = dialogData.title ?? 'APP.SHORTCUT_TITLE';
     this.shortcuts = dialogData.shortcuts;
     this.confirmText = dialogData.confirmText ? dialogData.confirmText : 'COMMON.OK';
+  }
+
+  public close(): void {
+    this.dialogRef.close();
   }
 }
 

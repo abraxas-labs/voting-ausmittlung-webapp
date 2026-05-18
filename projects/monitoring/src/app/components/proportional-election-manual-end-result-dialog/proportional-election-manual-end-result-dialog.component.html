@@ -1,22 +1,20 @@
-<vo-lib-dialog>
-  <h3 header translate>PROPORTIONAL_ELECTION_END_RESULT.ENTER_MANUAL_RESULTS</h3>
-
+<vo-lib-dialog [header]="'PROPORTIONAL_ELECTION_END_RESULT.ENTER_MANUAL_RESULTS' | translate" (dialogClose)="close()">
   <div content>
-    <bc-button [label]="'PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.TITLE' | translate" icon="plus" variant="tertiary" (buttonClick)="openListLotDecisionsDialog()"></bc-button>
-    <mat-horizontal-stepper #stepper
-      labelPosition="bottom"
-      (selectionChange)="selectionChanged($event.selectedIndex)">
+    <bc-button
+      [label]="'PROPORTIONAL_ELECTION_END_RESULT.LOT_DECISION_LIST.TITLE' | translate"
+      icon="plus"
+      variant="tertiary"
+      (buttonClick)="openListLotDecisionsDialog()"
+    ></bc-button>
+    <mat-horizontal-stepper #stepper labelPosition="bottom" (selectionChange)="selectionChanged($event.selectedIndex)">
       <ng-template matStepperIcon="number" let-index="index">
-        <ng-container *ngTemplateOutlet="stepperHeader; context: {$implicit: index}"></ng-container>
+        <ng-container *ngTemplateOutlet="stepperHeader; context: { $implicit: index }"></ng-container>
       </ng-template>
       <ng-template matStepperIcon="edit" let-index="index">
-        <ng-container *ngTemplateOutlet="stepperHeader; context: {$implicit: index}"></ng-container>
+        <ng-container *ngTemplateOutlet="stepperHeader; context: { $implicit: index }"></ng-container>
       </ng-template>
       @for (list of lists; track list) {
-        <mat-step
-          [editable]="true"
-          [label]="list.list.orderNumber">
-        </mat-step>
+        <mat-step [editable]="true" [label]="list.list.orderNumber"> </mat-step>
       }
     </mat-horizontal-stepper>
 
@@ -29,22 +27,25 @@
           <bc-label [label]="'ELECTION.VOTE_COUNT' | translate"></bc-label>
           <bc-label [label]="'ELECTION.CANDIDATE.STATE' | translate"></bc-label>
           @for (manualCandidateEndResult of manualCandidateEndResults; track manualCandidateEndResult) {
-            <span>{{manualCandidateEndResult.rank}}</span>
-            <span>{{manualCandidateEndResult.candidate.number}}</span>
-            <span
-              class="candidate-name">{{manualCandidateEndResult.candidate.politicalLastName}} {{manualCandidateEndResult.candidate.politicalFirstName}}</span>
-            <span>{{manualCandidateEndResult.voteCount}}</span>
-            <ng-container *ngTemplateOutlet="stateDropdownTemplate; context: {$implicit: manualCandidateEndResult}"></ng-container>
+            <span>{{ manualCandidateEndResult.rank }}</span>
+            <span>{{ manualCandidateEndResult.candidate.number }}</span>
+            <span class="candidate-name"
+              >{{ manualCandidateEndResult.candidate.politicalLastName }} {{ manualCandidateEndResult.candidate.politicalFirstName }}</span
+            >
+            <span>{{ manualCandidateEndResult.voteCount }}</span>
+            <ng-container *ngTemplateOutlet="stateDropdownTemplate; context: { $implicit: manualCandidateEndResult }"></ng-container>
           }
         </div>
         <ng-template #stateDropdownTemplate let-manualCandidateEndResult>
           <span>
-            <bc-dropdown [(value)]="manualCandidateEndResult.state"
+            <bc-dropdown
+              [(value)]="manualCandidateEndResult.state"
               (valueChange)="updateHasOpenRequiredCandidateStates()"
               valueExpr="value"
               displayExpr="description"
               [items]="candidateStates"
-            [subscriptSizing]="'dynamic'"></bc-dropdown>
+              [subscriptSizing]="'dynamic'"
+            ></bc-dropdown>
           </span>
         </ng-template>
       }
@@ -53,14 +54,15 @@
     }
   </div>
 
-  <div footer>
-    <vo-lib-button-bar (save)="save()"
-      [sticky]="false"
-      [canSave]="!hasAnyOpenRequiredCandidateStates"
-      [saveLabel]="(isLast ? 'COMMON.SAVE' : 'APP.NEXT') | translate"
-      [cancelLabel]="'APP.CLOSE' | translate"
-    (cancel)="close()"></vo-lib-button-bar>
-  </div>
+  <vo-lib-button-bar
+    footer
+    (save)="save()"
+    [sticky]="false"
+    [canSave]="!hasAnyOpenRequiredCandidateStates"
+    [saveLabel]="(isLast ? 'COMMON.SAVE' : 'APP.NEXT') | translate"
+    [cancelLabel]="'APP.CLOSE' | translate"
+    (cancel)="close()"
+  ></vo-lib-button-bar>
 </vo-lib-dialog>
 
 <ng-template #stepperHeader let-index>

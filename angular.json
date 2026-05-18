@@ -43,6 +43,7 @@
               }
             ],
             "styles": [
+              "./node_modules/@abraxas/base-components/src/lib/styles/predefined/default.theme.scss",
               "projects/monitoring/src/styles.scss"
             ],
             "loader": {
@@ -169,6 +170,7 @@
               }
             ],
             "styles": [
+              "./node_modules/@abraxas/base-components/src/lib/styles/predefined/default.theme.scss",
               "projects/erfassung/src/styles.scss"
             ],
             "loader": {

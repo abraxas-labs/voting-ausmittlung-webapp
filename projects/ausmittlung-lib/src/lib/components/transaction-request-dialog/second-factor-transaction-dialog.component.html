@@ -1,6 +1,4 @@
-<vo-lib-dialog>
-  <h3 header>{{ 'SECOND_FACTOR_TRANSACTION.TITLE' | translate }}</h3>
-
+<vo-lib-dialog [header]="'SECOND_FACTOR_TRANSACTION.TITLE' | translate" (dialogClose)="cancel()">
   <div content>
     @if (!hasError) {
       <p class="my-0">

@@ -2,7 +2,7 @@
 
 .file-container {
   min-height: 15rem;
-  border: 2px dashed $color-grey-6;
+  border: 2px dashed $color-border-soft;
   border-radius: 10px;
   margin-right: 1rem;
   display: flex;
@@ -10,7 +10,7 @@
   justify-content: center;
 
   &.dragging {
-    border-color: $color-grey-3;
+    border-color: $color-border-soft;
   }
 
   div {
@@ -27,11 +27,11 @@
   margin-left: -1rem;
 
   bc-icon {
-    color: $color-primary;
+    color: $color-action-on-bg;
 
     &:hover {
       cursor: pointer;
-      color: $color-primary-50;
+      color: $color-action-hover;
     }
   }
 }

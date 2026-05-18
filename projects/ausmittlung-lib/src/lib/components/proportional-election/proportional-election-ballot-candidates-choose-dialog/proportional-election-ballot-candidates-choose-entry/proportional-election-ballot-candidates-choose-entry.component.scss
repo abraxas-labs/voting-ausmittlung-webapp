@@ -11,7 +11,7 @@
 
   &:hover,
   &.active {
-    background-color: $color-grey-7;
+    background-color: $color-surface-bg-neutral-bright;
   }
 
   .candidate-number {
@@ -24,6 +24,6 @@
 
     float: right;
     display: inline-block;
-    color: $color-grey-3;
+    color: $color-text-secondary;
   }
 }

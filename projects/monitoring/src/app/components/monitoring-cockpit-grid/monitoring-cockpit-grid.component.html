@@ -21,7 +21,7 @@
 
   <bc-table selection filter sort [dataSource]="dataSource" [sticky]="true">
     <ng-container [columnDef]="stateColumn">
-      <bc-header-cell
+      <th bc-header-cell
         filter
         filterType="list"
         [filterItems]="stateList"
@@ -31,22 +31,22 @@
         *headerCellDef
         >
         {{ 'MONITORING_COCKPIT.STATE' | translate }}
-      </bc-header-cell>
-      <bc-data-cell *dataCellDef="let element">
+      </th>
+      <td bc-data-cell *dataCellDef="let element">
         <div class="state-colorbox" [ngClass]="'result-state-' + element.minResultState"></div>
-      </bc-data-cell>
+      </td>
     </ng-container>
 
     <ng-container [columnDef]="countingCircleColumn">
-      <bc-header-cell filter sort *headerCellDef>{{ 'MONITORING_COCKPIT.COUNTING_CIRCLE' | translate }}</bc-header-cell>
-      <bc-data-cell *dataCellDef="let element">{{ element.countingCircleWithDetails.countingCircle.name }}</bc-data-cell>
+      <th bc-header-cell filter sort *headerCellDef>{{ 'MONITORING_COCKPIT.COUNTING_CIRCLE' | translate }}</th>
+      <td bc-data-cell *dataCellDef="let element">{{ element.countingCircleWithDetails.countingCircle.name }}</td>
     </ng-container>
 
     @for (politicalBusiness of filteredPoliticalBusinesses; track politicalBusiness) {
       <ng-container
         [columnDef]="this.politicalBusinessColumnPrefix + politicalBusiness.id"
         >
-        <bc-header-cell
+        <th bc-header-cell
           filter
           filterType="list"
           [filterItems]="stateList"
@@ -58,8 +58,8 @@
           <span truncateWithTooltip tooltip>
             {{ politicalBusiness.title }}
           </span>
-        </bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">
+        </th>
+        <td bc-data-cell *dataCellDef="let element">
           <app-monitoring-cockpit-grid-entry
             (openDetail)="openDetail(element.countingCircleWithDetails.countingCircle, politicalBusiness)"
             [results]="[element.resultsByPoliticalBusinessId[politicalBusiness.id]]"
@@ -74,7 +74,7 @@
             "
             >
           </app-monitoring-cockpit-grid-entry>
-        </bc-data-cell>
+        </td>
       </ng-container>
     }
 
@@ -82,7 +82,7 @@
       <ng-container
         [columnDef]="this.politicalBusinessColumnPrefix + politicalBusinessUnion.id"
         >
-        <bc-header-cell
+        <th bc-header-cell
           filter
           filterType="list"
           [filterItems]="stateList"
@@ -94,8 +94,8 @@
           <span truncateWithTooltip tooltip>
             {{ politicalBusinessUnion.description }}
           </span>
-        </bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">
+        </th>
+        <td bc-data-cell *dataCellDef="let element">
           <app-monitoring-cockpit-grid-entry
             (openDetail)="openDetail(element.countingCircleWithDetails.countingCircle, undefined)"
             [results]="element.resultsByPoliticalBusinessUnionId[politicalBusinessUnion.id] ?? []"
@@ -116,13 +116,13 @@
             "
             >
           </app-monitoring-cockpit-grid-entry>
-        </bc-data-cell>
+        </td>
       </ng-container>
     }
 
     <ng-container [columnDef]="notOwnedPoliticalBusinessColumn">
-      <bc-header-cell filter sort *headerCellDef>{{ 'MONITORING_COCKPIT.NOT_OWNED_POLITICAL_BUSINESS.TITLE' | translate }}</bc-header-cell>
-      <bc-data-cell *dataCellDef="let element">
+      <th bc-header-cell filter sort *headerCellDef>{{ 'MONITORING_COCKPIT.NOT_OWNED_POLITICAL_BUSINESS.TITLE' | translate }}</th>
+      <td bc-data-cell *dataCellDef="let element">
         @if (element.resultsByCountingCircleId[element.countingCircleWithDetails.countingCircle.id]; as results) {
           <div
             class="not-owned-political-business-container"
@@ -134,14 +134,14 @@
             }}</span>
           </div>
         }
-      </bc-data-cell>
+      </td>
     </ng-container>
 
     @for (politicalBusiness of filteredPoliticalBusinesses; track politicalBusiness) {
       <ng-container
         [columnDef]="this.statusBarColumnPrefix + politicalBusiness.id"
         >
-        <bc-header-cell *headerCellDef>
+        <th bc-header-cell *headerCellDef>
           <app-monitoring-cockpit-button-container
             [politicalBusiness]="politicalBusiness"
             [readOnly]="readOnly || toCheckStateFilterIsSelected || filter.active.length > 0"
@@ -158,7 +158,7 @@
               >
             </app-monitoring-cockpit-grid-status-bar>
           }
-        </bc-header-cell>
+        </th>
       </ng-container>
     }
 
@@ -166,7 +166,7 @@
       <ng-container
         [columnDef]="this.statusBarColumnPrefix + politicalBusinessUnion.id"
         >
-        <bc-header-cell *headerCellDef>
+        <th bc-header-cell *headerCellDef>
           <app-monitoring-cockpit-button-container
             [politicalBusinessUnion]="politicalBusinessUnion"
             [readOnly]="readOnly || stateFilter.length > 0 || filter.active.length > 0"
@@ -183,17 +183,17 @@
               >
             </app-monitoring-cockpit-grid-status-bar>
           }
-        </bc-header-cell>
+        </th>
       </ng-container>
     }
 
     <ng-container [columnDef]="emptySubHeaderColumn">
-      <bc-header-cell *headerCellDef></bc-header-cell>
+      <th bc-header-cell *headerCellDef></th>
     </ng-container>
 
-    <bc-header-row *headerRowDef="let row; columns: columns; sticky: true"></bc-header-row>
-    <bc-header-row *headerRowDef="let row; columns: subHeaderColumns; sticky: true" class="sticky-sub-header"></bc-header-row>
-    <bc-data-row
+    <tr bc-header-row *headerRowDef="let row; columns: columns; sticky: true"></tr>
+    <tr bc-header-row *headerRowDef="let row; columns: subHeaderColumns; sticky: true" class="sticky-sub-header"></tr>
+    <tr bc-data-row
       *dataRowDef="let row; columns: columns; let i = index"
       selectionToggle
       [selectionToggleValue]="row"
@@ -201,7 +201,7 @@
       [selectionRowValue]="row"
       (click)="openDetail(row.countingCircleWithDetails.countingCircle)"
       >
-    </bc-data-row>
+    </tr>
     <ng-template noDataRow>
       <tr class="bc-row-data">
         <td class="bc-cell" colspan="2" translate>MONITORING_COCKPIT.NO_DATA</td>

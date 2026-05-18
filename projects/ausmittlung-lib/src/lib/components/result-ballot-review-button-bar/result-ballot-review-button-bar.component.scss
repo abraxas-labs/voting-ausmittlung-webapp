@@ -5,7 +5,7 @@
   @extend .py-2;
 
   display: flex;
-  border-top: 1px solid $color-grey-4;
+  border-top: 1px solid $color-border-soft;
 
   > * {
     @extend .mx-3;

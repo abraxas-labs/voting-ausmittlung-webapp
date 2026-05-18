@@ -11,7 +11,7 @@
 
 .with-border ::ng-deep.mat-expansion-panel .mat-expansion-panel-body {
   padding-top: 1rem !important;
-  border-top: 1px solid $color-grey-6;
+  border-top: 1px solid $color-border-soft;
   padding-bottom: 0.5rem !important;
 }
 
@@ -26,7 +26,7 @@ div[header] {
 
     &.not-responsible {
       font-style: italic;
-      color: $color-grey-4;
+      color: $color-text-secondary;
     }
   }
 

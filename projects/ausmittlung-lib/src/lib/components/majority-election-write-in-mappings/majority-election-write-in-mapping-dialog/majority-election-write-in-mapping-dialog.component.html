@@ -1,50 +1,61 @@
-<vo-lib-dialog>
-  @if (!loading) {
-    <h3 header>{{ 'RESULT_IMPORT.WRITE_INS.TITLE' + (!useGroupTitleWithElection && writeInGroups.length > 0 ? '_WITH_ELECTION' : '') + (!useGroupTitleWithImportType ? '_' + importType : '') | translate:{ electionDescription: selectedWriteInGroup?.election.shortDescription } }}</h3>
-  }
-
+<vo-lib-dialog
+  [header]="
+    'RESULT_IMPORT.WRITE_INS.TITLE' +
+      (!useGroupTitleWithElection && writeInGroups.length > 0 ? '_WITH_ELECTION' : '') +
+      (!useGroupTitleWithImportType ? '_' + importType : '')
+      | translate: { electionDescription: selectedWriteInGroup?.election?.shortDescription }
+  "
+  (dialogClose)="close()"
+  [contentLoading]="loading"
+>
   <div content>
-    @if (loading) {
-      <bc-spinner></bc-spinner>
+    @if (writeInGroups.length > 1) {
+      <mat-horizontal-stepper
+        labelPosition="bottom"
+        [linear]="false"
+        [selectedIndex]="selectedGroupIndex"
+        (selectionChange)="$event.previouslySelectedStep.interacted = false"
+      >
+        <ng-template matStepperIcon="number"></ng-template>
+        <ng-template matStepperIcon="edit"></ng-template>
+        @for (group of writeInGroups; track group; let i = $index) {
+          <mat-step
+            [editable]="!saving"
+            [state]="i === selectedGroupIndex ? 'edit' : 'number'"
+            [label]="
+              'RESULT_IMPORT.WRITE_INS.STEP_TITLE' +
+                (useGroupTitleWithElection ? '_WITH_ELECTION' : '') +
+                (useGroupTitleWithImportType ? '_' + group.importType : '') | translate: group
+            "
+          >
+          </mat-step>
+        }
+      </mat-horizontal-stepper>
+    }
+    @if (writeInGroups.length > 0) {
+      <vo-ausm-majority-election-write-in-mapping
+        [canShowNextGroup]="writeInGroups.length > 1 && selectedGroupIndex < writeInGroups.length - 1"
+        [canShowResetMappings]="!!selectedWriteInGroup && !!electionId"
+        [readOnly]="saving"
+        [group]="selectedWriteInGroup"
+        (writeInMappingsChange)="setMappings($event)"
+        (showNextGroup)="selectedGroupChange(selectedGroupIndex + 1)"
+        (resetMappings)="resetWriteIns()"
+      ></vo-ausm-majority-election-write-in-mapping>
     } @else {
-      @if (writeInGroups.length > 1) {
-        <mat-horizontal-stepper
-          labelPosition="bottom"
-          [linear]="false"
-          [selectedIndex]="selectedGroupIndex"
-          (selectionChange)="$event.previouslySelectedStep.interacted = false;">
-          <ng-template matStepperIcon="number"></ng-template>
-          <ng-template matStepperIcon="edit"></ng-template>
-          @for (group of writeInGroups; track group; let i = $index) {
-            <mat-step
-              [editable]="!saving"
-              [state]="i === selectedGroupIndex ? 'edit' : 'number'"
-              [label]="('RESULT_IMPORT.WRITE_INS.STEP_TITLE' + (useGroupTitleWithElection ? '_WITH_ELECTION' : '') + (useGroupTitleWithImportType ? '_' + group.importType : '')) | translate: group">
-            </mat-step>
-          }
-        </mat-horizontal-stepper>
-      }
-      @if (writeInGroups.length > 0) {
-        <vo-ausm-majority-election-write-in-mapping
-          [canShowNextGroup]="writeInGroups.length > 1 && selectedGroupIndex < writeInGroups.length - 1"
-          [canShowResetMappings]="!!selectedWriteInGroup && !!electionId"
-          [readOnly]="saving"
-          [group]="selectedWriteInGroup"
-          (writeInMappingsChange)="setMappings($event)"
-          (showNextGroup)="selectedGroupChange(selectedGroupIndex + 1)"
-          (resetMappings)="resetWriteIns()"></vo-ausm-majority-election-write-in-mapping>
-      } @else {
-        <p class="no-data" translate>RESULT_IMPORT.WRITE_INS.NO_DATA</p>
-      }
+      <p class="no-data" translate>RESULT_IMPORT.WRITE_INS.NO_DATA</p>
     }
   </div>
 
-  <div footer class="mr-3">
-    <vo-lib-button-bar [saveLabel]="(selectedGroupIndex === writeInGroups.length - 1 ? 'RESULT_IMPORT.WRITE_INS.COMPLETE' : 'RESULT_IMPORT.WRITE_INS.NEXT_ELECTION') | translate"
-      (save)="selectedGroupChange(selectedGroupIndex + 1)"
-      [saving]="saving"
-      [canSave]="!!selectedWriteInGroup && !hasUnmappedWriteIns()"
-      (cancel)="close()"></vo-lib-button-bar>
-  </div>
+  <vo-lib-button-bar
+    footer
+    [saveLabel]="
+      (selectedGroupIndex === writeInGroups.length - 1 ? 'RESULT_IMPORT.WRITE_INS.COMPLETE' : 'RESULT_IMPORT.WRITE_INS.NEXT_ELECTION')
+        | translate
+    "
+    (save)="selectedGroupChange(selectedGroupIndex + 1)"
+    [saving]="saving"
+    [canSave]="!!selectedWriteInGroup && !hasUnmappedWriteIns()"
+    (cancel)="close()"
+  ></vo-lib-button-bar>
 </vo-lib-dialog>
-

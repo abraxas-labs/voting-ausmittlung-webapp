@@ -5,7 +5,7 @@
 }
 
 .result-container {
-  border: 1px solid $color-grey-4;
+  border: 1px solid $color-border-soft;
 }
 
 .flex {
@@ -38,7 +38,7 @@
 
     div {
       height: 1rem;
-      background-color: $color-grey-4;
+      background-color: $color-surface-bg-neutral;
       max-width: 100%;
     }
   }

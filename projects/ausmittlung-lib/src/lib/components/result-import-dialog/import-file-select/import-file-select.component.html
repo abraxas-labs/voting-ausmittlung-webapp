@@ -23,28 +23,28 @@
     <h4 translate>RESULT_IMPORT.CHOSEN_FILES</h4>
     <bc-table [dataSource]="selectedFiles">
       <ng-container columnDef="name">
-        <bc-header-cell *headerCellDef>{{ 'RESULT_IMPORT.FILENAME' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">{{ element.file.name }}</bc-data-cell>
+        <th bc-header-cell *headerCellDef>{{ 'RESULT_IMPORT.FILENAME' | translate }}</th>
+        <td bc-data-cell *dataCellDef="let element">{{ element.file.name }}</td>
       </ng-container>
 
       <ng-container columnDef="type">
-        <bc-header-cell *headerCellDef>{{ 'RESULT_IMPORT.E_CH_STANDARD' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">
+        <th bc-header-cell *headerCellDef>{{ 'RESULT_IMPORT.E_CH_STANDARD' | translate }}</th>
+        <td bc-data-cell *dataCellDef="let element">
           <div class="truncate mr-4">
             {{ 'RESULT_IMPORT.E_CH_TYPES.' + element.echType | translate }}
           </div>
-        </bc-data-cell>
+        </td>
       </ng-container>
 
       <ng-container columnDef="actions">
-        <bc-header-cell *headerCellDef class="actions-header"></bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">
+        <th bc-header-cell *headerCellDef class="actions-header"></th>
+        <td bc-data-cell *dataCellDef="let element">
           <bc-icon (click)="removeFile(element)" icon="remove"></bc-icon>
-        </bc-data-cell>
+        </td>
       </ng-container>
 
-      <bc-header-row *headerRowDef="let row; columns: ['name', 'type', 'actions']"></bc-header-row>
-      <bc-data-row *dataRowDef="let row; columns: ['name', 'type', 'actions']; let i = index"></bc-data-row>
+      <tr bc-header-row *headerRowDef="let row; columns: ['name', 'type', 'actions']"></tr>
+      <tr bc-data-row *dataRowDef="let row; columns: ['name', 'type', 'actions']; let i = index"></tr>
       </bc-table>
   </div>
 </vo-lib-split-screen>

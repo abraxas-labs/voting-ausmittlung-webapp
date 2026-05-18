@@ -28,8 +28,9 @@ export interface CountOfVotersInformation {
   subTotalInfoList: CountOfVotersInformationSubTotal[];
 }
 
-export interface PoliticalBusinessNullableCountOfVoters
-  extends Required<Omit<PoliticalBusinessNullableCountOfVotersProto.AsObject, 'conventionalSubTotal'>> {
+export interface PoliticalBusinessNullableCountOfVoters extends Required<
+  Omit<PoliticalBusinessNullableCountOfVotersProto.AsObject, 'conventionalSubTotal'>
+> {
   conventionalSubTotal: PoliticalBusinessNullableCountOfVotersSubTotal;
 }
 

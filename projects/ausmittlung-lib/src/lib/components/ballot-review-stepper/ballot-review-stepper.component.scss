@@ -9,29 +9,29 @@
 
 ::ng-deep .mat-stepper-horizontal .mat-step-header {
   .mat-step-icon .mat-icon {
-    color: $color-white;
+    color: $color-text-inverse;
   }
 
   .mat-step-label.mat-step-label-active .ballot-state-ok {
-    color: $color-success;
+    color: $color-signal-success;
   }
 
   .mat-step-label.mat-step-label-active .ballot-state-fixed {
-    color: $color-error;
+    color: $color-signal-error;
   }
 
   .mat-step-icon mat-icon.ballot-state-ok {
-    background-color: $color-success;
+    background-color: $color-signal-success;
   }
 
   .mat-step-icon-state-error mat-icon.mat-icon {
-    color: $color-error;
+    color: $color-signal-error;
   }
 
   .mat-step-icon mat-icon.ballot-state-fixed {
     @include icon-size(20px); // the default error state icon of the mat stepper is 20px
 
-    color: $color-error;
+    color: $color-signal-error;
   }
 
   .mat-horizontal-content-container {
@@ -42,7 +42,7 @@
 .subtitle {
   @extend .mb-2;
 
-  color: $color-grey-4;
+  color: $color-text-secondary;
 }
 
 .ballot-title-bar {
@@ -58,8 +58,8 @@
 }
 
 .stepper {
-  border-top: 1px solid $color-grey-4;
-  border-bottom: 1px solid $color-grey-4;
+  border-top: 1px solid $color-border-soft;
+  border-bottom: 1px solid $color-border-soft;
   padding-top: 0.2rem;
 
   ::ng-deep .mat-horizontal-stepper-header-container {

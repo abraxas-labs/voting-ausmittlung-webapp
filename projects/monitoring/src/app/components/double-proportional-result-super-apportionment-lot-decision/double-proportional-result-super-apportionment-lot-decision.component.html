@@ -8,34 +8,34 @@
       [selectionMultiple]="false"
       (selectionChange)="lotDecisionChange($event.after.length > 0 ? $event.after[0].value : undefined)">
       <ng-container columnDef="selection">
-        <bc-header-cell *headerCellDef></bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">
+        <th bc-header-cell *headerCellDef></th>
+        <td bc-data-cell *dataCellDef="let element">
           <bc-radio-button
             [disabled]="readonly"
             selectionToggle
             [selectionToggleValue]="element"
             [checked]="selection.isSelected(element)"
           ></bc-radio-button>
-        </bc-data-cell>
+        </td>
       </ng-container>
       <ng-container columnDef="lot">
-        <bc-header-cell *headerCellDef>{{ 'DOUBLE_PROPORTIONAL_RESULT.SUPER_APPORTIONMENT.LOT_DECISION.LOT' | translate }}</bc-header-cell>
-        <bc-data-cell *dataCellDef="let element">{{ element.number }}</bc-data-cell>
+        <th bc-header-cell *headerCellDef>{{ 'DOUBLE_PROPORTIONAL_RESULT.SUPER_APPORTIONMENT.LOT_DECISION.LOT' | translate }}</th>
+        <td bc-data-cell *dataCellDef="let element">{{ element.number }}</td>
       </ng-container>
       @for (lotDecisionColumnDef of lotDecisionColumnDefs; track lotDecisionColumnDef) {
         <ng-container [columnDef]="lotDecisionColumnDef">
-          <bc-header-cell *headerCellDef>{{ lotDecisionColumnDef }}</bc-header-cell>
-          <bc-data-cell *dataCellDef="let element">{{ getNumberOfMandatesByColumnDef(element, lotDecisionColumnDef) }}</bc-data-cell>
+          <th bc-header-cell *headerCellDef>{{ lotDecisionColumnDef }}</th>
+          <td bc-data-cell *dataCellDef="let element">{{ getNumberOfMandatesByColumnDef(element, lotDecisionColumnDef) }}</td>
         </ng-container>
       }
-      <bc-header-row *headerRowDef="let row; columns: columns"></bc-header-row>
-      <bc-data-row *dataRowDef="let row; columns: columns; let i = index"
+      <tr bc-header-row *headerRowDef="let row; columns: columns"></tr>
+      <tr bc-data-row *dataRowDef="let row; columns: columns; let i = index"
         #rowSelection="selectionToggle"
         selectionToggle
         [selectionToggleValue]="row"
         selectionRow
         [selectionRowValue]="row"
-        (click)="!readonly ? rowSelection.toggle() : undefined"></bc-data-row>
+        (click)="!readonly ? rowSelection.toggle() : undefined"></tr>
     </bc-table>
     <div class="buttons">
       <vo-lib-inline-spinner [loading]="saving">
