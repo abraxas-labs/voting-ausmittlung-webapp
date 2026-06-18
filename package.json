@@ -22,7 +22,7 @@
   "dependencies": {
     "@abraxas/base-components": "21.30.0",
     "@abraxas/voting-ausmittlung-service-proto": "1.152.0",
-    "@abraxas/voting-lib": "5.17.4",
+    "@abraxas/voting-lib": "5.17.7",
     "@angular/animations": "21.2.8",
     "@angular/cdk": "21.2.6",
     "@angular/cdk-experimental": "21.2.6",

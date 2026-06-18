@@ -1,4 +1,4 @@
-# ✨ Changelog (`v3.29.4`)
+# ✨ Changelog (`v3.29.5`)
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Info
 
 ```text
-This version -------- v3.29.4
-Previous version ---- v3.28.1
+This version -------- v3.29.5
+Previous version ---- v3.29.4
 Initial version ----- v1.25.0
-Total commits ------- 5
+Total commits ------- 1
 ```
+
+## [v3.29.5] - 2026-06-11
+
+### 🔄 Changed
+
+- update lib
 
 ## [v3.29.4] - 2026-04-16
 
