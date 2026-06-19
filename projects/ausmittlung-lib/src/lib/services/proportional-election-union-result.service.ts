@@ -4,18 +4,22 @@
  * For license information see LICENSE file.
  */
 
-import { SecondFactorTransaction } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/second_factor_transaction_pb';
 import {
   ProportionalElectionUnionResultServiceClient,
   ProportionalElectionUnionResultServicePromiseClient,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/proportional_election_union_result_service_grpc_web_pb';
 import { GrpcBackendService, GrpcEnvironment, GrpcStreamingService } from '@abraxas/voting-lib';
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
+  createSecondFactorAuthorization,
   DoubleProportionalResult,
   DoubleProportionalResultSubApportionmentLotDecision,
   DoubleProportionalResultSuperApportionmentLotDecision,
+  mapToSecondFactorTransaction,
+  ProportionalElectionUnionEndResult,
+  ProportionalElectionUnionEndResultProto,
+  SecondFactorTransaction,
 } from '../models';
 import { ContestService } from './contest.service';
 import { GRPC_ENV_INJECTION_TOKEN } from './tokens';
@@ -30,10 +34,6 @@ import {
   UpdateProportionalElectionUnionDoubleProportionalResultSubApportionmentLotDecisionRequest,
   UpdateProportionalElectionUnionDoubleProportionalResultSuperApportionmentLotDecisionRequest,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/proportional_election_union_result_requests_pb';
-import {
-  ProportionalElectionUnionEndResult,
-  ProportionalElectionUnionEndResultProto,
-} from '../models/proportional-election-union-end-result.model';
 import { ProportionalElectionResultService } from './proportional-election-result.service';
 import { PoliticalBusinessUnionService } from './political-business-union.service';
 import { DoubleProportionalResultService } from './double-proportional-result.service';
@@ -88,14 +88,14 @@ export class ProportionalElectionUnionResultService extends GrpcStreamingService
     return this.request(
       c => c.prepareFinalizeEndResult,
       req,
-      r => r,
+      r => mapToSecondFactorTransaction(r),
     );
   }
 
-  public finalizeEndResult(proportionalElectionUnionId: string, secondFactorTransactionId: string): Observable<void> {
+  public finalizeEndResult(proportionalElectionUnionId: string, secondFactorTransactionId: string, otpCode?: string): Observable<void> {
     const req = new FinalizeProportionalElectionUnionEndResultRequest();
     req.setProportionalElectionUnionId(proportionalElectionUnionId);
-    req.setSecondFactorTransactionId(secondFactorTransactionId);
+    req.setSecondFactorAuthorization(createSecondFactorAuthorization(secondFactorTransactionId, otpCode));
     return this.requestClientStreamEmptyResp(c => c.finalizeEndResult, req);
   }
 

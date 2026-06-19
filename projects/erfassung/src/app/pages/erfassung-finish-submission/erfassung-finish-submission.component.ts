@@ -8,7 +8,7 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { SelectionModel } from '@angular/cdk/collections';
-import { DialogService, SnackbarService } from '@abraxas/voting-lib';
+import { DialogService, SecondFactorTransactionService, SnackbarService } from '@abraxas/voting-lib';
 import {
   BreadcrumbItem,
   BreadcrumbsService,
@@ -17,7 +17,6 @@ import {
   CountingCircleResultState,
   ResultListResult,
   ResultService,
-  SecondFactorTransactionService,
   splitArray,
   ValidationOverviewDialogComponent,
   ValidationOverviewDialogData,
@@ -206,7 +205,7 @@ export class ErfassungFinishSubmissionComponent implements OnInit, OnDestroy {
 
   private async finishSubmission(contestId: string, countingCircleId: string, resultIds: string[]): Promise<void> {
     const secondFactorTransaction = await this.resultService.prepareSubmissionFinished(contestId, countingCircleId, resultIds);
-    if (!secondFactorTransaction.getId() || !secondFactorTransaction.getCode()) {
+    if (!secondFactorTransaction.id) {
       await firstValueFrom(
         this.resultService.submissionFinished(
           contestId,
@@ -219,9 +218,10 @@ export class ErfassungFinishSubmissionComponent implements OnInit, OnDestroy {
     }
 
     await this.secondFactorTransactionService.showDialogAndExecuteVerifyAction(
-      () => this.resultService.submissionFinished(contestId, countingCircleId, resultIds, secondFactorTransaction.getId()),
-      secondFactorTransaction.getCode(),
-      secondFactorTransaction.getQrCode(),
+      (otpCode?: string) =>
+        this.resultService.submissionFinished(contestId, countingCircleId, resultIds, secondFactorTransaction.id, otpCode),
+      secondFactorTransaction.nevis,
+      secondFactorTransaction.availableProvidersList,
     );
   }
 }

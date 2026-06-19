@@ -36,14 +36,16 @@ import {
   ResultOverviewCountingCircleWithDetails,
   ResultOverviewCountingCircleWithDetailsProto,
   ResultOverviewProto,
+  SecondFactorTransaction,
   ValidationSummaries,
+  createSecondFactorAuthorization,
+  mapToSecondFactorTransaction,
 } from '../models';
 import { ContestCountingCircleDetailsService } from './contest-counting-circle-details.service';
 import { ContestService } from './contest.service';
 import { PoliticalBusinessService } from './political-business.service';
 import { GRPC_ENV_INJECTION_TOKEN } from './tokens';
 import { ValidationMappingService } from './validation-mapping.service';
-import { SecondFactorTransaction } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/second_factor_transaction_pb';
 import { PoliticalBusinessUnionService } from './political-business-union.service';
 import * as models_vote_result_pb from '@abraxas/voting-ausmittlung-service-proto/grpc/models/vote_result_pb';
 import { BallotQuestionResult } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/vote_result_pb';
@@ -120,7 +122,7 @@ export class ResultService extends GrpcStreamingService<ResultServicePromiseClie
     return this.request(
       c => c.prepareSubmissionFinished,
       req,
-      r => r,
+      r => mapToSecondFactorTransaction(r),
     );
   }
 
@@ -129,12 +131,13 @@ export class ResultService extends GrpcStreamingService<ResultServicePromiseClie
     countingCircleId: string,
     resultIds: string[],
     secondFactorTransactionId: string,
+    otpCode?: string,
   ): Observable<void> {
     const req = new CountingCircleResultsSubmissionFinishedRequest();
     req.setContestId(contestId);
     req.setCountingCircleId(countingCircleId);
     req.setCountingCircleResultIdsList(resultIds);
-    req.setSecondFactorTransactionId(secondFactorTransactionId);
+    req.setSecondFactorAuthorization(createSecondFactorAuthorization(secondFactorTransactionId, otpCode));
     return this.requestClientStreamEmptyResp(c => c.submissionFinished, req);
   }
 

@@ -42,3 +42,4 @@ export * from './double-proportional-result.model';
 export * from './proportional-election-union.model';
 export * from './permissions.model';
 export * from './runtime-config-polling-config.model';
+export * from './second-factor-transaction.model';

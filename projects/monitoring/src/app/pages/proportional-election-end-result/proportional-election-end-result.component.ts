@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { DialogService, SnackbarService } from '@abraxas/voting-lib';
+import { DialogService, SecondFactorTransactionService, SnackbarService } from '@abraxas/voting-lib';
 import { Component, OnDestroy, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -26,7 +26,6 @@ import {
   ProportionalElectionResultService,
   ProportionalElectionService,
   ProportionalElectionUnionResultService,
-  SecondFactorTransactionService,
   sum,
   VotingDataSource,
   Permissions,
@@ -214,9 +213,9 @@ export class ProportionalElectionEndResultComponent implements OnDestroy {
 
         await this.secondFactorTransactionService
           .showDialogAndExecuteVerifyAction(
-            () => this.resultService.finalizeEndResult(proportionalElectionId, secondFactorTransaction.getId()),
-            secondFactorTransaction.getCode(),
-            secondFactorTransaction.getQrCode(),
+            (otpCode?: string) => this.resultService.finalizeEndResult(proportionalElectionId, secondFactorTransaction.id, otpCode),
+            secondFactorTransaction.nevis,
+            secondFactorTransaction.availableProvidersList,
           )
           .catch(err => {
             this.endResult!.finalized = false;

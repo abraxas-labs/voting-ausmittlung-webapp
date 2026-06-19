@@ -10,7 +10,6 @@ import {
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/majority_election_result_service_grpc_web_pb';
 import { SecondaryMajorityElectionResult } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/majority_election_result_pb';
 import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/political_business_pb';
-import { SecondFactorTransaction } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/second_factor_transaction_pb';
 import {
   DefineMajorityElectionResultEntryParamsRequest,
   DefineMajorityElectionResultEntryRequest,
@@ -49,25 +48,16 @@ import {
   ValidateEnterMajorityElectionCountOfVotersRequest,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/majority_election_result_requests_pb';
 import { GrpcBackendService, GrpcEnvironment } from '@abraxas/voting-lib';
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   MajorityElectionBallotGroupResult,
   MajorityElectionBallotGroupResults,
-  MajorityElectionCandidateResult,
-  MajorityElectionCandidateResultProto,
-  MajorityElectionResult,
-  MajorityElectionResultEntry,
-  MajorityElectionResultEntryParams,
-  MajorityElectionResultProto,
-  mapToCountOfVoters,
-  mapToNullableCountOfVoters,
-  PoliticalBusinessNullableCountOfVoters,
-  ValidationSummary,
-} from '../models';
-import {
+  MajorityElectionBallotGroupResultsProto,
   MajorityElectionCandidateEndResult,
   MajorityElectionCandidateEndResultProto,
+  MajorityElectionCandidateResult,
+  MajorityElectionCandidateResultProto,
   MajorityElectionEndResult,
   MajorityElectionEndResultAvailableLotDecision,
   MajorityElectionEndResultAvailableLotDecisionProto,
@@ -75,16 +65,24 @@ import {
   MajorityElectionEndResultAvailableLotDecisionsProto,
   MajorityElectionEndResultLotDecision,
   MajorityElectionEndResultProto,
+  MajorityElectionResult,
+  MajorityElectionResultEntry,
+  MajorityElectionResultEntryParams,
+  MajorityElectionResultNullableSubTotal,
+  MajorityElectionResultNullableSubTotalProto,
+  MajorityElectionResultProto,
+  mapToCountOfVoters,
+  mapToNullableCountOfVoters,
+  PoliticalBusinessNullableCountOfVoters,
   SecondaryMajorityElectionEndResult,
   SecondaryMajorityElectionEndResultAvailableLotDecisions,
   SecondaryMajorityElectionEndResultAvailableLotDecisionsProto,
   SecondaryMajorityElectionEndResultProto,
-} from '../models/majority-election-end-result.model';
-import {
-  MajorityElectionBallotGroupResultsProto,
-  MajorityElectionResultNullableSubTotal,
-  MajorityElectionResultNullableSubTotalProto,
-} from '../models/majority-election-result.model';
+  SecondFactorTransaction,
+  ValidationSummary,
+  createSecondFactorAuthorization,
+  mapToSecondFactorTransaction,
+} from '../models';
 import { ContestCountingCircleDetailsService } from './contest-counting-circle-details.service';
 import { ContestService } from './contest.service';
 import { MajorityElectionService } from './majority-election.service';
@@ -234,20 +232,20 @@ export class MajorityElectionResultService extends PoliticalBusinessResultBaseSe
     await this.requestEmptyResp(c => c.enterBallotGroupResults, req);
   }
 
-  public async prepareSubmissionFinished(majorityElectionResultId: string): Promise<SecondFactorTransaction> {
+  public prepareSubmissionFinished(majorityElectionResultId: string): Promise<SecondFactorTransaction> {
     const req = new MajorityElectionResultPrepareSubmissionFinishedRequest();
     req.setElectionResultId(majorityElectionResultId);
-    return await this.request(
+    return this.request(
       c => c.prepareSubmissionFinished,
       req,
-      r => r,
+      r => mapToSecondFactorTransaction(r),
     );
   }
 
-  public submissionFinished(majorityElectionResultId: string, secondFactorTransactionId: string): Observable<void> {
+  public submissionFinished(majorityElectionResultId: string, secondFactorTransactionId: string, otpCode?: string): Observable<void> {
     const req = new MajorityElectionResultSubmissionFinishedRequest();
     req.setElectionResultId(majorityElectionResultId);
-    req.setSecondFactorTransactionId(secondFactorTransactionId);
+    req.setSecondFactorAuthorization(createSecondFactorAuthorization(secondFactorTransactionId, otpCode));
     return this.requestClientStreamEmptyResp(c => c.submissionFinished, req);
   }
 
@@ -257,21 +255,26 @@ export class MajorityElectionResultService extends PoliticalBusinessResultBaseSe
     await this.requestEmptyResp(c => c.resetToSubmissionFinished, req);
   }
 
-  public async prepareCorrectionFinished(majorityElectionResultId: string): Promise<SecondFactorTransaction> {
+  public prepareCorrectionFinished(majorityElectionResultId: string): Promise<SecondFactorTransaction> {
     const req = new MajorityElectionResultPrepareCorrectionFinishedRequest();
     req.setElectionResultId(majorityElectionResultId);
-    return await this.request(
+    return this.request(
       c => c.prepareCorrectionFinished,
       req,
-      r => r,
+      r => mapToSecondFactorTransaction(r),
     );
   }
 
-  public correctionFinished(majorityElectionResultId: string, comment: string, secondFactorTransactionId: string): Observable<void> {
+  public correctionFinished(
+    majorityElectionResultId: string,
+    comment: string,
+    secondFactorTransactionId: string,
+    otpCode?: string,
+  ): Observable<void> {
     const req = new MajorityElectionResultCorrectionFinishedRequest();
     req.setElectionResultId(majorityElectionResultId);
     req.setComment(comment);
-    req.setSecondFactorTransactionId(secondFactorTransactionId);
+    req.setSecondFactorAuthorization(createSecondFactorAuthorization(secondFactorTransactionId, otpCode));
     return this.requestClientStreamEmptyResp(c => c.correctionFinished, req);
   }
 
@@ -300,37 +303,45 @@ export class MajorityElectionResultService extends PoliticalBusinessResultBaseSe
     await this.requestEmptyResp(c => c.resetToAuditedTentatively, req);
   }
 
-  public async prepareSubmissionFinishedAndAuditedTentatively(majorityElectionResultId: string): Promise<SecondFactorTransaction> {
+  public prepareSubmissionFinishedAndAuditedTentatively(majorityElectionResultId: string): Promise<SecondFactorTransaction> {
     const req = new MajorityElectionResultPrepareSubmissionFinishedAndAuditedTentativelyRequest();
     req.setElectionResultId(majorityElectionResultId);
-    return await this.request(
+    return this.request(
       c => c.prepareSubmissionFinishedAndAuditedTentatively,
       req,
-      r => r,
+      r => mapToSecondFactorTransaction(r),
     );
   }
 
-  public submissionFinishedAndAuditedTentatively(majorityElectionResultId: string, secondFactorTransactionId: string): Observable<void> {
+  public submissionFinishedAndAuditedTentatively(
+    majorityElectionResultId: string,
+    secondFactorTransactionId: string,
+    otpCode?: string,
+  ): Observable<void> {
     const req = new MajorityElectionResultSubmissionFinishedAndAuditedTentativelyRequest();
     req.setElectionResultId(majorityElectionResultId);
-    req.setSecondFactorTransactionId(secondFactorTransactionId);
+    req.setSecondFactorAuthorization(createSecondFactorAuthorization(secondFactorTransactionId, otpCode));
     return this.requestClientStreamEmptyResp(c => c.submissionFinishedAndAuditedTentatively, req);
   }
 
-  public async prepareCorrectionFinishedAndAuditedTentatively(majorityElectionResultId: string): Promise<SecondFactorTransaction> {
+  public prepareCorrectionFinishedAndAuditedTentatively(majorityElectionResultId: string): Promise<SecondFactorTransaction> {
     const req = new MajorityElectionResultPrepareCorrectionFinishedAndAuditedTentativelyRequest();
     req.setElectionResultId(majorityElectionResultId);
-    return await this.request(
+    return this.request(
       c => c.prepareCorrectionFinishedAndAuditedTentatively,
       req,
-      r => r,
+      r => mapToSecondFactorTransaction(r),
     );
   }
 
-  public correctionFinishedAndAuditedTentatively(majorityElectionResultId: string, secondFactorTransactionId: string): Observable<void> {
+  public correctionFinishedAndAuditedTentatively(
+    majorityElectionResultId: string,
+    secondFactorTransactionId: string,
+    otpCode?: string,
+  ): Observable<void> {
     const req = new MajorityElectionResultCorrectionFinishedAndAuditedTentativelyRequest();
     req.setElectionResultId(majorityElectionResultId);
-    req.setSecondFactorTransactionId(secondFactorTransactionId);
+    req.setSecondFactorAuthorization(createSecondFactorAuthorization(secondFactorTransactionId, otpCode));
     return this.requestClientStreamEmptyResp(c => c.correctionFinishedAndAuditedTentatively, req);
   }
 
@@ -399,14 +410,14 @@ export class MajorityElectionResultService extends PoliticalBusinessResultBaseSe
     return this.request(
       c => c.prepareFinalizeEndResult,
       req,
-      r => r,
+      r => mapToSecondFactorTransaction(r),
     );
   }
 
-  public finalizeEndResult(majorityElectionId: string, secondFactorTransactionId: string): Observable<void> {
+  public finalizeEndResult(majorityElectionId: string, secondFactorTransactionId: string, otpCode?: string): Observable<void> {
     const req = new FinalizeMajorityElectionEndResultRequest();
     req.setMajorityElectionId(majorityElectionId);
-    req.setSecondFactorTransactionId(secondFactorTransactionId);
+    req.setSecondFactorAuthorization(createSecondFactorAuthorization(secondFactorTransactionId, otpCode));
     return this.requestClientStreamEmptyResp(c => c.finalizeEndResult, req);
   }
 

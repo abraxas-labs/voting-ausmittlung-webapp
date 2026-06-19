@@ -30,7 +30,7 @@ export class ResultBundleStateChipComponent {
         this.foregroundColor = 'dark';
         break;
       case BallotBundleState.BALLOT_BUNDLE_STATE_REVIEWED:
-        this.color = '#95d2a4';
+        this.color = '#98d3f1';
         this.foregroundColor = 'dark';
         break;
       case BallotBundleState.BALLOT_BUNDLE_STATE_DELETED:

@@ -4,11 +4,10 @@
  * For license information see LICENSE file.
  */
 
-import { SecondFactorTransaction } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/second_factor_transaction_pb';
 import { EnterPoliticalBusinessCountOfVotersRequest } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/count_of_voters_requests_pb';
 import { GrpcStreamingService } from '@abraxas/voting-lib';
 import { Observable } from 'rxjs';
-import { CountingCircleResult, PoliticalBusinessNullableCountOfVoters } from '../models';
+import { CountingCircleResult, PoliticalBusinessNullableCountOfVoters, SecondFactorTransaction } from '../models';
 import { createInt32Value } from './utils/proto.utils';
 
 export abstract class PoliticalBusinessResultBaseService<
@@ -20,13 +19,18 @@ export abstract class PoliticalBusinessResultBaseService<
 
   public abstract prepareSubmissionFinished(resultId: string): Promise<SecondFactorTransaction>;
 
-  public abstract submissionFinished(resultId: string, secondFactorTransactionId: string): Observable<void>;
+  public abstract submissionFinished(resultId: string, secondFactorTransactionId: string, otpCode?: string): Observable<void>;
 
   public abstract resetToSubmissionFinished(resultId: string): Promise<void>;
 
   public abstract prepareCorrectionFinished(resultId: string): Promise<SecondFactorTransaction>;
 
-  public abstract correctionFinished(resultId: string, comment: string, secondFactorTransactionId: string): Observable<void>;
+  public abstract correctionFinished(
+    resultId: string,
+    comment: string,
+    secondFactorTransactionId: string,
+    otpCode?: string,
+  ): Observable<void>;
 
   public abstract flagForCorrection(resultId: string, comment: string): Promise<void>;
 
@@ -38,11 +42,19 @@ export abstract class PoliticalBusinessResultBaseService<
 
   public abstract prepareSubmissionFinishedAndAuditedTentatively(resultId: string): Promise<SecondFactorTransaction>;
 
-  public abstract submissionFinishedAndAuditedTentatively(resultId: string, secondFactorTransactionId: string): Observable<void>;
+  public abstract submissionFinishedAndAuditedTentatively(
+    resultId: string,
+    secondFactorTransactionId: string,
+    otpCode?: string,
+  ): Observable<void>;
 
   public abstract prepareCorrectionFinishedAndAuditedTentatively(resultId: string): Promise<SecondFactorTransaction>;
 
-  public abstract correctionFinishedAndAuditedTentatively(resultId: string, secondFactorTransactionId: string): Observable<void>;
+  public abstract correctionFinishedAndAuditedTentatively(
+    resultId: string,
+    secondFactorTransactionId: string,
+    otpCode?: string,
+  ): Observable<void>;
 
   public abstract publish(resultIds: string[]): Promise<void>;
 

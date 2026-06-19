@@ -31,7 +31,7 @@ export abstract class ResultBundleTableComponent<T extends PoliticalBusinessResu
   public readonly numberColumn = 'number';
   public readonly selectColumn = 'select';
   public readonly countOfBallotsColumn = 'countOfBallots';
-  public readonly countOfModifiedBallotsColumn = 'countOfModifiedBallotsColumn';
+  public readonly countOfModifiedBallotsColumn = 'countOfModifiedBallots';
   public readonly stateColumn = 'state';
   public readonly reviewColumn = 'review';
   public readonly actionsColumn = 'actions';

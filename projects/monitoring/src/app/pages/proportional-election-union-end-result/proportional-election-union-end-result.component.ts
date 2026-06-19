@@ -10,13 +10,12 @@ import { combineLatest, debounceTime, map, Subscription } from 'rxjs';
 import {
   ProportionalElectionUnionResultService,
   ProportionalElectionUnionEndResult,
-  SecondFactorTransactionService,
   ProportionalElectionService,
   ProportionalElectionEndResult,
   EventLogService,
   ProportionalElectionUnionEndResultEventTypes,
 } from 'ausmittlung-lib';
-import { DialogService, SnackbarService } from '@abraxas/voting-lib';
+import { DialogService, SecondFactorTransactionService, SnackbarService } from '@abraxas/voting-lib';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -145,9 +144,9 @@ export class ProportionalElectionUnionEndResultComponent implements OnDestroy {
         this.endResult.finalized = true;
         await this.secondFactorTransactionService
           .showDialogAndExecuteVerifyAction(
-            () => this.resultService.finalizeEndResult(unionId, secondFactorTransaction.getId()),
-            secondFactorTransaction.getCode(),
-            secondFactorTransaction.getQrCode(),
+            (otpCode?: string) => this.resultService.finalizeEndResult(unionId, secondFactorTransaction.id, otpCode),
+            secondFactorTransaction.nevis,
+            secondFactorTransaction.availableProvidersList,
           )
           .catch(err => {
             this.endResult!.finalized = false;

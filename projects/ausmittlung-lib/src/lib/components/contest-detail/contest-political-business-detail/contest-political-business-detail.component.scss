@@ -21,6 +21,11 @@ div[header] {
   align-items: center;
   margin-right: 0.5rem;
 
+  > .header-title {
+    display: flex;
+    align-items: center;
+  }
+
   h4 {
     margin-bottom: 0;
 

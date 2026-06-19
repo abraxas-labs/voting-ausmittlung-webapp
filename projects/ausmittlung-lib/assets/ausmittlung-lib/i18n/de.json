@@ -337,7 +337,7 @@
     "BY_BUNDLE": "Einzelne Stimmzettel erfassen und Bundkontrolle",
     "NO_BUNDLES": "Es sind noch keine Bunde kontrolliert",
     "BALLOT_COUNT": "{{count}} Stimmzettel kontrolliert",
-    "BUNDLE_OVERVIEW": "Bundeübersicht und einzelne Stimmzettel erfassen",
+    "BUNDLE_OVERVIEW": "Bundübersicht und einzelne Stimmzettel erfassen",
     "NEW_BUNDLE": "+ Neuen Bund erfassen",
     "BALLOT_DETAIL": {
       "TITLE": "Stimmzettel erfassen",
@@ -1142,17 +1142,7 @@
     "DELETE_CONFIRM_MSG": "Sind Sie sicher, dass Sie die importierten Ergebnisse wieder löschen wollen?",
     "DELETE_SUCCESS": "Import-Daten werden gelöscht…"
   },
-  "SECOND_FACTOR_TRANSACTION": {
-    "TITLE": "Transaktionsbestätigung",
-    "INFO": "Bitte bestätigen Sie die Transaktion in Ihrer Authentifizierungs-App mit dem Code {{code}}.",
-    "ERROR": "Es ist ein Fehler aufgetreten. Bitte führen Sie die Aktion erneut aus.",
-    "NO_PUSH_NOTIFICATION": "Keine Push-Benachrichtigung erhalten? klicken Sie hier für Bestätigung via App!",
-    "QR_CODE": "Scannen Sie den QR-Code mit Ihrer Authentifizierungs-App um die Transaktion zu bestätigen.",
-    "QR_CODE_ALT": "QR Code"
-  },
   "ERROR_MESSAGES": {
-    "SecondFactorTransactionDataChangedException": "Die Daten wurden in der Zwischenzeit geändert, somit muss die Aktion erneut ausgeführt werden.",
-    "SecondFactorTransactionNotVerifiedException": "Die Transaktionsbestätigung wurde abgebrochen. Bitte führen Sie die Aktion erneut aus.",
     "SecondaryMajorityElectionCandidateNotSelectedInPrimaryElectionException": "Die Nebenwahl enthält Stimmen für Kandidaturen welche in der Hauptwahl nicht gewählt wurden."
   }
 }

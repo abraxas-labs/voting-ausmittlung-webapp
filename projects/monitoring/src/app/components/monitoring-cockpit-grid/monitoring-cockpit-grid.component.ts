@@ -191,10 +191,10 @@ export class MonitoringCockpitGridComponent implements OnInit, AfterViewInit, On
       x => x,
     );
 
+    this.createDoiTypeFilters();
     this.updateFilters();
     this.startChangesListener();
     this.updateStateFilters();
-    this.createDoiTypeFilters();
     this.updateTable();
     this.initTableSortAndFilterAccessors();
   }
@@ -624,7 +624,8 @@ export class MonitoringCockpitGridComponent implements OnInit, AfterViewInit, On
       disabled: false,
     }));
 
-    if (this.notOwnedPoliticalBusinessIds.length > 0) {
+    const hasMuDoiType = this.allDoiTypeFilters.some(x => x.value === DomainOfInfluenceType.DOMAIN_OF_INFLUENCE_TYPE_MU);
+    if (this.notOwnedPoliticalBusinessIds.length > 0 && !hasMuDoiType) {
       this.allDoiTypeFilters.push({
         displayText: this.i18n.instant('DOMAIN_OF_INFLUENCE_TYPES.' + DomainOfInfluenceType.DOMAIN_OF_INFLUENCE_TYPE_MU),
         value: DomainOfInfluenceType.DOMAIN_OF_INFLUENCE_TYPE_MU,

@@ -4,7 +4,7 @@
  * For license information see LICENSE file.
  */
 
-import { DialogService, SnackbarService, ThemeService } from '@abraxas/voting-lib';
+import { DialogService, SecondFactorTransactionService, SnackbarService, ThemeService } from '@abraxas/voting-lib';
 import { ChangeDetectorRef, Directive, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { firstValueFrom, Subscription } from 'rxjs';
@@ -14,6 +14,7 @@ import {
   ContestCountingCircleDetails,
   CountingCircleResult,
   CountingCircleResultState,
+  Permissions,
   PoliticalBusinessNullableCountOfVoters,
   ResultListResult,
   StateChange,
@@ -22,7 +23,6 @@ import {
 import { PoliticalBusinessResultBaseService } from '../../../services/political-business-result-base.service';
 import { PoliticalBusinessResultService } from '../../../services/political-business-result.service';
 import { PermissionService } from '../../../services/permission.service';
-import { SecondFactorTransactionService } from '../../../services/second-factor-transaction.service';
 import { sum } from '../../../services/utils/array.utils';
 import {
   ValidationOverviewDialogComponent,
@@ -30,7 +30,6 @@ import {
   ValidationOverviewDialogResult,
 } from '../../validation-overview-dialog/validation-overview-dialog.component';
 import { ContestPoliticalBusinessDetailComponent } from './contest-political-business-detail.component';
-import { Permissions } from '../../../models/permissions.model';
 import { UnsavedChangesService } from '../../../services/unsaved-changes.service';
 import { cloneDeep, isEqual } from 'lodash';
 import { ResultService } from '../../../services/result.service';
@@ -265,7 +264,7 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
         }
 
         const secondFactorTransaction = await this.resultService.prepareSubmissionFinished(id);
-        if (!secondFactorTransaction.getId() || !secondFactorTransaction.getCode()) {
+        if (!secondFactorTransaction.id) {
           await firstValueFrom(
             this.resultService.submissionFinished(id, AbstractContestPoliticalBusinessDetailComponent.emptySecondFactorId),
           );
@@ -273,9 +272,9 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
         }
 
         await this.secondFactorTransactionService.showDialogAndExecuteVerifyAction(
-          () => this.resultService.submissionFinished(id, secondFactorTransaction.getId()),
-          secondFactorTransaction.getCode(),
-          secondFactorTransaction.getQrCode(),
+          (otpCode?: string) => this.resultService.submissionFinished(id, secondFactorTransaction.id, otpCode),
+          secondFactorTransaction.nevis,
+          secondFactorTransaction.availableProvidersList,
         );
         break;
       }
@@ -290,7 +289,7 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
       }
       case CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_CORRECTION_DONE: {
         const secondFactorTransaction = await this.resultService.prepareCorrectionFinished(id);
-        if (!secondFactorTransaction.getId() || !secondFactorTransaction.getCode()) {
+        if (!secondFactorTransaction.id) {
           await firstValueFrom(
             this.resultService.correctionFinished(id, comment, AbstractContestPoliticalBusinessDetailComponent.emptySecondFactorId),
           );
@@ -298,9 +297,9 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
         }
 
         await this.secondFactorTransactionService.showDialogAndExecuteVerifyAction(
-          () => this.resultService.correctionFinished(id, comment, secondFactorTransaction.getId()),
-          secondFactorTransaction.getCode(),
-          secondFactorTransaction.getQrCode(),
+          (otpCode?: string) => this.resultService.correctionFinished(id, comment, secondFactorTransaction.id, otpCode),
+          secondFactorTransaction.nevis,
+          secondFactorTransaction.availableProvidersList,
         );
         break;
       }
@@ -313,9 +312,9 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
         if (oldState === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_SUBMISSION_ONGOING) {
           const secondFactorTransaction = await this.resultService.prepareSubmissionFinishedAndAuditedTentatively(id);
           await this.secondFactorTransactionService.showDialogAndExecuteVerifyAction(
-            () => this.resultService.submissionFinishedAndAuditedTentatively(id, secondFactorTransaction.getId()),
-            secondFactorTransaction.getCode(),
-            secondFactorTransaction.getQrCode(),
+            (otpCode?: string) => this.resultService.submissionFinishedAndAuditedTentatively(id, secondFactorTransaction.id, otpCode),
+            secondFactorTransaction.nevis,
+            secondFactorTransaction.availableProvidersList,
           );
           this.openMonitoring();
           break;
@@ -324,9 +323,9 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
         if (oldState === CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_READY_FOR_CORRECTION) {
           const secondFactorTransaction = await this.resultService.prepareCorrectionFinishedAndAuditedTentatively(id);
           await this.secondFactorTransactionService.showDialogAndExecuteVerifyAction(
-            () => this.resultService.correctionFinishedAndAuditedTentatively(id, secondFactorTransaction.getId()),
-            secondFactorTransaction.getCode(),
-            secondFactorTransaction.getQrCode(),
+            (otpCode?: string) => this.resultService.correctionFinishedAndAuditedTentatively(id, secondFactorTransaction.id, otpCode),
+            secondFactorTransaction.nevis,
+            secondFactorTransaction.availableProvidersList,
           );
           this.openMonitoring();
           break;

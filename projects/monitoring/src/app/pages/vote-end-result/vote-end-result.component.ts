@@ -4,12 +4,11 @@
  * For license information see LICENSE file.
  */
 
-import { DialogService, SnackbarService } from '@abraxas/voting-lib';
+import { DialogService, SecondFactorTransactionService, SnackbarService } from '@abraxas/voting-lib';
 import { Component, OnDestroy, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import {
-  SecondFactorTransactionService,
   VoteEndResult,
   VoteResultService,
   VoteEndResultEventTypes,
@@ -130,9 +129,9 @@ export class VoteEndResultComponent implements OnDestroy {
 
         await this.secondFactorTransactionService
           .showDialogAndExecuteVerifyAction(
-            () => this.resultService.finalizeEndResult(voteId, secondFactorTransaction.getId()),
-            secondFactorTransaction.getCode(),
-            secondFactorTransaction.getQrCode(),
+            (otpCode?: string) => this.resultService.finalizeEndResult(voteId, secondFactorTransaction.id, otpCode),
+            secondFactorTransaction.nevis,
+            secondFactorTransaction.availableProvidersList,
           )
           .catch(err => {
             this.endResult!.finalized = false;

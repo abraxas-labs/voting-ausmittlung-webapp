@@ -101,7 +101,6 @@ import { ProportionalElectionInfoComponent } from './components/proportional-ele
 import { ProportionalElectionNewBundleComponent } from './components/proportional-election/proportional-election-new-bundle/proportional-election-new-bundle.component';
 import { ResultStateBoxComponent } from './components/result-state-box/result-state-box.component';
 import { SelectCountingCircleDialogComponent } from './components/select-counting-circle-dialog/select-counting-circle-dialog.component';
-import { SecondFactorTransactionDialogComponent } from './components/transaction-request-dialog/second-factor-transaction-dialog.component';
 import { ValidationOverviewDialogComponent } from './components/validation-overview-dialog/validation-overview-dialog.component';
 import { ValidationResultComponent } from './components/validation-result/validation-result.component';
 import { VoteResultsGraphComponent } from './components/vote-results-graph/vote-results-graph.component';
@@ -256,7 +255,6 @@ import { SystemBusyComponent } from './pages/system-busy/system-busy.component';
     ContestDetailVotingCardsElectorateComponent,
     TranslateVoteQuestionPipe,
     ContestPastUnlockDialogComponent,
-    SecondFactorTransactionDialogComponent,
     ShortcutDialogComponent,
     AdmonitionComponent,
     ResultExportComponent,

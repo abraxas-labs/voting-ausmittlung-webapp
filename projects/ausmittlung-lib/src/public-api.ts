@@ -20,7 +20,6 @@ export * from './lib/services/majority-election.service';
 export * from './lib/services/export.service';
 export * from './lib/services/breadcrumbs.service';
 export * from './lib/services/result-import.service';
-export * from './lib/services/second-factor-transaction.service';
 export * from './lib/services/unsaved-changes.service';
 export * from './lib/services/proportional-election-union-result.service';
 export * from './lib/services/proportional-election.service';

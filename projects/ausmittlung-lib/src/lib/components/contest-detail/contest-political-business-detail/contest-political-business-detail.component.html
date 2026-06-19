@@ -1,12 +1,10 @@
 <bc-expansion-panel (expandedChange)="expandedChanged($event)" class="with-border">
   <div header>
-    <div>
+    <div class="header-title">
+      <bc-status-label [label]="'DOMAIN_OF_INFLUENCE_TYPES.' + result.politicalBusiness.domainOfInfluence?.type | translate" class="mr-2"></bc-status-label>
       <h4 [class.not-responsible]="contentReadonly && !isResponsibleMonitorAuthority">
         {{result.politicalBusiness.title}}
       </h4>
-    </div>
-    <div class="container">
-      <bc-status-label class="center" [label]="'DOMAIN_OF_INFLUENCE_TYPES.' + result.politicalBusiness.domainOfInfluence?.type | translate"></bc-status-label>
     </div>
     <div class="spacer"></div>
     @switch (result.politicalBusiness.businessType) {

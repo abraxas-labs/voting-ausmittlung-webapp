@@ -1,4 +1,4 @@
-# ✨ Changelog (`v3.29.5`)
+# ✨ Changelog (`v3.30.0`)
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Info
 
 ```text
-This version -------- v3.29.5
-Previous version ---- v3.29.4
+This version -------- v3.30.0
+Previous version ---- v3.29.5
 Initial version ----- v1.25.0
-Total commits ------- 1
+Total commits ------- 10
 ```
+
+## [v3.30.0] - 2026-06-16
+
+### 🔄 Changed
+
+- update lib
+
+### 🔄 Changed
+
+- create doi type filters before updating filters
+
+### 🔄 Changed
+
+- fix vote bundle overview label
+
+### 🔄 Changed
+
+- fix count of modified ballots column filter
+
+### 🔄 Changed
+
+- change bundle state reviewed color
+
+### 🔄 Changed
+
+- reposition domain of influence type label in business details
+
+### 🆕 Added
+
+- feat(VOTING-6923): otp mfa support
+
+### 🔄 Changed
+
+- monitoring cockpit doi type filter only contains one mu filter
+
+### 🔄 Changed
+
+- change sg theme to schalter-e
 
 ## [v3.29.5] - 2026-06-11
 
