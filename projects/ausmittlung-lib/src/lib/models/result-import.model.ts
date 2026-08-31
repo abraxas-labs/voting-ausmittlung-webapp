@@ -13,9 +13,15 @@ import { ResultImport as ResultImportProto } from '@abraxas/voting-ausmittlung-s
 import { MajorityElectionWriteInMappingTarget } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/majority_election_write_in_pb';
 import { SimplePoliticalBusiness } from './political-business.model';
 import { ResultImportType } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/import_pb';
+import { CertificateInfo } from './certificate.model';
 
-export interface ResultImport extends Omit<ResultImportProto.AsObject, 'started'> {
+export interface ResultImport extends Omit<
+  ResultImportProto.AsObject,
+  'started' | 'eCountingClientCertificateInfo' | 'eCountingClientCaCertificateInfo'
+> {
   started: Date;
+  eCountingClientCertificateInfo?: CertificateInfo;
+  eCountingClientCaCertificateInfo?: CertificateInfo;
 }
 
 export {

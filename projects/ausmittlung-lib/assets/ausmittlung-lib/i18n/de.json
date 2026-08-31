@@ -337,7 +337,7 @@
     "BY_BUNDLE": "Einzelne Stimmzettel erfassen und Bundkontrolle",
     "NO_BUNDLES": "Es sind noch keine Bunde kontrolliert",
     "BALLOT_COUNT": "{{count}} Stimmzettel kontrolliert",
-    "BUNDLE_OVERVIEW": "Bundübersicht und einzelne Stimmzettel erfassen",
+    "BUNDLE_OVERVIEW": "Bundübersicht",
     "NEW_BUNDLE": "+ Neuen Bund erfassen",
     "BALLOT_DETAIL": {
       "TITLE": "Stimmzettel erfassen",
@@ -1108,6 +1108,10 @@
       },
       "ACTION_WRITE_INS": "Write-Ins zuweisen"
     },
+    "CERTIFICATE": {
+      "E_COUNTING_CLIENT_CERTIFICATE_CN": "Sender Zertifikat CN",
+      "E_COUNTING_CLIENT_CA_CERTIFICATE_CN": "CA Signing Zertifikat CN"
+    },
     "LIST_TITLE": "Importierte Ergebnisse",
     "TITLE": "Ergebnisse importieren",
     "IMPORT": "Ergebnisse importieren",
@@ -1141,6 +1145,10 @@
     "DELETE_CONFIRM_TITLE": "Sind Sie sicher?",
     "DELETE_CONFIRM_MSG": "Sind Sie sicher, dass Sie die importierten Ergebnisse wieder löschen wollen?",
     "DELETE_SUCCESS": "Import-Daten werden gelöscht…"
+  },
+  "CERTIFICATE": {
+    "NOT_AFTER": "Gültig bis",
+    "THUMBPRINT": "Thumbprint"
   },
   "ERROR_MESSAGES": {
     "SecondaryMajorityElectionCandidateNotSelectedInPrimaryElectionException": "Die Nebenwahl enthält Stimmen für Kandidaturen welche in der Hauptwahl nicht gewählt wurden."

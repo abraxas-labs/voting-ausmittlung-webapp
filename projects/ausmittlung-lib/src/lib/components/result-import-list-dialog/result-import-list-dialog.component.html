@@ -5,7 +5,7 @@
         <bc-button [label]="'RESULT_IMPORT.DELETE' | translate" color="warn" (buttonClick)="deleteResults()"></bc-button>
       </div>
     }
-    <bc-table [dataSource]="resultImports">
+    <bc-table [dataSource]="resultImports" multiTemplateDataRows>
       <ng-container columnDef="fileName">
         <th bc-header-cell *headerCellDef>{{ 'RESULT_IMPORT.FILENAME' | translate }}</th>
         <td bc-data-cell *dataCellDef="let element">
@@ -107,8 +107,50 @@
         </td>
       </ng-container>
 
+      <ng-container columnDef="expandAction">
+        <th bc-header-cell *headerCellDef></th>
+        <td bc-data-cell *dataCellDef="let element" [align]="'right'">
+          @if(!!element.eCountingClientCertificateInfo) {
+          <bc-icon
+            (click)="toggleRow(element)"
+            [icon]="expandedElement === element ? 'angle-up' : 'angle-down'"
+            variant="tertiary"
+          ></bc-icon>
+          }
+        </td>
+      </ng-container>
+
+      <ng-container columnDef="expandedContent">
+        <ng-container *dataCellDef="let element">
+          @if (element === expandedElement) {
+          <td
+            [attr.colspan]="columns.length"
+            class="bc-expansion-container content-padding"
+          >
+            <p class="certificate-info mt-2 mb-1">
+              <span>{{ 'RESULT_IMPORT.CERTIFICATE.E_COUNTING_CLIENT_CERTIFICATE_CN' | translate }}</span>
+              <span>{{ element.eCountingClientCertificateInfo.cn }}</span>
+              <span>{{ 'CERTIFICATE.NOT_AFTER' | translate }}</span>
+              <span>{{element.eCountingClientCertificateInfo.notAfter | date: 'dd.MM.yyyy' }}</span>
+              <span>{{ 'CERTIFICATE.THUMBPRINT' | translate }}</span>
+              <span>{{ element.eCountingClientCertificateInfo.thumbprint }} </span>
+            </p>
+            <p class="certificate-info my-1">
+              <span>{{ 'RESULT_IMPORT.CERTIFICATE.E_COUNTING_CLIENT_CA_CERTIFICATE_CN' | translate }}</span>
+              <span>{{ element.eCountingClientCaCertificateInfo.cn }}</span>
+              <span>{{ 'CERTIFICATE.NOT_AFTER' | translate }}</span>
+              <span>{{element.eCountingClientCaCertificateInfo.notAfter | date: 'dd.MM.yyyy' }}</span>
+              <span>{{ 'CERTIFICATE.THUMBPRINT' | translate }}</span>
+              <span>{{ element.eCountingClientCaCertificateInfo.thumbprint }} </span>
+            </p>
+          </td>
+          }
+        </ng-container>
+      </ng-container>
+
       <tr bc-header-row *headerRowDef="let row; columns: columns"></tr>
       <tr bc-data-row *dataRowDef="let row; columns: columns; let i = index"></tr>
+      <tr bc-data-row *dataRowDef="let row; columns: ['expandedContent']" class="bc-expansion-row"></tr>
     </bc-table>
   </div>
 

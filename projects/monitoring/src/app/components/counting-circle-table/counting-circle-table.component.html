@@ -1,12 +1,3 @@
-<div class="flex">
-  <bc-switch
-    [label]="'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.ALL_FIELDS' | translate"
-    [checked]="allColumns.length === columnsToDisplay.length"
-    (checkedChange)="toggleAllFields($event)"
-  ></bc-switch>
-  <bc-columns [columns]="allColumns" (columnsToggled)="onColumnsToggled($event)"></bc-columns>
-</div>
-
 <bc-table [sticky]="true" filter sort [sortActive]="[{ id: countingCircleColumn, direction: 'asc' }]" [dataSource]="dataSource">
   <ng-container [columnDef]="stateColumn">
     <th bc-header-cell filter filterType="list" [filterItems]="stateList"
@@ -96,6 +87,30 @@
     <th bc-header-cell filter filterType="number" sort *headerCellDef class="small-filter">{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.COUNTER_PROPOSAL_2_TOTAL_COUNT_UNSPECIFIED' | translate }}</th>
     <td bc-data-cell *dataCellDef="let element">{{ element.counterProposal2TotalCountUnspecified }}</td>
   </ng-container>
+  <ng-container [columnDef]="variant1TotalCountYesColumn">
+    <th bc-header-cell filter filterType="number" sort *headerCellDef class="small-filter">{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.VARIANT_1_TOTAL_COUNT_YES' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element" [class.winning]="element.variant1TotalCountYes > element.variant1TotalCountNo">{{ element.variant1TotalCountYes }}</td>
+  </ng-container>
+  <ng-container [columnDef]="variant1TotalCountNoColumn">
+    <th bc-header-cell filter filterType="number" sort *headerCellDef class="small-filter">{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.VARIANT_1_TOTAL_COUNT_NO' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element" [class.losing]="element.variant1TotalCountYes < element.variant1TotalCountNo">{{ element.variant1TotalCountNo }}</td>
+  </ng-container>
+  <ng-container [columnDef]="variant1TotalCountUnspecifiedColumn">
+    <th bc-header-cell filter filterType="number" sort *headerCellDef class="small-filter">{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.VARIANT_1_TOTAL_COUNT_UNSPECIFIED' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element">{{ element.variant1TotalCountUnspecified }}</td>
+  </ng-container>
+  <ng-container [columnDef]="variant2TotalCountYesColumn">
+    <th bc-header-cell filter filterType="number" sort *headerCellDef class="small-filter">{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.VARIANT_2_TOTAL_COUNT_YES' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element" [class.winning]="element.variant2TotalCountYes > element.variant2TotalCountNo">{{ element.variant2TotalCountYes }}</td>
+  </ng-container>
+  <ng-container [columnDef]="variant2TotalCountNoColumn">
+    <th bc-header-cell filter filterType="number" sort *headerCellDef class="small-filter">{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.VARIANT_2_TOTAL_COUNT_NO' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element" [class.losing]="element.variant2TotalCountYes < element.variant2TotalCountNo">{{ element.variant2TotalCountNo }}</td>
+  </ng-container>
+  <ng-container [columnDef]="variant2TotalCountUnspecifiedColumn">
+    <th bc-header-cell filter filterType="number" sort *headerCellDef class="small-filter">{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.VARIANT_2_TOTAL_COUNT_UNSPECIFIED' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element">{{ element.variant2TotalCountUnspecified }}</td>
+  </ng-container>
   <ng-container [columnDef]="tieBreak1TotalCountYesColumn">
     <th bc-header-cell filter filterType="number" sort *headerCellDef class="small-filter">{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.TIE_BREAK_1_TOTAL_COUNT_YES' | translate }}</th>
     <td bc-data-cell *dataCellDef="let element" [class.winning]="element.tieBreak1TotalCountYes > element.tieBreak1TotalCountNo">{{ element.tieBreak1TotalCountYes }}</td>
@@ -132,6 +147,22 @@
     <th bc-header-cell filter filterType="number" sort *headerCellDef class="small-filter">{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.TIE_BREAK_3_TOTAL_COUNT_UNSPECIFIED' | translate }}</th>
     <td bc-data-cell *dataCellDef="let element">{{ element.tieBreak3TotalCountUnspecified }}</td>
   </ng-container>
+  @for (col of majorityElectionColumns; track col) {
+    <ng-container [columnDef]="col.id">
+      <th bc-header-cell filter filterType="number" sort *headerCellDef class="small-filter">{{ col.firstName + ' ' + col.lastName }}</th>
+      <td bc-data-cell *dataCellDef="let element">{{ element.candidateResults?.find(x => x.candidate.id === col.id)?.voteCount }}</td>
+    </ng-container>
+  }
+  <ng-container [columnDef]="individualVoteCountColumn">
+    <th bc-header-cell filter filterType="number" sort *headerCellDef class="small-filter">{{ 'MONITORING_POLITICAL_BUSINESSES_OVERVIEW.INDIVIDUAL_VOTE_COUNT' | translate }}</th>
+    <td bc-data-cell *dataCellDef="let element">{{ element.individualVoteCount }}</td>
+  </ng-container>
+  @for (col of proportionalElectionColumns; track col) {
+    <ng-container [columnDef]="col.id">
+      <th bc-header-cell filter filterType="number" sort *headerCellDef class="small-filter">{{ col.shortDescription }}</th>
+      <td bc-data-cell *dataCellDef="let element">{{ element.listResults?.find(x => x.list.id === col.id)?.totalVoteCount }}</td>
+    </ng-container>
+  }
   <tr bc-header-row *headerRowDef="let row; columns: columnsToDisplay"></tr>
   <tr bc-data-row *dataRowDef="let row; columns: columnsToDisplay; let i = index"
                class="clickable"

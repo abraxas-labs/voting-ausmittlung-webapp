@@ -7,14 +7,10 @@
 import { ExpansionPanelComponent } from '@abraxas/base-components';
 import { CountingCircleResultState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/counting_circle_pb';
 import { DialogService, SnackbarService } from '@abraxas/voting-lib';
-import { ChangeDetectorRef, Component, Input, ViewChild, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, Input, ViewChild } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { ContestCantonDefaults, ContestCountingCircleDetails, PoliticalBusinessType, ResultListResult } from '../../../models';
 import { CommentsDialogComponent, CommentsDialogComponentData } from '../../comments-dialog/comments-dialog.component';
-import {
-  ContactPersonDialogComponent,
-  ContactPersonDialogComponentData,
-} from '../../contact-person-dialog/contact-person-dialog.component';
 import { ResultImportService } from '../../../services/result-import.service';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -101,17 +97,6 @@ export class ContestPoliticalBusinessDetailComponent {
       resultId: this.result.id,
     };
     this.dialog.open(CommentsDialogComponent, data);
-  }
-
-  public openContactPerson(): void {
-    if (!this.result.politicalBusiness.domainOfInfluence?.contactPerson) {
-      return;
-    }
-
-    const data: ContactPersonDialogComponentData = {
-      domainOfInfluences: [this.result.politicalBusiness.domainOfInfluence],
-    };
-    this.dialog.open(ContactPersonDialogComponent, data);
   }
 
   public async deleteECountingImportData(): Promise<void> {

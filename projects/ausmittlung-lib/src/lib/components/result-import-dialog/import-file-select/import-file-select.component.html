@@ -11,7 +11,7 @@
       <div>
         <p translate>RESULT_IMPORT.DRAG_FILE</p>
         <p translate>RESULT_IMPORT.OR</p>
-        <input #fileInput type="file" (change)="setFileFromEvent($event)" accept=".xml" [multiple]="true">
+        <input #fileInput type="file" (change)="setFileFromEvent($event)" [accept]="accept" [multiple]="true">
         <bc-button (buttonClick)="fileInput.click()" variant="primary"
           [label]="'RESULT_IMPORT.CHOOSE_FILE' | translate">
         </bc-button>

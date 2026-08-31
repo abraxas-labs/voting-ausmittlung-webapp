@@ -9,11 +9,15 @@
         [showRoles]="true"
         [showThemes]="false"
         logo="VO"
+        [style.--color-component-appheader-bg]="customHeaderColor"
+        [style.--color-component-appheader-border]="customHeaderColor"
         >
         <vo-lib-environment-chip></vo-lib-environment-chip>
       </bc-app-header-bar-iam>
     } @else {
-      <bc-app-header-bar [link]="['/', theme]" [title]="appTitle" logo="VO"></bc-app-header-bar>
+      <bc-app-header-bar [link]="['/', theme]" [title]="appTitle" logo="VO"
+                         [style.--color-component-appheader-bg]="customHeaderColor"
+                         [style.--color-component-appheader-border]="customHeaderColor"></bc-app-header-bar>
     }
     @if (!loading && hasTenant) {
       <router-outlet></router-outlet>

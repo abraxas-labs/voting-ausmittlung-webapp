@@ -48,7 +48,6 @@ import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.compo
 import { CommentsDialogComponent } from './components/comments-dialog/comments-dialog.component';
 import { ConfirmCommentDialogComponent } from './components/confirm-comment-dialog/confirm-comment-dialog.component';
 import { ContactPersonDataComponent } from './components/contact-person-data/contact-person-data.component';
-import { ContactPersonDialogComponent } from './components/contact-person-dialog/contact-person-dialog.component';
 import { ContactPersonEditComponent } from './components/contact-person-edit/contact-person-edit.component';
 import { ContestDetailCountOfVotersComponent } from './components/contest-detail/contest-detail-count-of-voters/contest-detail-count-of-voters.component';
 import { ContestDetailVotingCardsElectorateComponent } from './components/contest-detail/contest-detail-voting-cards-electorate/contest-detail-voting-cards-electorate.component';
@@ -227,7 +226,6 @@ import { SystemBusyComponent } from './pages/system-busy/system-busy.component';
     ContestProportionalElectionDetailHeaderComponent,
     BreadcrumbsComponent,
     ContactPersonEditComponent,
-    ContactPersonDialogComponent,
     ProportionalElectionBallotCandidatesChooseDialogComponent,
     ProportionalElectionBallotCandidatesChooseEntryComponent,
     ResultBundleStateChipComponent,

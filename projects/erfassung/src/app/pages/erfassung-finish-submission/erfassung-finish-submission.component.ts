@@ -15,6 +15,7 @@ import {
   Contest,
   CountingCircle,
   CountingCircleResultState,
+  DomainOfInfluenceType,
   ResultListResult,
   ResultService,
   splitArray,
@@ -130,7 +131,9 @@ export class ErfassungFinishSubmissionComponent implements OnInit, OnDestroy {
       await this.finishSubmission(contestId, ccId, resultIds);
       const results = splitArray(
         this.selectedResults.selected,
-        x => this.tenant?.id === x.politicalBusiness!.domainOfInfluence!.secureConnectId,
+        x =>
+          this.tenant?.id === x.politicalBusiness!.domainOfInfluence!.secureConnectId &&
+          x.politicalBusiness!.domainOfInfluence!.type >= DomainOfInfluenceType.DOMAIN_OF_INFLUENCE_TYPE_MU,
       );
       for (const result of results[0]) {
         result.state = CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_AUDITED_TENTATIVELY;

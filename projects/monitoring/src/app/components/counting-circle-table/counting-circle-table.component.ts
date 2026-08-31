@@ -4,21 +4,26 @@
  * For license information see LICENSE file.
  */
 
-import { AfterViewInit, Component, Input, OnChanges, OnInit, ViewChild, inject } from '@angular/core';
-import { Column, ColumnsComponent, FilterDirective, SortDirective, TableDataSource } from '@abraxas/base-components';
+import { AfterViewInit, Component, inject, Input, OnChanges, OnInit, ViewChild } from '@angular/core';
+import { ColumnsComponent, FilterDirective, SortDirective, TableDataSource } from '@abraxas/base-components';
 import { EnumItemDescription, EnumUtil } from '@abraxas/voting-lib';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   CountingCircleResultState,
   CountOfVotersInformationSubTotal,
+  MajorityElectionCandidate,
+  ProportionalElectionList,
   ResultOverviewCountingCircleResult,
   ResultOverviewCountingCircleWithDetails,
+  SimplePoliticalBusiness,
   sum,
   VotingCardResultDetail,
   VotingChannel,
 } from 'ausmittlung-lib';
-import { TranslateService } from '@ngx-translate/core';
-import { StorageService } from '../../services/storage.service';
+import {
+  PoliticalBusinessSubType,
+  PoliticalBusinessType,
+} from '@abraxas/voting-ausmittlung-service-proto/grpc/models/political_business_pb';
 
 @Component({
   selector: 'app-counting-circle-table',
@@ -30,8 +35,6 @@ export class CountingCircleTableComponent implements OnInit, AfterViewInit, OnCh
   private readonly enumUtil = inject(EnumUtil);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-  private readonly i18n = inject(TranslateService);
-  private readonly storageService = inject(StorageService);
 
   public readonly countingCircleResultState: typeof CountingCircleResultState = CountingCircleResultState;
   public readonly votingChannel: typeof VotingChannel = VotingChannel;
@@ -53,9 +56,15 @@ export class CountingCircleTableComponent implements OnInit, AfterViewInit, OnCh
   public readonly counterProposal1TotalCountYesColumn = 'counterProposal1TotalCountYes';
   public readonly counterProposal1TotalCountNoColumn = 'counterProposal1TotalCountNo';
   public readonly counterProposal1TotalCountUnspecifiedColumn = 'counterProposal1TotalCountUnspecified';
+  public readonly variant1TotalCountYesColumn = 'variant1TotalCountYes';
+  public readonly variant1TotalCountNoColumn = 'variant1TotalCountNo';
+  public readonly variant1TotalCountUnspecifiedColumn = 'variant1TotalCountUnspecified';
   public readonly counterProposal2TotalCountYesColumn = 'counterProposal2TotalCountYes';
   public readonly counterProposal2TotalCountNoColumn = 'counterProposal2TotalCountNo';
   public readonly counterProposal2TotalCountUnspecifiedColumn = 'counterProposal2TotalCountUnspecified';
+  public readonly variant2TotalCountYesColumn = 'variant2TotalCountYes';
+  public readonly variant2TotalCountNoColumn = 'variant2TotalCountNo';
+  public readonly variant2TotalCountUnspecifiedColumn = 'variant2TotalCountUnspecified';
   public readonly tieBreak1TotalCountYesColumn = 'tieBreak1TotalCountYes';
   public readonly tieBreak1TotalCountNoColumn = 'tieBreak1TotalCountNo';
   public readonly tieBreak1TotalCountUnspecifiedColumn = 'tieBreak1TotalCountUnspecified';
@@ -65,108 +74,49 @@ export class CountingCircleTableComponent implements OnInit, AfterViewInit, OnCh
   public readonly tieBreak3TotalCountYesColumn = 'tieBreak3TotalCountYes';
   public readonly tieBreak3TotalCountNoColumn = 'tieBreak3TotalCountNo';
   public readonly tieBreak3TotalCountUnspecifiedColumn = 'tieBreak3TotalCountUnspecified';
+  public readonly individualVoteCountColumn = 'individualVoteCount';
 
-  public readonly allColumns: Column[] = [
-    { id: this.stateColumn, label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.STATE') },
-    { id: this.countingCircleColumn, label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.COUNTING_CIRCLE') },
-    { id: this.receivedBallotsColumn, label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.RECEIVED_BALLOTS') },
-    { id: this.blankBallotsColumn, label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.BLANK_BALLOTS') },
-    { id: this.invalidBallotsColumn, label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.INVALID_BALLOTS') },
-    { id: this.accountedBallotsColumn, label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.ACCOUNTED_BALLOTS') },
-    { id: this.totalCountOfVotersColumn, label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.TOTAL_COUNT_OF_VOTERS') },
-    { id: this.votingCardsBallotBoxColumn, label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.VOTING_CARDS_BALLOT_BOX') },
-    { id: this.votingCardsPaperColumn, label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.VOTING_CARDS_PAPER') },
-    {
-      id: this.votingCardsByMailValidColumn,
-      label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.VOTING_CARDS_BY_MAIL_VALID'),
-    },
-    {
-      id: this.votingCardsByMailInvalidColumn,
-      label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.VOTING_CARDS_BY_MAIL_INVALID'),
-    },
-    {
-      id: this.mainBallotTotalCountYesColumn,
-      label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.MAIN_BALLOT_TOTAL_COUNT_YES'),
-    },
-    {
-      id: this.mainBallotTotalCountNoColumn,
-      label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.MAIN_BALLOT_TOTAL_COUNT_NO'),
-    },
-    {
-      id: this.mainBallotTotalCountUnspecifiedColumn,
-      label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.MAIN_BALLOT_TOTAL_COUNT_UNSPECIFIED'),
-    },
-    {
-      id: this.counterProposal1TotalCountYesColumn,
-      label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.COUNTER_PROPOSAL_1_TOTAL_COUNT_YES'),
-    },
-    {
-      id: this.counterProposal1TotalCountNoColumn,
-      label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.COUNTER_PROPOSAL_1_TOTAL_COUNT_NO'),
-    },
-    {
-      id: this.counterProposal1TotalCountUnspecifiedColumn,
-      label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.COUNTER_PROPOSAL_1_TOTAL_COUNT_UNSPECIFIED'),
-    },
-    {
-      id: this.counterProposal2TotalCountYesColumn,
-      label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.COUNTER_PROPOSAL_2_TOTAL_COUNT_YES'),
-    },
-    {
-      id: this.counterProposal2TotalCountNoColumn,
-      label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.COUNTER_PROPOSAL_2_TOTAL_COUNT_NO'),
-    },
-    {
-      id: this.counterProposal2TotalCountUnspecifiedColumn,
-      label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.COUNTER_PROPOSAL_2_TOTAL_COUNT_UNSPECIFIED'),
-    },
-    {
-      id: this.tieBreak1TotalCountYesColumn,
-      label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.TIE_BREAK_1_TOTAL_COUNT_YES'),
-    },
-    {
-      id: this.tieBreak1TotalCountNoColumn,
-      label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.TIE_BREAK_1_TOTAL_COUNT_NO'),
-    },
-    {
-      id: this.tieBreak1TotalCountUnspecifiedColumn,
-      label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.TIE_BREAK_1_TOTAL_COUNT_UNSPECIFIED'),
-    },
-    {
-      id: this.tieBreak2TotalCountYesColumn,
-      label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.TIE_BREAK_2_TOTAL_COUNT_YES'),
-    },
-    {
-      id: this.tieBreak2TotalCountNoColumn,
-      label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.TIE_BREAK_2_TOTAL_COUNT_NO'),
-    },
-    {
-      id: this.tieBreak2TotalCountUnspecifiedColumn,
-      label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.TIE_BREAK_2_TOTAL_COUNT_UNSPECIFIED'),
-    },
-    {
-      id: this.tieBreak3TotalCountYesColumn,
-      label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.TIE_BREAK_3_TOTAL_COUNT_YES'),
-    },
-    {
-      id: this.tieBreak3TotalCountNoColumn,
-      label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.TIE_BREAK_3_TOTAL_COUNT_NO'),
-    },
-    {
-      id: this.tieBreak3TotalCountUnspecifiedColumn,
-      label: this.i18n.instant('MONITORING_POLITICAL_BUSINESSES_OVERVIEW.TIE_BREAK_3_TOTAL_COUNT_UNSPECIFIED'),
-    },
+  public columnsToDisplay: string[] = [];
+
+  public defaultColumns: string[] = [
+    this.stateColumn,
+    this.countingCircleColumn,
+    this.receivedBallotsColumn,
+    this.blankBallotsColumn,
+    this.invalidBallotsColumn,
+    this.accountedBallotsColumn,
+    this.totalCountOfVotersColumn,
+    this.votingCardsBallotBoxColumn,
+    this.votingCardsPaperColumn,
+    this.votingCardsByMailValidColumn,
+    this.votingCardsByMailInvalidColumn,
   ];
 
-  public columnsToDisplay: string[] = this.allColumns.map(x => x.id);
+  public voteStandardColumns: string[] = [
+    this.mainBallotTotalCountYesColumn,
+    this.mainBallotTotalCountNoColumn,
+    this.mainBallotTotalCountUnspecifiedColumn,
+  ];
+  public voteVariantColumns: string[] = [];
+  public majorityElectionColumns: MajorityElectionCandidate[] = [];
+  public individualVoteCountDisabled = false;
+  public proportionalElectionColumns: ProportionalElectionList[] = [];
 
   @Input()
   public set countingCircles(data: ResultOverviewCountingCircleResult[]) {
     this.dataSource.data = data;
+
+    this.majorityElectionColumns = this.getMajorityElectionColumns(data);
+    this.individualVoteCountDisabled = !data.some(x => x.individualVoteCount !== undefined);
+    this.proportionalElectionColumns = this.getProportionalElectionColumns(data);
+    this.voteVariantColumns = this.getVoteVariantColumns(data);
   }
 
   @Input()
   public countingCirclesById: Record<string, ResultOverviewCountingCircleWithDetails> = {};
+
+  @Input()
+  public politicalBusiness?: SimplePoliticalBusiness;
 
   @ViewChild(SortDirective, { static: true })
   public sort!: SortDirective;
@@ -180,8 +130,6 @@ export class CountingCircleTableComponent implements OnInit, AfterViewInit, OnCh
   public dataSource = new TableDataSource<ResultOverviewCountingCircleResult>();
   public stateList: EnumItemDescription<CountingCircleResultState>[] = [];
 
-  private initializingColumns: boolean = true;
-
   public ngOnInit(): void {
     this.stateList = this.enumUtil.getArrayWithDescriptions<CountingCircleResultState>(
       CountingCircleResultState,
@@ -189,23 +137,32 @@ export class CountingCircleTableComponent implements OnInit, AfterViewInit, OnCh
     );
 
     this.setDataAccessors();
-
-    const storedColumns = this.storageService.getMonitoringCockpitColumnIds();
-    if (storedColumns) {
-      this.columnsToDisplay = storedColumns;
-    }
   }
 
   public ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
     this.dataSource.filter = this.filter;
-    this.initColumns();
   }
 
   public ngOnChanges() {
     const data = this.dataSource.data;
     if (!data) {
       return;
+    }
+
+    if (this.politicalBusiness?.businessType === PoliticalBusinessType.POLITICAL_BUSINESS_TYPE_MAJORITY_ELECTION) {
+      this.columnsToDisplay = [...this.defaultColumns, ...this.majorityElectionColumns.map(x => x.id)];
+      if (!this.individualVoteCountDisabled) {
+        this.columnsToDisplay.push(this.individualVoteCountColumn);
+      }
+    } else if (this.politicalBusiness?.businessType === PoliticalBusinessType.POLITICAL_BUSINESS_TYPE_PROPORTIONAL_ELECTION) {
+      this.columnsToDisplay = [...this.defaultColumns, ...this.proportionalElectionColumns.map(x => x.id)];
+    } else if (this.politicalBusiness?.businessType === PoliticalBusinessType.POLITICAL_BUSINESS_TYPE_VOTE) {
+      if (this.politicalBusiness.businessSubType === PoliticalBusinessSubType.POLITICAL_BUSINESS_SUB_TYPE_VOTE_VARIANT_BALLOT) {
+        this.columnsToDisplay = [...this.defaultColumns, ...this.voteVariantColumns];
+      } else {
+        this.columnsToDisplay = [...this.defaultColumns, ...this.voteStandardColumns];
+      }
     }
   }
 
@@ -216,28 +173,6 @@ export class CountingCircleTableComponent implements OnInit, AfterViewInit, OnCh
         politicalBusinessId: politicalBusinessId,
       },
     });
-  }
-
-  public toggleAllFields(value: boolean): void {
-    if (value) {
-      this.columnsToDisplay = this.allColumns.map(column => column.id);
-      return;
-    }
-
-    const storedColumns = this.storageService.getMonitoringCockpitColumnIds();
-    if (!storedColumns) {
-      return;
-    }
-
-    this.columnsToDisplay = storedColumns;
-  }
-
-  public onColumnsToggled(columns: string[]): void {
-    if (this.initializingColumns) {
-      return;
-    }
-    this.columnsToDisplay = [...columns];
-    this.storageService.storeMonitoringCockpitColumnIds(this.columnsToDisplay);
   }
 
   public getVotingCardsValue(votingCards: VotingCardResultDetail[], channel: VotingChannel, valid: boolean): number | undefined {
@@ -262,15 +197,6 @@ export class CountingCircleTableComponent implements OnInit, AfterViewInit, OnCh
       subTotals.filter(st => st.domainOfInfluenceType === highestHierarchicalDoiType),
       st => st.countOfVoters ?? 0,
     );
-  }
-
-  private initColumns(): void {
-    for (const column of this.allColumns) {
-      const active = this.columnsToDisplay.includes(column.id);
-      this.columnsComponent.onColumnToggle(column.id, active);
-    }
-
-    this.initializingColumns = false;
   }
 
   private setDataAccessors(): void {
@@ -339,6 +265,14 @@ export class CountingCircleTableComponent implements OnInit, AfterViewInit, OnCh
         );
       }
 
+      if (this.majorityElectionColumns.some(x => x.id === columnId)) {
+        return data.candidateResults?.find(x => x.candidate.id === columnId)?.voteCount ?? 0;
+      }
+
+      if (this.proportionalElectionColumns.some(x => x.id === columnId)) {
+        return data.listResults?.find(x => x.list!.id === columnId)?.totalVoteCount ?? 0;
+      }
+
       return (data as Record<string, any>)[columnId] ?? '';
     };
 
@@ -375,5 +309,72 @@ export class CountingCircleTableComponent implements OnInit, AfterViewInit, OnCh
 
     this.dataSource.filterDataAccessor = filterDataAccessor;
     this.dataSource.sortingDataAccessor = sortDataAccessor;
+  }
+
+  private getMajorityElectionColumns(data: ResultOverviewCountingCircleResult[]): MajorityElectionCandidate[] {
+    const uniqueCandidates = new Map(
+      data
+        .flatMap(result => result.candidateResults ?? [])
+        .map(candidateResult => [candidateResult.candidate.id, candidateResult.candidate]),
+    );
+
+    return Array.from(uniqueCandidates.values());
+  }
+
+  private getProportionalElectionColumns(data: ResultOverviewCountingCircleResult[]): ProportionalElectionList[] {
+    const uniqueLists = new Map(
+      data.flatMap(result => result.listResults ?? []).map(listResult => [listResult.list!.id, listResult.list!]),
+    );
+
+    return Array.from(uniqueLists.values());
+  }
+
+  private getVoteVariantColumns(data: ResultOverviewCountingCircleResult[]): string[] {
+    if (data.length === 0) {
+      return [];
+    }
+
+    const voteVariantConfig: { property: keyof ResultOverviewCountingCircleResult; column: string }[] = [
+      { property: 'mainBallotTotalCountYes', column: this.mainBallotTotalCountYesColumn },
+      { property: 'mainBallotTotalCountNo', column: this.mainBallotTotalCountNoColumn },
+      { property: 'mainBallotTotalCountUnspecified', column: this.mainBallotTotalCountUnspecifiedColumn },
+      { property: 'counterProposal1TotalCountYes', column: this.counterProposal1TotalCountYesColumn },
+      { property: 'counterProposal1TotalCountNo', column: this.counterProposal1TotalCountNoColumn },
+      { property: 'counterProposal1TotalCountUnspecified', column: this.counterProposal1TotalCountUnspecifiedColumn },
+      { property: 'variant1TotalCountYes', column: this.variant1TotalCountYesColumn },
+      { property: 'variant1TotalCountNo', column: this.variant1TotalCountNoColumn },
+      { property: 'variant1TotalCountUnspecified', column: this.variant1TotalCountUnspecifiedColumn },
+      { property: 'counterProposal2TotalCountYes', column: this.counterProposal2TotalCountYesColumn },
+      { property: 'counterProposal2TotalCountNo', column: this.counterProposal2TotalCountNoColumn },
+      { property: 'counterProposal2TotalCountUnspecified', column: this.counterProposal2TotalCountUnspecifiedColumn },
+      { property: 'variant2TotalCountYes', column: this.variant2TotalCountYesColumn },
+      { property: 'variant2TotalCountNo', column: this.variant2TotalCountNoColumn },
+      { property: 'variant2TotalCountUnspecified', column: this.variant2TotalCountUnspecifiedColumn },
+      { property: 'tieBreak1TotalCountYes', column: this.tieBreak1TotalCountYesColumn },
+      { property: 'tieBreak1TotalCountNo', column: this.tieBreak1TotalCountNoColumn },
+      { property: 'tieBreak1TotalCountUnspecified', column: this.tieBreak1TotalCountUnspecifiedColumn },
+      { property: 'tieBreak2TotalCountYes', column: this.tieBreak2TotalCountYesColumn },
+      { property: 'tieBreak2TotalCountNo', column: this.tieBreak2TotalCountNoColumn },
+      { property: 'tieBreak2TotalCountUnspecified', column: this.tieBreak2TotalCountUnspecifiedColumn },
+      { property: 'tieBreak3TotalCountYes', column: this.tieBreak3TotalCountYesColumn },
+      { property: 'tieBreak3TotalCountNo', column: this.tieBreak3TotalCountNoColumn },
+      { property: 'tieBreak3TotalCountUnspecified', column: this.tieBreak3TotalCountUnspecifiedColumn },
+    ];
+
+    const presentInAtLeastOne = new Set<keyof ResultOverviewCountingCircleResult>();
+
+    for (const result of data) {
+      for (const config of voteVariantConfig) {
+        if (!presentInAtLeastOne.has(config.property) && result[config.property] !== undefined) {
+          presentInAtLeastOne.add(config.property);
+        }
+      }
+
+      if (presentInAtLeastOne.size === voteVariantConfig.length) {
+        break;
+      }
+    }
+
+    return voteVariantConfig.filter(config => presentInAtLeastOne.has(config.property)).map(config => config.column);
   }
 }

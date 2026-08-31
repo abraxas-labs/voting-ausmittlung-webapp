@@ -15,7 +15,7 @@ import {
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/result_requests_pb';
 import { ResultServiceClient, ResultServicePromiseClient } from '@abraxas/voting-ausmittlung-service-proto/grpc/result_service_grpc_web_pb';
 import { GrpcBackendService, GrpcEnvironment, GrpcStreamingService } from '@abraxas/voting-lib';
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   Comment,
@@ -24,6 +24,10 @@ import {
   ContestCountingCircleDetailsProto,
   CountingCircleResultState,
   CountingMachine,
+  createSecondFactorAuthorization,
+  MajorityElectionCandidateResultProto,
+  mapToSecondFactorTransaction,
+  ProportionalElectionListResultProto,
   ResultList,
   ResultListProto,
   ResultListResult,
@@ -38,8 +42,6 @@ import {
   ResultOverviewProto,
   SecondFactorTransaction,
   ValidationSummaries,
-  createSecondFactorAuthorization,
-  mapToSecondFactorTransaction,
 } from '../models';
 import { ContestCountingCircleDetailsService } from './contest-counting-circle-details.service';
 import { ContestService } from './contest.service';
@@ -49,7 +51,7 @@ import { ValidationMappingService } from './validation-mapping.service';
 import { PoliticalBusinessUnionService } from './political-business-union.service';
 import * as models_vote_result_pb from '@abraxas/voting-ausmittlung-service-proto/grpc/models/vote_result_pb';
 import { BallotQuestionResult } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/vote_result_pb';
-import { BallotSubType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/vote_pb';
+import { BallotQuestionType, BallotSubType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/vote_pb';
 
 @Injectable({
   providedIn: 'root',
@@ -245,6 +247,12 @@ export class ResultService extends GrpcStreamingService<ResultServicePromiseClie
       counterProposal2TotalCountYes: this.getCounterProposal2Result(obj.ballotResultsList)?.totalCountOfAnswerYes,
       counterProposal2TotalCountNo: this.getCounterProposal2Result(obj.ballotResultsList)?.totalCountOfAnswerNo,
       counterProposal2TotalCountUnspecified: this.getCounterProposal2Result(obj.ballotResultsList)?.totalCountOfAnswerUnspecified,
+      variant1TotalCountYes: this.getVariant1Result(obj.ballotResultsList)?.totalCountOfAnswerYes,
+      variant1TotalCountNo: this.getVariant1Result(obj.ballotResultsList)?.totalCountOfAnswerNo,
+      variant1TotalCountUnspecified: this.getVariant1Result(obj.ballotResultsList)?.totalCountOfAnswerUnspecified,
+      variant2TotalCountYes: this.getVariant2Result(obj.ballotResultsList)?.totalCountOfAnswerYes,
+      variant2TotalCountNo: this.getVariant2Result(obj.ballotResultsList)?.totalCountOfAnswerNo,
+      variant2TotalCountUnspecified: this.getVariant2Result(obj.ballotResultsList)?.totalCountOfAnswerUnspecified,
       tieBreak1TotalCountYes: this.getTieBreakTotalCountYes(obj.ballotResultsList, 0, BallotSubType.BALLOT_SUB_TYPE_TIE_BREAK_1),
       tieBreak1TotalCountNo: this.getTieBreakTotalCountNo(obj.ballotResultsList, 0, BallotSubType.BALLOT_SUB_TYPE_TIE_BREAK_1),
       tieBreak1TotalCountUnspecified: this.getTieBreakTotalCountUnspecified(
@@ -266,6 +274,14 @@ export class ResultService extends GrpcStreamingService<ResultServicePromiseClie
         2,
         BallotSubType.BALLOT_SUB_TYPE_TIE_BREAK_3,
       ),
+      candidateResults: data.getCandidateResultsList().map(r => ({
+        ...(r.toObject()! as Required<MajorityElectionCandidateResultProto.AsObject>),
+        conventionalVoteCount: r.getConventionalVoteCount()?.getValue(),
+      })),
+      individualVoteCount: data.getIndividualVoteCount()?.getValue(),
+      listResults: data.getListResultsList().map(r => ({
+        ...(r.toObject()! as Required<ProportionalElectionListResultProto.AsObject>),
+      })),
     };
   }
 
@@ -276,7 +292,11 @@ export class ResultService extends GrpcStreamingService<ResultServicePromiseClie
       return undefined;
     }
 
-    if (ballotResults.length === 1 && ballotResults[0].questionResultsList.length > 1) {
+    if (
+      ballotResults.length === 1 &&
+      ballotResults[0].questionResultsList.length > 1 &&
+      ballotResults[0].questionResultsList[1].question?.type === BallotQuestionType.BALLOT_QUESTION_TYPE_COUNTER_PROPOSAL
+    ) {
       return ballotResults[0].questionResultsList[1];
     }
 
@@ -299,12 +319,66 @@ export class ResultService extends GrpcStreamingService<ResultServicePromiseClie
       return undefined;
     }
 
-    if (ballotResults.length === 1 && ballotResults[0].questionResultsList.length > 2) {
+    if (
+      ballotResults.length === 1 &&
+      ballotResults[0].questionResultsList.length > 2 &&
+      ballotResults[0].questionResultsList[2].question?.type === BallotQuestionType.BALLOT_QUESTION_TYPE_COUNTER_PROPOSAL
+    ) {
       return ballotResults[0].questionResultsList[2];
     }
 
     if (ballotResults.length > 2) {
       const counterProposal2Result = ballotResults.find(x => x.ballot?.ballotSubType === BallotSubType.BALLOT_SUB_TYPE_COUNTER_PROPOSAL_2);
+      if (!counterProposal2Result) {
+        return undefined;
+      }
+
+      return counterProposal2Result.questionResultsList[0];
+    }
+
+    return undefined;
+  }
+
+  private getVariant1Result(ballotResults: Array<models_vote_result_pb.BallotResult.AsObject>): BallotQuestionResult.AsObject | undefined {
+    if (ballotResults.length === 0) {
+      return undefined;
+    }
+
+    if (
+      ballotResults.length === 1 &&
+      ballotResults[0].questionResultsList.length > 1 &&
+      ballotResults[0].questionResultsList[1].question?.type === BallotQuestionType.BALLOT_QUESTION_TYPE_VARIANT
+    ) {
+      return ballotResults[0].questionResultsList[1];
+    }
+
+    if (ballotResults.length > 1) {
+      const counterProposal1Result = ballotResults.find(x => x.ballot?.ballotSubType === BallotSubType.BALLOT_SUB_TYPE_VARIANT_1);
+      if (!counterProposal1Result) {
+        return undefined;
+      }
+
+      return counterProposal1Result.questionResultsList[0];
+    }
+
+    return undefined;
+  }
+
+  private getVariant2Result(ballotResults: Array<models_vote_result_pb.BallotResult.AsObject>): BallotQuestionResult.AsObject | undefined {
+    if (ballotResults.length === 0) {
+      return undefined;
+    }
+
+    if (
+      ballotResults.length === 1 &&
+      ballotResults[0].questionResultsList.length > 2 &&
+      ballotResults[0].questionResultsList[2].question?.type === BallotQuestionType.BALLOT_QUESTION_TYPE_VARIANT
+    ) {
+      return ballotResults[0].questionResultsList[2];
+    }
+
+    if (ballotResults.length > 2) {
+      const counterProposal2Result = ballotResults.find(x => x.ballot?.ballotSubType === BallotSubType.BALLOT_SUB_TYPE_VARIANT_2);
       if (!counterProposal2Result) {
         return undefined;
       }

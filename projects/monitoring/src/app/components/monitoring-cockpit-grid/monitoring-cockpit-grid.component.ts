@@ -432,9 +432,14 @@ export class MonitoringCockpitGridComponent implements OnInit, AfterViewInit, On
   }
 
   private getMinResultState(ccResults: ResultOverviewCountingCircleResults): CountingCircleResultState {
-    return Math.min(
-      ...ccResults.results.filter(r => !this.notOwnedPoliticalBusinessIds.includes(r.politicalBusinessId)).map(x => x.state as number),
-    ) as CountingCircleResultState;
+    const resultStates = ccResults.results
+      .filter(r => !this.notOwnedPoliticalBusinessIds.includes(r.politicalBusinessId))
+      .map(x => x.state as number);
+    if (resultStates.length === 0) {
+      return CountingCircleResultState.COUNTING_CIRCLE_RESULT_STATE_UNSPECIFIED;
+    }
+
+    return Math.min(...resultStates) as CountingCircleResultState;
   }
 
   private filteredCountingCircleResultsComparer(

@@ -1,4 +1,5 @@
 @use '@abraxas/voting-lib/style/color' as *;
+@use '@abraxas/voting-lib/style/spacing' as *;
 
 div[header] {
   display: flex;
@@ -19,4 +20,36 @@ bc-data-cell {
 
 ul {
   padding-inline-start: 20px;
+}
+
+.certificate-info {
+  @extend .pl-2;
+
+  display: flex;
+  font-size: 13px;
+  align-items: center;
+
+  > *:nth-child(odd) {
+    font-weight: 500;
+  }
+
+  > *:first-child {
+    flex-basis: 15%;
+  }
+
+  > *:nth-child(2) {
+    flex-basis: 13%;
+  }
+
+  > *:nth-child(3) {
+    flex-basis: 5%;
+  }
+
+  > *:nth-child(4) {
+    flex-basis: 10%;
+  }
+
+  > *:nth-child(5) {
+    flex-basis: 10%;
+  }
 }

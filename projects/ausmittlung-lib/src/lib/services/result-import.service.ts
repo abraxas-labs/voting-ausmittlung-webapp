@@ -24,6 +24,7 @@ import { PoliticalBusinessService } from './political-business.service';
 import { GRPC_ENV_INJECTION_TOKEN, REST_API_URL_INJECTION_TOKEN } from './tokens';
 import { firstValueFrom } from 'rxjs';
 import { ResultImportType } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/import_pb';
+import { mapToCertificateInfo } from '../models/certificate.model';
 
 @Injectable({
   providedIn: 'root',
@@ -86,6 +87,8 @@ export class ResultImportService extends GrpcService<ResultImportServicePromiseC
       r =>
         r.getImportsList().map(x => ({
           ...x.toObject(),
+          eCountingClientCertificateInfo: mapToCertificateInfo(x.getECountingClientCertificateInfo()),
+          eCountingClientCaCertificateInfo: mapToCertificateInfo(x.getECountingClientCaCertificateInfo()),
           started: x.getStarted()!.toDate(),
         })),
     );
@@ -100,6 +103,8 @@ export class ResultImportService extends GrpcService<ResultImportServicePromiseC
       r =>
         r.getImportsList().map(x => ({
           ...x.toObject(),
+          eCountingClientCertificateInfo: undefined,
+          eCountingClientCaCertificateInfo: undefined,
           started: x.getStarted()!.toDate(),
         })),
     );

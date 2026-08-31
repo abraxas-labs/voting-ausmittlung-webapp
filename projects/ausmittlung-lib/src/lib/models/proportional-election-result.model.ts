@@ -39,6 +39,7 @@ export {
   ProportionalElectionResultBundlesProto,
   ProportionalElectionResultBundleProto,
   ProportionalElectionResultBallotProto,
+  ProportionalElectionListResultProto,
   ProportionalElectionListResultsProto,
   ProportionalElectionResultSubTotalProto,
   ProportionalElectionListResultSubTotalProto,

@@ -42,5 +42,12 @@
     "FIRST_PAGE": "Erste Seite",
     "LAST_PAGE": "Letzte Seite",
     "OF_LABEL": "von"
+  },
+  "ERROR_MESSAGES": {
+    "CryptoFileException": "Der Dateiinhalt des E-Counting Imports entspricht nicht den Vorgaben.",
+    "ResultImportECountingUnencryptedFileException": "E-Counting Imports müssen verschlüsselt sein.",
+    "ResultImportECountingClientCertificateCnException": "Der CN des E-Counting Imports stimmt nicht mit der BFS-Nummer des Auszählungskreises überein.",
+    "ResultImportECountingSignatureVerifyException": "Die Signatur des E-Counting Imports ist ungültig.",
+    "X509ChainBuilderException": "Die kryptografische Zertifikatskette des E-Counting Imports konnte nicht validiert werden."
   }
 }

@@ -20,7 +20,6 @@ export class StorageService {
   private readonly doiTypeFilterKey: string = 'doiTypeFilter';
   private readonly monitoringCockpitTabKey: string = 'monitoringCockpitTab';
   private readonly monitoringCockpitSelectedPoliticalBusinessIdKey: string = 'monitoringCockpitSelectedPoliticalBusinessId';
-  private readonly monitoringCockpitColumnIdsKey: string = 'monitoringCockpitColumnIds';
 
   public getStateFilter(): string | null {
     return sessionStorage.getItem(this.stateFilterKey);
@@ -57,18 +56,5 @@ export class StorageService {
 
   public storeMonitoringCockpitSelectedPoliticalBusinessId(value: string): void {
     sessionStorage.setItem(this.monitoringCockpitSelectedPoliticalBusinessIdKey, value);
-  }
-
-  public getMonitoringCockpitColumnIds(): string[] | null {
-    const ids = sessionStorage.getItem(this.monitoringCockpitColumnIdsKey);
-    if (!ids) {
-      return null;
-    }
-
-    return JSON.parse(ids);
-  }
-
-  public storeMonitoringCockpitColumnIds(value: string[]): void {
-    sessionStorage.setItem(this.monitoringCockpitColumnIdsKey, JSON.stringify(value));
   }
 }

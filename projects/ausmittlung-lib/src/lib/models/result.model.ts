@@ -21,6 +21,8 @@ import { VotingCardChannel } from './voting-channel.model';
 import { ContestCountingCircleElectorateSummary } from './contest-counting-circle-electorate.model';
 import { PoliticalBusinessUnion } from './political-business-union.model';
 import { VoterType } from './voter-type.model';
+import { MajorityElectionCandidateResult } from './majority-election-result.model';
+import { ProportionalElectionListResult } from './proportional-election-result.model';
 
 export {
   ResultOverviewProto,
@@ -52,7 +54,11 @@ export interface ResultOverviewCountingCircleWithDetails {
 
 export interface ResultOverviewCountingCircleResult extends Omit<
   ResultOverviewCountingCircleResultProto.AsObject,
-  'submissionDoneTimestamp' | 'readyForCorrectionTimestamp' | 'auditedTentativelyTimestamp' | 'plausibilisedTimestamp'
+  | 'submissionDoneTimestamp'
+  | 'readyForCorrectionTimestamp'
+  | 'auditedTentativelyTimestamp'
+  | 'plausibilisedTimestamp'
+  | 'individualVoteCount'
 > {
   submissionDoneTimestamp?: Date;
   readyForCorrectionTimestamp?: Date;
@@ -69,6 +75,12 @@ export interface ResultOverviewCountingCircleResult extends Omit<
   counterProposal2TotalCountYes?: number;
   counterProposal2TotalCountNo?: number;
   counterProposal2TotalCountUnspecified?: number;
+  variant1TotalCountYes?: number;
+  variant1TotalCountNo?: number;
+  variant1TotalCountUnspecified?: number;
+  variant2TotalCountYes?: number;
+  variant2TotalCountNo?: number;
+  variant2TotalCountUnspecified?: number;
   tieBreak1TotalCountYes?: number;
   tieBreak1TotalCountNo?: number;
   tieBreak1TotalCountUnspecified?: number;
@@ -78,6 +90,9 @@ export interface ResultOverviewCountingCircleResult extends Omit<
   tieBreak3TotalCountYes?: number;
   tieBreak3TotalCountNo?: number;
   tieBreak3TotalCountUnspecified?: number;
+  candidateResults?: MajorityElectionCandidateResult[];
+  individualVoteCount?: number;
+  listResults?: ProportionalElectionListResult[];
 }
 
 export interface ResultList {

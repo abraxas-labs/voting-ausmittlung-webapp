@@ -1,4 +1,4 @@
-# ✨ Changelog (`v3.30.0`)
+# ✨ Changelog (`v3.32.1`)
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Info
 
 ```text
-This version -------- v3.30.0
-Previous version ---- v3.29.5
+This version -------- v3.32.1
+Previous version ---- v3.30.0
 Initial version ----- v1.25.0
-Total commits ------- 10
+Total commits ------- 9
 ```
+
+## [v3.32.1] - 2026-08-11
+
+### 🆕 Added
+
+- add individual vote count to result overview counting circle result
+
+## [v3.32.0] - 2026-07-22
+
+### 🆕 Added
+
+- support custom header color
+
+## [v3.31.2] - 2026-07-13
+
+### 🔄 Changed
+
+- enable saving 0 electorates
+
+## [v3.31.1] - 2026-07-08
+
+### 🔄 Changed
+
+- display majority and proportional election results in political business table
+
+## [v3.31.0] - 2026-07-08
+
+### 🆕 Added
+
+- e-counting import certificate validation
+
+## [v3.30.4] - 2026-07-08
+
+### 🔄 Changed
+
+- change vote bundle overview label
+
+## [v3.30.3] - 2026-07-06
+
+### 🔄 Changed
+
+- unify multi result and single result submission finished behavior
+
+## [v3.30.2] - 2026-07-02
+
+### 🔄 Changed
+
+- do not show close icon button for contact dialog in active contest
+
+## [v3.30.1] - 2026-07-01
+
+### 🔄 Changed
+
+- monitoring cockpit sorting without owned political businesses
 
 ## [v3.30.0] - 2026-06-16
 

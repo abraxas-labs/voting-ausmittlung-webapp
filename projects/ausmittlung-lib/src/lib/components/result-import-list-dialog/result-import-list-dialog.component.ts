@@ -33,6 +33,7 @@ export class ResultImportListDialogComponent implements OnInit {
   public resultImports: ResultImport[] = [];
   public resultsImported: boolean = false;
   public isECounting: boolean = false;
+  public expandedElement?: ResultImport;
 
   private readonly importType: ResultImportType;
   private readonly contestId: string;
@@ -55,7 +56,7 @@ export class ResultImportListDialogComponent implements OnInit {
     }
 
     if (this.importType == ResultImportType.RESULT_IMPORT_TYPE_ECOUNTING) {
-      this.columns.push('importedPoliticalBusinesses', 'ignoredPoliticalBusinesses');
+      this.columns.push('importedPoliticalBusinesses', 'ignoredPoliticalBusinesses', 'expandAction');
     }
   }
 
@@ -103,6 +104,10 @@ export class ResultImportListDialogComponent implements OnInit {
     }
 
     this.close('deleted');
+  }
+
+  public toggleRow(element: ResultImport): void {
+    this.expandedElement = this.expandedElement === element ? undefined : element;
   }
 }
 

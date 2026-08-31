@@ -26,6 +26,7 @@ export class ResultImportDialogComponent {
   public importing: boolean = false;
   public files: ImportFile[] = [];
   public filesValid: boolean = false;
+  public accept: string;
 
   private readonly importType: ResultImportType;
   private readonly contestId: string;
@@ -40,6 +41,8 @@ export class ResultImportDialogComponent {
     this.contestId = dialogData.contestId;
     this.countingCircleId = dialogData.countingCircleId;
     this.canImport = dialogData.canImport;
+
+    this.accept = this.importType === ResultImportType.RESULT_IMPORT_TYPE_EVOTING ? '.xml' : '.ecountsig';
 
     // eCH 0220 v1.2 doesn't require eCH 0110 anymore
     // since we don't want a version selector,

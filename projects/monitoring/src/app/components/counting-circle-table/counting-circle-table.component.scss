@@ -134,6 +134,10 @@ $color-losing: $color-signal-error-light;
   width: 8rem;
 }
 
+[class*='bc-column-'] {
+  width: 8rem;
+}
+
 ::ng-deep .small-filter .mat-mdc-form-field-icon-suffix {
   padding-left: 0;
 }
@@ -147,8 +151,16 @@ $color-losing: $color-signal-error-light;
   padding-left: 4px;
 }
 
-::ng-deep .small-filter .formfield .mat-mdc-form-field-icon-prefix {
-  margin-right: 0;
+::ng-deep .small-filter .formfield {
+  .mat-mdc-form-field-icon-prefix {
+    margin-right: 0;
+  }
+
+  .mat-mdc-form-field-infix {
+    padding: 0;
+    min-height: 0;
+    align-self: center;
+  }
 }
 
 .flex {

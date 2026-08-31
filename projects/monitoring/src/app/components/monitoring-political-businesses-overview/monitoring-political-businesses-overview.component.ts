@@ -28,6 +28,7 @@ export class MonitoringPoliticalBusinessesOverviewComponent implements OnInit {
 
   public politicalBusinesses: SimplePoliticalBusinessOverview[] = [];
   public countingCircles: ResultOverviewCountingCircleResult[] = [];
+  public selectedPoliticalBusiness?: SimplePoliticalBusiness;
 
   public countingCircleResultsByPoliticalBusinessId: Record<string, ResultOverviewCountingCircleResult[]> = {};
   public countingCirclesById: Record<string, ResultOverviewCountingCircleWithDetails> = {};
@@ -62,6 +63,7 @@ export class MonitoringPoliticalBusinessesOverviewComponent implements OnInit {
 
   public openCountingCircleResults(simplePoliticalBusiness: SimplePoliticalBusiness): void {
     this.countingCircles = this.countingCircleResultsByPoliticalBusinessId[simplePoliticalBusiness.id];
+    this.selectedPoliticalBusiness = simplePoliticalBusiness;
   }
 
   private getMinPoliticalBusinessState(ccResults: ResultOverviewCountingCircleResult[]): CountingCircleResultState {

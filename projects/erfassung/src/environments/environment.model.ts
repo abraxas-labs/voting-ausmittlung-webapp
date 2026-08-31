@@ -19,4 +19,5 @@ export interface Environment extends TenantConfig, UserConfig, AuthorizationConf
   includeDelegations: boolean;
   runtimeConfigPolling: RuntimeConfigPollingConfig;
   eventLogConfig: EventLogConfig;
+  customHeaderColor?: string;
 }

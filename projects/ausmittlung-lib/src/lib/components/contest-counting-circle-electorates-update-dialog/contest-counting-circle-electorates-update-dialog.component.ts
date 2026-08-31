@@ -16,6 +16,7 @@ import {
 import { ConfirmDialogComponent, ConfirmDialogData, ConfirmDialogResult, DialogService, SnackbarService } from '@abraxas/voting-lib';
 import { ContestCountingCircleElectorateService } from '../../services/contest-counting-circle-electorate.service';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { cloneDeep, isEqual } from 'lodash';
 
 @Component({
   selector: 'vo-ausm-contest-counting-circle-electorates-update-dialog',
@@ -33,10 +34,12 @@ export class ContestCountingCircleElectoratesUpdateDialogComponent {
   private readonly contestId: string;
   private readonly countingCircleId: string;
 
+  public originalElectorates: CountingCircleElectorate[] = [];
   public electorates: CountingCircleElectorate[] = [];
   public electorateLabelByIndex: Map<number, string> = new Map<number, string>();
   public readonly = false;
   public saving = false;
+  public canSave = false;
 
   constructor() {
     const dialogData = inject<ContestCountingCircleElectoratesUpdateDialogData>(MAT_DIALOG_DATA);
@@ -45,8 +48,9 @@ export class ContestCountingCircleElectoratesUpdateDialogComponent {
     this.countingCircleId = dialogData.countingCircleId;
 
     this.electorates = dialogData.electorates.map(e => ({ domainOfInfluenceTypesList: [...e.domainOfInfluenceTypesList] }));
+    this.originalElectorates = cloneDeep(this.electorates);
     this.readonly = dialogData.readonly;
-    this.updateElectorateLabels();
+    this.updateElectorateDependentFields();
   }
 
   public async assign(electorate: CountingCircleElectorate): Promise<void> {
@@ -66,18 +70,14 @@ export class ContestCountingCircleElectoratesUpdateDialogComponent {
     }
 
     electorate.domainOfInfluenceTypesList = result.assignedDomainOfInfluenceTypes;
-    this.updateElectorateLabels();
-  }
-
-  public get canSave(): boolean {
-    return this.electorates.length > 0 && this.electorates.every(e => e.domainOfInfluenceTypesList.length > 0);
+    this.updateElectorateDependentFields();
   }
 
   public remove(index: number): void {
     const updatedElectorates = [...this.electorates];
     updatedElectorates.splice(index, 1);
     this.electorates = updatedElectorates;
-    this.updateElectorateLabels();
+    this.updateElectorateDependentFields();
   }
 
   public add(): void {
@@ -87,7 +87,7 @@ export class ContestCountingCircleElectoratesUpdateDialogComponent {
         domainOfInfluenceTypesList: [],
       },
     ];
-    this.updateElectorateLabels();
+    this.updateElectorateDependentFields();
   }
 
   public async save(): Promise<void> {
@@ -130,7 +130,7 @@ export class ContestCountingCircleElectoratesUpdateDialogComponent {
     this.dialogRef.close();
   }
 
-  private updateElectorateLabels(): void {
+  private updateElectorateDependentFields(): void {
     this.electorateLabelByIndex = new Map<number, string>();
 
     for (let i = 0; i < this.electorates.length; i++) {
@@ -139,6 +139,9 @@ export class ContestCountingCircleElectoratesUpdateDialogComponent {
         .join(', ');
       this.electorateLabelByIndex.set(i, electorateLabel);
     }
+
+    const hasChanges = !isEqual(this.electorates, this.originalElectorates);
+    this.canSave = hasChanges && (this.electorates.length === 0 || this.electorates.every(e => e.domainOfInfluenceTypesList.length > 0));
   }
 }
 

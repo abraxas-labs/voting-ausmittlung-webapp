@@ -25,6 +25,9 @@ export class ImportFileSelectComponent implements OnInit {
   @Input()
   public ech0110Supported: boolean = true;
 
+  @Input()
+  public accept: string = '.xml';
+
   @Output()
   public filesChange: EventEmitter<ImportFile[]> = new EventEmitter<ImportFile[]>();
 
