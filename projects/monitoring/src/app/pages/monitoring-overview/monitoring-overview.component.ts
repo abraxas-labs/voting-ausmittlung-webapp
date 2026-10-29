@@ -5,18 +5,19 @@
  */
 
 import { DialogService } from '@abraxas/voting-lib';
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   EventLogService,
   ExportService,
   ResultExportConfiguration,
+  ResultImportCompletedEvent,
   ResultImportListDialogComponent,
   ResultImportListDialogData,
   ResultImportListDialogResult,
   ResultOverview,
   ResultService,
-  ResultImportCompletedEvent,
+  StorageService,
 } from 'ausmittlung-lib';
 import { Subscription } from 'rxjs';
 import {
@@ -25,7 +26,6 @@ import {
 } from '../../components/export-cockpit-dialog/export-cockpit-dialog.component';
 import { AuthorizationService, Tenant } from '@abraxas/base-components';
 import { ResultImportType } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/import_pb';
-import { StorageService } from '../../services/storage.service';
 
 @Component({
   selector: 'app-monitoring-overview',

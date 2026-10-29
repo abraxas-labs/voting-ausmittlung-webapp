@@ -21,6 +21,13 @@
   }
 }
 
+.sticky {
+  position: sticky;
+  background-color: white;
+  top: 0;
+  z-index: 999;
+}
+
 .info-entries {
   display: flex;
   column-gap: 3rem;

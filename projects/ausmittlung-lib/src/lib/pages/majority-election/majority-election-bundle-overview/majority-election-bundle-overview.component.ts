@@ -4,17 +4,21 @@
  * For license information see LICENSE file.
  */
 
+import {
+  MajorityElectionNewBundleComponent,
+  MajorityElectionNewBundleResult,
+} from '../../../components/majority-election/majority-election-new-bundle/majority-election-new-bundle.component';
 import { MajorityElectionReviewProcedure } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/majority_election_pb';
 import { Component, HostListener, inject } from '@angular/core';
 import { Params } from '@angular/router';
 import { PoliticalBusinessNewBundleNumberComponent } from '../../../components/political-business-new-bundle-number/political-business-new-bundle-number.component';
-import { MajorityElectionResultBundles, PoliticalBusinessResultBundle } from '../../../models';
+import { MajorityElectionResultBundle, MajorityElectionResultBundles } from '../../../models';
 import { MajorityElectionResultBundleService } from '../../../services/majority-election-result-bundle.service';
 import { PoliticalBusinessBundleOverviewComponent } from '../../political-business-bundle-overview/political-business-bundle-overview.component';
-import { MajorityElectionBallotComponent } from '../majority-election-ballot/majority-election-ballot.component';
 import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/political_business_pb';
 import { Event, EventType, MajorityElectionResultBundleEventTypes } from '../../../models/event-log.model';
 import { BallotBundleState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/ballot_bundle_pb';
+import { MajorityElectionService } from '../../../services/majority-election.service';
 
 @Component({
   selector: 'vo-ausm-majority-election-bundle-overview',
@@ -23,6 +27,7 @@ import { BallotBundleState } from '@abraxas/voting-ausmittlung-service-proto/grp
   standalone: false,
 })
 export class MajorityElectionBundleOverviewComponent extends PoliticalBusinessBundleOverviewComponent<MajorityElectionResultBundles> {
+  private readonly majorityElectionService = inject(MajorityElectionService);
   private readonly resultBundleService = inject(MajorityElectionResultBundleService);
 
   public readonly reviewProcedures: typeof MajorityElectionReviewProcedure = MajorityElectionReviewProcedure;
@@ -40,12 +45,27 @@ export class MajorityElectionBundleOverviewComponent extends PoliticalBusinessBu
 
   @HostListener('document:keydown.control.alt.q')
   public async createNewBundle(): Promise<void> {
-    if (!this.result || !this.result.politicalBusinessResult.entryParams) {
+    if (this.isCreatingBundle || !this.result?.politicalBusinessResult.entryParams) {
       return;
     }
 
     let bundleNumber: number | undefined;
-    if (!this.result.politicalBusinessResult.entryParams.automaticBallotBundleNumberGeneration) {
+    let ballotGroupId: string | undefined;
+    if (this.result.politicalBusinessResult.entryParams.bundlesWithBallotGroupEnabled) {
+      const ballotGroups = await this.majorityElectionService.getBallotGroups(this.result.politicalBusinessResult.election.id);
+      const selection = await this.dialog.openForResult<MajorityElectionNewBundleComponent, MajorityElectionNewBundleResult>(
+        MajorityElectionNewBundleComponent,
+        {
+          enableBundleNumber: !this.result.politicalBusinessResult.entryParams.automaticBallotBundleNumberGeneration,
+          ballotGroups,
+        },
+      );
+      if (!selection) {
+        return;
+      }
+      bundleNumber = selection.bundleNumber;
+      ballotGroupId = selection.ballotGroupId;
+    } else if (!this.result.politicalBusinessResult.entryParams.automaticBallotBundleNumberGeneration) {
       bundleNumber = await this.dialog.openForResult<PoliticalBusinessNewBundleNumberComponent, number>(
         PoliticalBusinessNewBundleNumberComponent,
         {},
@@ -57,7 +77,11 @@ export class MajorityElectionBundleOverviewComponent extends PoliticalBusinessBu
 
     this.isCreatingBundle = true;
     try {
-      this.createdBundleData = await this.resultBundleService.createBundle(this.result.politicalBusinessResult.id, bundleNumber);
+      this.createdBundleData = await this.resultBundleService.createBundle(
+        this.result.politicalBusinessResult.id,
+        bundleNumber,
+        ballotGroupId,
+      );
       await this.dialog.alert(
         'APP.CONFIRM',
         this.i18n.instant('ELECTION.CONFIRM_BUNDLE_CREATION', { number: this.createdBundleData.bundleNumber }),
@@ -69,7 +93,7 @@ export class MajorityElectionBundleOverviewComponent extends PoliticalBusinessBu
     }
   }
 
-  public async reviewBundle(bundle: PoliticalBusinessResultBundle): Promise<void> {
+  public async reviewBundle(bundle: MajorityElectionResultBundle): Promise<void> {
     if (
       this.result?.politicalBusinessResult.entryParams?.reviewProcedure ===
       MajorityElectionReviewProcedure.MAJORITY_ELECTION_REVIEW_PROCEDURE_PHYSICALLY
@@ -79,7 +103,7 @@ export class MajorityElectionBundleOverviewComponent extends PoliticalBusinessBu
     return super.reviewBundle(bundle);
   }
 
-  public async succeedBundleReview(bundles: PoliticalBusinessResultBundle[]): Promise<void> {
+  public async succeedBundleReview(bundles: MajorityElectionResultBundle[]): Promise<void> {
     if (
       this.result?.politicalBusinessResult.entryParams?.reviewProcedure !==
       MajorityElectionReviewProcedure.MAJORITY_ELECTION_REVIEW_PROCEDURE_PHYSICALLY
@@ -90,7 +114,7 @@ export class MajorityElectionBundleOverviewComponent extends PoliticalBusinessBu
     return this.resultBundleService.succeedBundleReview(bundles.map(x => x.id));
   }
 
-  public async rejectBundleReview(bundle: PoliticalBusinessResultBundle): Promise<void> {
+  public async rejectBundleReview(bundle: MajorityElectionResultBundle): Promise<void> {
     if (
       this.result?.politicalBusinessResult.entryParams?.reviewProcedure !==
       MajorityElectionReviewProcedure.MAJORITY_ELECTION_REVIEW_PROCEDURE_PHYSICALLY
@@ -101,7 +125,7 @@ export class MajorityElectionBundleOverviewComponent extends PoliticalBusinessBu
     return this.resultBundleService.rejectBundleReview(bundle.id);
   }
 
-  public async resetBundle(bundle: PoliticalBusinessResultBundle): Promise<void> {
+  public async resetBundle(bundle: MajorityElectionResultBundle): Promise<void> {
     return this.resultBundleService.resetBundleToSubmissionFinished(bundle.id);
   }
 
@@ -113,7 +137,7 @@ export class MajorityElectionBundleOverviewComponent extends PoliticalBusinessBu
     return this.resultBundleService.getBundles(resultId);
   }
 
-  protected async loadBundle(id: string): Promise<PoliticalBusinessResultBundle> {
+  protected async loadBundle(id: string): Promise<MajorityElectionResultBundle> {
     return (await this.resultBundleService.getBundle(id)).bundle;
   }
 

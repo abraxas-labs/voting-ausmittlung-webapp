@@ -26,6 +26,7 @@ export * from './lib/services/proportional-election.service';
 export * from './lib/services/event-log.service';
 export * from './lib/services/language.service';
 export * from './lib/services/runtime-config.service';
+export * from './lib/services/storage.service';
 
 // pages
 export * from './lib/pages/contest-detail/contest-detail.component';
@@ -60,6 +61,9 @@ export * from './lib/components/result-import-dialog/result-import-dialog.compon
 export * from './lib/components/result-import-list-dialog/result-import-list-dialog.component';
 export * from './lib/components/majority-election-candidacy-info/majority-election-candidacy-info.component';
 export * from './lib/components/info-icon/info-icon.component';
+
+// directives
+export * from './lib/directives/store-active-filters.directive';
 
 // pipes
 export * from './lib/pipes/translate-vote-question.pipe';

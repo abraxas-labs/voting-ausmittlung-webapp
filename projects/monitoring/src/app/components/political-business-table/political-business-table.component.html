@@ -1,4 +1,4 @@
-<bc-table [sticky]="true" selection filter sort [sortMultiple]="true" [sortActive]="[{ id: domainOfInfluenceTypeColumn, direction: 'asc' }, { id: domainOfInfluenceColumn, direction: 'asc' }, { id: businessTypeColumn, direction: 'asc' }, { id: politicalBusinessNumberColumn, direction: 'asc' }]" [dataSource]="dataSource">
+<bc-table [sticky]="true" selection filter voAusmStoreActiveFilters="political-business" sort [sortMultiple]="true" [sortActive]="[{ id: domainOfInfluenceTypeColumn, direction: 'asc' }, { id: domainOfInfluenceColumn, direction: 'asc' }, { id: businessTypeColumn, direction: 'asc' }, { id: politicalBusinessNumberColumn, direction: 'asc' }]" [dataSource]="dataSource">
   <ng-container [columnDef]="minStateColumn">
     <th bc-header-cell filter filterType="list" [filterItems]="stateList"
                     filterDisplayExpr="description" filterValueExpr="value" sort *headerCellDef>

@@ -21,6 +21,26 @@
             (nextBallotRequest)="nextBallot()"
             (previousBallotRequest)="previousBallot()"
             (ballotNumberEntered)="changeBallotNumber($event)">
+            <ng-container center>
+              @if (canEditBallot && this.politicalBusinessResult!.entryParams!.bundlesWithBallotGroupEnabled) {
+                <bc-button
+                  class="mx-2 mb-2"
+                  variant="tertiary"
+                  [label]="'ELECTION.BALLOT_DETAIL.REMOVE_ALL_CANDIDATES' | translate"
+                  [disabled]="actionExecuting"
+                  (buttonClick)="removeAllCandidates()">
+                </bc-button>
+              }
+              @if (canEditBallot && this.politicalBusinessResult!.entryParams!.bundlesWithBallotGroupEnabled) {
+                <bc-button
+                  class="mx-2 mb-2"
+                  variant="tertiary"
+                  [disabled]="actionExecuting || !hasChanges"
+                  [label]="'ELECTION.BALLOT_DETAIL.RESET' | translate"
+                  (buttonClick)="resetBallot()">
+                </bc-button>
+              }
+            </ng-container>
             @if (!header.readonly) {
               <bc-icon right class="clickable-icon" icon="question-circle-o" (click)="showShortcutDialog()"></bc-icon>
             }
@@ -28,6 +48,7 @@
           <vo-ausm-majority-election-ballot-contents
             (contentChanged)="contentChanged()"
             [ballot]="ballot"
+            [bundlesWithBallotGroupEnabled]="politicalBusinessResult.entryParams.bundlesWithBallotGroupEnabled"
             [loadingBallot]="loadingBallot"
             [disabled]="actionExecuting"
             [showInvalidVotes]="politicalBusinessResult.election.contest!.cantonDefaults!.majorityElectionInvalidVotes"

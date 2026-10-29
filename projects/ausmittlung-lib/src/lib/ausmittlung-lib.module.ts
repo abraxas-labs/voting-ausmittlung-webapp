@@ -82,6 +82,9 @@ import { InfoPanelEntryComponent } from './components/info-panel/info-panel-entr
 import { InfoPanelComponent } from './components/info-panel/info-panel.component';
 import { MajorityElectionWriteInMappingDialogComponent } from './components/majority-election-write-in-mappings/majority-election-write-in-mapping-dialog/majority-election-write-in-mapping-dialog.component';
 import { MajorityElectionWriteInMappingComponent } from './components/majority-election-write-in-mappings/majority-election-write-in-mapping/majority-election-write-in-mapping.component';
+import { MajorityElectionBallotCandidatesChooseDialogComponent } from './components/majority-election/majority-election-ballot-candidates-choose-dialog/majority-election-ballot-candidates-choose-dialog.component';
+import { ProportionalElectionBallotCandidatesChooseDialogComponent } from './components/proportional-election/proportional-election-ballot-candidates-choose-dialog/proportional-election-ballot-candidates-choose-dialog.component';
+import { ElectionBallotCandidatesChooseEntryComponent } from './components/election-ballot-candidates-choose-dialog/election-ballot-candidates-choose-entry/election-ballot-candidates-choose-entry.component';
 import { MajorityElectionBallotCandidatesComponent } from './components/majority-election/majority-election-ballot-candidates/majority-election-ballot-candidates.component';
 import { MajorityElectionBallotContentComponent } from './components/majority-election/majority-election-ballot-content/majority-election-ballot-content.component';
 import { MajorityElectionBallotContentsComponent } from './components/majority-election/majority-election-ballot-contents/majority-election-ballot-contents.component';
@@ -89,10 +92,9 @@ import { MajorityElectionBundleTableComponent } from './components/majority-elec
 import { MajorityElectionInfoComponent } from './components/majority-election/majority-election-info/majority-election-info.component';
 import { MajorityElectionSecondaryInfoComponent } from './components/majority-election/majority-election-secondary-info/majority-election-secondary-info.component';
 import { PoliticalBusinessBallotButtonBarComponent } from './components/political-business-ballot-button-bar/political-business-ballot-button-bar.component';
+import { MajorityElectionNewBundleComponent } from './components/majority-election/majority-election-new-bundle/majority-election-new-bundle.component';
 import { PoliticalBusinessNewBundleNumberComponent } from './components/political-business-new-bundle-number/political-business-new-bundle-number.component';
 import { ProportionalElectionBallotCandidateModifyComponent } from './components/proportional-election/proportional-election-ballot-candidate-modify/proportional-election-ballot-candidate-modify.component';
-import { ProportionalElectionBallotCandidatesChooseDialogComponent } from './components/proportional-election/proportional-election-ballot-candidates-choose-dialog/proportional-election-ballot-candidates-choose-dialog.component';
-import { ProportionalElectionBallotCandidatesChooseEntryComponent } from './components/proportional-election/proportional-election-ballot-candidates-choose-dialog/proportional-election-ballot-candidates-choose-entry/proportional-election-ballot-candidates-choose-entry.component';
 import { ProportionalElectionBallotCandidatesComponent } from './components/proportional-election/proportional-election-ballot-candidates/proportional-election-ballot-candidates.component';
 import { ProportionalElectionBallotContentComponent } from './components/proportional-election/proportional-election-ballot-content/proportional-election-ballot-content.component';
 import { ProportionalElectionBundleTableComponent } from './components/proportional-election/proportional-election-bundle-table/proportional-election-bundle-table.component';
@@ -158,6 +160,8 @@ import { ProportionalElectionBundleInfoComponent } from './components/proportion
 import { MajorityElectionBundleInfoComponent } from './components/majority-election/majority-election-bundle-info/majority-election-bundle-info.component';
 import { VoteBundleInfoComponent } from './components/vote/vote-bundle-info/vote-bundle-info.component';
 import { SystemBusyComponent } from './pages/system-busy/system-busy.component';
+import { StorageService } from './services/storage.service';
+import { StoreActiveFiltersDirective } from './directives/store-active-filters.directive';
 
 @NgModule({
   declarations: [
@@ -210,6 +214,9 @@ import { SystemBusyComponent } from './pages/system-busy/system-busy.component';
     PoliticalBusinessBallotButtonBarComponent,
     MajorityElectionBallotContentComponent,
     MajorityElectionBallotCandidatesComponent,
+    ElectionBallotCandidatesChooseEntryComponent,
+    MajorityElectionBallotCandidatesChooseDialogComponent,
+    ProportionalElectionBallotCandidatesChooseDialogComponent,
     ResultBallotReviewButtonBarComponent,
     MajorityElectionBallotContentsComponent,
     ContestMajorityElectionResultComponent,
@@ -226,8 +233,6 @@ import { SystemBusyComponent } from './pages/system-busy/system-busy.component';
     ContestProportionalElectionDetailHeaderComponent,
     BreadcrumbsComponent,
     ContactPersonEditComponent,
-    ProportionalElectionBallotCandidatesChooseDialogComponent,
-    ProportionalElectionBallotCandidatesChooseEntryComponent,
     ResultBundleStateChipComponent,
     ContestVoteDetailResultEntryParamsComponent,
     ContestVoteDetailDetailedComponent,
@@ -241,6 +246,7 @@ import { SystemBusyComponent } from './pages/system-busy/system-busy.component';
     VoteBallotQuestionAnswerButtonComponent,
     VoteBallotReviewComponent,
     PoliticalBusinessNewBundleNumberComponent,
+    MajorityElectionNewBundleComponent,
     ContestDetailVotingCardsExpansionPanelComponent,
     VotingDataSourceTabsComponent,
     ValidationOverviewDialogComponent,
@@ -258,6 +264,7 @@ import { SystemBusyComponent } from './pages/system-busy/system-busy.component';
     ResultExportComponent,
     ValidationGroupPipe,
     PermissionDirective,
+    StoreActiveFiltersDirective,
     ContestStateChangeButtonComponent,
     ContestDetailInfoComponent,
     ContestDetailInfoDialogComponent,
@@ -342,6 +349,7 @@ import { SystemBusyComponent } from './pages/system-busy/system-busy.component';
     ResultImportListDialogComponent,
     MajorityElectionCandidacyInfoComponent,
     InfoIconComponent,
+    StoreActiveFiltersDirective,
   ],
 })
 export class AusmittlungLibModule {
@@ -364,6 +372,7 @@ export class AusmittlungLibModule {
           provide: VOTING_AUSMITTLUNG_MONITORING_WEBAPP_URL,
           useValue: votingAusmittlungMonitoringWebApp,
         },
+        StorageService,
       ],
     };
   }

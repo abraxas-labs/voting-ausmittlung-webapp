@@ -5,19 +5,20 @@
  */
 
 import { BallotBundleState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/ballot_bundle_pb';
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, HostListener, inject, ViewChild } from '@angular/core';
 import { ShortcutDialogComponent, ShortcutDialogData } from '../../../components/ballot-shortcut-dialog/shortcut-dialog.component';
 import { MajorityElectionBallotContentsComponent } from '../../../components/majority-election/majority-election-ballot-contents/majority-election-ballot-contents.component';
 import {
   BallotNumberGeneration,
+  MajorityElectionBallotCandidate,
   MajorityElectionBase,
   MajorityElectionCandidates,
   MajorityElectionResult,
   MajorityElectionResultBallot,
-  PoliticalBusinessResultBundle,
+  MajorityElectionResultBallotBase,
+  MajorityElectionResultBundle,
 } from '../../../models';
 import { MajorityElectionResultBundleService } from '../../../services/majority-election-result-bundle.service';
-import { MajorityElectionResultService } from '../../../services/majority-election-result.service';
 import { MajorityElectionService } from '../../../services/majority-election.service';
 import { ElectionBallotComponent } from '../../election-ballot/election-ballot.component';
 import { BallotHeaderComponent } from '../../../components/ballot-header/ballot-header.component';
@@ -30,11 +31,10 @@ import { BallotHeaderComponent } from '../../../components/ballot-header/ballot-
 })
 export class MajorityElectionBallotComponent extends ElectionBallotComponent<
   MajorityElectionResult,
-  PoliticalBusinessResultBundle,
+  MajorityElectionResultBundle,
   MajorityElectionResultBallot
 > {
   private readonly resultBundleService = inject(MajorityElectionResultBundleService);
-  private readonly resultService = inject(MajorityElectionResultService);
   private readonly electionService = inject(MajorityElectionService);
 
   private electionCandidates: MajorityElectionCandidates = {
@@ -62,6 +62,93 @@ export class MajorityElectionBallotComponent extends ElectionBallotComponent<
 
   protected get ballotNumberGeneration(): BallotNumberGeneration | undefined {
     return this.politicalBusinessResult?.entryParams?.ballotNumberGeneration;
+  }
+
+  protected get canEditBallot(): boolean {
+    return (
+      !!this.bundle &&
+      !!this.politicalBusinessResult?.entryParams &&
+      this.bundleInProcessOrCorrection &&
+      this.canUpdateBallot &&
+      !this.politicalBusinessResult.election.contest?.locked &&
+      !this.loadingBallot &&
+      !this.actionExecuting &&
+      !this.isDestroyed
+    );
+  }
+
+  @HostListener('document:keydown.control.alt.t', ['$event'])
+  public async resetBallot(event?: KeyboardEvent): Promise<void> {
+    if (
+      !this.ballot ||
+      !this.canEditBallot ||
+      !this.hasChanges ||
+      !this.politicalBusinessResult!.entryParams!.bundlesWithBallotGroupEnabled
+    ) {
+      return;
+    }
+
+    event?.preventDefault();
+    const ballot = this.ballot;
+    this.actionExecuting = true;
+    try {
+      if (ballot.isNew) {
+        this.ballot = this.newBallot();
+        this.ballot.number = ballot.number;
+      } else {
+        const restoredBallot = await this.resultBundleService.getBallot(this.bundle!.id, ballot.number, this.electionByIds!);
+        if (this.isDestroyed || this.ballot !== ballot) {
+          return;
+        }
+        this.ballot = restoredBallot;
+        this.ballotCacheByNumber[ballot.number] = restoredBallot;
+      }
+
+      for (const electionBallot of [this.ballot, ...this.ballot.secondaryMajorityElectionBallots]) {
+        this.updateEmptyVoteCount(electionBallot);
+      }
+      this.contentChanged();
+      this.hasChanges = this.ballot.isNew;
+    } finally {
+      this.actionExecuting = false;
+    }
+  }
+
+  @HostListener('document:keydown.control.alt.a', ['$event'])
+  public removeAllCandidates(event?: KeyboardEvent): void {
+    if (!this.ballot || !this.canEditBallot || !this.politicalBusinessResult!.entryParams!.bundlesWithBallotGroupEnabled) {
+      return;
+    }
+
+    event?.preventDefault();
+    this.ballot = {
+      ...this.removeCandidates(this.ballot),
+      secondaryMajorityElectionBallots: this.ballot.secondaryMajorityElectionBallots.map(x => this.removeCandidates(x)),
+    };
+    this.updateEmptyVoteCount(this.ballot);
+    if (!this.ballot.isNew) {
+      this.ballotCacheByNumber[this.ballot.number] = this.ballot;
+    }
+    this.contentChanged();
+    this.setFocus();
+  }
+
+  private removeCandidates<T extends MajorityElectionResultBallotBase>(ballot: T): T {
+    return {
+      ...ballot,
+      candidates: ballot.candidates.filter(candidate => candidate.onBallotGroup).map(candidate => ({ ...candidate, selected: false })),
+    };
+  }
+
+  private updateEmptyVoteCount(ballot: MajorityElectionResultBallotBase): void {
+    ballot.computedEmptyVoteCount =
+      ballot.election.numberOfMandates -
+      ballot.individualVoteCount -
+      ballot.invalidVoteCount -
+      ballot.candidates.filter(candidate => candidate.selected).length;
+    if (this.politicalBusinessResult!.entryParams!.automaticEmptyVoteCounting) {
+      ballot.emptyVoteCount = ballot.computedEmptyVoteCount;
+    }
   }
 
   public contentChanged(): void {
@@ -109,15 +196,9 @@ export class MajorityElectionBallotComponent extends ElectionBallotComponent<
       individualVoteCount: 0,
       invalidVoteCount: 0,
       election: this.politicalBusinessResult!.election,
-      candidates: this.electionCandidates.candidates.map(c => ({
-        ...c,
-        selected: false,
-      })),
+      candidates: this.buildCandidates(this.politicalBusinessResult!.election.id),
       secondaryMajorityElectionBallots: this.electionCandidates.secondaryElectionCandidates.map(sme => ({
-        candidates: sme.candidates.map(c => ({
-          ...c,
-          selected: false,
-        })),
+        candidates: this.buildSecondaryElectionCandidates(sme.secondaryMajorityElectionId),
         election: this.electionByIds![sme.secondaryMajorityElectionId],
         emptyVoteCount: isManualEmptyVoteCounting ? 0 : this.electionByIds![sme.secondaryMajorityElectionId].numberOfMandates,
         individualVoteCount: 0,
@@ -149,7 +230,7 @@ export class MajorityElectionBallotComponent extends ElectionBallotComponent<
     this.ballot = cachedBallot ?? (await this.resultBundleService.getBallot(bundleId, ballotNumber, this.electionByIds!));
   }
 
-  protected saveNewBallot(bundle: PoliticalBusinessResultBundle, ballot: MajorityElectionResultBallot): Promise<number> {
+  protected saveNewBallot(bundle: MajorityElectionResultBundle, ballot: MajorityElectionResultBallot): Promise<number> {
     return this.resultBundleService.createBallot(
       bundle.id,
       ballot,
@@ -158,7 +239,7 @@ export class MajorityElectionBallotComponent extends ElectionBallotComponent<
     );
   }
 
-  protected updateBallot(bundle: PoliticalBusinessResultBundle, ballot: MajorityElectionResultBallot): Promise<void> {
+  protected updateBallot(bundle: MajorityElectionResultBundle, ballot: MajorityElectionResultBallot): Promise<void> {
     return this.resultBundleService.updateBallot(bundle.id, ballot, this.politicalBusinessResult!.entryParams!.automaticEmptyVoteCounting);
   }
 
@@ -174,13 +255,15 @@ export class MajorityElectionBallotComponent extends ElectionBallotComponent<
 
   protected isBallotUnchanged(): boolean {
     return (
-      this.ballot !== undefined &&
-      this.ballot.computedEmptyVoteCount === this.politicalBusinessResult!.election.numberOfMandates &&
-      this.ballot.individualVoteCount === 0 &&
-      this.ballot.invalidVoteCount === 0 &&
-      this.ballot.secondaryMajorityElectionBallots.every(
-        b => b.computedEmptyVoteCount === b.election.numberOfMandates && b.individualVoteCount === 0 && b.invalidVoteCount === 0,
-      )
+      !!this.ballot &&
+      [this.ballot, ...this.ballot.secondaryMajorityElectionBallots].every(ballot => {
+        const ballotGroupEntry = this.bundle?.ballotGroup?.entries.find(entry => entry.election.id === ballot.election.id);
+        return (
+          ballot.candidates.every(candidate => candidate.selected === candidate.onBallotGroup) &&
+          ballot.individualVoteCount === (ballotGroupEntry?.individualCandidatesVoteCount ?? 0) &&
+          ballot.invalidVoteCount === 0
+        );
+      })
     );
   }
 
@@ -204,5 +287,56 @@ export class MajorityElectionBallotComponent extends ElectionBallotComponent<
     for (const secondaryElectionResult of electionResult.secondaryMajorityElectionResults) {
       this.electionByIds[secondaryElectionResult.election.id] = secondaryElectionResult.election;
     }
+  }
+
+  private buildCandidates(electionId: string): MajorityElectionBallotCandidate[] {
+    if (!this.bundle?.ballotGroup) {
+      return this.electionCandidates.candidates.map(c => ({
+        ...c,
+        selected: false,
+        onBallotGroup: false,
+      }));
+    }
+
+    const ballotGroupEntry = this.bundle!.ballotGroup!.entries.find(x => x.election.id === electionId);
+    if (!ballotGroupEntry) {
+      return [];
+    }
+
+    return ballotGroupEntry.candidates.map((c, index) => ({
+      ...c,
+      selected: true,
+      onBallotGroup: true,
+      position: index + 1,
+    }));
+  }
+
+  private buildSecondaryElectionCandidates(electionId: string): MajorityElectionBallotCandidate[] {
+    if (!this.bundle?.ballotGroup) {
+      const secondaryElectionCandidates = this.electionCandidates.secondaryElectionCandidates.find(
+        x => x.secondaryMajorityElectionId === electionId,
+      );
+      if (!secondaryElectionCandidates) {
+        return [];
+      }
+
+      return secondaryElectionCandidates.candidates.map(c => ({
+        ...c,
+        selected: false,
+        onBallotGroup: false,
+      }));
+    }
+
+    const ballotGroupEntry = this.bundle!.ballotGroup!.entries.find(x => x.election.id === electionId);
+    if (!ballotGroupEntry) {
+      return [];
+    }
+
+    return ballotGroupEntry.candidates.map((c, index) => ({
+      ...c,
+      selected: true,
+      onBallotGroup: true,
+      position: index + 1,
+    }));
   }
 }

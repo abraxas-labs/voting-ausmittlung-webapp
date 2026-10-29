@@ -39,6 +39,12 @@ export type FetchProtocolExportsRequest = {
   protocolExportIds: string[];
 };
 
+export type FetchBundleReviewExportRequest = {
+  contestId: string;
+  countingCircleId: string;
+  protocolExportId: string;
+};
+
 export type ResultExportConfiguration = Omit<
   ResultExportConfigurationProto.AsObject,
   'intervalMinutes' | 'politicalBusinessMetadataMap' | 'latestExecution'

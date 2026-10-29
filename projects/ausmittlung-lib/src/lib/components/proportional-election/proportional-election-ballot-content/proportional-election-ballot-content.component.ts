@@ -5,17 +5,20 @@
  */
 
 import { DialogService } from '@abraxas/voting-lib';
-import { Component, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
-import { ProportionalElectionBallotCandidate, ProportionalElectionResult, ProportionalElectionResultBallot } from '../../../models';
+import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
+import {
+  ProportionalElectionBallotCandidate,
+  ProportionalElectionCandidate,
+  ProportionalElectionResult,
+  ProportionalElectionResultBallot,
+} from '../../../models';
 import {
   ProportionalElectionBallotUiData,
   ProportionalElectionBallotUiService,
 } from '../../../services/proportional-election-ballot-ui.service';
 import { ProportionalElectionBallotCandidateModifyComponent } from '../proportional-election-ballot-candidate-modify/proportional-election-ballot-candidate-modify.component';
-import {
-  ProportionalElectionBallotCandidatesChooseDialogComponent,
-  ProportionalElectionBallotCandidatesChooseDialogData,
-} from '../proportional-election-ballot-candidates-choose-dialog/proportional-election-ballot-candidates-choose-dialog.component';
+import { ProportionalElectionBallotCandidatesChooseDialogComponent } from '../proportional-election-ballot-candidates-choose-dialog/proportional-election-ballot-candidates-choose-dialog.component';
+import { ElectionBallotCandidatesChooseDialogData } from '../../election-ballot-candidates-choose-dialog/election-ballot-candidates-choose-dialog.component';
 import {
   AddCandidatePositionEvent,
   CandidatePositionEvent,
@@ -76,13 +79,14 @@ export class ProportionalElectionBallotContentComponent {
 
   public async addCandidateAtPosition({ position, listCandidate, candidate }: AddCandidatePositionEvent): Promise<void> {
     if (!candidate) {
-      const data: ProportionalElectionBallotCandidatesChooseDialogData = {
+      const data: ElectionBallotCandidatesChooseDialogData<ProportionalElectionCandidate> = {
         candidates: Object.values(this.ballotUiData.addableCandidatesByNumber),
         candidateCheckDigit: this.electionResult.entryParams.candidateCheckDigit,
       };
-      candidate = await this.dialogService.openForResult(ProportionalElectionBallotCandidatesChooseDialogComponent, data, {
-        autoFocus: false,
-      });
+      candidate = await this.dialogService.openForResult<
+        ProportionalElectionBallotCandidatesChooseDialogComponent,
+        ProportionalElectionCandidate
+      >(ProportionalElectionBallotCandidatesChooseDialogComponent, data, { autoFocus: false });
 
       if (!candidate) {
         return;

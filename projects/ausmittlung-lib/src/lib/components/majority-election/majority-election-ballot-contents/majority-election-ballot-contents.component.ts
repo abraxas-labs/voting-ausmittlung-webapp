@@ -15,6 +15,9 @@ import { MajorityElectionBallotContentComponent } from '../majority-election-bal
 })
 export class MajorityElectionBallotContentsComponent {
   @Input()
+  public bundlesWithBallotGroupEnabled: boolean = false;
+
+  @Input()
   public disabled: boolean = true;
 
   @Input()

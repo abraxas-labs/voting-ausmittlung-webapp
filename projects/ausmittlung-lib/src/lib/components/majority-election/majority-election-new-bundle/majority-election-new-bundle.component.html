@@ -1,0 +1,79 @@
+<vo-lib-dialog [header]="'MAJORITY_ELECTION.BALLOT_GROUP.SELECT_FOR_BUNDLE.TITLE' | translate" (dialogClose)="close()">
+  <div content>
+    <div class="form-container">
+
+      @if (data.enableBundleNumber) {
+        <bc-number
+          class="my-2 field-number"
+          [required]="true"
+          [allowUndefined]="false"
+          [label]="'POLITICAL_BUSINESS.BUNDLE_NUMBER' | translate"
+          [(value)]="bundleNumber"
+          [min]="1"
+          [autoFocus]="true"
+          [subscriptSizing]="'dynamic'"
+        >
+        </bc-number>
+      }
+      <bc-number
+        class="m-2 field-number"
+        [optionalText]="''"
+        [label]="'MAJORITY_ELECTION.BALLOT_GROUP.SELECT_FOR_BUNDLE.ENTER_BALLOT_GROUP_NUMBER' | translate"
+        [(value)]="ballotGroupNumber"
+        (valueChange)="selectBallotGroup(false)"
+        (keydown.enter)="selectBallotGroup(true)"
+        [autoFocus]="!data.enableBundleNumber"
+        [subscriptSizing]="'dynamic'"
+      ></bc-number>
+      <div class="spacer"></div>
+      <bc-button
+        class="align-bottom"
+        variant="tertiary"
+        [label]="'MAJORITY_ELECTION.BALLOT_GROUP.SELECT_FOR_BUNDLE.EMPTY_BALLOT' | translate"
+        [disabled]="!canSave"
+        (buttonClick)="save()"
+      ></bc-button>
+    </div>
+    <div class="overflow">
+      <bc-table [dataSource]="dataSource" selection #selection="selection" (selectionChange)="updateSelectedBallotGroup($event)">
+        <ng-container columnDef="select">
+          <th bc-header-cell *headerCellDef></th>
+          <td bc-data-cell *dataCellDef="let element">
+            <bc-radio-button selectionToggle [selectionToggleValue]="element" [checked]="selection.isSelected(element)"></bc-radio-button>
+          </td>
+        </ng-container>
+        <ng-container columnDef="position">
+          <th bc-header-cell *headerCellDef>{{ 'MAJORITY_ELECTION.BALLOT_GROUP.SELECT_FOR_BUNDLE.NUMBER' | translate }}</th>
+          <td bc-data-cell *dataCellDef="let element">{{ element.position }}</td>
+        </ng-container>
+        <ng-container columnDef="shortDescription">
+          <th bc-header-cell *headerCellDef>{{ 'MAJORITY_ELECTION.BALLOT_GROUP.SELECT_FOR_BUNDLE.SHORT_DESCRIPTION' | translate }}</th>
+          <td bc-data-cell *dataCellDef="let element">{{ element.shortDescription }}</td>
+        </ng-container>
+        <ng-container columnDef="description">
+          <th bc-header-cell *headerCellDef>{{ 'MAJORITY_ELECTION.BALLOT_GROUP.SELECT_FOR_BUNDLE.DESCRIPTION' | translate }}</th>
+          <td bc-data-cell *dataCellDef="let element">{{ element.description }}</td>
+        </ng-container>
+        <tr bc-header-row *headerRowDef="let row; columns: columns"></tr>
+        <tr
+          bc-data-row
+          *dataRowDef="let row; columns: columns"
+          #rowSelection="selectionToggle"
+          selectionToggle
+          [selectionToggleValue]="row"
+          selectionRow
+          [selectionRowValue]="row"
+          (click)="rowSelection.toggle()"
+        ></tr>
+      </bc-table>
+    </div>
+  </div>
+  <vo-lib-button-bar
+    footer
+    (cancel)="close()"
+    (save)="save(selectedBallotGroup)"
+    [saveLabel]="'MAJORITY_ELECTION.BALLOT_GROUP.SELECT_FOR_BUNDLE.SELECT_BALLOT_GROUP' | translate"
+    [canSave]="canSave && !!selectedBallotGroup"
+  >
+  </vo-lib-button-bar>
+</vo-lib-dialog>

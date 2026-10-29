@@ -1,4 +1,4 @@
-# ✨ Changelog (`v3.32.1`)
+# ✨ Changelog (`v3.35.0`)
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,73 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Info
 
 ```text
-This version -------- v3.32.1
-Previous version ---- v3.30.0
+This version -------- v3.35.0
+Previous version ---- v3.32.1
 Initial version ----- v1.25.0
-Total commits ------- 9
+Total commits ------- 15
 ```
+
+## [v3.35.0] - 2026-10-21
+
+### 🔄 Changed
+
+- improve proportional election result table
+
+## [v3.34.1] - 2026-10-20
+
+### 🔄 Changed
+
+- improve bundle review download request
+
+## [v3.34.0] - 2026-10-16
+
+### 🆕 Added
+
+- add sedex export provider
+
+## [v3.33.1] - 2026-10-07
+
+### 🔄 Changed
+
+- store active filters in cockpit grid table
+
+## [v3.33.0] - 2026-10-01
+
+### 🆕 Added
+
+- store active table filters during session
+
+### 🔄 Changed
+
+- prevent confirm dialog from taking focus
+
+### 🆕 Added
+
+- add ballot group to majority election result bundle
+
+### 🔄 Changed
+
+- monitoring overview political business sorting
+
+### 🔄 Changed
+
+- unselect list when ballot without list number is selected
+
+### 🆕 Added
+
+- add bundles with ballot group enabled option
+
+### 🆕 Added
+
+- allow to create a ballot without list via entering a number
+
+### 🔄 Changed
+
+- keep white space when contest details are sticky
+
+### 🆕 Added
+
+- auto load political business in monitoring
 
 ## [v3.32.1] - 2026-08-11
 

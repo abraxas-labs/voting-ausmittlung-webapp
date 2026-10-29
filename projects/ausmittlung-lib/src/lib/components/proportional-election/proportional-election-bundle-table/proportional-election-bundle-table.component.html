@@ -7,7 +7,7 @@
       (buttonClick)="succeedBundleReview.emit(selection.selected)"
       [label]="'ELECTION.BALLOT_DETAIL.SUCCEED_MULTIPLE' | translate"></bc-button>
   }
-  <bc-table selection filter sort [sortActive]="[{ id: stateColumn, direction: 'asc' }, { id: numberColumn, direction: 'asc' }]"
+  <bc-table selection filter voAusmStoreActiveFilters="proportional-election-bundle" sort [sortActive]="[{ id: stateColumn, direction: 'asc' }, { id: numberColumn, direction: 'asc' }]"
     [filterDisabled]="!enableFiltering" [sortDisabled]="!enableSorting" [sortMultiple]="true" [dataSource]="dataSource">
     <ng-container [columnDef]="selectColumn">
       <th bc-header-cell *headerCellDef>

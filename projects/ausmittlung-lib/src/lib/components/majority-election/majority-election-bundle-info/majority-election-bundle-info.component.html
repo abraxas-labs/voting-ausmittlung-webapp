@@ -12,6 +12,13 @@
 <bc-readonly [label]="'ELECTION.COUNT_OF_MODIFIED_LISTS' | translate">
   {{ bundle.countOfModifiedBallots }}
 </bc-readonly>
+
+@if (bundle.ballotGroup) {
+  <bc-readonly class="full-column" [label]="'MAJORITY_ELECTION.BALLOT_GROUP.SHORT_DESCRIPTION' | translate">
+    {{ bundle.ballotGroup.shortDescription }}
+  </bc-readonly>
+}
+
 <bc-readonly class="full-column" [label]="'APP.STATE' | translate">
   <vo-ausm-result-bundle-state-chip
     [state]="bundle.state"

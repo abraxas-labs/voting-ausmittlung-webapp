@@ -10,6 +10,7 @@ import {
   GetResultCommentsRequest,
   GetResultListRequest,
   GetResultOverviewRequest,
+  GetResultsRequest,
   ResetCountingCircleResultsRequest,
   ValidateCountingCircleResultsRequest,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/result_requests_pb';
@@ -27,6 +28,8 @@ import {
   createSecondFactorAuthorization,
   MajorityElectionCandidateResultProto,
   mapToSecondFactorTransaction,
+  PoliticalBusinessResults,
+  PoliticalBusinessResultsProto,
   ProportionalElectionListResultProto,
   ResultList,
   ResultListProto,
@@ -52,6 +55,9 @@ import { PoliticalBusinessUnionService } from './political-business-union.servic
 import * as models_vote_result_pb from '@abraxas/voting-ausmittlung-service-proto/grpc/models/vote_result_pb';
 import { BallotQuestionResult } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/vote_result_pb';
 import { BallotQuestionType, BallotSubType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/vote_pb';
+import { VoteResultService } from './vote-result.service';
+import { ProportionalElectionResultService } from './proportional-election-result.service';
+import { MajorityElectionResultService } from './majority-election-result.service';
 
 @Injectable({
   providedIn: 'root',
@@ -84,6 +90,17 @@ export class ResultService extends GrpcStreamingService<ResultServicePromiseClie
       c => c.getList,
       req,
       r => this.mapToResultList(r),
+    );
+  }
+
+  public getResults(contestId: string, countingCircleId: string): Promise<PoliticalBusinessResults> {
+    const req = new GetResultsRequest();
+    req.setContestId(contestId);
+    req.setCountingCircleId(countingCircleId);
+    return this.request(
+      c => c.getResults,
+      req,
+      r => this.mapToResults(r),
     );
   }
 
@@ -183,6 +200,16 @@ export class ResultService extends GrpcStreamingService<ResultServicePromiseClie
       enabledVotingCardChannels: data.getEnabledVotingCardChannelsList().map(x => x.toObject()),
       enabledVoterTypes: data.getEnabledVoterTypesList(),
       electorateSummary: data.getElectorateSummary()!.toObject(),
+    };
+  }
+
+  private mapToResults(data: PoliticalBusinessResultsProto): PoliticalBusinessResults {
+    return {
+      voteResults: data.getVoteResultsList().map(r => VoteResultService.mapToVoteResult(r)),
+      proportionalElectionResults: data
+        .getProportionalElectionResultsList()
+        .map(r => ProportionalElectionResultService.mapToProportionalElectionResult(r)),
+      majorityElectionResults: data.getMajorityElectionResultsList().map(r => MajorityElectionResultService.mapToMajorityElectionResult(r)),
     };
   }
 

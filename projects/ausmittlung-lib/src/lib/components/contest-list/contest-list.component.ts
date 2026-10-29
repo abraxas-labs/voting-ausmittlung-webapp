@@ -31,6 +31,9 @@ export class ContestListComponent implements OnInit, AfterViewInit, OnChanges {
     this.ownerColumn,
   ];
 
+  @Input({ required: true })
+  public tableName: string = '';
+
   @Input()
   public set contests(contests: ContestSummary[]) {
     this.dataSource.data = contests;

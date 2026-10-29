@@ -27,6 +27,7 @@ export class ProportionalElectionNewBundleComponent implements OnInit {
   private readonly i18n = inject(TranslateService);
   private readonly cd = inject(ChangeDetectorRef);
 
+  private readonly ballotWithoutListNumber = '99';
   public readonly columns = ['select', 'orderNumber', 'shortDescription', 'description'];
   public readonly dataSource = new TableDataSource<ProportionalElectionList>();
   public loading: boolean = true;
@@ -106,6 +107,20 @@ export class ProportionalElectionNewBundleComponent implements OnInit {
 
   public async selectList(createBundle: boolean): Promise<void> {
     if (!this.listNumber) {
+      return;
+    }
+
+    if (this.listNumber === this.ballotWithoutListNumber) {
+      if (createBundle) {
+        await this.createBundle();
+      } else if (this.selection.totalSelected > 0) {
+        for (let list of this.dataSource.data) {
+          if (this.selection.isSelected(list)) {
+            this.selection.toggleSelection(list);
+          }
+        }
+      }
+
       return;
     }
 

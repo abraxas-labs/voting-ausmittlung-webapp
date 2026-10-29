@@ -6,7 +6,13 @@
 
 import { FileDownloadService } from '@abraxas/voting-lib';
 import { Injectable, inject } from '@angular/core';
-import { FetchProtocolExportsRequest, GenerateResultExportsRequest, ProtocolExport, ResultExportTemplate } from '../models';
+import {
+  FetchBundleReviewExportRequest,
+  FetchProtocolExportsRequest,
+  GenerateResultExportsRequest,
+  ProtocolExport,
+  ResultExportTemplate,
+} from '../models';
 import { REST_API_URL_INJECTION_TOKEN } from './tokens';
 
 @Injectable({
@@ -49,15 +55,11 @@ export class ResultExportService {
     return await this.fileDownloadService.postDownloadFile(`${this.apiUrl}/protocol_exports`, req);
   }
 
-  public async downloadResultBundleReviewExport(
-    protocolExportId: string,
-    contestId: string,
-    countingCircleId: string | undefined,
-  ): Promise<void> {
-    const req: FetchProtocolExportsRequest = {
+  public async downloadResultBundleReviewExport(protocolExportId: string, contestId: string, countingCircleId: string): Promise<void> {
+    const req: FetchBundleReviewExportRequest = {
       contestId,
       countingCircleId,
-      protocolExportIds: [protocolExportId],
+      protocolExportId: protocolExportId,
     };
     return await this.fileDownloadService.postDownloadFile(`${this.apiUrl}/bundle_review`, req);
   }

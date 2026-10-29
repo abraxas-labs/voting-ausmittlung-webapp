@@ -43,6 +43,9 @@ export class ContestHeaderComponent implements OnChanges {
   @Input()
   public accessiblePoliticalBusinesses: PoliticalBusiness[] = [];
 
+  @Input()
+  public reducedWhitespace: boolean = false;
+
   public readonly states: typeof ContestState = ContestState;
 
   public selectedCountingCircle?: CountingCircle;

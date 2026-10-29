@@ -6,6 +6,7 @@
 
 import { Injectable } from '@angular/core';
 import { DomainOfInfluenceType } from '@abraxas/voting-ausmittlung-service-proto/grpc/shared/domain_of_influence_pb';
+import { Filter } from '@abraxas/base-components';
 
 @Injectable()
 export class StorageService {
@@ -20,6 +21,7 @@ export class StorageService {
   private readonly doiTypeFilterKey: string = 'doiTypeFilter';
   private readonly monitoringCockpitTabKey: string = 'monitoringCockpitTab';
   private readonly monitoringCockpitSelectedPoliticalBusinessIdKey: string = 'monitoringCockpitSelectedPoliticalBusinessId';
+  private readonly tableFilterPrefix: string = 'app:filter:';
 
   public getStateFilter(): string | null {
     return sessionStorage.getItem(this.stateFilterKey);
@@ -56,5 +58,14 @@ export class StorageService {
 
   public storeMonitoringCockpitSelectedPoliticalBusinessId(value: string): void {
     sessionStorage.setItem(this.monitoringCockpitSelectedPoliticalBusinessIdKey, value);
+  }
+
+  public getActiveFilters(tableName: string): Filter[] {
+    const filters = sessionStorage.getItem(this.tableFilterPrefix + tableName);
+    return filters ? JSON.parse(filters) : [];
+  }
+
+  public storeActiveFilters(tableName: string, activeFilters: Filter[]): void {
+    sessionStorage.setItem(this.tableFilterPrefix + tableName, JSON.stringify(activeFilters));
   }
 }

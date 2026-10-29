@@ -5,7 +5,7 @@
  */
 
 import { Component, Input } from '@angular/core';
-import { PoliticalBusinessResultBundle } from '../../../models';
+import { MajorityElectionResultBundle } from '../../../models';
 
 @Component({
   selector: 'vo-ausm-majority-election-bundle-info',
@@ -15,7 +15,7 @@ import { PoliticalBusinessResultBundle } from '../../../models';
 })
 export class MajorityElectionBundleInfoComponent {
   @Input({ required: true })
-  public bundle!: PoliticalBusinessResultBundle;
+  public bundle!: MajorityElectionResultBundle;
 
   @Input()
   public bundleSize?: number;

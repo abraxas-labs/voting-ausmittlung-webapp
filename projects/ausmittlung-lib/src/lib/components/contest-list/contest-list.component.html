@@ -1,4 +1,4 @@
-<bc-table selection filter sort [sortActive]="[{ id: 'date', direction: 'asc' }]" [dataSource]="dataSource">
+<bc-table selection filter [voAusmStoreActiveFilters]="tableName" sort [sortActive]="[{ id: 'date', direction: 'asc' }]" [dataSource]="dataSource">
   <ng-container columnDef="date">
     <th bc-header-cell filter filterType="date-extended" sort *headerCellDef>{{ 'CONTEST.DATE' | translate }}</th>
     <td bc-data-cell *dataCellDef="let element">{{ element.date | date }}</td>

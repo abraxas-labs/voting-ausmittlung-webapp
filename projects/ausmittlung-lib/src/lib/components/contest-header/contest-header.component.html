@@ -1,6 +1,6 @@
 <ng-container>
   @if (!!contest) {
-    <div class="info-container">
+    <div class="info-container" [class.reduced-whitespace]="reducedWhitespace">
       <bc-label [label]="'CONTEST.DETAIL.INFO.CONTEST' | translate"
         [class.col-span-2]="!!countingCircle || !!politicalBusiness"
         [class.col-span-3]="!countingCircle && !!state"

@@ -17,6 +17,7 @@
           @if (!loadingBallot && !!ballot) {
             <vo-ausm-majority-election-ballot-contents class="mb-3"
               [ballot]="ballot"
+              [bundlesWithBallotGroupEnabled]="electionResult.entryParams.bundlesWithBallotGroupEnabled"
               [showInvalidVotes]="electionResult.election.contest!.cantonDefaults!.majorityElectionInvalidVotes"
               [loadingBallot]="loadingBallot"
               [readonly]="!correctionOngoing"

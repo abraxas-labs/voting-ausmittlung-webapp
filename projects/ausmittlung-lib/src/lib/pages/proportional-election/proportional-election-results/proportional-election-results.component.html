@@ -10,18 +10,16 @@
 
   @if (contestResultList) {
     <h2 class="mt-3" translate>CONTEST.DETAIL.COUNT_OF_VOTERS_AND_VOTING_CARDS</h2>
-    <div class="mb-3">
-      <vo-ausm-contest-detail-info
-        [eVoting]="contestResultList.details.eVoting"
-        [eCounting]="contestResultList.details.eCounting"
-        [eCountingResultsImported]="contestResultList.details.eCountingResultsImported"
-        [enabledVoterTypes]="contestResultList.enabledVoterTypes"
-        [countOfVotersInformationSubTotals]="contestResultList.details.countOfVotersInformationSubTotals"
-        [votingCards]="contestResultList.details.votingCards"
-        [enabledVotingCardChannels]="contestResultList.enabledVotingCardChannels"
-        [domainOfInfluenceTypes]="domainOfInfluenceTypes" [canton]="canton" [readonly]="true">
-      </vo-ausm-contest-detail-info>
-    </div>
+    <vo-ausm-contest-detail-info
+      [eVoting]="contestResultList.details.eVoting"
+      [eCounting]="contestResultList.details.eCounting"
+      [eCountingResultsImported]="contestResultList.details.eCountingResultsImported"
+      [enabledVoterTypes]="contestResultList.enabledVoterTypes"
+      [countOfVotersInformationSubTotals]="contestResultList.details.countOfVotersInformationSubTotals"
+      [votingCards]="contestResultList.details.votingCards"
+      [enabledVotingCardChannels]="contestResultList.enabledVotingCardChannels"
+      [domainOfInfluenceTypes]="domainOfInfluenceTypes" [canton]="canton" [readonly]="true">
+    </vo-ausm-contest-detail-info>
   }
 
   @if (electionResult) {
@@ -51,6 +49,13 @@
         <td bc-data-cell *dataCellDef="let element">{{ element.list.shortDescription }}</td>
       </ng-container>
 
+      <ng-container columnDef="unmodifiedListsCount">
+        <th bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.UNMODIFIED_LISTS_COUNT' | translate
+          }}</th>
+        <td bc-data-cell *dataCellDef="let element">{{ (dataPrefix ? element[dataPrefix] : element).unmodifiedListsCount
+          }}</td>
+      </ng-container>
+
       <ng-container columnDef="unmodifiedListVotesCount">
         <th bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.UNMODIFIED_LIST_VOTES_COUNT' | translate
           }}</th>
@@ -63,6 +68,13 @@
           }}</th>
         <td bc-data-cell *dataCellDef="let element">{{ (dataPrefix ? element[dataPrefix] :
           element).unmodifiedListBlankRowsCount }}</td>
+      </ng-container>
+
+      <ng-container columnDef="modifiedListsCount">
+        <th bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.MODIFIED_LISTS_COUNT' | translate
+          }}</th>
+        <td bc-data-cell *dataCellDef="let element">{{ (dataPrefix ? element[dataPrefix] : element).modifiedListsCount
+          }}</td>
       </ng-container>
 
       <ng-container columnDef="modifiedListVotesCount">
@@ -79,18 +91,11 @@
           element).modifiedListBlankRowsCount }}</td>
       </ng-container>
 
-      <ng-container columnDef="unmodifiedListsCount">
-        <th bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.UNMODIFIED_LISTS_COUNT' | translate
+      <ng-container columnDef="totalVoteCount">
+        <th bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.TOTAL_VOTE_COUNT' | translate
           }}</th>
-        <td bc-data-cell *dataCellDef="let element">{{ (dataPrefix ? element[dataPrefix] : element).unmodifiedListsCount
-          }}</td>
-      </ng-container>
-
-      <ng-container columnDef="modifiedListsCount">
-        <th bc-header-cell *headerCellDef>{{ 'PROPORTIONAL_ELECTION.LIST.MODIFIED_LISTS_COUNT' | translate
-          }}</th>
-        <td bc-data-cell *dataCellDef="let element">{{ (dataPrefix ? element[dataPrefix] : element).modifiedListsCount
-          }}</td>
+        <td bc-data-cell *dataCellDef="let element">{{ (dataPrefix ? element[dataPrefix] :
+          element).totalVoteCount }}</td>
       </ng-container>
 
       <tr bc-header-row *headerRowDef="let row; columns: listResultColumns"></tr>

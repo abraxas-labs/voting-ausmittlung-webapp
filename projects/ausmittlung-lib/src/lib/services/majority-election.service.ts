@@ -6,13 +6,16 @@
 
 import { MajorityElectionServicePromiseClient } from '@abraxas/voting-ausmittlung-service-proto/grpc/majority_election_service_grpc_web_pb';
 import {
+  GetMajorityElectionBallotGroupsRequest,
   ListMajorityElectionCandidatesRequest,
   ListSecondaryMajorityElectionCandidatesRequest,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/requests/majority_election_requests_pb';
 import { GrpcBackendService, GrpcEnvironment, GrpcService } from '@abraxas/voting-lib';
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   MajorityElection,
+  MajorityElectionBallotGroup,
+  MajorityElectionBallotGroupProto,
   MajorityElectionCandidate,
   MajorityElectionCandidates,
   MajorityElectionCandidatesProto,
@@ -42,6 +45,19 @@ export class MajorityElectionService extends GrpcService<MajorityElectionService
     return {
       ...proto.toObject(),
       contest: !contest ? undefined : ContestService.mapToContest(contest),
+    };
+  }
+
+  public static mapToBallotGroup(response: MajorityElectionBallotGroupProto): MajorityElectionBallotGroup {
+    const obj = response.toObject();
+    return {
+      ...obj,
+      entries:
+        obj.entriesList.map(y => ({
+          election: (y.election || y.secondaryElection)!,
+          candidates: y.candidatesList,
+          individualCandidatesVoteCount: y.individualCandidatesVoteCount,
+        })) ?? [],
     };
   }
 
@@ -83,6 +99,16 @@ export class MajorityElectionService extends GrpcService<MajorityElectionService
     );
     this.secondaryCandidatesCache[electionId] = response;
     return response;
+  }
+
+  public async getBallotGroups(electionId: string): Promise<MajorityElectionBallotGroup[]> {
+    const req = new GetMajorityElectionBallotGroupsRequest();
+    req.setElectionId(electionId);
+    return await this.request(
+      c => c.getBallotGroups,
+      req,
+      resp => resp.getBallotGroupsList().map(x => MajorityElectionService.mapToBallotGroup(x)),
+    );
   }
 
   private async listCandidatesForRequest(cacheId: string, req: ListMajorityElectionCandidatesRequest): Promise<MajorityElectionCandidates> {

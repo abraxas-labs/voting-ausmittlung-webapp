@@ -14,7 +14,9 @@ import { Permissions } from '../../models/permissions.model';
 import { UserService } from '../../services/user.service';
 
 @Directive()
-export abstract class PoliticalBusinessBallotReviewComponent implements OnInit {
+export abstract class PoliticalBusinessBallotReviewComponent<
+  TBundle extends PoliticalBusinessResultBundle = PoliticalBusinessResultBundle,
+> implements OnInit {
   private isSelfModifiedBundle: boolean = false;
 
   protected readonly route = inject(ActivatedRoute);
@@ -28,7 +30,7 @@ export abstract class PoliticalBusinessBallotReviewComponent implements OnInit {
   public loadingBallot: boolean = true;
   public actionExecuting: boolean = false;
 
-  public bundle?: PoliticalBusinessResultBundle;
+  public bundle?: TBundle;
   public reviewBallots: BallotReview[] = [];
 
   public canSucceedSelfModifiedBundle: boolean = false;

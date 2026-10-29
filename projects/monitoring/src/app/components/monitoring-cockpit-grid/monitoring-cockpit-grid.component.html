@@ -19,7 +19,7 @@
     </div>
   </div>
 
-  <bc-table selection filter sort [dataSource]="dataSource" [sticky]="true">
+  <bc-table selection filter voAusmStoreActiveFilters="cockpit-grid" sort [dataSource]="dataSource" [sticky]="true">
     <ng-container [columnDef]="stateColumn">
       <th bc-header-cell
         filter

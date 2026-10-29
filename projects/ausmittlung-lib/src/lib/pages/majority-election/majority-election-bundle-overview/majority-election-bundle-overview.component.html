@@ -24,7 +24,8 @@
             (generateBundleReviewExport)="generateBundleReviewExport($event)"
             (downloadBundleReviewExport)="downloadBundleReviewExport($event)"
             [reviewProcedure]="result.politicalBusinessResult.entryParams?.reviewProcedure"
-            [enableReviewMultiple]="result.politicalBusinessResult.entryParams?.reviewProcedure === reviewProcedures.MAJORITY_ELECTION_REVIEW_PROCEDURE_PHYSICALLY">
+            [enableReviewMultiple]="result.politicalBusinessResult.entryParams?.reviewProcedure === reviewProcedures.MAJORITY_ELECTION_REVIEW_PROCEDURE_PHYSICALLY"
+            [enableBallotGroup]="!!result.politicalBusinessResult.entryParams?.bundlesWithBallotGroupEnabled">
           </vo-ausm-majority-election-bundle-table>
         </div>
         <div class="sticky-buttons">

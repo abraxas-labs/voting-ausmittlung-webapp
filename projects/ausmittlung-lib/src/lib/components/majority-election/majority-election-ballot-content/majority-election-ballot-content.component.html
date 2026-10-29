@@ -7,17 +7,32 @@
   <div class="ballot-stats">
     @if (!readonly) {
       <div class="candidate-modify">
-        <div>
+        @if (bundlesWithBallotGroupEnabled) {
+          <div>
+            <bc-text
+              #removeCandidateInput
+              [autoFocus]="!isSecondaryElection"
+              [label]="'ELECTION.BALLOT_DETAIL.REMOVE_CANDIDATE' | translate"
+              [readonly]="readonly || disabled"
+              [(ngModel)]="removeCandidateValue"
+              (ngModelChange)="tryRemoveCandidate($event)"
+              [hint]="'ELECTION.BALLOT_DETAIL.EDIT_CANDIDATE_HINT' | translate"
+              [optionalText]="''"
+              [subscriptSizing]="'dynamic'"
+            ></bc-text>
+          </div>
+        }
+        <div class="mt-3">
           <bc-text
             #toggleCandidateInput
-            [focusOnLoad]="!isSecondaryElection"
-          [label]="
-            (isSecondaryElection
-              ? 'ELECTION.BALLOT_DETAIL.TOGGLE_CANDIDATE'
-              : 'ELECTION.BALLOT_DETAIL.TOGGLE_CANDIDATE_SHORTCUT'
-            ) | translate
-          "
-            [readonly]="readonly || disabled"
+            [label]="
+              (bundlesWithBallotGroupEnabled
+                ? 'ELECTION.BALLOT_DETAIL.ADD_CANDIDATE'
+                : 'ELECTION.BALLOT_DETAIL.TOGGLE_CANDIDATE'
+              ) | translate
+            "
+            [readonly]="readonly || disabled || (bundlesWithBallotGroupEnabled && ballot.computedEmptyVoteCount <= 0)"
+            [autoFocus]="!bundlesWithBallotGroupEnabled && !isSecondaryElection"
             [(ngModel)]="toggleCandidateValue"
             [hint]="'ELECTION.BALLOT_DETAIL.EDIT_CANDIDATE_HINT' | translate"
             (ngModelChange)="tryToggleCandidate($event)"
@@ -71,11 +86,14 @@
       ></bc-number>
     }
   </div>
-  <div class="spacer"></div>
   <div>
     <vo-ausm-majority-election-ballot-candidates
       [readonly]="disabled || readonly"
       [candidates]="ballot.candidates"
+      [bundlesWithBallotGroupEnabled]="bundlesWithBallotGroupEnabled"
+      [positions]="positions"
+      (addCandidate)="chooseCandidate($event)"
+      (restoreCandidate)="restoreCandidate($event)"
       [hasEmptyVotes]="ballot.computedEmptyVoteCount > 0"
       (toggleCandidate)="toggleCandidate($event)"
       [candidateCheckDigit]="candidateCheckDigit"

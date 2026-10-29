@@ -462,7 +462,8 @@
       "NO_BALLOTS": "Kein Wahlzettel vorhanden",
       "EDIT_CANDIDATE_HINT": "Nr eingeben",
       "REPLACE_CANDIDATE": "Kandidat/in ersetzen",
-      "REPLACE_CANDIDATE_NO_REPLACEMENT": "Listenplatz leer lassen",
+      "REPLACE_CANDIDATE_NO_REPLACEMENT_LIST": "Listenplatz leer lassen",
+      "REPLACE_CANDIDATE_NO_REPLACEMENT_BALLOT_GROUP": "Wahlzettelgruppenplatz leer lassen",
       "REPLACE_CANDIDATE_SEARCH_AND_REPLACE": "Kandidat suchen und hinzufügen",
       "REMOVE_ALL_CANDIDATES": "Wahlzettel leeren",
       "RESET": "Änderungen zurücksetzen",
@@ -480,6 +481,7 @@
       },
       "CANDIDATE": "Kandidat/in",
       "CANDIDATE_ON_LIST": "Kandidat/in gemäss Liste",
+      "CANDIDATE_ON_BALLOT_GROUP": "Kandidat/in gemäss Wahlzettelgruppe",
       "CANDIDATE_ON_BALLOT": "Kandidat/in gemäss Wahlzettel",
       "REVIEW": "Bund kontrollieren",
       "REJECT_REVIEW": "Bund zurück zur Überprüfung",
@@ -522,6 +524,7 @@
     "BALLOT_COUNT": "{{count}} Wahlzettel kontrolliert"
   },
   "MAJORITY_ELECTION": {
+    "EMPTY_VOTE_SLOT": "Leerer Wahlzettelgruppenplatz",
     "TITLE": "Majorzwahl",
     "BY_BALLOT_GROUPS": "Nach Wahlzettelgruppen erfassen",
     "BALLOT_GROUPS_COUNT": "{{count}} Wahlzettel erfasst",
@@ -545,12 +548,25 @@
           "1": "Elektronisch",
           "2": "Physisch"
         }
+      },
+      "BUNDLES_WITH_BALLOT_GROUP_ENABLED": {
+        "TITLE": "Bunderfassung mit Auswahl von Wahlzettelgruppe",
+        "ENABLED": "Aktiviert"
       }
     },
     "PARTY": "Partei",
     "BALLOT_GROUP": {
       "TITLE": "Nach Wahlzettelgruppen erfassen",
       "SIDEBAR_TITLE": "Details zur Wahlzettelgruppe",
+      "SELECT_FOR_BUNDLE": {
+        "TITLE": "Wahlzettelgruppe für neuen Bund auswählen",
+        "SHORT_DESCRIPTION": "Kurzbezeichnung",
+        "DESCRIPTION": "Bezeichnung",
+        "NUMBER": "Nr.",
+        "EMPTY_BALLOT": "Leerer Wahlzettel",
+        "SELECT_BALLOT_GROUP": "Wahlzettelgruppe auswählen",
+        "ENTER_BALLOT_GROUP_NUMBER": "Wahlzettelgruppe-Nr. eingeben"
+      },
       "SHORT_DESCRIPTION": "Wahlzettelgruppe",
       "NO_ENTRIES": "Keine Wahlzettelgruppe ausgewählt",
       "NO_CANDIDATES": "Keine Kandidaturen"
@@ -597,11 +613,12 @@
       "SHORT_DESCRIPTION": "Listenkurzbezeichnung",
       "SHORT_DESCRIPTION_ABBREVIATION": "Kurzbez.",
       "UNMODIFIED_LISTS_COUNT": "Unv. WZ",
-      "UNMODIFIED_LIST_VOTES_COUNT": "UnvWZ: Stimmen",
-      "UNMODIFIED_LIST_BLANK_ROWS_COUNT": "UnvWZ: Leere Zeilen",
+      "UNMODIFIED_LIST_VOTES_COUNT": "Kand. Stimmen unv. WZ",
+      "UNMODIFIED_LIST_BLANK_ROWS_COUNT": "Zusatzstimmen unv. WZ",
       "MODIFIED_LISTS_COUNT": "Ver. WZ",
-      "MODIFIED_LIST_VOTES_COUNT": "VerWZ: Stimmen",
-      "MODIFIED_LIST_BLANK_ROWS_COUNT": "VerWZ: Leere Zeilen"
+      "MODIFIED_LIST_VOTES_COUNT": "Kand. Stimmen ver. WZ",
+      "MODIFIED_LIST_BLANK_ROWS_COUNT": "Zusatzstimmen ver. WZ",
+      "TOTAL_VOTE_COUNT": "Total Stimmen"
     },
     "CANDIDATES": "Kandidaturen",
     "CANDIDATE": {

@@ -1,5 +1,7 @@
-$political-business-gutter: 1.8rem;
-
 .political-business-list > * {
-  margin-bottom: $political-business-gutter;
+  margin-bottom: 1.8rem;
+}
+
+.political-business-list.reduced-whitespace > * {
+  margin-bottom: 1rem;
 }

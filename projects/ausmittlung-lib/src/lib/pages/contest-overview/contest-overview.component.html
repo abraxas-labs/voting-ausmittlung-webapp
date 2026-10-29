@@ -1,9 +1,11 @@
 <vo-lib-page [contentLoading]="loading" header="CONTEST.TITLE">
   <vo-ausm-contest-list [contests]="contests"
+                        tableName="contests"
                         (openDetail)="openDetail.emit($event)"></vo-ausm-contest-list>
 
   <h2 translate>CONTEST.PAST_CONTESTS</h2>
   <vo-ausm-contest-list [contests]="pastContests"
+                        tableName="past-contests"
                         (openDetail)="openDetail.emit($event)"></vo-ausm-contest-list>
 
   <h2 translate>CONTEST.ARCHIVED_CONTESTS</h2>
@@ -11,5 +13,6 @@
                         [showEndOfTestingPhase]="false"
                         [showDescription]="true"
                         [showOwner]="true"
+                        tableName="archived-contests"
                         (openDetail)="openDetail.emit($event)"></vo-ausm-contest-list>
 </vo-lib-page>

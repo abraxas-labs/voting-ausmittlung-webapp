@@ -83,6 +83,18 @@ export abstract class AbstractContestPoliticalBusinessDetailComponent<
   @Input()
   public contestCantonDefaults?: ContestCantonDefaults;
 
+  @Input()
+  public set preloadedResult(value: T | undefined) {
+    if (!value) {
+      return;
+    }
+
+    this.isDataLoaded = true;
+    this.lastSavedResultDetail = cloneDeep(value);
+    this.resultDetail = value;
+    this.loading = false;
+  }
+
   public resultDetail?: T;
   public lastSavedResultDetail?: T;
   public canEnterResults: boolean = false;

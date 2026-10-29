@@ -8,6 +8,7 @@ import { MajorityElectionResultBundleServicePromiseClient } from '@abraxas/votin
 import {
   CreateMajorityElectionResultBallotRequest,
   CreateMajorityElectionResultBundleRequest,
+  CreateUpdateMajorityElectionResultBallotCandidateRequest,
   CreateUpdateSecondaryMajorityElectionResultBallotRequest,
   DeleteMajorityElectionResultBallotRequest,
   DeleteMajorityElectionResultBundleRequest,
@@ -32,15 +33,16 @@ import {
   MajorityElectionBase,
   MajorityElectionResultBallot,
   MajorityElectionResultBallotBase,
+  MajorityElectionResultBallotProto,
+  MajorityElectionResultBundle,
   MajorityElectionResultBundleDetails,
   MajorityElectionResultBundleProto,
   MajorityElectionResultBundles,
   MajorityElectionResultBundlesProto,
-  PoliticalBusinessResultBundle,
   ProtocolExport,
   ProtocolExportProto,
 } from '../models';
-import { MajorityElectionResultBallotProto } from '../models/majority-election-result.model';
+import { MajorityElectionService } from './majority-election.service';
 import { MajorityElectionResultService } from './majority-election-result.service';
 import { GRPC_ENV_INJECTION_TOKEN } from './tokens';
 import { PoliticalBusinessResultBundleService } from './political-business-result-bundle.service';
@@ -84,7 +86,7 @@ export class MajorityElectionResultBundleService extends GrpcService<MajorityEle
     );
   }
 
-  public getBallot(
+  public async getBallot(
     bundleId: string,
     ballotNumber: number,
     electionByIds: { primaryElection: MajorityElectionBase; [id: string]: MajorityElectionBase },
@@ -99,13 +101,20 @@ export class MajorityElectionResultBundleService extends GrpcService<MajorityEle
     );
   }
 
-  public createBundle(electionResultId: string, bundleNumber?: number): Promise<CreateMajorityElectionResultBundleResponse.AsObject> {
+  public createBundle(
+    electionResultId: string,
+    bundleNumber?: number,
+    ballotGroupId?: string,
+  ): Promise<CreateMajorityElectionResultBundleResponse.AsObject> {
     const req = new CreateMajorityElectionResultBundleRequest();
     req.setElectionResultId(electionResultId);
-    if (!!bundleNumber) {
+    if (bundleNumber) {
       const bundleNumberValue = new Int32Value();
       bundleNumberValue.setValue(bundleNumber);
       req.setBundleNumber(bundleNumberValue);
+    }
+    if (ballotGroupId) {
+      req.setBallotGroupId(ballotGroupId);
     }
     return this.request(
       c => c.createBundle,
@@ -204,7 +213,7 @@ export class MajorityElectionResultBundleService extends GrpcService<MajorityEle
     };
   }
 
-  private mapToBundle(proto: MajorityElectionResultBundleProto): PoliticalBusinessResultBundle {
+  private mapToBundle(proto: MajorityElectionResultBundleProto): MajorityElectionResultBundle {
     const obj = proto.toObject();
     return {
       ...obj,
@@ -215,6 +224,7 @@ export class MajorityElectionResultBundleService extends GrpcService<MajorityEle
       protocolExport: this.mapToProtocolExport(proto.getProtocolExport()),
       logs: proto.getLogsList().map(x => PoliticalBusinessResultBundleService.mapToPoliticalBusinessResultBundleLog(x)),
       ballotModificationUserIds: proto.getBallotModificationUserIdsList(),
+      ballotGroup: proto.getBallotGroup() ? MajorityElectionService.mapToBallotGroup(proto.getBallotGroup()!) : undefined,
     };
   }
 
@@ -245,7 +255,17 @@ export class MajorityElectionResultBundleService extends GrpcService<MajorityEle
     ballot: MajorityElectionResultBallotBase,
     autoEmptyVoteCounting: boolean,
   ): void {
-    request.setSelectedCandidateIdsList(ballot.candidates.filter(c => c.selected).map(c => c.id));
+    request.setCandidatesList(
+      ballot.candidates
+        .filter(c => c.selected)
+        .map(c => {
+          const candidate = new CreateUpdateMajorityElectionResultBallotCandidateRequest();
+          candidate.setCandidateId(c.id);
+          candidate.setPosition(c.position);
+          candidate.setOnBallotGroup(c.onBallotGroup);
+          return candidate;
+        }),
+    );
     request.setIndividualVoteCount(ballot.individualVoteCount);
     request.setInvalidVoteCount(ballot.invalidVoteCount);
     if (!autoEmptyVoteCounting && ballot.election.numberOfMandates > 1) {

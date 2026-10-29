@@ -62,6 +62,7 @@ export class ContestMajorityElectionDetailResultEntryComponent implements OnInit
   private originalResultEntry: MajorityElectionResultEntry = MajorityElectionResultEntry.MAJORITY_ELECTION_RESULT_ENTRY_UNSPECIFIED;
   private originalResultEntryParams!: MajorityElectionResultEntryParams;
   public useCandidateCheckDigit: boolean = false;
+  public bundlesWithBallotGroupEnabled: boolean = false;
   private readonly routeSubscription: Subscription;
 
   constructor() {
@@ -84,6 +85,7 @@ export class ContestMajorityElectionDetailResultEntryComponent implements OnInit
 
     this.routeSubscription = route.data.subscribe(async ({ contestCantonDefaults }) => {
       this.useCandidateCheckDigit = contestCantonDefaults.majorityElectionUseCandidateCheckDigit;
+      this.bundlesWithBallotGroupEnabled = contestCantonDefaults.majorityElectionBundlesWithBallotGroupEnabled;
     });
   }
 
@@ -105,6 +107,7 @@ export class ContestMajorityElectionDetailResultEntryComponent implements OnInit
         ballotNumberGeneration,
         reviewProcedure,
         candidateCheckDigit,
+        bundlesWithBallotGroupEnabled,
       } = this.election;
       this.resultEntryParams = {
         ballotBundleSize,
@@ -115,6 +118,7 @@ export class ContestMajorityElectionDetailResultEntryComponent implements OnInit
         ballotNumberGeneration,
         reviewProcedure,
         candidateCheckDigit,
+        bundlesWithBallotGroupEnabled,
       };
     }
 

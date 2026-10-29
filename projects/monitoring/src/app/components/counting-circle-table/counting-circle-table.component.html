@@ -1,4 +1,4 @@
-<bc-table [sticky]="true" filter sort [sortActive]="[{ id: countingCircleColumn, direction: 'asc' }]" [dataSource]="dataSource">
+<bc-table [sticky]="true" filter voAusmStoreActiveFilters="counting-circle" sort [sortActive]="[{ id: countingCircleColumn, direction: 'asc' }]" [dataSource]="dataSource">
   <ng-container [columnDef]="stateColumn">
     <th bc-header-cell filter filterType="list" [filterItems]="stateList"
                     filterDisplayExpr="description" filterValueExpr="value" sort *headerCellDef>

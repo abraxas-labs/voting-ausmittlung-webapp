@@ -7,6 +7,7 @@
 import { CountingCircleResultState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/counting_circle_pb';
 import {
   ResultList as ResultListProto,
+  PoliticalBusinessResults as PoliticalBusinessResultsProto,
   ResultListResult as ResultListResultProto,
   ResultOverview as ResultOverviewProto,
   ResultOverviewCountingCircleResult as ResultOverviewCountingCircleResultProto,
@@ -21,8 +22,9 @@ import { VotingCardChannel } from './voting-channel.model';
 import { ContestCountingCircleElectorateSummary } from './contest-counting-circle-electorate.model';
 import { PoliticalBusinessUnion } from './political-business-union.model';
 import { VoterType } from './voter-type.model';
-import { MajorityElectionCandidateResult } from './majority-election-result.model';
-import { ProportionalElectionListResult } from './proportional-election-result.model';
+import { MajorityElectionCandidateResult, MajorityElectionResult } from './majority-election-result.model';
+import { ProportionalElectionListResult, ProportionalElectionResult } from './proportional-election-result.model';
+import { VoteResult } from './vote-result.model';
 
 export {
   ResultOverviewProto,
@@ -31,6 +33,7 @@ export {
   ResultOverviewCountingCircleResultProto,
   ResultListResultProto,
   ResultOverviewCountingCircleWithDetailsProto,
+  PoliticalBusinessResultsProto,
 };
 
 export interface ResultOverview {
@@ -108,6 +111,12 @@ export interface ResultList {
   hasUnmappedWriteIns: boolean;
   enabledVotingCardChannels: VotingCardChannel[];
   electorateSummary: ContestCountingCircleElectorateSummary;
+}
+
+export interface PoliticalBusinessResults {
+  voteResults: VoteResult[];
+  proportionalElectionResults: ProportionalElectionResult[];
+  majorityElectionResults: MajorityElectionResult[];
 }
 
 export interface ResultListResult {

@@ -4,81 +4,36 @@
  * For license information see LICENSE file.
  */
 
-import { ActiveDescendantKeyManager } from '@angular/cdk/a11y';
-import { AfterViewInit, ChangeDetectorRef, Component, HostListener, QueryList, ViewChildren, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { ProportionalElectionCandidate } from '../../../models';
-import { ProportionalElectionBallotCandidatesChooseEntryComponent } from './proportional-election-ballot-candidates-choose-entry/proportional-election-ballot-candidates-choose-entry.component';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-
-interface SearchableCandidate extends ProportionalElectionCandidate {
-  queryable: string;
-}
+import {
+  ElectionBallotCandidateChoice,
+  ElectionBallotCandidatesChooseDialogComponent,
+} from '../../election-ballot-candidates-choose-dialog/election-ballot-candidates-choose-dialog.component';
 
 @Component({
   selector: 'vo-ausm-proportional-election-ballot-candidates-choose-dialog',
-  templateUrl: './proportional-election-ballot-candidates-choose-dialog.component.html',
-  styleUrls: ['./proportional-election-ballot-candidates-choose-dialog.component.scss'],
+  templateUrl: '../../election-ballot-candidates-choose-dialog/election-ballot-candidates-choose-dialog.component.html',
+  styleUrls: ['../../election-ballot-candidates-choose-dialog/election-ballot-candidates-choose-dialog.component.scss'],
   standalone: false,
 })
-export class ProportionalElectionBallotCandidatesChooseDialogComponent implements AfterViewInit {
-  private readonly dialogRef = inject<MatDialogRef<ProportionalElectionBallotCandidatesChooseDialogData>>(MatDialogRef);
-  private readonly cd = inject(ChangeDetectorRef);
-
-  public readonly allCandidates: SearchableCandidate[];
-  public candidates: ProportionalElectionCandidate[];
-  public candidateCheckDigit: boolean;
-
-  @ViewChildren(ProportionalElectionBallotCandidatesChooseEntryComponent)
-  public candidateEntries!: QueryList<ProportionalElectionBallotCandidatesChooseEntryComponent>;
-
-  private keyManager?: ActiveDescendantKeyManager<ProportionalElectionBallotCandidatesChooseEntryComponent>;
-
-  constructor() {
-    const dialogData = inject<ProportionalElectionBallotCandidatesChooseDialogData>(MAT_DIALOG_DATA);
-
-    this.allCandidates = dialogData.candidates.map(c => ({
-      ...c,
-      queryable: `${c.description} ${c.listDescription} ${c.listNumber + c.number}`.toUpperCase(),
-    }));
-    this.candidates = dialogData.candidates;
-    this.candidateCheckDigit = dialogData.candidateCheckDigit;
+export class ProportionalElectionBallotCandidatesChooseDialogComponent extends ElectionBallotCandidatesChooseDialogComponent<ProportionalElectionCandidate> {
+  protected buildCandidateChoice(
+    candidate: ProportionalElectionCandidate,
+    candidateCheckDigit: boolean,
+  ): ElectionBallotCandidateChoice<ProportionalElectionCandidate> {
+    const checkDigit = candidateCheckDigit ? candidate.checkDigit : '';
+    const number = candidate.numberIncludingList + checkDigit;
+    const name = `${candidate.politicalLastName} ${candidate.politicalFirstName}`;
+    const searchNumber = candidate.listNumber + candidate.number + checkDigit;
+    return {
+      candidate,
+      number,
+      name,
+      partyOrList: candidate.listDescription,
+      queryable: `${candidate.description} ${candidate.listDescription} ${number} ${searchNumber}`.toUpperCase(),
+    };
   }
 
-  public ngAfterViewInit(): void {
-    this.keyManager = new ActiveDescendantKeyManager(this.candidateEntries).withWrap().withVerticalOrientation();
-  }
-
-  @HostListener('document:keydown', ['$event'])
-  public async keyDown(event: KeyboardEvent): Promise<void> {
-    if (!this.keyManager) {
-      return;
-    }
-
-    if (event.key === 'Enter' && this.keyManager.activeItem) {
-      this.done(this.keyManager.activeItem.candidate);
-      event.preventDefault();
-      return;
-    }
-
-    this.keyManager.onKeydown(event);
-  }
-
-  public done(candidate?: ProportionalElectionCandidate): void {
-    this.dialogRef.close(candidate);
-  }
-
-  public search(query: string): void {
-    const upperQuery = query.toUpperCase();
-    this.candidates = this.allCandidates.filter(c => c.queryable.includes(upperQuery));
-    if (this.candidates.length > 0) {
-      // detect changes to make sure that the filtered components are visible
-      this.cd.detectChanges();
-      this.keyManager?.setFirstItemActive();
-    }
-  }
-}
-
-export interface ProportionalElectionBallotCandidatesChooseDialogData {
-  candidates: ProportionalElectionCandidate[];
-  candidateCheckDigit: boolean;
+  protected noReplacementLabel = 'ELECTION.BALLOT_DETAIL.REPLACE_CANDIDATE_NO_REPLACEMENT_LIST';
 }

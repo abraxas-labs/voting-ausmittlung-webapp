@@ -13,15 +13,29 @@
           [enforceEmptyVoteCounting]="election.enforceEmptyVoteCountingForCountingCircles"
           [enforceCandidateCheckDigit]="election.enforceCandidateCheckDigitForCountingCircles"
           [useCandidateCheckDigit]="useCandidateCheckDigit">
-          <bc-radio-button-group
-            [label]="'MAJORITY_ELECTION.RESULT_ENTRY.REVIEW_PROCEDURE.TITLE' | translate"
-            orientation="vertical"
-            [items]="reviewProcedureChoices"
-            [(value)]="resultEntryParams.reviewProcedure"
-            [disabled]="election.enforceReviewProcedureForCountingCircles"
-            [subscriptSizing]="'dynamic'"
+          <div class="majority-election-entry-params">
+            <bc-radio-button-group
+              [label]="'MAJORITY_ELECTION.RESULT_ENTRY.REVIEW_PROCEDURE.TITLE' | translate"
+              orientation="vertical"
+              [items]="reviewProcedureChoices"
+              [(value)]="resultEntryParams.reviewProcedure"
+              [disabled]="election.enforceReviewProcedureForCountingCircles"
+              [subscriptSizing]="'dynamic'"
             >
-          </bc-radio-button-group>
+            </bc-radio-button-group>
+            @if (bundlesWithBallotGroupEnabled) {
+              <div>
+                <bc-label [label]="'MAJORITY_ELECTION.RESULT_ENTRY.BUNDLES_WITH_BALLOT_GROUP_ENABLED.TITLE' | translate" [disabled]="election.enforceBundlesWithBallotGroupEnabledForCountingCircles"></bc-label>
+                <bc-checkbox
+                  [(checked)]="resultEntryParams.bundlesWithBallotGroupEnabled"
+                  [label]="'MAJORITY_ELECTION.RESULT_ENTRY.BUNDLES_WITH_BALLOT_GROUP_ENABLED.ENABLED' | translate"
+                  [disabled]="election.enforceBundlesWithBallotGroupEnabledForCountingCircles"
+                  [subscriptSizing]="'dynamic'"
+                >
+                </bc-checkbox>
+              </div>
+            }
+          </div>
         </vo-ausm-election-result-entry-params>
       }
       @if (!isInitialSetup) {

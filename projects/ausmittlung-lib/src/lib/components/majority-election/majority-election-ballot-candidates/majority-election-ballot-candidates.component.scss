@@ -1,8 +1,14 @@
+@use '@abraxas/voting-lib/style/color' as *;
+
 .candidate-list {
   display: grid;
   gap: 0.4rem 0.8rem;
   grid-template-columns: repeat(3, auto) minmax(5rem, auto);
   align-items: center;
+
+  &.ballot-group {
+    grid-template-columns: repeat(3, auto) minmax(6.5rem, auto) repeat(3, max-content) minmax(6.5rem, 1fr);
+  }
 
   .title {
     align-self: start;
@@ -12,7 +18,56 @@
     }
   }
 
-  span.clickable {
+  .candidate-toggle {
+    cursor: not-allowed;
+
+    &.clickable {
+      cursor: pointer;
+    }
+
+    &.removed-from-list {
+      text-decoration: line-through;
+      color: $color-text-secondary;
+    }
+  }
+
+  .replacement-candidate-title {
+    grid-column: 5 / span 3;
+  }
+
+  .empty-slot {
+    display: contents;
+
+    &.replacement-candidate {
+      grid-column: 6 / span 3;
+      min-width: max-content;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+
+      .empty-vote {
+        flex: 1;
+        min-width: max-content;
+      }
+
+      > div {
+        flex-shrink: 0;
+        margin-left: auto;
+      }
+    }
+  }
+
+  .empty-vote {
+    color: $color-text-secondary;
+    white-space: nowrap;
+    grid-column: 2 / span 2;
+  }
+
+  .clickable {
     cursor: pointer;
+  }
+
+  .replacement-candidate-row {
+    grid-column: 5 / span 4;
   }
 }

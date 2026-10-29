@@ -1,9 +1,9 @@
-<vo-lib-page [contentLoading]="loading" [header]="'CONTEST.DETAIL.TITLE' | translate">
+<vo-lib-page [contentLoading]="loading" [reducedWhitespace]="useImprovedUi" [header]="useImprovedUi ? null : ('CONTEST.DETAIL.TITLE' | translate)">
   <vo-lib-page-header header>
     <div left>
       <vo-ausm-breadcrumbs [items]="breadcrumbs"></vo-ausm-breadcrumbs>
     </div>
-    <vo-ausm-contest-header center [contest]="resultList?.contest" [countingCircle]="resultList?.countingCircle" [state]="resultList?.state" [accessibleCountingCircles]="accessibleCountingCircles"></vo-ausm-contest-header>
+    <vo-ausm-contest-header center [contest]="resultList?.contest" [reducedWhitespace]="useImprovedUi" [countingCircle]="resultList?.countingCircle" [state]="resultList?.state" [accessibleCountingCircles]="accessibleCountingCircles"></vo-ausm-contest-header>
     @if (!!resultList) {
       <div right>
         <bc-button variant="tertiary"
@@ -35,7 +35,9 @@
   @if (resultList) {
     <div>
       <ng-container>
-        <h2 class="mt-3" translate>CONTEST.DETAIL.COUNT_OF_VOTERS_AND_VOTING_CARDS</h2>
+        @if (!useImprovedUi) {
+          <h2 class="mt-3" translate>CONTEST.DETAIL.COUNT_OF_VOTERS_AND_VOTING_CARDS</h2>
+        }
         <!-- Component should be re-rendered when the counting circle is changed -->
         @if (!loading) {
           <vo-ausm-contest-detail-info
@@ -49,6 +51,8 @@
             [domainOfInfluenceTypes]="domainOfInfluenceTypes"
             [countingMachineEnabled]="countingMachineEnabled"
             [countingMachine]="resultList.details.countingMachine"
+            [reducedWhitespace]="useImprovedUi"
+            [sticky]="useImprovedUi"
             [canton]="canton"
             [contestId]="resultList.contest.id"
             [countingCircleId]="resultList.countingCircle.id"
@@ -60,9 +64,12 @@
             (saved)="updateCountOfVoters($event)">
           </vo-ausm-contest-detail-info>
         }
-        <h2 class="mt-3" translate>CONTEST.DETAIL.POLITICAL_BUSINESSES</h2>
+
+        @if (!useImprovedUi) {
+          <h2 translate>CONTEST.DETAIL.POLITICAL_BUSINESSES</h2>
+        }
       </ng-container>
-      <div class="political-business-list">
+      <div class="political-business-list" [class.reduced-whitespace]="useImprovedUi">
         @for (result of resultList.results; track result) {
           <div>
             <vo-ausm-contest-political-business-detail
@@ -71,6 +78,8 @@
               [isResponsibleMonitorAuthority]="tenant?.id === result.politicalBusiness.domainOfInfluence?.secureConnectId"
               [contestCountingCircleDetails]="resultList.details"
               [result]="result"
+              [expandInitially]="autoShowPoliticalBusinessResults && supportMonitoringCantonSettings"
+              [preloadedResult]="findPreloadedResult(result)"
               [contestCantonDefaults]="resultList.contest.cantonDefaults"></vo-ausm-contest-political-business-detail>
           </div>
         }

@@ -87,6 +87,12 @@ export class ContestDetailInfoComponent implements AfterViewInit {
   public countingCircleId?: string;
 
   @Input()
+  public reducedWhitespace: boolean = false;
+
+  @Input()
+  public sticky: boolean = false;
+
+  @Input()
   public canton: DomainOfInfluenceCanton = DomainOfInfluenceCanton.DOMAIN_OF_INFLUENCE_CANTON_UNSPECIFIED;
 
   @ViewChild('votingCards') votingCardsRef!: ElementRef;

@@ -1,3 +1,19 @@
+@use '@abraxas/voting-lib/style/spacing' as *;
+
 .entry-params {
   margin-left: 2rem;
+}
+
+.majority-election-entry-params {
+  display: flex;
+
+  > *:not(:first-child) {
+    @extend .ml-3;
+  }
+
+  bc-label {
+    display: block;
+    margin-bottom: 2px;
+    line-height: 16px;
+  }
 }

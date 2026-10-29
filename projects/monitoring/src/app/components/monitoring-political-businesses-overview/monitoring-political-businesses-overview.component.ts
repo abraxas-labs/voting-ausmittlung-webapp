@@ -46,13 +46,11 @@ export class MonitoringPoliticalBusinessesOverviewComponent implements OnInit {
       x => x,
     );
 
-    this.politicalBusinesses = this.resultOverview.politicalBusinesses
-      .sort((a, b) => (a.domainOfInfluence?.type ?? 0) - (b.domainOfInfluence?.type ?? 0))
-      .map(x => ({
-        ...x,
-        amountOfCountingCircles: this.countingCircleResultsByPoliticalBusinessId[x.id].length,
-        minState: this.getMinPoliticalBusinessState(this.countingCircleResultsByPoliticalBusinessId[x.id]),
-      }));
+    this.politicalBusinesses = this.resultOverview.politicalBusinesses.map(x => ({
+      ...x,
+      amountOfCountingCircles: this.countingCircleResultsByPoliticalBusinessId[x.id].length,
+      minState: this.getMinPoliticalBusinessState(this.countingCircleResultsByPoliticalBusinessId[x.id]),
+    }));
 
     this.countingCirclesById = groupBySingle(
       this.resultOverview.countingCircleResults,

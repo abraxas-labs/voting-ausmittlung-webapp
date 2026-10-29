@@ -116,13 +116,17 @@ export interface MajorityElectionCandidateResult {
   conventionalVoteCount?: number;
 }
 
-export interface MajorityElectionResultBundles extends PoliticalBusinessResultBundles {
+export interface MajorityElectionResultBundle extends PoliticalBusinessResultBundle {
+  ballotGroup?: MajorityElectionBallotGroup;
+}
+
+export interface MajorityElectionResultBundles extends PoliticalBusinessResultBundles<MajorityElectionResultBundle> {
   politicalBusinessResult: MajorityElectionResult;
 }
 
 export interface MajorityElectionResultBundleDetails {
   electionResult: MajorityElectionResult;
-  bundle: PoliticalBusinessResultBundle;
+  bundle: MajorityElectionResultBundle;
 }
 
 export interface MajorityElectionResultBallotBase {

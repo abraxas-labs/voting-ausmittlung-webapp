@@ -12,6 +12,7 @@ import {
   BallotBundleState,
   MajorityElectionBase,
   MajorityElectionResult,
+  MajorityElectionResultBundle,
   MajorityElectionResultBallot,
   ReviewState,
 } from '../../../models';
@@ -27,7 +28,10 @@ const modifiedReviewForbiddenException = 'ReviewModifiedBundleForbiddenException
   styleUrls: ['./majority-election-ballot-review.component.scss'],
   standalone: false,
 })
-export class MajorityElectionBallotReviewComponent extends PoliticalBusinessBallotReviewComponent implements OnDestroy {
+export class MajorityElectionBallotReviewComponent
+  extends PoliticalBusinessBallotReviewComponent<MajorityElectionResultBundle>
+  implements OnDestroy
+{
   private readonly dialog = inject(DialogService);
   private readonly resultBundleService = inject(MajorityElectionResultBundleService);
 

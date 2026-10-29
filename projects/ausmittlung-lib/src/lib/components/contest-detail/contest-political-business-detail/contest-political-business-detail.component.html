@@ -58,6 +58,7 @@
                 [eCounting]="contestCountingCircleDetails.eCounting"
                 [countingCircleId]="contestCountingCircleDetails.countingCircleId"
                 [result]="result"
+                [preloadedResult]="preloadedResult"
                 [contestCantonDefaults]="contestCantonDefaults"></vo-ausm-contest-vote-detail>
             }
             @case (politicalBusinessType.POLITICAL_BUSINESS_TYPE_PROPORTIONAL_ELECTION) {
@@ -70,6 +71,7 @@
                 [eCounting]="contestCountingCircleDetails.eCounting"
                 [countingCircleId]="contestCountingCircleDetails.countingCircleId"
                 [result]="result"
+                [preloadedResult]="preloadedResult"
                 [contestCantonDefaults]="contestCantonDefaults"></vo-ausm-contest-proportional-election-detail>
             }
             @case (politicalBusinessType.POLITICAL_BUSINESS_TYPE_MAJORITY_ELECTION) {
@@ -82,6 +84,7 @@
                 [eCounting]="contestCountingCircleDetails.eCounting"
                 [countingCircleId]="contestCountingCircleDetails.countingCircleId"
                 [result]="result"
+                [preloadedResult]="preloadedResult"
                 [contestCantonDefaults]="contestCantonDefaults"></vo-ausm-contest-majority-election-detail>
             }
           }

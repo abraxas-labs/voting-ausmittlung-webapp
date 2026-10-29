@@ -2,7 +2,7 @@
   <div content>
     <bc-button
       variant="tertiary"
-      [label]="'ELECTION.BALLOT_DETAIL.REPLACE_CANDIDATE_NO_REPLACEMENT' | translate"
+      [label]="noReplacementLabel | translate"
       (buttonClick)="done()"
     ></bc-button>
 
@@ -16,12 +16,8 @@
 
     <div class="candidate-list">
       @for (candidate of candidates; track candidate) {
-        <vo-ausm-proportional-election-ballot-candidates-choose-entry
-          (click)="done(candidate)"
-          [candidate]="candidate"
-          [candidateCheckDigit]="candidateCheckDigit"
-          >
-        </vo-ausm-proportional-election-ballot-candidates-choose-entry>
+        <vo-ausm-election-ballot-candidates-choose-entry (click)="done(candidate.candidate)" [choice]="candidate">
+        </vo-ausm-election-ballot-candidates-choose-entry>
       }
     </div>
   </div>

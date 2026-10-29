@@ -35,12 +35,13 @@ export class ProportionalElectionResultsComponent implements OnDestroy {
   public readonly listResultColumns = [
     'orderNumber',
     'shortDescription',
+    'unmodifiedListsCount',
     'unmodifiedListVotesCount',
     'unmodifiedListBlankRowsCount',
+    'modifiedListsCount',
     'modifiedListVotesCount',
     'modifiedListBlankRowsCount',
-    'unmodifiedListsCount',
-    'modifiedListsCount',
+    'totalVoteCount',
   ];
   public readonly candidateColumns = [
     'number',

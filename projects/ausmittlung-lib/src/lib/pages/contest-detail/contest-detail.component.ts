@@ -6,7 +6,7 @@
 
 import { AuthorizationService, Tenant } from '@abraxas/base-components';
 import { DialogService, SnackbarService } from '@abraxas/voting-lib';
-import { AfterViewInit, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, QueryList, ViewChildren, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, inject, Input, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ContestPoliticalBusinessDetailComponent } from '../../components/contest-detail/contest-political-business-detail/contest-political-business-detail.component';
@@ -18,9 +18,14 @@ import {
   ContestCountingCircleDetails,
   CountingCircle,
   DomainOfInfluenceType,
+  MajorityElectionResult,
+  PoliticalBusinessResults,
+  PoliticalBusinessType,
+  ProportionalElectionResult,
   ResultList,
   ResultListResult,
   ResultStateChangeEvent,
+  VoteResult,
   VotingChannel,
 } from '../../models';
 import { BreadcrumbItem, BreadcrumbsService } from '../../services/breadcrumbs.service';
@@ -85,6 +90,9 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
   @Input()
   public showExport: boolean = true;
 
+  @Input()
+  public supportMonitoringCantonSettings: boolean = false;
+
   public sidebarReadonly: boolean = true;
 
   public get showImports(): boolean {
@@ -97,6 +105,10 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
   public politicalBusinessesDetails?: QueryList<ContestPoliticalBusinessDetailComponent>;
 
   public countingMachineEnabled: boolean = false;
+  private useImprovedUiCantonSetting: boolean = false;
+  public useImprovedUi: boolean = false;
+  public autoShowPoliticalBusinessResults: boolean = false;
+  public preloadedPoliticalBusinessResults?: PoliticalBusinessResults;
   public domainOfInfluenceTypes: DomainOfInfluenceType[] = [];
   public canton: DomainOfInfluenceCanton = DomainOfInfluenceCanton.DOMAIN_OF_INFLUENCE_CANTON_UNSPECIFIED;
   public accessibleCountingCircles: CountingCircle[] = [];
@@ -132,13 +144,34 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     this.routeQueryParamsSubscription = this.route.queryParams.subscribe(({ politicalBusinessId }) =>
       this.tryExpandPoliticalBusinesses(politicalBusinessId),
     );
-    this.routeParamsSubscription = this.route.params.subscribe(({ contestId, countingCircleId }) =>
-      this.loadData(contestId, countingCircleId),
-    );
+    this.routeParamsSubscription = this.route.params.subscribe(async ({ contestId, countingCircleId }) => {
+      await this.loadData(contestId, countingCircleId);
+      await this.preloadPoliticalBusinessResults();
+    });
 
     this.routeDataSubscription = route.data.subscribe(async ({ contestCantonDefaults }) => {
       this.countingMachineEnabled = contestCantonDefaults.countingMachineEnabled;
+      this.useImprovedUiCantonSetting = contestCantonDefaults.monitoringUseImprovedUi;
+      this.useImprovedUi = this.useImprovedUiCantonSetting && this.supportMonitoringCantonSettings;
+      this.autoShowPoliticalBusinessResults = contestCantonDefaults.monitoringAutoShowPoliticalBusinesses;
+      await this.preloadPoliticalBusinessResults();
     });
+  }
+
+  private async preloadPoliticalBusinessResults() {
+    if (
+      !this.autoShowPoliticalBusinessResults ||
+      !this.resultList ||
+      this.preloadedPoliticalBusinessResults ||
+      !this.supportMonitoringCantonSettings
+    ) {
+      return;
+    }
+
+    this.preloadedPoliticalBusinessResults = await this.resultService.getResults(
+      this.resultList.contest.id,
+      this.resultList.countingCircle.id,
+    );
   }
 
   public async ngOnInit(): Promise<void> {
@@ -151,6 +184,8 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     this.canReadImport = await this.permissionService.hasPermission(Permissions.Import.ReadECounting);
     this.canImport = await this.permissionService.hasPermission(Permissions.Import.ImportECounting);
     this.canDeleteImport = await this.permissionService.hasPermission(Permissions.Import.DeleteECounting);
+    this.useImprovedUi = this.useImprovedUiCantonSetting && this.supportMonitoringCantonSettings;
+    await this.preloadPoliticalBusinessResults();
   }
 
   public async mapWriteIns(importType?: ResultImportType): Promise<void> {
@@ -524,6 +559,28 @@ export class ContestDetailComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     this.stateUpdated(e.event.aggregateId, e.newState, e.event.timestamp);
+  }
+
+  public findPreloadedResult(
+    resultListResult: ResultListResult,
+  ): VoteResult | ProportionalElectionResult | MajorityElectionResult | undefined {
+    if (!this.preloadedPoliticalBusinessResults) {
+      return undefined;
+    }
+
+    if (resultListResult.politicalBusiness.businessType === PoliticalBusinessType.POLITICAL_BUSINESS_TYPE_VOTE) {
+      return this.preloadedPoliticalBusinessResults.voteResults.find(r => r.id === resultListResult.id);
+    }
+
+    if (resultListResult.politicalBusiness.businessType === PoliticalBusinessType.POLITICAL_BUSINESS_TYPE_PROPORTIONAL_ELECTION) {
+      return this.preloadedPoliticalBusinessResults.proportionalElectionResults.find(r => r.id === resultListResult.id);
+    }
+
+    if (resultListResult.politicalBusiness.businessType === PoliticalBusinessType.POLITICAL_BUSINESS_TYPE_MAJORITY_ELECTION) {
+      return this.preloadedPoliticalBusinessResults.majorityElectionResults.find(r => r.id === resultListResult.id);
+    }
+
+    return undefined;
   }
 
   private async reloadAllStates(): Promise<void> {

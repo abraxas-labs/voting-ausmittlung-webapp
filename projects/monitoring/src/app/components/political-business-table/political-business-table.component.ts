@@ -12,7 +12,7 @@ import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto
 import { EnumItemDescription, EnumUtil } from '@abraxas/voting-lib';
 import { CountingCircleResultState } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/counting_circle_pb';
 import { TranslateService } from '@ngx-translate/core';
-import { StorageService } from '../../services/storage.service';
+import { StorageService } from 'ausmittlung-lib';
 
 @Component({
   selector: 'app-political-business-table',

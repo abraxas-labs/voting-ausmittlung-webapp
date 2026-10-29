@@ -7,7 +7,7 @@
       (buttonClick)="succeedBundleReview.emit(selection.selected)"
       [label]="'ELECTION.BALLOT_DETAIL.SUCCEED_MULTIPLE' | translate"></bc-button>
   }
-  <bc-table selection filter sort [sortActive]="[{ id: stateColumn, direction: 'asc' }, { id: numberColumn, direction: 'asc' }]"
+  <bc-table selection filter voAusmStoreActiveFilters="majority-election-bundle" sort [sortActive]="[{ id: stateColumn, direction: 'asc' }, { id: numberColumn, direction: 'asc' }]"
     [filterDisabled]="!enableFiltering" [sortDisabled]="!enableSorting" [sortMultiple]="true" [dataSource]="dataSource">
     <ng-container [columnDef]="selectColumn">
       <th bc-header-cell *headerCellDef>
@@ -34,6 +34,13 @@
         <span truncateWithTooltip tooltip>{{ 'ELECTION.BUNDLE_SIZE' | translate }}</span>
       </th>
       <td bc-data-cell *dataCellDef="let element">{{ bundleSize | number }}</td>
+    </ng-container>
+
+    <ng-container [columnDef]="ballotGroupColumn">
+      <th bc-header-cell [filter]="enableFiltering" filterType="text" [sort]="enableSorting" *headerCellDef>
+        <span truncateWithTooltip tooltip>{{ 'MAJORITY_ELECTION.BALLOT_GROUP.SHORT_DESCRIPTION' | translate }}</span>
+      </th>
+      <td bc-data-cell *dataCellDef="let element">{{ element.ballotGroup?.shortDescription }}</td>
     </ng-container>
 
     <ng-container [columnDef]="createdByColumn">

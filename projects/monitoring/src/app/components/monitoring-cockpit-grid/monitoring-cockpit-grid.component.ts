@@ -27,11 +27,11 @@ import {
   ResultStateChangeEvent,
   SimplePoliticalBusiness,
   VoteResultService,
+  StorageService,
 } from 'ausmittlung-lib';
 import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { PoliticalBusinessType } from '@abraxas/voting-ausmittlung-service-proto/grpc/models/political_business_pb';
-import { StorageService } from '../../services/storage.service';
 import { EnumItemDescription, EnumUtil } from '@abraxas/voting-lib';
 
 @Component({
@@ -102,7 +102,7 @@ export class MonitoringCockpitGridComponent implements OnInit, AfterViewInit, On
   @ViewChild(FilterDirective)
   public filter!: FilterDirective;
 
-  public dataSource = new TableDataSource<FilteredCountingCircleResults>();
+  public readonly dataSource = new TableDataSource<FilteredCountingCircleResults>();
   public columns: string[] = [];
   public subHeaderColumns: string[] = [];
   public stateList: EnumItemDescription<CountingCircleResultState>[] = [];
@@ -148,6 +148,8 @@ export class MonitoringCockpitGridComponent implements OnInit, AfterViewInit, On
       CountingCircleResultState,
       'COUNTING_CIRCLE_RESULT_STATE.',
     );
+
+    this.initTableSortAndFilterAccessors();
   }
 
   public async ngOnInit(): Promise<void> {
@@ -196,7 +198,6 @@ export class MonitoringCockpitGridComponent implements OnInit, AfterViewInit, On
     this.startChangesListener();
     this.updateStateFilters();
     this.updateTable();
-    this.initTableSortAndFilterAccessors();
   }
 
   public ngAfterViewInit(): void {

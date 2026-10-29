@@ -9,7 +9,15 @@ import { CountingCircleResultState } from '@abraxas/voting-ausmittlung-service-p
 import { DialogService, SnackbarService } from '@abraxas/voting-lib';
 import { ChangeDetectorRef, Component, inject, Input, ViewChild } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { ContestCantonDefaults, ContestCountingCircleDetails, PoliticalBusinessType, ResultListResult } from '../../../models';
+import {
+  ContestCantonDefaults,
+  ContestCountingCircleDetails,
+  MajorityElectionResult,
+  PoliticalBusinessType,
+  ResultListResult,
+  VoteResult,
+  ProportionalElectionResult,
+} from '../../../models';
 import { CommentsDialogComponent, CommentsDialogComponentData } from '../../comments-dialog/comments-dialog.component';
 import { ResultImportService } from '../../../services/result-import.service';
 import { TranslateService } from '@ngx-translate/core';
@@ -47,6 +55,16 @@ export class ContestPoliticalBusinessDetailComponent {
 
   @Input()
   public contestCantonDefaults?: ContestCantonDefaults;
+
+  @Input()
+  public preloadedResult?: VoteResult | ProportionalElectionResult | MajorityElectionResult;
+
+  @Input()
+  public set expandInitially(value: boolean) {
+    if (value && this.expansionPanel) {
+      this.expansionPanel.expanded = true;
+    }
+  }
 
   @ViewChild(ExpansionPanelComponent, { static: true })
   public expansionPanel!: ExpansionPanelComponent;

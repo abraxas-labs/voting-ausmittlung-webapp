@@ -203,6 +203,7 @@ export class MajorityElectionResultService extends PoliticalBusinessResultBaseSe
       resultEntryParamsReq.setBallotNumberGeneration(resultEntryParams.ballotNumberGeneration);
       resultEntryParamsReq.setReviewProcedure(resultEntryParams.reviewProcedure);
       resultEntryParamsReq.setCandidateCheckDigit(resultEntryParams.candidateCheckDigit);
+      resultEntryParamsReq.setBundlesWithBallotGroupEnabled(resultEntryParams.bundlesWithBallotGroupEnabled);
       req.setResultEntryParams(resultEntryParamsReq);
     }
     return this.requestEmptyResp(c => c.defineEntry, req);

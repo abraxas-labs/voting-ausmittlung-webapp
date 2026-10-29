@@ -7,9 +7,10 @@
     @extend .ml-3;
   }
 
-  bc-label {
+  ::ng-deep bc-label {
     display: block;
-    margin-bottom: 0.3rem;
+    margin-bottom: 2px;
+    line-height: 16px;
   }
 
   .numeric {

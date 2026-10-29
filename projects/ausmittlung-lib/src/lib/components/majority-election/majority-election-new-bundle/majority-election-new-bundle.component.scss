@@ -1,0 +1,25 @@
+.field-number {
+  max-width: 8rem;
+}
+
+.form-container {
+  display: flex;
+  align-items: flex-start;
+
+  .align-bottom {
+    align-self: end;
+  }
+}
+
+.overflow {
+  overflow: auto;
+  max-height: 30rem;
+}
+
+.bc-column-select {
+  width: 3rem;
+}
+
+.bc-column-position {
+  width: 5rem;
+}

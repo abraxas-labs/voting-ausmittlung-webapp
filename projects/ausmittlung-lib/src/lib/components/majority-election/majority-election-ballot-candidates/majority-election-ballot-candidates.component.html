@@ -1,20 +1,124 @@
-<!-- If this div is scrollable due to overflow, it will receive a tabindex by default (from the browser). We do not want this, as it interrupts the default tab flow. -->
-<div class="candidate-list" tabindex="-1">
-  <bc-label class="title first" [label]="'APP.NR' | translate"></bc-label>
-  <bc-label class="title" [label]="'ELECTION.BALLOT_DETAIL.CANDIDATE' | translate"></bc-label>
-  <bc-label class="title" [label]="'MAJORITY_ELECTION.PARTY' | translate"></bc-label>
-  @for (candidate of candidates; track candidate) {
-    <bc-checkbox class="m-0"
-      [tabIndex]="-1"
-      [checked]="candidate.selected"
-      [disabled]="readonly || (!candidate.selected && !hasEmptyVotes)"
-      (checkedChange)="emitToggleCandidate(candidate, $event)"
-      [subscriptSizing]="'dynamic'"></bc-checkbox>
-    <span [class.clickable]="!readonly && (candidate.selected || hasEmptyVotes)"
-      (click)="emitToggleCandidate(candidate)">{{candidate.number + (candidateCheckDigit ? candidate.checkDigit : '')}}</span>
-    <span [class.clickable]="!readonly && (candidate.selected || hasEmptyVotes)"
-      (click)="emitToggleCandidate(candidate)">{{candidate.politicalLastName}} {{candidate.politicalFirstName}}</span>
-    <span [class.clickable]="!readonly && (candidate.selected || hasEmptyVotes)"
-      (click)="emitToggleCandidate(candidate)">{{candidate.party}}</span>
-  }
-</div>
+@if (bundlesWithBallotGroupEnabled) {
+  <!-- If this div is scrollable due to overflow, it will receive a tabindex by default (from the browser). We do not want this, as it interrupts the default tab flow. -->
+  <div class="candidate-list ballot-group" tabindex="-1">
+    <span></span>
+    <bc-label class="title" [label]="'APP.NR' | translate"></bc-label>
+    <bc-label class="title" [label]="'ELECTION.BALLOT_DETAIL.CANDIDATE_ON_BALLOT_GROUP' | translate"></bc-label>
+    <bc-label class="title" [label]="'MAJORITY_ELECTION.PARTY' | translate"></bc-label>
+    <bc-label class="title replacement-candidate-title" [label]="'ELECTION.BALLOT_DETAIL.CANDIDATE_ON_BALLOT' | translate"></bc-label>
+    <bc-label class="title" [label]="'MAJORITY_ELECTION.PARTY' | translate"></bc-label>
+    @for (position of positions; track position.position) {
+      @if (position.ballotGroupCandidate; as candidate) {
+        <bc-checkbox
+          class="m-0 candidate-toggle"
+          [tabIndex]="-1"
+          [checked]="candidate.selected"
+          [class.clickable]="canToggleGroupCandidate(position)"
+          [disabled]="readonly || !candidate.selected"
+          (click)="toggleGroupCandidate(position); $event.preventDefault()"
+          subscriptSizing="dynamic"
+        ></bc-checkbox>
+        <span
+          class="candidate-toggle"
+          [class.clickable]="canToggleGroupCandidate(position)"
+          [class.removed-from-list]="!candidate.selected"
+          (click)="toggleGroupCandidate(position)"
+          >{{ candidate.number + (candidateCheckDigit ? candidate.checkDigit : '') }}</span
+        >
+        <span
+          class="candidate-toggle"
+          [class.clickable]="canToggleGroupCandidate(position)"
+          [class.removed-from-list]="!candidate.selected"
+          (click)="toggleGroupCandidate(position)"
+          >{{ candidate.politicalLastName }} {{ candidate.politicalFirstName }}</span
+        >
+        <span
+          class="candidate-toggle"
+          [class.clickable]="canToggleGroupCandidate(position)"
+          [class.removed-from-list]="!candidate.selected"
+          (click)="toggleGroupCandidate(position)"
+          >{{ candidate.party }}</span
+        >
+      } @else {
+        <ng-container [ngTemplateOutlet]="emptyRowSlot" [ngTemplateOutletContext]="{ isReplacementCandidate: false }"></ng-container>
+      }
+      @if (position.replacementCandidate; as candidate) {
+        <bc-checkbox
+          class="m-0 candidate-toggle"
+          [tabIndex]="-1"
+          [checked]="true"
+          [disabled]="readonly"
+          [class.clickable]="!readonly"
+          (checkedChange)="emitToggleCandidate(candidate, $event)"
+          subscriptSizing="dynamic"
+        ></bc-checkbox>
+        <span class="candidate-toggle" [class.clickable]="!readonly" (click)="emitToggleCandidate(candidate)">
+          {{ candidate.number + (candidateCheckDigit ? candidate.checkDigit : '') }}
+        </span>
+        <span class="candidate-toggle" [class.clickable]="!readonly" (click)="emitToggleCandidate(candidate)">
+          {{ candidate.politicalLastName }} {{ candidate.politicalFirstName }}</span>
+        <span class="candidate-toggle" [class.clickable]="!readonly" (click)="emitToggleCandidate(candidate)">
+          {{ candidate.party }}
+        </span>
+      } @else if (position.ballotGroupCandidate && !position.ballotGroupCandidate.selected) {
+        <ng-container [ngTemplateOutlet]="emptyRowSlot" [ngTemplateOutletContext]="{ isReplacementCandidate: true }"></ng-container>
+      } @else {
+        <span class="replacement-candidate-row"></span>
+      }
+      <ng-template #emptyRowSlot let-isReplacementCandidate="isReplacementCandidate">
+        <bc-checkbox
+          class="m-0 candidate-toggle"
+          [tabIndex]="-1"
+          [checked]="true"
+          [disabled]="true"
+          [class.clickable]="!readonly && hasEmptyVotes && !position.replacementCandidate"
+          (click)="addNewCandidate(position); $event.preventDefault()"
+          subscriptSizing="dynamic"
+        ></bc-checkbox>
+        <div class="empty-slot" [class.replacement-candidate]="isReplacementCandidate">
+          <span
+            class="empty-vote candidate-toggle"
+            [class.clickable]="!readonly && hasEmptyVotes && !position.replacementCandidate"
+            (click)="addNewCandidate(position)"
+            >{{ 'MAJORITY_ELECTION.EMPTY_VOTE_SLOT' | translate }}</span
+          >
+          <div>
+            @if (!readonly && hasEmptyVotes && !position.replacementCandidate) {
+              <bc-button
+                variant="tertiary"
+                [tabIndex]="-1"
+                [label]="'ELECTION.BALLOT_DETAIL.ADD_CANDIDATE' | translate"
+                (buttonClick)="addNewCandidate(position)"
+              ></bc-button>
+            }
+          </div>
+        </div>
+      </ng-template>
+    }
+  </div>
+} @else {
+  <!-- If this div is scrollable due to overflow, it will receive a tabindex by default (from the browser). We do not want this, as it interrupts the default tab flow. -->
+  <div class="candidate-list" tabindex="-1">
+    <bc-label class="title first" [label]="'APP.NR' | translate"></bc-label>
+    <bc-label class="title" [label]="'ELECTION.BALLOT_DETAIL.CANDIDATE' | translate"></bc-label>
+    <bc-label class="title" [label]="'MAJORITY_ELECTION.PARTY' | translate"></bc-label>
+    @for (candidate of candidates; track candidate) {
+      <bc-checkbox
+        class="m-0"
+        [tabIndex]="-1"
+        [checked]="candidate.selected"
+        [disabled]="readonly || (!candidate.selected && !hasEmptyVotes)"
+        (checkedChange)="emitToggleCandidate(candidate, $event)"
+        [subscriptSizing]="'dynamic'"
+      ></bc-checkbox>
+      <span [class.clickable]="!readonly && (candidate.selected || hasEmptyVotes)" (click)="emitToggleCandidate(candidate)">
+        {{ candidate.number + (candidateCheckDigit ? candidate.checkDigit : '') }}
+      </span>
+      <span [class.clickable]="!readonly && (candidate.selected || hasEmptyVotes)" (click)="emitToggleCandidate(candidate)">
+        {{ candidate.politicalLastName }} {{ candidate.politicalFirstName }}</span>
+      <span [class.clickable]="!readonly && (candidate.selected || hasEmptyVotes)" (click)="emitToggleCandidate(candidate)">
+        {{ candidate.party }}
+      </span>
+    }
+  </div>
+}
