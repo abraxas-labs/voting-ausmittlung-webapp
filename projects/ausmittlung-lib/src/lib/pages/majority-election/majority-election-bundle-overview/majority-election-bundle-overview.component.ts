@@ -86,7 +86,8 @@ export class MajorityElectionBundleOverviewComponent extends PoliticalBusinessBu
         'APP.CONFIRM',
         this.i18n.instant('ELECTION.CONFIRM_BUNDLE_CREATION', { number: this.createdBundleData.bundleNumber }),
       );
-      this.tryNavigateToCreatedBundleAfterDelay();
+      this.bundleCreationConfirmed = true;
+      await this.tryNavigateToCreatedBundleAfterDelay();
     } catch (err) {
       this.isCreatingBundle = false;
       throw err;

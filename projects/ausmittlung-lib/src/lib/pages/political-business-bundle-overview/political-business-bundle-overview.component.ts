@@ -68,6 +68,8 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
   public loading: boolean = true;
   public canCreateBundle: boolean = false;
   public isCreatingBundle: boolean = false;
+  public bundleIsCreated: boolean = false;
+  public bundleCreationConfirmed: boolean = false;
   public politicalBusinessDetailEntryDenied: boolean = false;
 
   protected createdBundleData?: CreatedPoliticalBusinessResultBundleData;
@@ -336,7 +338,10 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
     }
 
     if (this.createdBundleData && this.createdBundleData.bundleId === b.id) {
-      await this.navigateToCreatedBundle();
+      this.bundleIsCreated = true;
+      if (this.bundleCreationConfirmed) {
+        await this.navigateToCreatedBundle();
+      }
       return;
     }
 
@@ -404,7 +409,12 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
     };
   }
 
-  protected tryNavigateToCreatedBundleAfterDelay(): void {
+  protected async tryNavigateToCreatedBundleAfterDelay(): Promise<void> {
+    if (this.isCreatingBundle && this.bundleIsCreated) {
+      await this.navigateToCreatedBundle();
+      return;
+    }
+
     setTimeout(async () => {
       if (this.isCreatingBundle) {
         await this.navigateToCreatedBundle();
@@ -422,6 +432,8 @@ export abstract class PoliticalBusinessBundleOverviewComponent<
     });
 
     this.isCreatingBundle = false;
+    this.bundleIsCreated = false;
+    this.bundleCreationConfirmed = false;
     this.createdBundleData = undefined;
   }
 

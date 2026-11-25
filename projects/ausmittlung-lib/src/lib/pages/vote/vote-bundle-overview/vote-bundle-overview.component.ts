@@ -61,8 +61,8 @@ export class VoteBundleOverviewComponent extends PoliticalBusinessBundleOverview
         this.result.ballotResult.id,
         bundleNumber,
       );
-
-      this.tryNavigateToCreatedBundleAfterDelay();
+      this.bundleCreationConfirmed = true;
+      await this.tryNavigateToCreatedBundleAfterDelay();
     } catch (err) {
       this.isCreatingBundle = false;
       throw err;

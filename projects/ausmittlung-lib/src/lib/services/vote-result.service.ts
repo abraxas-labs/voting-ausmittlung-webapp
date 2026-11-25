@@ -46,7 +46,7 @@ import {
   VoteResultServicePromiseClient,
 } from '@abraxas/voting-ausmittlung-service-proto/grpc/vote_result_service_grpc_web_pb';
 import { GrpcBackendService, GrpcEnvironment } from '@abraxas/voting-lib';
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   BallotEndResult,
@@ -59,10 +59,13 @@ import {
   BallotQuestionResultSubTotalProto,
   BallotResult,
   BallotResultProto,
+  createSecondFactorAuthorization,
   mapToCountOfVoters,
   mapToNullableCountOfVoters,
+  mapToSecondFactorTransaction,
   QuestionResultNullableSubTotal,
   QuestionResultSubTotal,
+  SecondFactorTransaction,
   TieBreakQuestionEndResult,
   TieBreakQuestionEndResultProto,
   TieBreakQuestionResult,
@@ -78,9 +81,6 @@ import {
   VoteResultEntry,
   VoteResultEntryParams,
   VoteResultProto,
-  SecondFactorTransaction,
-  createSecondFactorAuthorization,
-  mapToSecondFactorTransaction,
 } from '../models';
 import { ContestCountingCircleDetailsService } from './contest-counting-circle-details.service';
 import { ContestService } from './contest.service';

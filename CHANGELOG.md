@@ -1,4 +1,4 @@
-# ✨ Changelog (`v3.35.0`)
+# ✨ Changelog (`v3.35.2`)
 
 All notable changes to this project will be documented in this file.
 
@@ -8,11 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Version Info
 
 ```text
-This version -------- v3.35.0
-Previous version ---- v3.32.1
+This version -------- v3.35.2
+Previous version ---- v3.35.0
 Initial version ----- v1.25.0
-Total commits ------- 15
+Total commits ------- 2
 ```
+
+## [v3.35.2] - 2026-11-18
+
+### 🔄 Changed
+
+- display political business table even if no matching results are present
+
+## [v3.35.1] - 2026-10-30
+
+### 🔄 Changed
+
+- navigate to created bundle after it is confirmed
 
 ## [v3.35.0] - 2026-10-21
 

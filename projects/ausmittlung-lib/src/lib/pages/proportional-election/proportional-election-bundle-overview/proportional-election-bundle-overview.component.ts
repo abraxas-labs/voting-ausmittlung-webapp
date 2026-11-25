@@ -58,7 +58,8 @@ export class ProportionalElectionBundleOverviewComponent extends PoliticalBusine
       this.createdBundleData = result;
       this.isCreatingBundle = true;
       await this.dialog.alert('APP.CONFIRM', this.i18n.instant('ELECTION.CONFIRM_BUNDLE_CREATION', { number: result.bundleNumber }));
-      this.tryNavigateToCreatedBundleAfterDelay();
+      this.bundleCreationConfirmed = true;
+      await this.tryNavigateToCreatedBundleAfterDelay();
     }
   }
 

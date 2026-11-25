@@ -48,8 +48,8 @@ export class MonitoringPoliticalBusinessesOverviewComponent implements OnInit {
 
     this.politicalBusinesses = this.resultOverview.politicalBusinesses.map(x => ({
       ...x,
-      amountOfCountingCircles: this.countingCircleResultsByPoliticalBusinessId[x.id].length,
-      minState: this.getMinPoliticalBusinessState(this.countingCircleResultsByPoliticalBusinessId[x.id]),
+      amountOfCountingCircles: this.countingCircleResultsByPoliticalBusinessId[x.id]?.length ?? 0,
+      minState: this.getMinPoliticalBusinessState(this.countingCircleResultsByPoliticalBusinessId[x.id] ?? []),
     }));
 
     this.countingCirclesById = groupBySingle(
@@ -60,7 +60,7 @@ export class MonitoringPoliticalBusinessesOverviewComponent implements OnInit {
   }
 
   public openCountingCircleResults(simplePoliticalBusiness: SimplePoliticalBusiness): void {
-    this.countingCircles = this.countingCircleResultsByPoliticalBusinessId[simplePoliticalBusiness.id];
+    this.countingCircles = this.countingCircleResultsByPoliticalBusinessId[simplePoliticalBusiness.id] ?? [];
     this.selectedPoliticalBusiness = simplePoliticalBusiness;
   }
 
